@@ -3,8 +3,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import { OrchidBranch } from "@/components/invitation/orchid-branch";
-
 const introStorageEvent = "wedding-intro-storage-change";
 
 function subscribeToIntroStorage(onStoreChange: () => void) {
@@ -119,7 +117,6 @@ export function InvitationIntro({
       >
         <span aria-hidden="true" className="invitation-intro__edition">An invitation to celebrate</span>
         <span aria-hidden="true" className="invitation-intro__ornament">R <span>&</span> A</span>
-        <OrchidBranch className="invitation-intro__orchid" />
         <p className="invitation-intro__greeting">{greeting}</p>
         <p className="invitation-intro__date">{date}</p>
         <div className="invitation-intro__actions">

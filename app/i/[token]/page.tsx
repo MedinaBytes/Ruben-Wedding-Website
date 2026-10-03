@@ -6,7 +6,6 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { InvitationIntro } from "@/components/invitation/invitation-intro";
 import { InviteOpenTracker } from "@/components/invitation/invite-open-tracker";
-import { OrchidBranch } from "@/components/invitation/orchid-branch";
 import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
@@ -89,7 +88,6 @@ export default async function InvitationPage({
                 preload
                 className="hero__image"
               />
-              <OrchidBranch className="hero__orchid" />
               <figcaption>{hero("portraitCaption")}</figcaption>
             </figure>
           </div>

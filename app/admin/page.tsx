@@ -6,7 +6,6 @@ import { deleteWeddingData } from "@/app/actions/admin-data";
 import { signInAdmin } from "@/app/actions/admin-auth";
 import { hasAuthenticatedAdmin } from "@/lib/admin/auth";
 import { AdminDashboard } from "@/components/admin/admin-dashboard";
-import { OrchidBranch } from "@/components/invitation/orchid-branch";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -39,7 +38,6 @@ export default async function AdminPage({
       <main className="admin-page" id="main">
         <section className="admin-login" aria-labelledby="admin-login-title">
           <div aria-hidden="true" className="admin-login__art">
-            <OrchidBranch className="admin-login__orchid" />
             <span className="admin-login__monogram">R <i>&</i> A</span>
             <span className="admin-login__date">02 · 10 · 2027<br />Vienna, Austria</span>
           </div>
