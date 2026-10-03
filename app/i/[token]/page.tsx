@@ -65,6 +65,8 @@ export default async function InvitationPage({
         date={getWeddingDateLabel(locale, true)}
         openLabel={intro("open")}
         skipLabel={intro("skip")}
+        soundOnLabel={intro("soundOn")}
+        soundOffLabel={intro("soundOff")}
       />
       <main id="main">
         <InviteOpenTracker invitationId={invitation.id} token={token} />

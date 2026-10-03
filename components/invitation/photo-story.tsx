@@ -5,7 +5,9 @@ import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import type { Locale } from "@/lib/wedding-config";
 
 export async function PhotoStory({ locale }: { locale?: Locale }) {
-  const t = await getTranslations(locale ? { locale, namespace: "gallery" } : "gallery");
+  const t = locale
+    ? await getTranslations({ locale, namespace: "gallery" })
+    : await getTranslations("gallery");
 
   return (
     <section className="photo-story" aria-labelledby="photo-story-title">

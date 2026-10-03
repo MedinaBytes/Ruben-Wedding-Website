@@ -4,6 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  distDir: process.env.CODEX_NEXT_DIST_DIR ?? ".next",
   turbopack: {
     root: process.cwd(),
   },

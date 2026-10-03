@@ -3,6 +3,8 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { OrchidBranch } from "@/components/invitation/orchid-branch";
+
 const introStorageEvent = "wedding-intro-storage-change";
 
 function subscribeToIntroStorage(onStoreChange: () => void) {
@@ -21,17 +23,22 @@ export function InvitationIntro({
   date,
   openLabel,
   skipLabel,
+  soundOnLabel,
+  soundOffLabel,
 }: {
   invitationId: string;
   greeting: string;
   date: string;
   openLabel: string;
   skipLabel: string;
+  soundOnLabel: string;
+  soundOffLabel: string;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [isClosing, setIsClosing] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const storageKey = `wedding-intro-seen:${invitationId}`;
   const getSnapshot = useCallback(() => {
     try {
@@ -49,7 +56,35 @@ export function InvitationIntro({
     if (isOpen && dialog && !dialog.open) dialog.showModal();
   }, [isOpen]);
 
+  function playOpeningChime() {
+    if (!soundEnabled) return;
+
+    const AudioContextConstructor = window.AudioContext;
+    if (!AudioContextConstructor) return;
+
+    const context = new AudioContextConstructor();
+    const gain = context.createGain();
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.connect(context.destination);
+
+    [523.25, 659.25].forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const noteStart = context.currentTime + index * 0.13;
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, noteStart);
+      oscillator.connect(gain);
+      gain.gain.setValueAtTime(0.0001, noteStart);
+      gain.gain.exponentialRampToValueAtTime(0.045, noteStart + 0.045);
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.62);
+      oscillator.start(noteStart);
+      oscillator.stop(noteStart + 0.65);
+    });
+
+    window.setTimeout(() => void context.close(), 1000);
+  }
+
   function closeIntro() {
+    playOpeningChime();
     try {
       sessionStorage.setItem(storageKey, "true");
     } catch {
@@ -76,13 +111,15 @@ export function InvitationIntro({
       ref={dialogRef}
     >
       <motion.div
-        animate={{ opacity: isClosing ? 0 : 1, scale: isClosing ? 0.985 : 1, y: isClosing ? 8 : 0 }}
+        animate={{ opacity: isClosing ? 0 : 1, scale: isClosing ? 0.97 : 1, y: isClosing ? -10 : 0, rotateX: isClosing ? -5 : 0 }}
         className="invitation-intro__paper"
-        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.985, y: 12 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96, y: 20, rotateX: 3 }}
         onAnimationComplete={finishClose}
-        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.62, ease: [0.2, 0.7, 0.2, 1] }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.72, ease: [0.2, 0.7, 0.2, 1] }}
       >
+        <span aria-hidden="true" className="invitation-intro__edition">An invitation to celebrate</span>
         <span aria-hidden="true" className="invitation-intro__ornament">R <span>&</span> A</span>
+        <OrchidBranch className="invitation-intro__orchid" />
         <p className="invitation-intro__greeting">{greeting}</p>
         <p className="invitation-intro__date">{date}</p>
         <div className="invitation-intro__actions">
@@ -93,6 +130,15 @@ export function InvitationIntro({
             {skipLabel}
           </button>
         </div>
+        <button
+          aria-pressed={soundEnabled}
+          className="invitation-intro__sound"
+          onClick={() => setSoundEnabled((enabled) => !enabled)}
+          type="button"
+        >
+          <span aria-hidden="true">{soundEnabled ? "♫" : "♪"}</span>
+          {soundEnabled ? soundOffLabel : soundOnLabel}
+        </button>
       </motion.div>
     </dialog>
   );
