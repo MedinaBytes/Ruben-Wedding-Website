@@ -7,13 +7,18 @@ import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
 import type { Locale } from "@/lib/wedding-config";
 
 type Category = "all" | "editorial" | "travel" | "celebration" | "adventures";
+type PhotoLocale = "en" | "es" | "de" | "hu";
+
+function photoText(values: Record<PhotoLocale, string>, locale: Locale) {
+  return values[locale === "de-AT" ? "de" : locale] ?? values.en;
+}
 
 const categoryLabels: Record<Category, Record<Locale, string>> = {
-  all: { en: "All memories", es: "Todos los recuerdos", de: "Alle Erinnerungen", hu: "Minden emlék" },
-  editorial: { en: "Portraits & Gala", es: "Retratos de Gala", de: "Porträts", hu: "Portrék" },
-  travel: { en: "Travel & Horizons", es: "Viajes y Horizontes", de: "Reisen", hu: "Utazások" },
-  celebration: { en: "Celebrations & Love", es: "Celebraciones", de: "Feiern", hu: "Ünneplések" },
-  adventures: { en: "Adventures & Sea", es: "Aventuras y Mar", de: "Abenteuer", hu: "Kalandok" },
+  all: { en: "All memories", es: "Todos los recuerdos", "de-AT": "Alle Erinnerungen", hu: "Minden emlék" },
+  editorial: { en: "Portraits & Gala", es: "Retratos de Gala", "de-AT": "Porträts", hu: "Portrék" },
+  travel: { en: "Travel & Horizons", es: "Viajes y Horizontes", "de-AT": "Reisen", hu: "Utazások" },
+  celebration: { en: "Celebrations & Love", es: "Celebraciones", "de-AT": "Feiern", hu: "Ünneplések" },
+  adventures: { en: "Adventures & Sea", es: "Aventuras y Mar", "de-AT": "Abenteuer", hu: "Kalandok" },
 };
 
 export function BentoGallery({
@@ -109,8 +114,8 @@ export function BentoGallery({
         {filteredPhotos.map((photo, index) => {
           const isWide = index % 5 === 0 || index % 7 === 0;
           const isTall = index % 4 === 0 && !isWide;
-          const photoTitle = photo.title[locale] ?? photo.title.en;
-          const photoCaption = photo.caption[locale] ?? photo.caption.en;
+          const photoTitle = photoText(photo.title, locale);
+          const photoCaption = photoText(photo.caption, locale);
 
           return (
             <figure
@@ -190,7 +195,7 @@ export function BentoGallery({
           <div className="lightbox-content">
             <WeddingPhoto
               id={activePhoto.id}
-              alt={activePhoto.caption[locale] ?? activePhoto.caption.en}
+              alt={photoText(activePhoto.caption, locale)}
               sizes="(max-width: 1200px) 90vw, 1200px"
               className="lightbox-image"
             />
@@ -200,8 +205,8 @@ export function BentoGallery({
                   .replace("{current}", String((activePhotoIndex ?? 0) + 1))
                   .replace("{total}", String(filteredPhotos.length))} · {categoryLabels[activePhoto.category][locale]}
               </span>
-              <h4 className="lightbox-title">{activePhoto.title[locale] ?? activePhoto.title.en}</h4>
-              <p className="lightbox-desc">{activePhoto.caption[locale] ?? activePhoto.caption.en}</p>
+              <h4 className="lightbox-title">{photoText(activePhoto.title, locale)}</h4>
+              <p className="lightbox-desc">{photoText(activePhoto.caption, locale)}</p>
             </div>
           </div>
 

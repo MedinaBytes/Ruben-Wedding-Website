@@ -7,6 +7,8 @@ const optionalText = (maximum: number) => z.string().trim().max(maximum).optiona
 export const createInvitationSchema = z
   .object({
     displayName: z.string().trim().min(1).max(160),
+    email: z.string().trim().email().max(254).optional(),
+    phone: optionalText(40),
     greetingOverride: optionalText(300),
     language: z.enum(supportedLocales).optional(),
     groupName: optionalText(160),

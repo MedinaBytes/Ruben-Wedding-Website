@@ -1,10 +1,12 @@
 import type { Locale } from "@/lib/wedding-config";
 
+type PhotoLocale = Exclude<Locale, "de-AT"> | "de";
+
 export type PhotoStoryItem = {
   id: string;
   category: "editorial" | "travel" | "celebration" | "adventures";
-  title: Record<Locale, string>;
-  caption: Record<Locale, string>;
+  title: Record<PhotoLocale, string>;
+  caption: Record<PhotoLocale, string>;
 };
 
 export const photoCatalog: readonly PhotoStoryItem[] = [

@@ -29,11 +29,10 @@ export default async function HomePage({
       ? (manualLocale as Locale)
       : (requestLocale as Locale);
 
-  const [messages, navigation, hero, lookup, wedding, footer] = await Promise.all([
+  const [messages, navigation, hero, wedding, footer] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "navigation" }),
     getTranslations({ locale, namespace: "hero" }),
-    getTranslations({ locale, namespace: "lookup" }),
     getTranslations({ locale, namespace: "wedding" }),
     getTranslations({ locale, namespace: "footer" }),
   ]);
@@ -46,6 +45,8 @@ export default async function HomePage({
         privacyLabel={navigation("privacy")}
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
+        showDetailsLink={false}
+        showLanguageSwitcher={false}
       />
       <main className="guest-entry" id="main">
         <section className="hero" aria-labelledby="hero-title">
@@ -61,7 +62,7 @@ export default async function HomePage({
                 <span>{hero("detailsLink")}</span>
                 <span aria-hidden="true">↓</span>
               </a>
-              <InvitationLookupCard currentLocale={locale} languageLabel={lookup("languageLabel")} inputLabel={lookup("inputLabel")} />
+              <InvitationLookupCard currentLocale={locale} />
             </div>
             <figure className="hero__portrait">
               <HeroPhotoMotion>

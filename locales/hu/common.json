@@ -63,7 +63,19 @@
   },
   "lookup": {
     "languageLabel": "Válassz nyelvet",
-    "inputLabel": "Név, e-mail-cím vagy telefonszám"
+    "languageTitle": "Mielőtt elkezdjük",
+    "languageDescription": "Válaszd azt a nyelvet, amelyiken a legkényelmesebben érzed magad.",
+    "identifyTitle": "Keresd meg a meghívódat",
+    "identifyDescription": "Add meg a neved, e-mail-címed vagy telefonszámod a személyes meghívó megkereséséhez.",
+    "inputLabel": "Név, e-mail-cím vagy telefonszám",
+    "inputPlaceholder": "Pl. Kovács Anna, anna@example.com vagy +36 20 123 4567",
+    "invalidInput": "Adj meg érvényes nevet, e-mail-címet vagy nemzetközi telefonszámot.",
+    "submit": "Meghívó keresése",
+    "searching": "Keressük a meghívódat…",
+    "notFound": "Ezekkel az adatokkal nem találtunk aktív meghívót. Ellenőrizd őket, és próbáld újra.",
+    "rateLimited": "Várj néhány percet, mielőtt újra próbálkozol.",
+    "lookupError": "Most nem sikerült megnyitni a meghívódat. Kérjük, próbáld újra hamarosan.",
+    "changeLanguage": "Nyelv módosítása"
   },
   "event": {
     "dayLabel": "Egy közös nap",
@@ -293,6 +305,8 @@
     "createInvitationError": "A meghívót nem sikerült létrehozni. Ellenőrizd a mezőket, majd próbáld újra.",
     "displayName": "Megjelenített név",
     "groupName": "Csoportnév, opcionális",
+    "lookupEmail": "E-mail-cím a meghívókereséshez, nem kötelező",
+    "lookupPhone": "Telefonszám országhívóval, nem kötelező",
     "preferredLanguage": "Előnyben részesített nyelv",
     "languageDefault": "Böngésző nyelvének használata",
     "plusOneAllowed": "További vendég engedélyezése",

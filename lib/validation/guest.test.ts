@@ -60,7 +60,7 @@ describe("guest request validation", () => {
   });
 
   it("resolves locale using invitation, manual, browser, then English priority", () => {
-    expect(resolveLocalePreference("de", "es", "hu", supportedLocales)).toBe("de");
+    expect(resolveLocalePreference("de-AT", "es", "hu", supportedLocales)).toBe("de-AT");
     expect(resolveLocalePreference(undefined, "es", "hu", supportedLocales)).toBe("es");
     expect(resolveLocalePreference(undefined, undefined, "hu", supportedLocales)).toBe("hu");
     expect(resolveLocalePreference("unknown", undefined, "unknown", supportedLocales)).toBe("en");

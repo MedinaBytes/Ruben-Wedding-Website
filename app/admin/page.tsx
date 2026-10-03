@@ -65,7 +65,7 @@ export default async function AdminPage({
     "confirmedGuests", "confirmedGuestsNote", "songCount", "songRequestsNote", "exportCsv", "invitationList", "invitationName",
     "guestPlaces", "response", "attending", "declined", "pending", "songRequests", "artistUnknown", "responseDetails",
     "guestNames", "noInvitations", "noSongs", "noRsvps", "deleteSectionTitle",
-    "createInvitation", "creatingInvitation", "createInvitationSuccess", "createInvitationError", "displayName", "groupName",
+    "createInvitation", "creatingInvitation", "createInvitationSuccess", "createInvitationError", "displayName", "groupName", "lookupEmail", "lookupPhone",
     "preferredLanguage", "languageDefault", "plusOneAllowed", "invitationUrl",
     "deleteWarning", "deleteConfirmationLabel", "deleteAction",
   ] as const;

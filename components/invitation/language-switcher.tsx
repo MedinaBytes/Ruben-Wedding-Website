@@ -9,14 +9,14 @@ import { supportedLocales, type Locale } from "@/lib/wedding-config";
 const localeLabels: Record<Locale, string> = {
   en: "English",
   es: "Español",
-  de: "Deutsch",
+  "de-AT": "Deutsch (Österreich)",
   hu: "Magyar",
 };
 
 const localeCodes: Record<Locale, string> = {
   en: "EN",
   es: "ES",
-  de: "DE",
+  "de-AT": "DE",
   hu: "HU",
 };
 

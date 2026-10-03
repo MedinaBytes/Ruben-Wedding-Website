@@ -22,6 +22,8 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
       body: JSON.stringify({
         displayName: formData.get("displayName"),
         groupName: formData.get("groupName") || undefined,
+        email: formData.get("email") || undefined,
+        phone: formData.get("phone") || undefined,
         language: formData.get("language") || undefined,
         maxGuests,
         plusOneAllowed: formData.get("plusOneAllowed") === "on",
@@ -49,6 +51,14 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
       <div className="field-group">
         <label htmlFor="invitation-group-name">{labels.groupName}</label>
         <input autoComplete="off" id="invitation-group-name" maxLength={160} name="groupName" type="text" />
+      </div>
+      <div className="field-group">
+        <label htmlFor="invitation-email">{labels.lookupEmail}</label>
+        <input autoComplete="email" id="invitation-email" maxLength={254} name="email" type="email" />
+      </div>
+      <div className="field-group">
+        <label htmlFor="invitation-phone">{labels.lookupPhone}</label>
+        <input autoComplete="tel" id="invitation-phone" maxLength={40} name="phone" type="tel" />
       </div>
       <div className="field-group">
         <label htmlFor="invitation-language">{labels.preferredLanguage}</label>

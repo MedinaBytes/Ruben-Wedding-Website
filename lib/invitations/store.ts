@@ -4,13 +4,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { hashInvitationToken, invitationTokenSchema } from "@/lib/invitations/token";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import type { Locale } from "@/lib/wedding-config";
 import type { RsvpPayload, SongRequestPayload } from "@/lib/validation/guest";
 
 export type ActiveInvitation = {
   id: string;
   display_name: string;
   greeting_override: string | null;
-  language: "en" | "es" | "de" | "hu" | null;
+  language: Locale | null;
   max_guests: number;
   plus_one_allowed: boolean;
   personal_message: string | null;
@@ -26,10 +27,29 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
   const tokenHash = getInvitationTokenHash(token);
   if (!tokenHash) return null;
 
-  const { data, error } = await client
+  const { data: directInvitation, error: directError } = await client
     .from("invitations")
     .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
     .eq("token_hash", tokenHash)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (directError) throw new Error("Invitation lookup failed.");
+  if (directInvitation) return directInvitation as ActiveInvitation;
+
+  const { data: alias, error: aliasError } = await client
+    .from("invitation_token_aliases")
+    .select("invitation_id")
+    .eq("token_hash", tokenHash)
+    .maybeSingle();
+
+  if (aliasError) throw new Error("Invitation lookup failed.");
+  if (!alias) return null;
+
+  const { data, error } = await client
+    .from("invitations")
+    .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+    .eq("id", alias.invitation_id)
     .eq("status", "active")
     .maybeSingle();
 
@@ -38,19 +58,7 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
 }
 
 export async function findActiveInvitationByToken(token: string) {
-  const tokenHash = getInvitationTokenHash(token);
-  if (!tokenHash) return null;
-
-  const client = createSupabaseAdminClient();
-  const { data, error } = await client
-    .from("invitations")
-    .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
-    .eq("token_hash", tokenHash)
-    .eq("status", "active")
-    .maybeSingle();
-
-  if (error) throw new Error("Invitation lookup failed.");
-  return data as ActiveInvitation | null;
+  return findActiveInvitation(createSupabaseAdminClient(), token);
 }
 
 export async function consumeInvitationRateLimit(

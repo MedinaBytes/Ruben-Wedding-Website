@@ -11,7 +11,7 @@ describe("wedding configuration", () => {
   });
 
   it("keeps all supported locales in one place", () => {
-    expect(weddingConfig.locales).toEqual(["en", "es", "de", "hu"]);
+    expect(weddingConfig.locales).toEqual(["en", "es", "de-AT", "hu"]);
   });
 
   it("resolves the wedding start in Europe/Vienna, including daylight saving time", () => {
@@ -19,6 +19,6 @@ describe("wedding configuration", () => {
   });
 
   it("formats the event date with a locale-specific weekday and month", () => {
-    expect(getWeddingDateLabel("de", true)).toBe("Samstag, 2. Oktober 2027");
+    expect(getWeddingDateLabel("de-AT", true)).toBe("Samstag, 2. Oktober 2027");
   });
 });

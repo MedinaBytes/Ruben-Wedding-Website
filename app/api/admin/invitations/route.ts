@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { generateInvitationToken, hashInvitationToken } from "@/lib/invitations/token";
+import { normalizeEmail, normalizeName, normalizePhone } from "@/lib/invitations/lookup-normalize";
 import { invalidOriginResponse, isJsonRequest, isSameOriginMutation } from "@/lib/security/request";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createInvitationSchema } from "@/lib/validation/admin";
@@ -34,18 +35,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_request" }, { status: 422, headers: privateHeaders });
   }
 
+  const normalizedName = normalizeName(payload.data.displayName);
+  const normalizedGroupName = payload.data.groupName ? normalizeName(payload.data.groupName) : null;
+  const normalizedEmail = payload.data.email ? normalizeEmail(payload.data.email) : null;
+  const normalizedPhone = payload.data.phone ? normalizePhone(payload.data.phone) : null;
+  if ((payload.data.email && !normalizedEmail) || (payload.data.phone && !normalizedPhone)) {
+    return NextResponse.json({ error: "invalid_request" }, { status: 422, headers: privateHeaders });
+  }
+
   const client = createSupabaseAdminClient();
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const token = generateInvitationToken();
     const { data, error } = await client
       .from("invitations")
       .insert({
-        token,
         token_hash: hashInvitationToken(token),
         display_name: payload.data.displayName,
+        normalized_name: normalizedName,
         greeting_override: payload.data.greetingOverride ?? null,
         language: payload.data.language ?? null,
         group_name: payload.data.groupName ?? null,
+        normalized_group_name: normalizedGroupName,
+        normalized_email: normalizedEmail,
+        normalized_phone: normalizedPhone,
         max_guests: payload.data.maxGuests,
         plus_one_allowed: payload.data.plusOneAllowed,
         personal_message: payload.data.personalMessage ?? null,

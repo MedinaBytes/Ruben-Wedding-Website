@@ -47,7 +47,7 @@ function getStayLinks(locale: Locale | undefined) {
     ];
   }
 
-  if (locale === "de") {
+  if (locale === "de-AT") {
     return [
       { label: "Hotels in Meidling suchen", href: "https://www.booking.com/searchresults.html?ss=Meidling%2C+Vienna" },
       { label: "Budget-Optionen", href: "https://www.booking.com/searchresults.html?ss=Vienna%20Meidling&nflt=class%3D1%3B2%3B3" },
@@ -126,7 +126,7 @@ export async function WeddingSections({
       { label: travel("trainMav"), href: "https://www.mavcsoport.hu/en/mav-szemelyszallitas/international-travels/start-europa-tickets" },
       { label: travel("trainOebb"), href: "https://www.oebb.at/en/" },
     ] : []),
-    ...(locale === "de" ? [{ label: travel("trainOebb"), href: "https://www.oebb.at/de/" }] : []),
+    ...(locale === "de-AT" ? [{ label: travel("trainOebb"), href: "https://www.oebb.at/de/" }] : []),
     ...(!locale || locale === "en" ? [{ label: travel("trainOebb"), href: "https://www.oebb.at/en/" }] : []),
     { label: travel("cityTickets"), href: "https://www.wienerlinien.at/web/wl-en/24-hours-vienna" },
     { label: travel("airportConnections"), href: "https://www.viennaairport.com/en/passengers/arrival__parking/public_transport" },

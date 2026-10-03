@@ -13,6 +13,18 @@ describe("admin invitation validation", () => {
     expect(createInvitationSchema.safeParse(baseInvitation).success).toBe(true);
   });
 
+  it("accepts optional email and international phone lookup contacts", () => {
+    expect(createInvitationSchema.safeParse({
+      ...baseInvitation,
+      email: "alex@example.com",
+      phone: "+43 660 123 4567",
+    }).success).toBe(true);
+  });
+
+  it("rejects malformed email lookup contacts", () => {
+    expect(createInvitationSchema.safeParse({ ...baseInvitation, email: "not-an-email" }).success).toBe(false);
+  });
+
   it("rejects an additional guest when only one place is available", () => {
     expect(createInvitationSchema.safeParse({ ...baseInvitation, maxGuests: 1 }).success).toBe(false);
   });

@@ -9,6 +9,8 @@ export function SiteHeader({
   languageLabel,
   mainNavigationLabel,
   invitation,
+  showDetailsLink = true,
+  showLanguageSwitcher = true,
 }: {
   detailsLabel: string;
   detailsHref?: string;
@@ -16,6 +18,8 @@ export function SiteHeader({
   languageLabel: string;
   mainNavigationLabel: string;
   invitation?: { id: string; token: string };
+  showDetailsLink?: boolean;
+  showLanguageSwitcher?: boolean;
 }) {
   return (
     <header className="site-header">
@@ -23,10 +27,10 @@ export function SiteHeader({
         R<span aria-hidden="true">&</span>A
       </Link>
       <nav aria-label={mainNavigationLabel} className="site-header__nav">
-        <a href={detailsHref}>{detailsLabel}</a>
+        {showDetailsLink && <a href={detailsHref}>{detailsLabel}</a>}
         <Link href="/privacy">{privacyLabel}</Link>
       </nav>
-      <LanguageSwitcher invitation={invitation} label={languageLabel} />
+      {showLanguageSwitcher && <LanguageSwitcher invitation={invitation} label={languageLabel} />}
     </header>
   );
 }

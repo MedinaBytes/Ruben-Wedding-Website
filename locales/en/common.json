@@ -62,8 +62,20 @@
     "portraitCaption": "Ruben and Andrea"
   },
   "lookup": {
-    "languageLabel": "Choose a language",
-    "inputLabel": "Your name, email, or phone number"
+    "languageLabel": "Choose your language",
+    "languageTitle": "Before we begin",
+    "languageDescription": "Choose the language you feel most at home in.",
+    "identifyTitle": "Find your invitation",
+    "identifyDescription": "Enter your name, email, or phone number to find your personal invitation.",
+    "inputLabel": "Name, email, or phone number",
+    "inputPlaceholder": "e.g. John Doe, john@example.com or +1 555 123 4567",
+    "invalidInput": "Enter a valid name, email address, or international phone number.",
+    "submit": "Find my invitation",
+    "searching": "Looking for your invitation…",
+    "notFound": "We couldn’t find an active invitation with those details. Check them and try again.",
+    "rateLimited": "Please wait a few minutes before trying again.",
+    "lookupError": "We couldn’t open your invitation just now. Please try again shortly.",
+    "changeLanguage": "Change language"
   },
   "event": {
     "dayLabel": "A day together",
@@ -293,6 +305,8 @@
     "createInvitationError": "The invitation could not be created. Check the fields and try again.",
     "displayName": "Display name",
     "groupName": "Group name, optional",
+    "lookupEmail": "Email for invitation lookup, optional",
+    "lookupPhone": "Phone with country code, optional",
     "preferredLanguage": "Preferred language",
     "languageDefault": "Use browser language",
     "plusOneAllowed": "Allow an additional guest",

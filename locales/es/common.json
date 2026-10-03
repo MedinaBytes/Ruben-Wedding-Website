@@ -62,8 +62,20 @@
     "portraitCaption": "Ruben y Andrea"
   },
   "lookup": {
-    "languageLabel": "Elige el idioma",
-    "inputLabel": "Nombre, correo o teléfono"
+    "languageLabel": "Elige tu idioma",
+    "languageTitle": "Antes de empezar",
+    "languageDescription": "Elige el idioma en el que te sientas más a gusto.",
+    "identifyTitle": "Encuentra tu invitación",
+    "identifyDescription": "Ingresa tu nombre, correo o teléfono para encontrar tu invitación personal.",
+    "inputLabel": "Nombre, correo o teléfono",
+    "inputPlaceholder": "Ej. Ana García, ana@example.com o +34 600 123 456",
+    "invalidInput": "Introduce un nombre, correo electrónico o teléfono internacional válido.",
+    "submit": "Buscar mi invitación",
+    "searching": "Buscando tu invitación…",
+    "notFound": "No encontramos una invitación activa con esos datos. Revísalos e inténtalo de nuevo.",
+    "rateLimited": "Espera unos minutos antes de volver a intentarlo.",
+    "lookupError": "Ahora no pudimos abrir tu invitación. Inténtalo de nuevo en un momento.",
+    "changeLanguage": "Cambiar idioma"
   },
   "event": {
     "dayLabel": "Un día juntos",
@@ -293,6 +305,8 @@
     "createInvitationError": "No se pudo crear la invitación. Revisa los campos e inténtalo de nuevo.",
     "displayName": "Nombre para mostrar",
     "groupName": "Nombre del grupo, opcional",
+    "lookupEmail": "Correo para buscar la invitación, opcional",
+    "lookupPhone": "Teléfono con prefijo internacional, opcional",
     "preferredLanguage": "Idioma preferido",
     "languageDefault": "Usar el idioma del navegador",
     "plusOneAllowed": "Permitir un invitado adicional",

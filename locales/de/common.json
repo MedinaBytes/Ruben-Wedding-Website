@@ -63,7 +63,19 @@
   },
   "lookup": {
     "languageLabel": "Sprache wählen",
-    "inputLabel": "Name, E-Mail oder Telefonnummer"
+    "languageTitle": "Bevor wir beginnen",
+    "languageDescription": "Wähle die Sprache, in der du dich am wohlsten fühlst.",
+    "identifyTitle": "Finde deine Einladung",
+    "identifyDescription": "Gib deinen Namen, deine E-Mail oder deine Telefonnummer ein, um deine persönliche Einladung zu finden.",
+    "inputLabel": "Name, E-Mail oder Telefonnummer",
+    "inputPlaceholder": "z. B. Max Mustermann, max@example.com oder +43 660 123 4567",
+    "invalidInput": "Bitte gib einen gültigen Namen, eine gültige E-Mail-Adresse oder internationale Telefonnummer ein.",
+    "submit": "Einladung finden",
+    "searching": "Deine Einladung wird gesucht…",
+    "notFound": "Mit diesen Angaben wurde keine aktive Einladung gefunden. Bitte prüfe sie und versuche es erneut.",
+    "rateLimited": "Bitte warte ein paar Minuten und versuche es dann erneut.",
+    "lookupError": "Deine Einladung konnte gerade nicht geöffnet werden. Bitte versuche es gleich noch einmal.",
+    "changeLanguage": "Sprache ändern"
   },
   "event": {
     "dayLabel": "Ein gemeinsamer Tag",
@@ -293,6 +305,8 @@
     "createInvitationError": "Die Einladung konnte nicht erstellt werden. Prüfe die Felder und versuche es erneut.",
     "displayName": "Anzeigename",
     "groupName": "Gruppenname, optional",
+    "lookupEmail": "E-Mail-Adresse für die Einladungssuche, optional",
+    "lookupPhone": "Telefonnummer mit Ländervorwahl, optional",
     "preferredLanguage": "Bevorzugte Sprache",
     "languageDefault": "Browsersprache verwenden",
     "plusOneAllowed": "Zusätzlichen Gast erlauben",

@@ -1,4 +1,4 @@
-export const supportedLocales = ["en", "es", "de", "hu"] as const;
+export const supportedLocales = ["en", "es", "de-AT", "hu"] as const;
 
 export const weddingConfig = {
   couple: {

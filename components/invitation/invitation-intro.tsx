@@ -23,6 +23,7 @@ export function InvitationIntro({
   skipLabel,
   soundOnLabel,
   soundOffLabel,
+  onComplete,
 }: {
   invitationId: string;
   greeting: string;
@@ -31,6 +32,7 @@ export function InvitationIntro({
   skipLabel: string;
   soundOnLabel: string;
   soundOffLabel: string;
+  onComplete?: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -96,6 +98,7 @@ export function InvitationIntro({
     dialogRef.current?.close();
     setIsDismissed(true);
     window.dispatchEvent(new Event(introStorageEvent));
+    onComplete?.();
   }
 
   return (

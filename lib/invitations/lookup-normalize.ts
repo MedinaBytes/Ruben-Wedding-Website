@@ -1,16 +1,47 @@
-export function normalizeLookupValue(value: string) {
-  const trimmed = value.trim().toLowerCase();
-  const normalized = trimmed.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const containsEmail = normalized.includes("@");
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { z } from "zod";
 
-  if (containsEmail) {
-    return normalized.replace(/\s+/g, "").trim();
+export type NormalizedLookupValue =
+  | { kind: "name"; value: string }
+  | { kind: "email"; value: string }
+  | { kind: "phone"; value: string };
+
+const emailSchema = z.string().email();
+const phoneCharacters = /^[+\d\s().-]+$/;
+
+export function normalizeName(value: string) {
+  return value.normalize("NFC").trim().toLowerCase().replace(/\s+/gu, " ");
+}
+
+export function normalizeEmail(value: string) {
+  const email = value.trim().toLowerCase();
+  return emailSchema.safeParse(email).success ? email : null;
+}
+
+export function normalizePhone(value: string) {
+  const trimmed = value.trim();
+  if (!phoneCharacters.test(trimmed)) return null;
+  const international = trimmed.replace(/^00/, "+");
+  const phone = parsePhoneNumberFromString(international);
+  return phone?.isValid() ? phone.number : null;
+}
+
+export function normalizeLookupValue(value: string): NormalizedLookupValue | null {
+  const trimmed = value.normalize("NFC").trim();
+  if (!trimmed) return null;
+
+  if (trimmed.includes("@")) {
+    const email = normalizeEmail(trimmed);
+    return email ? { kind: "email", value: email } : null;
   }
 
-  const digitsOnly = normalized.replace(/\D+/g, "");
-  if (digitsOnly.length >= 7) {
-    return digitsOnly;
+  const isPhoneInput = phoneCharacters.test(trimmed)
+    && ((trimmed.match(/\d/g)?.length ?? 0) >= 7 || trimmed.startsWith("+") || trimmed.startsWith("00"));
+  if (isPhoneInput) {
+    const phone = normalizePhone(trimmed);
+    return phone ? { kind: "phone", value: phone } : null;
   }
 
-  return normalized.replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  const name = normalizeName(trimmed);
+  return name.length >= 2 ? { kind: "name", value: name } : null;
 }

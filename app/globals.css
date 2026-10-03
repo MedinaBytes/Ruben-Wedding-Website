@@ -321,6 +321,22 @@ a {
   scroll-margin-top: 1rem;
 }
 
+.lookup-card__stage {
+  animation: lookup-stage-arrive 360ms var(--ease-editorial) both;
+}
+
+@keyframes lookup-stage-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .lookup-card__header .section-label {
   display: block;
   margin-bottom: 0.45rem;
@@ -350,25 +366,35 @@ a {
   margin-top: 0.75rem;
 }
 
+.lookup-card__language-options {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
 .lookup-lang-btn {
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid var(--color-border);
   color: var(--color-ink);
   cursor: pointer;
   font: inherit;
-  font-size: 0.76rem;
-  min-height: 2.75rem;
-  min-width: 2.75rem;
-  padding: 0.4rem 0.65rem;
-  transition: background-color var(--duration-fast) ease-out, border-color var(--duration-fast) ease-out;
+  font-size: 0.82rem;
+  min-height: 3.25rem;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  transition: background-color var(--duration-fast) ease-out, border-color var(--duration-fast) ease-out, color var(--duration-fast) ease-out;
 }
 
 .lookup-lang-btn:hover:not(:disabled) {
   background: var(--color-matcha-pale);
+  border-color: var(--color-matcha-strong);
 }
 
 .lookup-lang-btn.is-active {
-  border-bottom-color: var(--color-matcha-strong);
+  background: var(--color-matcha-pale);
+  border-color: var(--color-matcha-strong);
   font-weight: 650;
 }
 
@@ -416,6 +442,21 @@ a {
 .lookup-card__form .text-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.lookup-card__change-language {
+  background: transparent;
+  border: 0;
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  margin: 0 0 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rose-gold);
+  text-underline-offset: 0.25em;
 }
 
 .lookup-message {
@@ -1802,6 +1843,10 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .lookup-card__stage {
+    animation: none;
   }
 }
 

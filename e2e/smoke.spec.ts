@@ -14,16 +14,20 @@ test("public entry keeps personalized wedding sections private", async ({ page }
   await page.goto("/?lang=en");
 
   await expect(page.locator(".guest-entry .lookup-section")).toHaveCount(1);
+  await expect(page.getByRole("group", { name: "Choose your language" })).toBeVisible();
+  await expect(page.getByLabel("Name, email, or phone number")).toHaveCount(0);
   await expect(page.locator(".day-story, .photo-story, .venues, .music-note, .gift-note, .rsvp-section")).toHaveCount(0);
 });
 
-test("entry navigation targets guest lookup", async ({ page }) => {
+test("language selection advances to the separate lookup view and persists", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Find invitation" }).click();
+  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "Español" }).click();
 
-  await expect(page).toHaveURL(/#lookup-section$/);
-  await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
+  await expect(page).toHaveURL(/\?lang=es$/);
+  await expect(page.getByRole("heading", { name: "Encuentra tu invitación" })).toBeVisible();
+  await expect(page.getByLabel("Nombre, correo o teléfono")).toBeVisible();
+  await expect(page.getByRole("group", { name: "Elige tu idioma" })).toHaveCount(0);
 });
 
 test("invalid invitation token shows a safe not-found response", async ({ page }) => {
@@ -32,22 +36,24 @@ test("invalid invitation token shows a safe not-found response", async ({ page }
   expect(response?.status()).toBe(404);
 });
 
-test("language switcher updates the locale on the public page", async ({ page }) => {
+test("lookup view can return to language selection", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await page.getByRole("button", { name: "Español" }).first().click();
+  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "English" }).click();
+  await expect(page.getByLabel("Name, email, or phone number")).toBeVisible();
+  await page.getByRole("button", { name: "Change language" }).click();
 
-  await expect(page.getByText("Una boda en Viena")).toBeVisible({ timeout: 15000 });
-  await expect(
-    page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Privacidad" }),
-  ).toBeVisible();
+  await expect(page.getByRole("group", { name: "Choose your language" })).toBeVisible();
+  await expect(page.getByLabel("Name, email, or phone number")).toHaveCount(0);
 });
 
-test("homepage renders invitation lookup card with language selector", async ({ page }) => {
+test("lookup form appears only after language selection", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
-  await expect(page.getByLabel("Your name, email, or phone number")).toBeVisible();
+  await expect(page.getByLabel("Your name, email, or phone number")).toHaveCount(0);
+  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "English" }).click();
+  await expect(page.getByRole("heading", { name: "Find your invitation" })).toBeVisible();
+  await expect(page.getByLabel("Name, email, or phone number")).toBeVisible();
   await expect(page.getByPlaceholder(/John Doe/)).toBeVisible();
 });
 
