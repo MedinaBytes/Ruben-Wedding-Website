@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { supportedLocales } from "@/lib/wedding-config";
+import { supportedLocales } from "../wedding-config";
 
 const optionalText = (maximum: number) => z.string().trim().max(maximum).optional();
 
