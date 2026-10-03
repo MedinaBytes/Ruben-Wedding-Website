@@ -123,6 +123,7 @@ export function BentoGallery({
               }}
               type="button"
             >
+              {isWide && <BotanicalCornerAccent position="top-right" />}
               <WeddingPhoto
                 id={photo.id}
                 alt=""
