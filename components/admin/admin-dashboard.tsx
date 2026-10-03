@@ -1,4 +1,5 @@
 import { signOutAdmin } from "@/app/actions/admin-auth";
+import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type AdminMetrics = {
@@ -152,6 +153,7 @@ export async function AdminDashboard({
         <div className="admin-data-grid">
           <section aria-labelledby="admin-invitations-title" className="admin-panel" id="invitations">
             <div className="admin-panel__heading"><div><p className="section-label">01 / {labels.invitations}</p><h2 id="admin-invitations-title">{labels.invitationList}</h2></div><span>{invitations.length}</span></div>
+            <CreateInvitationForm labels={labels} />
             {invitations.length ? (
               <div className="admin-table-wrap"><table><thead><tr><th>{labels.invitationName}</th><th>{labels.guestPlaces}</th><th>{labels.response}</th></tr></thead><tbody>
                 {invitations.map((invitation) => {
