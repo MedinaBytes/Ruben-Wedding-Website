@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Dienstleister",
-      "body": "Der Hosting-Anbieter stellt die Website bereit, Supabase die Datenbank. Falls konfiguriert, wird die Google-Maps-Karte geladen, sobald sich der Veranstaltungsortbereich dem sichtbaren Bereich nähert. Das Spotify-Embed wird nur geladen, wenn du die Playlist-Schaltfläche auswählst und eine Playlist konfiguriert ist. Beim Laden können diese Anbieter technische Daten verarbeiten; es gelten ihre jeweiligen Datenschutzhinweise."
+      "body": "Der Hosting-Anbieter stellt die Website bereit, Supabase die Datenbank. Die Links zu den Veranstaltungsorten öffnen OpenStreetMap, das technische Daten gemäß seiner eigenen Datenschutzerklärung verarbeiten kann. Das Spotify-Embed wird nur geladen, wenn du die Playlist-Schaltfläche auswählst und eine Playlist konfiguriert ist."
     },
     "retention": {
       "title": "Speicherdauer",

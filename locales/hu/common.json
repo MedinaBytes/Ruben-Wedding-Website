@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Szolgáltatók",
-      "body": "Az oldalt a telepítési szolgáltató üzemelteti, az adatbázist a Supabase biztosítja. Beállított Google Maps esetén a térkép akkor töltődik be, amikor a helyszín szakasz a képernyő közelébe kerül. A Spotify-beágyazás csak a lejátszási lista gombjának kiválasztásakor, és csak beállított lista esetén töltődik be. Betöltéskor a szolgáltatók technikai adatokat kezelhetnek; saját adatvédelmi szabályzataik érvényesek."
+      "body": "Az oldalt a telepítési szolgáltató üzemelteti, az adatbázist a Supabase biztosítja. A helyszínlinkek az OpenStreetMapet nyitják meg, amely saját adatvédelmi szabályzata szerint technikai adatokat kezelhet. A Spotify-beágyazás csak a lejátszási lista gombjának kiválasztásakor, és csak beállított lista esetén töltődik be."
     },
     "retention": {
       "title": "Adatmegőrzés",

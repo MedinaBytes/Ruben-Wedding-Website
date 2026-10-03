@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Proveedores de servicios",
-      "body": "El proveedor de despliegue aloja el sitio y Supabase proporciona la base de datos. Si está configurado, el mapa de Google Maps se carga cuando la sección del lugar se acerca a la pantalla. El reproductor de Spotify solo se carga cuando eliges su botón y hay una lista configurada. Estos proveedores pueden procesar datos técnicos al cargar sus servicios; se aplican sus propias políticas de privacidad."
+      "body": "El proveedor de despliegue aloja el sitio y Supabase proporciona la base de datos. Los enlaces de los lugares abren OpenStreetMap, que puede procesar datos técnicos según su propia política de privacidad. El reproductor de Spotify solo se carga cuando eliges su botón y hay una lista configurada."
     },
     "retention": {
       "title": "Conservación",

@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Service providers",
-      "body": "The site is hosted by its deployment provider and uses Supabase for its database. If configured, a Google Maps embed loads when its venue section nears the viewport. A Spotify embed loads only after you choose its playlist button and if a playlist is configured. These providers may process technical data when their services load; their own privacy policies apply."
+      "body": "The site is hosted by its deployment provider and uses Supabase for its database. Venue links open OpenStreetMap, which may process technical data under its own privacy policy. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
     },
     "retention": {
       "title": "Retention",
