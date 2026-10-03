@@ -17,8 +17,28 @@
   },
   "privacy": {
     "title": "Privacy",
-    "notice": "The privacy notice is being prepared and will be available before invitations are sent.",
-    "contactPlaceholder": "Couple contact details: to be provided."
+    "notice": "This invitation site uses only the information needed to manage wedding invitations, replies, and song requests.",
+    "collection": {
+      "title": "Information collected",
+      "body": "The private invitation link identifies your invitation. If you reply, the site stores your attendance, guest count and additional guest names, language, and any dietary requirements or note you provide. Song requests may include a title, artist, and optional Spotify link. Limited invitation events record the invitation identifier, event type, time, locale, and session identifier."
+    },
+    "purpose": {
+      "title": "Why and who can access it",
+      "body": "This information is used to organize the celebration and respond to your invitation. It is available to the couple and authorized administrators, and is stored through the site's server-side database provider. Invitation links should be treated as private."
+    },
+    "services": {
+      "title": "Service providers",
+      "body": "The site is hosted by its deployment provider and uses Supabase for its database. If configured, a Google Maps embed loads when its venue section nears the viewport. A Spotify embed loads only after you choose its playlist button and if a playlist is configured. These providers may process technical data when their services load; their own privacy policies apply."
+    },
+    "retention": {
+      "title": "Retention",
+      "body": "The retention period has not yet been decided. It must be confirmed before invitations are sent; wedding data should be deleted when it is no longer needed."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Couple contact details: to be provided before invitations are sent."
+    },
+    "reviewNote": "This notice is a draft and requires legal review before launch."
   },
   "navigation": {
     "details": "The day",
@@ -159,5 +179,47 @@
     "greeting": "Dear {name},",
     "open": "Open invitation",
     "skip": "Skip intro"
+  },
+  "admin": {
+    "label": "Wedding administration",
+    "title": "Overview",
+    "signOut": "Sign out",
+    "navigation": "Admin navigation",
+    "overview": "Overview",
+    "invitations": "Invitations",
+    "rsvps": "RSVPs",
+    "music": "Song requests",
+    "analytics": "Activity",
+    "summary": "Wedding data summary",
+    "dataUnavailable": "Wedding data is temporarily unavailable.",
+    "invitationCount": "Active invitations",
+    "invitationDenominator": "Active invitations",
+    "guestCount": "Maximum invited guests",
+    "guestDenominator": "Total allowed guest places across active invitations",
+    "openedCount": "Opened invitations",
+    "openedDenominator": "{count} active invitations",
+    "attendingCount": "Attending invitations",
+    "attendanceResponses": "Of active invitations with a response",
+    "declinedCount": "Declined invitations",
+    "pendingCount": "Awaiting response",
+    "pendingDenominator": "Active invitations without an RSVP",
+    "confirmedGuests": "Confirmed attendees",
+    "confirmedGuestsNote": "People attending, including additional guests",
+    "songCount": "Song requests",
+    "songRequestsNote": "Requests submitted by invited guests",
+    "setupError": "Admin sign-in is not configured yet.",
+    "credentialsError": "Those credentials are not authorized.",
+    "loginTitle": "Sign in",
+    "loginDescription": "Sign in with an authorized account to manage wedding invitations.",
+    "email": "Email address",
+    "password": "Password",
+    "signIn": "Sign in",
+    "deleteSectionTitle": "Delete wedding data",
+    "deleteWarning": "Permanently removes invitation, RSVP, song, event, rate-limit, and stored site-setting records. Admin accounts and deployment configuration remain. This cannot be undone.",
+    "deleteConfirmationLabel": "Type DELETE WEDDING DATA to confirm.",
+    "deleteAction": "Delete wedding data",
+    "deleteSuccess": "Wedding data has been deleted.",
+    "deleteConfirmationError": "The confirmation phrase did not match. No data was deleted.",
+    "deleteError": "Wedding data could not be deleted. No success was reported."
   }
 }

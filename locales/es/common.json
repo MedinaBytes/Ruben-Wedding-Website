@@ -17,8 +17,28 @@
   },
   "privacy": {
     "title": "Privacidad",
-    "notice": "El aviso de privacidad está en preparación y estará disponible antes de enviar las invitaciones.",
-    "contactPlaceholder": "Datos de contacto de la pareja: pendientes."
+    "notice": "Este sitio utiliza únicamente la información necesaria para gestionar las invitaciones, las respuestas y las peticiones de canciones.",
+    "collection": {
+      "title": "Información recopilada",
+      "body": "El enlace privado identifica tu invitación. Si respondes, el sitio guarda tu asistencia, el número de personas y los nombres de acompañantes, el idioma y cualquier requisito alimentario o mensaje que facilites. Las peticiones musicales pueden incluir título, artista y un enlace opcional de Spotify. Los eventos de invitación registran únicamente el identificador de invitación, el tipo de evento, la hora, el idioma y el identificador de sesión."
+    },
+    "purpose": {
+      "title": "Uso y acceso",
+      "body": "Esta información se utiliza para organizar la celebración y gestionar tu invitación. Solo la pareja y las personas administradoras autorizadas pueden acceder a ella; se almacena mediante el proveedor de base de datos del sitio. Trata el enlace de invitación como privado."
+    },
+    "services": {
+      "title": "Proveedores de servicios",
+      "body": "El proveedor de despliegue aloja el sitio y Supabase proporciona la base de datos. Si está configurado, el mapa de Google Maps se carga cuando la sección del lugar se acerca a la pantalla. El reproductor de Spotify solo se carga cuando eliges su botón y hay una lista configurada. Estos proveedores pueden procesar datos técnicos al cargar sus servicios; se aplican sus propias políticas de privacidad."
+    },
+    "retention": {
+      "title": "Conservación",
+      "body": "El plazo de conservación aún no se ha decidido. Debe confirmarse antes de enviar las invitaciones; los datos de la boda se eliminarán cuando ya no sean necesarios."
+    },
+    "contact": {
+      "title": "Contacto",
+      "body": "Los datos de contacto de la pareja se facilitarán antes de enviar las invitaciones."
+    },
+    "reviewNote": "Este aviso es un borrador y requiere revisión legal antes de publicarse."
   },
   "navigation": {
     "details": "El día",
@@ -159,5 +179,47 @@
     "greeting": "Hola, {name}:",
     "open": "Abrir invitación",
     "skip": "Saltar introducción"
+  },
+  "admin": {
+    "label": "Administración de la boda",
+    "title": "Resumen",
+    "signOut": "Cerrar sesión",
+    "navigation": "Navegación de administración",
+    "overview": "Resumen",
+    "invitations": "Invitaciones",
+    "rsvps": "Respuestas",
+    "music": "Peticiones de canciones",
+    "analytics": "Actividad",
+    "summary": "Resumen de datos de la boda",
+    "dataUnavailable": "Los datos de la boda no están disponibles temporalmente.",
+    "invitationCount": "Invitaciones activas",
+    "invitationDenominator": "Invitaciones activas",
+    "guestCount": "Máximo de personas invitadas",
+    "guestDenominator": "Total de plazas permitidas en las invitaciones activas",
+    "openedCount": "Invitaciones abiertas",
+    "openedDenominator": "{count} invitaciones activas",
+    "attendingCount": "Invitaciones aceptadas",
+    "attendanceResponses": "De las invitaciones activas con respuesta",
+    "declinedCount": "Invitaciones rechazadas",
+    "pendingCount": "Pendientes de respuesta",
+    "pendingDenominator": "Invitaciones activas sin respuesta",
+    "confirmedGuests": "Personas asistentes confirmadas",
+    "confirmedGuestsNote": "Personas que asistirán, incluidos los acompañantes",
+    "songCount": "Peticiones de canciones",
+    "songRequestsNote": "Peticiones enviadas por invitados",
+    "setupError": "El acceso de administración aún no está configurado.",
+    "credentialsError": "Estas credenciales no están autorizadas.",
+    "loginTitle": "Iniciar sesión",
+    "loginDescription": "Inicia sesión con una cuenta autorizada para gestionar las invitaciones.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "deleteSectionTitle": "Eliminar los datos de la boda",
+    "deleteWarning": "Elimina permanentemente los registros de invitaciones, respuestas, canciones, eventos, límites de uso y ajustes guardados del sitio. Las cuentas de administración y la configuración del despliegue permanecen. Esta acción no se puede deshacer.",
+    "deleteConfirmationLabel": "Escribe DELETE WEDDING DATA para confirmar.",
+    "deleteAction": "Eliminar los datos de la boda",
+    "deleteSuccess": "Se han eliminado los datos de la boda.",
+    "deleteConfirmationError": "La frase de confirmación no coincide. No se han eliminado datos.",
+    "deleteError": "No se pudieron eliminar los datos de la boda. No se confirma ninguna eliminación."
   }
 }

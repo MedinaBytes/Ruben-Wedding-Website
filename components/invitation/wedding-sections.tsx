@@ -76,7 +76,6 @@ export async function WeddingSections({
 
       <section className="day-story" aria-labelledby="day-title">
         <div className="section-heading">
-          <p className="section-label">{day("dayLabel")}</p>
           <h2 id="day-title">{day("timelineTitle")}</h2>
         </div>
         <ol className="day-timeline">
@@ -158,7 +157,6 @@ export async function WeddingSections({
 
       <section className="travel-note" aria-labelledby="travel-title">
         <div className="section-heading">
-          <p className="section-label">{travel("label")}</p>
           <h2 id="travel-title">{travel("title")}</h2>
         </div>
         <div className="travel-note__copy">
@@ -171,7 +169,6 @@ export async function WeddingSections({
 
       <section className="stay-note" aria-labelledby="stay-title">
         <div className="section-heading">
-          <p className="section-label">{stay("label")}</p>
           <h2 id="stay-title">{stay("title")}</h2>
         </div>
         <div className="stay-note__copy">
@@ -183,7 +180,6 @@ export async function WeddingSections({
 
       <section className="dress-note" aria-labelledby="dress-title">
         <div className="dress-note__heading">
-          <p className="section-label">{dress("label")}</p>
           <h2 id="dress-title">{dress("title")}</h2>
         </div>
         <p className="dress-note__code">{weddingConfig.dressCode}</p>
@@ -211,7 +207,6 @@ export async function WeddingSections({
 
       <section className="gift-note" aria-labelledby="gifts-title">
         <div className="section-heading">
-          <p className="section-label">{gifts("label")}</p>
           <h2 id="gifts-title">{gifts("title")}</h2>
         </div>
         <div className="gift-note__copy">
@@ -227,7 +222,6 @@ export async function WeddingSections({
       {invitation && <RsvpForm invitation={invitation} />}
 
       <section className="closing-note" aria-labelledby="closing-title">
-        <p className="section-label">{closing("label")}</p>
         <h2 id="closing-title">{closing("title")}</h2>
         <p>{closing("message")}</p>
       </section>

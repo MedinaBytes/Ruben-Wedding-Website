@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import Link from "next/link";
-
 import { signOutAdmin } from "@/app/actions/admin-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -16,7 +14,17 @@ type AdminMetrics = {
   songs: number;
 };
 
-export async function AdminDashboard({ labels }: { labels: Record<string, string> }) {
+export async function AdminDashboard({
+  labels,
+  statusMessage,
+  statusIsError,
+  deleteAction,
+}: {
+  labels: Record<string, string>;
+  statusMessage: string;
+  statusIsError: boolean;
+  deleteAction: (formData: FormData) => void | Promise<void>;
+}) {
   let metrics: AdminMetrics;
 
   try {
@@ -87,6 +95,11 @@ export async function AdminDashboard({ labels }: { labels: Record<string, string
         <Link href="/admin/music">{labels.music}</Link>
         <Link href="/admin/analytics">{labels.analytics}</Link>
       </nav>
+      {statusMessage && (
+        <p className="admin-status" role={statusIsError ? "alert" : "status"}>
+          {statusMessage}
+        </p>
+      )}
       <section aria-label={labels.summary} className="admin-metrics">
         {metricsList.map((metric) => (
           <article className="admin-metric" key={metric.label}>
@@ -95,6 +108,26 @@ export async function AdminDashboard({ labels }: { labels: Record<string, string
             <p className="admin-metric__note">{metric.note}</p>
           </article>
         ))}
+      </section>
+      <section aria-labelledby="admin-delete-title" className="admin-delete">
+        <h2 id="admin-delete-title">{labels.deleteSectionTitle}</h2>
+        <p id="admin-delete-warning">{labels.deleteWarning}</p>
+        <form action={deleteAction} className="admin-delete__form">
+          <div className="field-group">
+            <label htmlFor="admin-delete-confirmation">{labels.deleteConfirmationLabel}</label>
+            <input
+              autoComplete="off"
+              id="admin-delete-confirmation"
+              name="confirmation"
+              required
+              type="text"
+              aria-describedby="admin-delete-warning"
+            />
+          </div>
+          <button className="text-button admin-delete__button" type="submit">
+            {labels.deleteAction}
+          </button>
+        </form>
       </section>
     </div>
   );

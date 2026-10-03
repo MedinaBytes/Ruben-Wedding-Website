@@ -17,8 +17,28 @@
   },
   "privacy": {
     "title": "Datenschutz",
-    "notice": "Der Datenschutzhinweis wird vorbereitet und steht vor dem Versand der Einladungen zur Verfügung.",
-    "contactPlaceholder": "Kontaktdaten des Paares: noch offen."
+    "notice": "Diese Einladungsseite verwendet nur die Informationen, die zur Verwaltung der Einladungen, Rückmeldungen und Musikwünsche erforderlich sind.",
+    "collection": {
+      "title": "Erhobene Informationen",
+      "body": "Der private Einladungslink ordnet deine Einladung zu. Bei einer Rückmeldung speichert die Seite deine Teilnahme, die Gästezahl und Namen zusätzlicher Gäste, die Sprache sowie angegebene Ernährungsanforderungen oder Nachrichten. Musikwünsche können Titel, Interpret und einen optionalen Spotify-Link enthalten. Begrenzte Einladungsereignisse erfassen nur Einladungskennung, Ereignistyp, Zeitpunkt, Sprache und Sitzungskennung."
+    },
+    "purpose": {
+      "title": "Verwendung und Zugriff",
+      "body": "Diese Informationen dienen der Organisation der Feier und der Verwaltung deiner Einladung. Zugriff haben das Paar und autorisierte Administratoren; gespeichert werden sie über den serverseitigen Datenbankanbieter der Website. Bitte behandle deinen Einladungslink vertraulich."
+    },
+    "services": {
+      "title": "Dienstleister",
+      "body": "Der Hosting-Anbieter stellt die Website bereit, Supabase die Datenbank. Falls konfiguriert, wird die Google-Maps-Karte geladen, sobald sich der Veranstaltungsortbereich dem sichtbaren Bereich nähert. Das Spotify-Embed wird nur geladen, wenn du die Playlist-Schaltfläche auswählst und eine Playlist konfiguriert ist. Beim Laden können diese Anbieter technische Daten verarbeiten; es gelten ihre jeweiligen Datenschutzhinweise."
+    },
+    "retention": {
+      "title": "Speicherdauer",
+      "body": "Die Speicherdauer ist noch nicht festgelegt. Sie muss vor dem Versand der Einladungen bestätigt werden; Hochzeitsdaten sollten gelöscht werden, sobald sie nicht mehr benötigt werden."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Die Kontaktdaten des Paares werden vor dem Versand der Einladungen ergänzt."
+    },
+    "reviewNote": "Dieser Hinweis ist ein Entwurf und muss vor der Veröffentlichung rechtlich geprüft werden."
   },
   "navigation": {
     "details": "Der Tag",
@@ -159,5 +179,47 @@
     "greeting": "Hallo, {name},",
     "open": "Einladung öffnen",
     "skip": "Einführung überspringen"
+  },
+  "admin": {
+    "label": "Hochzeitsverwaltung",
+    "title": "Übersicht",
+    "signOut": "Abmelden",
+    "navigation": "Verwaltungsnavigation",
+    "overview": "Übersicht",
+    "invitations": "Einladungen",
+    "rsvps": "Rückmeldungen",
+    "music": "Musikwünsche",
+    "analytics": "Aktivität",
+    "summary": "Hochzeitsdaten im Überblick",
+    "dataUnavailable": "Die Hochzeitsdaten sind vorübergehend nicht verfügbar.",
+    "invitationCount": "Aktive Einladungen",
+    "invitationDenominator": "Aktive Einladungen",
+    "guestCount": "Maximale Zahl eingeladener Gäste",
+    "guestDenominator": "Insgesamt erlaubte Plätze in aktiven Einladungen",
+    "openedCount": "Geöffnete Einladungen",
+    "openedDenominator": "{count} aktive Einladungen",
+    "attendingCount": "Teilnehmende Einladungen",
+    "attendanceResponses": "Von aktiven Einladungen mit Rückmeldung",
+    "declinedCount": "Abgesagte Einladungen",
+    "pendingCount": "Noch ausstehende Rückmeldungen",
+    "pendingDenominator": "Aktive Einladungen ohne Rückmeldung",
+    "confirmedGuests": "Bestätigte Gäste",
+    "confirmedGuestsNote": "Teilnehmende Personen einschließlich zusätzlicher Gäste",
+    "songCount": "Musikwünsche",
+    "songRequestsNote": "Von eingeladenen Gästen eingereichte Wünsche",
+    "setupError": "Die Admin-Anmeldung ist noch nicht eingerichtet.",
+    "credentialsError": "Diese Zugangsdaten sind nicht autorisiert.",
+    "loginTitle": "Anmelden",
+    "loginDescription": "Melde dich mit einem autorisierten Konto an, um die Einladungen zu verwalten.",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "deleteSectionTitle": "Hochzeitsdaten löschen",
+    "deleteWarning": "Löscht dauerhaft Einladungs-, Rückmeldungs-, Musik-, Ereignis-, Ratenbegrenzungs- und gespeicherte Website-Einstellungsdaten. Admin-Konten und Deployment-Konfiguration bleiben erhalten. Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    "deleteConfirmationLabel": "Zur Bestätigung DELETE WEDDING DATA eingeben.",
+    "deleteAction": "Hochzeitsdaten löschen",
+    "deleteSuccess": "Die Hochzeitsdaten wurden gelöscht.",
+    "deleteConfirmationError": "Der Bestätigungstext stimmt nicht überein. Es wurden keine Daten gelöscht.",
+    "deleteError": "Die Hochzeitsdaten konnten nicht gelöscht werden. Eine Löschung wird nicht bestätigt."
   }
 }

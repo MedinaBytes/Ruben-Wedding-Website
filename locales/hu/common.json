@@ -17,8 +17,28 @@
   },
   "privacy": {
     "title": "Adatvédelem",
-    "notice": "Az adatvédelmi tájékoztató előkészítés alatt áll, és a meghívók kiküldése előtt lesz elérhető.",
-    "contactPlaceholder": "A pár elérhetősége: később kerül megadásra."
+    "notice": "Ez a meghívóoldal kizárólag a meghívók, visszajelzések és zenei kérések kezeléséhez szükséges adatokat használja.",
+    "collection": {
+      "title": "Gyűjtött adatok",
+      "body": "A privát meghívólink azonosítja a meghívásodat. Válasz esetén az oldal tárolja a részvételi szándékot, a létszámot és a további vendégek nevét, a nyelvet, valamint az általad megadott étkezési igényeket vagy üzenetet. A zenei kérés címet, előadót és opcionális Spotify-linket tartalmazhat. A korlátozott meghívási eseményadatok csak a meghívó azonosítóját, az esemény típusát, időpontját, nyelvét és a munkamenet azonosítóját rögzítik."
+    },
+    "purpose": {
+      "title": "Felhasználás és hozzáférés",
+      "body": "Az adatokat az ünnepség megszervezésére és a meghívás kezelésére használjuk. Azokhoz a pár és az arra jogosult adminisztrátorok férhetnek hozzá; az adatokat az oldal szerveroldali adatbázis-szolgáltatója tárolja. A meghívólinket kezeld bizalmasan."
+    },
+    "services": {
+      "title": "Szolgáltatók",
+      "body": "Az oldalt a telepítési szolgáltató üzemelteti, az adatbázist a Supabase biztosítja. Beállított Google Maps esetén a térkép akkor töltődik be, amikor a helyszín szakasz a képernyő közelébe kerül. A Spotify-beágyazás csak a lejátszási lista gombjának kiválasztásakor, és csak beállított lista esetén töltődik be. Betöltéskor a szolgáltatók technikai adatokat kezelhetnek; saját adatvédelmi szabályzataik érvényesek."
+    },
+    "retention": {
+      "title": "Adatmegőrzés",
+      "body": "Az adatmegőrzési idő még nincs meghatározva. Ezt a meghívók kiküldése előtt jóvá kell hagyni; az esküvői adatokat törölni kell, amikor már nincs rájuk szükség."
+    },
+    "contact": {
+      "title": "Kapcsolat",
+      "body": "A pár elérhetőségeit a meghívók kiküldése előtt adjuk meg."
+    },
+    "reviewNote": "Ez a tájékoztató tervezet, megjelenés előtt jogi felülvizsgálat szükséges."
   },
   "navigation": {
     "details": "A nap",
@@ -159,5 +179,47 @@
     "greeting": "Kedves {name}!",
     "open": "Meghívó megnyitása",
     "skip": "Bevezető kihagyása"
+  },
+  "admin": {
+    "label": "Esküvői adminisztráció",
+    "title": "Áttekintés",
+    "signOut": "Kijelentkezés",
+    "navigation": "Adminisztrációs navigáció",
+    "overview": "Áttekintés",
+    "invitations": "Meghívók",
+    "rsvps": "Visszajelzések",
+    "music": "Zenei kérések",
+    "analytics": "Tevékenység",
+    "summary": "Esküvői adatok összesítése",
+    "dataUnavailable": "Az esküvői adatok átmenetileg nem érhetők el.",
+    "invitationCount": "Aktív meghívók",
+    "invitationDenominator": "Aktív meghívók",
+    "guestCount": "Meghívott vendégek maximális száma",
+    "guestDenominator": "Az aktív meghívókban engedélyezett férőhelyek összesen",
+    "openedCount": "Megnyitott meghívók",
+    "openedDenominator": "{count} aktív meghívó",
+    "attendingCount": "Részvételt jelző meghívók",
+    "attendanceResponses": "Visszajelzést adott aktív meghívók közül",
+    "declinedCount": "Lemondott meghívók",
+    "pendingCount": "Válaszra vár",
+    "pendingDenominator": "Válasz nélküli aktív meghívók",
+    "confirmedGuests": "Visszaigazolt résztvevők",
+    "confirmedGuestsNote": "A további vendégekkel együtt érkezők",
+    "songCount": "Zenei kérések",
+    "songRequestsNote": "A meghívott vendégek kérései",
+    "setupError": "Az adminisztrátori bejelentkezés még nincs beállítva.",
+    "credentialsError": "Ezek a hitelesítő adatok nem jogosultak.",
+    "loginTitle": "Bejelentkezés",
+    "loginDescription": "A meghívók kezeléséhez jelentkezz be egy engedélyezett fiókkal.",
+    "email": "E-mail-cím",
+    "password": "Jelszó",
+    "signIn": "Bejelentkezés",
+    "deleteSectionTitle": "Esküvői adatok törlése",
+    "deleteWarning": "Véglegesen törli a meghívók, visszajelzések, zenei kérések, események, korlátozási bejegyzések és mentett webhelybeállítások adatait. Az adminisztrátori fiókok és a telepítési konfiguráció megmarad. A művelet nem vonható vissza.",
+    "deleteConfirmationLabel": "A megerősítéshez írd be: DELETE WEDDING DATA.",
+    "deleteAction": "Esküvői adatok törlése",
+    "deleteSuccess": "Az esküvői adatok törlése sikerült.",
+    "deleteConfirmationError": "A megerősítő kifejezés nem egyezik. Nem történt adattörlés.",
+    "deleteError": "Az esküvői adatokat nem sikerült törölni. A rendszer nem jelzett sikeres törlést."
   }
 }
