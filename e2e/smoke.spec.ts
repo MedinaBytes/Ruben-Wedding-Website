@@ -1,11 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ context }) => {
-  await context.addInitScript(() => {
-    window.sessionStorage.setItem("wedding_welcome_seen", "true");
-  });
-});
-
 test("homepage renders the invitation shell", async ({ page }) => {
   await page.goto("/?lang=en");
 
@@ -42,11 +36,10 @@ test("language switcher updates the locale on the public page", async ({ page })
   ).toBeVisible();
 });
 
-test("homepage renders welcome modal with language selector and invitation lookup on fresh visit", async ({ page }) => {
-  await page.evaluate(() => window.sessionStorage.removeItem("wedding_welcome_seen"));
+test("homepage renders invitation lookup card with language selector", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
   await expect(page.getByPlaceholder(/John Doe/)).toBeVisible();
 });
 
