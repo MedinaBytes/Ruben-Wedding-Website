@@ -175,10 +175,23 @@
     "loadError": "No pudimos cargar tus canciones guardadas.",
     "saveError": "No pudimos guardar tus canciones. Inténtalo de nuevo."
   },
+  "gallery": {
+    "eyebrow": "Algunas páginas de nuestra historia",
+    "title": "Una vida hecha de pequeños momentos",
+    "description": "De celebraciones sencillas a atardeceres lejanos, estos son algunos recuerdos que llevamos con nosotros.",
+    "birthdayAlt": "Ruben y Andrea se dan un beso en una celebración de cumpleaños.",
+    "birthdayCaption": "Un cumpleaños muy especial",
+    "cityAlt": "Ruben y Andrea juntos sobre la ciudad.",
+    "cityCaption": "Un poco por encima de la ciudad",
+    "coastAlt": "Ruben y Andrea junto a la costa al atardecer.",
+    "coastCaption": "Nuestra clase de tarde favorita"
+  },
   "intro": {
     "greeting": "Hola, {name}:",
     "open": "Abrir invitación",
-    "skip": "Saltar introducción"
+    "skip": "Saltar introducción",
+    "soundOn": "Activar sonido",
+    "soundOff": "Desactivar sonido"
   },
   "admin": {
     "label": "Administración de la boda",

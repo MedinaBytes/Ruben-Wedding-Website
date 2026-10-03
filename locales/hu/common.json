@@ -175,10 +175,23 @@
     "loadError": "A korábban mentett dalkérések nem tölthetők be.",
     "saveError": "A dalkérések mentése nem sikerült. Kérjük, próbáljátok újra."
   },
+  "gallery": {
+    "eyebrow": "Történetünk néhány oldala",
+    "title": "Egy élet apró pillanatokból",
+    "description": "Kis ünnepektől a távoli naplementékig: néhány emlék, amelyet magunkkal viszünk.",
+    "birthdayAlt": "Ruben és Andrea csókot váltanak egy születésnapi ünnepségen.",
+    "birthdayCaption": "Egy igazán szép születésnap",
+    "cityAlt": "Ruben és Andrea együtt a város fölött.",
+    "cityCaption": "Kicsit a város fölött",
+    "coastAlt": "Ruben és Andrea együtt a tengerparton naplementekor.",
+    "coastCaption": "A kedvenc esti fényünk"
+  },
   "intro": {
     "greeting": "Kedves {name}!",
     "open": "Meghívó megnyitása",
-    "skip": "Bevezető kihagyása"
+    "skip": "Bevezető kihagyása",
+    "soundOn": "Hang bekapcsolása",
+    "soundOff": "Hang kikapcsolása"
   },
   "admin": {
     "label": "Esküvői adminisztráció",

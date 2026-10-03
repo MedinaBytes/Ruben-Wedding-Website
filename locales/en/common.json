@@ -175,10 +175,23 @@
     "loadError": "We could not load your saved song requests.",
     "saveError": "We could not save your song requests. Please try again."
   },
+  "gallery": {
+    "eyebrow": "A few pages in our story",
+    "title": "A life, collected in little moments",
+    "description": "From small celebrations to faraway sunsets, these are a few of the memories we carry with us.",
+    "birthdayAlt": "Ruben and Andrea sharing a kiss at a birthday celebration.",
+    "birthdayCaption": "One very good birthday",
+    "cityAlt": "Ruben and Andrea together above the city.",
+    "cityCaption": "A little above the city",
+    "coastAlt": "Ruben and Andrea together beside the coast at sunset.",
+    "coastCaption": "Our favorite kind of evening"
+  },
   "intro": {
     "greeting": "Dear {name},",
     "open": "Open invitation",
-    "skip": "Skip intro"
+    "skip": "Skip intro",
+    "soundOn": "Turn sound on",
+    "soundOff": "Turn sound off"
   },
   "admin": {
     "label": "Wedding administration",

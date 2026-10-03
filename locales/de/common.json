@@ -175,10 +175,23 @@
     "loadError": "Eure gespeicherten Liedwünsche konnten nicht geladen werden.",
     "saveError": "Eure Liedwünsche konnten nicht gespeichert werden. Bitte versucht es erneut."
   },
+  "gallery": {
+    "eyebrow": "Ein paar Seiten unserer Geschichte",
+    "title": "Ein Leben voller kleiner Augenblicke",
+    "description": "Von kleinen Feiern bis zu fernen Sonnenuntergängen – diese Erinnerungen tragen wir bei uns.",
+    "birthdayAlt": "Ruben und Andrea küssen sich bei einer Geburtstagsfeier.",
+    "birthdayCaption": "Ein besonders schöner Geburtstag",
+    "cityAlt": "Ruben und Andrea gemeinsam über der Stadt.",
+    "cityCaption": "Ein wenig über der Stadt",
+    "coastAlt": "Ruben und Andrea bei Sonnenuntergang an der Küste.",
+    "coastCaption": "Unser liebster Abendhimmel"
+  },
   "intro": {
     "greeting": "Hallo, {name},",
     "open": "Einladung öffnen",
-    "skip": "Einführung überspringen"
+    "skip": "Einführung überspringen",
+    "soundOn": "Ton einschalten",
+    "soundOff": "Ton ausschalten"
   },
   "admin": {
     "label": "Hochzeitsverwaltung",

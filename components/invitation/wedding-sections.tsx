@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Countdown } from "@/components/invitation/countdown";
 import { RsvpForm, SongRequestForm } from "@/components/invitation/guest-forms";
 import { LazyMap } from "@/components/invitation/lazy-map";
+import { PhotoStory } from "@/components/invitation/photo-story";
 import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
@@ -108,6 +109,8 @@ export async function WeddingSections({
           </li>
         </ol>
       </section>
+
+      <PhotoStory locale={locale} />
 
       <section className="venues" id="locations" aria-labelledby="venues-title">
         <div className="section-heading">
