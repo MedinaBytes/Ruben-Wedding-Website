@@ -79,7 +79,7 @@
     "receptionTime": "From",
     "pleaseArriveBy": "Please arrive by",
     "receptionEnd": "Until the body can stand it.",
-    "openMap": "Open in Google Maps",
+    "openMap": "Open in OpenStreetMap",
     "directions": "Get directions",
     "mapTitle": "Map showing {name}"
   },

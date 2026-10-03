@@ -79,7 +79,7 @@
     "receptionTime": "Desde",
     "pleaseArriveBy": "Por favor, lleguen antes de las",
     "receptionEnd": "Hasta que el cuerpo aguante.",
-    "openMap": "Abrir en Google Maps",
+    "openMap": "Abrir en OpenStreetMap",
     "directions": "Cómo llegar",
     "mapTitle": "Mapa de {name}"
   },

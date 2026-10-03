@@ -79,7 +79,7 @@
     "receptionTime": "Kezdés",
     "pleaseArriveBy": "Kérjük, érkezzetek eddig",
     "receptionEnd": "Amíg bírja a test.",
-    "openMap": "Megnyitás a Google Térképen",
+    "openMap": "Megnyitás az OpenStreetMapben",
     "directions": "Útvonaltervezés",
     "mapTitle": "Térkép: {name}"
   },

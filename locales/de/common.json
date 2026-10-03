@@ -79,7 +79,7 @@
     "receptionTime": "Ab",
     "pleaseArriveBy": "Bitte bis spätestens",
     "receptionEnd": "Bis der Körper nicht mehr kann.",
-    "openMap": "In Google Maps öffnen",
+    "openMap": "In OpenStreetMap öffnen",
     "directions": "Route planen",
     "mapTitle": "Karte von {name}"
   },

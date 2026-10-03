@@ -7,12 +7,10 @@ import {
   saveSongRequests,
 } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { invalidOriginResponse, isJsonRequest, isSameOriginMutation, privateApiHeaders } from "@/lib/security/request";
 import { songRequestPayloadSchema } from "@/lib/validation/guest";
 
-const privateHeaders = {
-  "Cache-Control": "private, no-store",
-  "X-Robots-Tag": "noindex, nofollow",
-};
+const privateHeaders = privateApiHeaders();
 
 export async function GET(
   _request: Request,
@@ -54,6 +52,11 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ token: string }> },
 ) {
+  if (!isSameOriginMutation(request)) return invalidOriginResponse();
+  if (!isJsonRequest(request)) {
+    return NextResponse.json({ error: "invalid_content_type" }, { status: 415, headers: privateHeaders });
+  }
+
   const { token } = await context.params;
 
   try {

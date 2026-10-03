@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
+import { privateApiHeaders } from "@/lib/security/request";
 
-const privateHeaders = {
-  "Cache-Control": "private, no-store",
-  "X-Robots-Tag": "noindex, nofollow",
-};
+const privateHeaders = privateApiHeaders();
 
 export async function GET(
   _request: Request,

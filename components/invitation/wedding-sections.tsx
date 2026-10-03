@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
 import { RsvpForm, SongRequestForm } from "@/components/invitation/guest-forms";
-import { LazyMap } from "@/components/invitation/lazy-map";
 import { PhotoStory } from "@/components/invitation/photo-story";
 import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
@@ -14,14 +13,18 @@ function getSectionTranslations(locale: Locale | undefined, namespace: SectionNa
   return locale ? getTranslations({ locale, namespace }) : getTranslations(namespace);
 }
 
-function mapsLink(name: string, address: string, mode: "search" | "directions") {
-  const url = new URL(
-    mode === "search"
-      ? "https://www.google.com/maps/search/"
-      : "https://www.google.com/maps/dir/",
-  );
-  url.searchParams.set("api", "1");
-  url.searchParams.set(mode === "search" ? "query" : "destination", `${name}, ${address}`);
+function openStreetMapLink(
+  name: string,
+  address: string,
+  coordinates: { latitude: number; longitude: number },
+  mode: "search" | "directions",
+) {
+  const url = new URL(mode === "search" ? "https://www.openstreetmap.org/search" : "https://www.openstreetmap.org/directions");
+  if (mode === "search") {
+    url.searchParams.set("query", `${name}, ${address}`);
+  } else {
+    url.searchParams.set("to", `${coordinates.latitude},${coordinates.longitude}`);
+  }
   return url.toString();
 }
 
@@ -60,6 +63,7 @@ export async function WeddingSections({
       address: weddingConfig.ceremony.address,
       time: weddingConfig.ceremony.time,
       arrival: weddingConfig.ceremony.guestArrival,
+      coordinates: weddingConfig.ceremony.coordinates,
     },
     {
       id: "reception",
@@ -68,6 +72,7 @@ export async function WeddingSections({
       address: weddingConfig.reception.address,
       time: `~${weddingConfig.reception.approximateStart}`,
       arrival: null,
+      coordinates: weddingConfig.reception.coordinates,
     },
   ] as const;
 
@@ -125,11 +130,6 @@ export async function WeddingSections({
                 <h3>{place.name}</h3>
                 <p className="venue__local-name">{place.localName}</p>
                 <address>{place.address}</address>
-                <LazyMap
-                  name={place.name}
-                  address={place.address}
-                  title={venue("mapTitle", { name: place.name })}
-                />
                 <p className="venue__time">
                   <span>{place.id === "ceremony" ? venue("ceremonyTime") : venue("receptionTime")}</span>
                   <strong>{place.time}</strong>
@@ -143,12 +143,12 @@ export async function WeddingSections({
               </div>
               <div className="venue__links">
                 <TrackedMapLink
-                  href={mapsLink(place.name, place.address, "search")}
+                  href={openStreetMapLink(place.name, place.address, place.coordinates, "search")}
                   invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
                   label={venue("openMap")}
                 />
                 <TrackedMapLink
-                  href={mapsLink(place.name, place.address, "directions")}
+                  href={openStreetMapLink(place.name, place.address, place.coordinates, "directions")}
                   invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
                   label={venue("directions")}
                 />
