@@ -34,7 +34,7 @@ export const songRequestPayloadSchema = z
           .object({
             title: z.string().trim().min(1).max(200),
             artist: optionalText(160),
-            spotifyUrl: z.string().url().max(2048).optional(),
+            spotifyUrl: z.union([z.string().url().max(2048), z.literal("")]).optional().transform((value) => (value === "" ? undefined : value)),
           })
           .strict(),
       )
@@ -58,6 +58,20 @@ export const spotifySongSubmissionSchema = z
 export type RsvpPayload = z.infer<typeof rsvpPayloadSchema>;
 export type SongRequestPayload = z.infer<typeof songRequestPayloadSchema>;
 export type SpotifySongSubmission = z.infer<typeof spotifySongSubmissionSchema>;
+
+export function isManualSongRequestPayload(value: unknown): value is SongRequestPayload {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  if (!("requests" in candidate) || !Array.isArray(candidate.requests) || !("language" in candidate)) return false;
+  return songRequestPayloadSchema.safeParse(value).success;
+}
+
+export function isSpotifySongSubmissionPayload(value: unknown): value is SpotifySongSubmission {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  if (!("trackIds" in candidate) || !Array.isArray(candidate.trackIds) || !("language" in candidate)) return false;
+  return spotifySongSubmissionSchema.safeParse(value).success;
+}
 
 export function validateRsvpForInvitation(
   value: unknown,

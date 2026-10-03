@@ -4,10 +4,16 @@ import {
   consumeInvitationRateLimit,
   findActiveInvitation,
   recordInvitationEvent,
+  saveSongRequests,
 } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { invalidOriginResponse, isJsonRequest, isSameOriginMutation, privateApiHeaders } from "@/lib/security/request";
-import { spotifySongSubmissionSchema } from "@/lib/validation/guest";
+import {
+  isManualSongRequestPayload,
+  isSpotifySongSubmissionPayload,
+  songRequestPayloadSchema,
+  spotifySongSubmissionSchema,
+} from "@/lib/validation/guest";
 import {
   addSpotifyTrackToPlaylist,
   getSpotifyPlaylistConfig,
@@ -93,15 +99,34 @@ export async function POST(
       return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
     }
 
-    const result = spotifySongSubmissionSchema.safeParse(body);
-    if (!result.success) {
+    if (isManualSongRequestPayload(body)) {
+      const payload = songRequestPayloadSchema.parse(body);
+      await saveSongRequests(client, invitation.id, payload);
+      await recordInvitationEvent(client, {
+        invitationId: invitation.id,
+        eventType: "SONG_REQUESTED",
+        locale: payload.language,
+      }).catch(() => undefined);
+
+      return NextResponse.json({
+        results: payload.requests.map((request) => ({
+          title: request.title,
+          artist: request.artist ?? "",
+          status: "added",
+          spotifyUrl: request.spotifyUrl ?? null,
+        })),
+      }, { headers: privateHeaders });
+    }
+
+    if (!isSpotifySongSubmissionPayload(body)) {
       return NextResponse.json({ error: "invalid_request" }, { status: 422, headers: privateHeaders });
     }
 
+    const result = spotifySongSubmissionSchema.parse(body);
     const playlist = getSpotifyPlaylistConfig();
     if (!playlist) throw new SpotifyUnavailableError();
 
-    const tracks = await Promise.all(result.data.trackIds.map(getSpotifyTrack));
+    const tracks = await Promise.all(result.trackIds.map(getSpotifyTrack));
     const existingTrackIds = await getSpotifyPlaylistTrackIds(playlist.id);
     const results: Array<{ trackId: string; title: string; artist: string; status: string }> = [];
 
@@ -150,7 +175,7 @@ export async function POST(
       await recordInvitationEvent(client, {
         invitationId: invitation.id,
         eventType: "SONG_REQUESTED",
-        locale: result.data.language,
+        locale: result.language,
       }).catch(() => undefined);
     }
 

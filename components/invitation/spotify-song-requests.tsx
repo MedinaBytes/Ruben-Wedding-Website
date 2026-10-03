@@ -49,6 +49,7 @@ function normalizeSubmittedSongs(value: unknown): SubmittedSong[] {
 export function SpotifySongRequests({ token, playlistUrl }: { token: string; playlistUrl: string | null }) {
   const locale = useLocale() as Locale;
   const t = useTranslations("music");
+  const songFormT = useTranslations("songForm");
   const endpoint = `/api/invitation/${encodeURIComponent(token)}/songs`;
   const searchEndpoint = `/api/invitation/${encodeURIComponent(token)}/spotify/search`;
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,6 +62,8 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
   const [errorMessage, setErrorMessage] = useState("");
   const [searchError, setSearchError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [manualSong, setManualSong] = useState({ title: "", artist: "", spotifyUrl: "" });
+  const [manualError, setManualError] = useState("");
   const hasReachedMaximum = submitted.length + selected.length >= 3;
 
   useEffect(() => {
@@ -141,6 +144,62 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
     setSubmitted(normalizeSubmittedSongs(body.requests));
   }
 
+  async function submitManualSong() {
+    const title = manualSong.title.trim();
+    const artist = manualSong.artist.trim();
+    const spotifyUrl = manualSong.spotifyUrl.trim();
+
+    if (!title) {
+      setManualError(songFormT("titleLabel"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+    setManualError("");
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requests: [{ title, artist: artist || undefined, spotifyUrl: spotifyUrl || undefined }],
+          language: locale,
+        }),
+      });
+
+      if (!response.ok) {
+        const code = await readErrorCode(response);
+        if (code === "rate_limited") setErrorMessage(t("rateLimitError"));
+        else if (code === "invalid_request") setErrorMessage(songFormT("invalidUrl"));
+        else setErrorMessage(t("submissionError"));
+        return;
+      }
+
+      const body: unknown = await response.json();
+      if (typeof body !== "object" || body === null || !("results" in body) || !Array.isArray(body.results)) {
+        throw new Error("invalid_submission_response");
+      }
+
+      const nextSong: SubmittedSong = {
+        id: `manual-${Date.now()}`,
+        title,
+        artist,
+        artworkUrl: null,
+        spotifyUrl: spotifyUrl || "",
+        status: "submitted",
+      };
+      setSubmitted((current) => [...current, nextSong]);
+      setManualSong({ title: "", artist: "", spotifyUrl: "" });
+      setSuccessMessage(t("submissionSuccess"));
+    } catch {
+      setErrorMessage(t("submissionError"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   async function submitSongs() {
     if (selected.length === 0 || isSubmitting) return;
     setIsSubmitting(true);
@@ -187,6 +246,46 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
 
   return (
     <div className="song-request" aria-busy={isSubmitting || isLoadingSubmitted}>
+      <form
+        className="song-request__manual-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void submitManualSong();
+        }}
+      >
+        <label htmlFor="song-title-input">{songFormT("titleLabel")}</label>
+        <input
+          id="song-title-input"
+          onChange={(event) => setManualSong((current) => ({ ...current, title: event.target.value }))}
+          placeholder={songFormT("titleLabel")}
+          type="text"
+          value={manualSong.title}
+        />
+
+        <label htmlFor="song-artist-input">{songFormT("artistLabel")}</label>
+        <input
+          id="song-artist-input"
+          onChange={(event) => setManualSong((current) => ({ ...current, artist: event.target.value }))}
+          placeholder={songFormT("artistLabel")}
+          type="text"
+          value={manualSong.artist}
+        />
+
+        <label htmlFor="song-link-input">{songFormT("spotifyLabel")}</label>
+        <input
+          id="song-link-input"
+          onChange={(event) => setManualSong((current) => ({ ...current, spotifyUrl: event.target.value }))}
+          placeholder="https://"
+          type="url"
+          value={manualSong.spotifyUrl}
+        />
+
+        <button disabled={isSubmitting || hasReachedMaximum || !manualSong.title.trim()} type="submit">
+          {songFormT("addSong")}
+        </button>
+        {manualError && <p className="form-message form-message--error" role="alert">{manualError}</p>}
+      </form>
+
       <div className="song-request__search">
         <label htmlFor="spotify-track-search">{t("searchLabel")}</label>
         <input

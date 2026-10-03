@@ -12,6 +12,13 @@ create table if not exists public.invitations (
   token text,
   token_hash text not null unique check (token_hash ~ '^[a-f0-9]{64}$'),
   display_name text not null check (char_length(display_name) between 1 and 160),
+  normalized_name text,
+  email text,
+  normalized_email text,
+  phone text,
+  normalized_phone text,
+  whatsapp text,
+  normalized_whatsapp text,
   greeting_override text,
   language text check (language is null or language in ('en', 'es', 'de', 'hu')),
   group_name text,
@@ -139,6 +146,15 @@ create table if not exists public.admin_audit_log (
 );
 
 -- 9. Indexes for Performance
+create index if not exists invitations_lookup_name_idx
+  on public.invitations (normalized_name, status);
+
+create index if not exists invitations_lookup_email_idx
+  on public.invitations (normalized_email, status);
+
+create index if not exists invitations_lookup_phone_idx
+  on public.invitations (normalized_phone, normalized_whatsapp, status);
+
 create index if not exists invitation_events_invitation_created_idx
   on public.invitation_events (invitation_id, created_at desc);
 

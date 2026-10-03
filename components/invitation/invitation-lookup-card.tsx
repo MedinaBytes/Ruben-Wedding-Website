@@ -8,9 +8,10 @@ import { setManualLocale } from "@/app/actions/set-locale";
 import type { Locale } from "@/lib/wedding-config";
 
 const languages: { code: Locale; label: string }[] = [
-  { code: "es", label: "Español" },
   { code: "en", label: "English" },
+  { code: "es", label: "Español" },
   { code: "de", label: "Deutsch" },
+  { code: "hu", label: "Magyar" },
 ];
 
 export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale }) {
@@ -53,22 +54,28 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
             {currentLocale === "es"
               ? "Invitación personalizada"
               : currentLocale === "de"
-              ? "Persönliche Einladung"
-              : "Personalized Invitation"}
+                ? "Persönliche Einladung"
+                : currentLocale === "hu"
+                  ? "Személyre szabott meghívó"
+                  : "Personalized Invitation"}
           </span>
           <h2 id="lookup-title" className="lookup-card__title">
             {currentLocale === "es"
               ? "Encuentra tu Invitación"
               : currentLocale === "de"
-              ? "Finde deine Einladung"
-              : "Find Your Invitation"}
+                ? "Finde deine Einladung"
+                : currentLocale === "hu"
+                  ? "Találd meg a meghívód"
+                  : "Find Your Invitation"}
           </h2>
           <p className="lookup-card__desc">
             {currentLocale === "es"
-              ? "Ingresa tu nombre o apellido para abrir tu invitación personalizada con confirmación RSVP:"
+              ? "Ingresa tu nombre, correo o teléfono para abrir tu invitación personalizada y confirmar tu asistencia:"
               : currentLocale === "de"
-              ? "Gib deinen Vor- oder Nachnamen ein, um deine persönliche Einladung und RSVP zu öffnen:"
-              : "Enter your first or last name to access your personalized invitation and RSVP:"}
+                ? "Gib deinen Namen, deine E-Mail oder deine Telefonnummer ein, um deine persönliche Einladung zu öffnen und deine RSVP zu bestätigen:"
+                : currentLocale === "hu"
+                  ? "Írd be a neved, e-mail címed vagy telefonszámod, hogy megnyisd a személyre szabott meghívót és igazold a részvételi szándékodat:"
+                  : "Enter your name, email, or phone number to open your personalized invitation and RSVP:"}
           </p>
         </div>
 
@@ -95,10 +102,12 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 currentLocale === "es"
-                  ? "Ej. Juan Pérez o Familia García"
+                  ? "Ej. Juan Pérez, juan@example.com o +34 600 123 456"
                   : currentLocale === "de"
-                  ? "z. B. Max Mustermann"
-                  : "e.g. John Doe or Garcia Family"
+                    ? "z. B. Max Mustermann, max@example.com oder +43 660 123 4567"
+                    : currentLocale === "hu"
+                      ? "pl. Kovács Anna, anna@example.com vagy +36 20 123 4567"
+                      : "e.g. John Doe, john@example.com or +1 555 123 4567"
               }
               className="lookup-card__input"
               required
@@ -114,13 +123,17 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
               ? currentLocale === "es"
                 ? "Buscando..."
                 : currentLocale === "de"
-                ? "Suche..."
-                : "Searching..."
+                  ? "Suche..."
+                  : currentLocale === "hu"
+                    ? "Keresés..."
+                    : "Searching..."
               : currentLocale === "es"
-              ? "Abrir Invitación"
-              : currentLocale === "de"
-              ? "Einladung öffnen"
-              : "Open Invitation"}
+                ? "Abrir Invitación"
+                : currentLocale === "de"
+                  ? "Einladung öffnen"
+                  : currentLocale === "hu"
+                    ? "Meghívó megnyitása"
+                    : "Open Invitation"}
           </button>
         </form>
 
@@ -130,18 +143,22 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
             {currentLocale === "es"
               ? `¡Invitación encontrada para ${foundName}! Abriendo...`
               : currentLocale === "de"
-              ? `Einladung für ${foundName} gefunden! Öffne...`
-              : `Invitation found for ${foundName}! Opening...`}
+                ? `Einladung für ${foundName} gefunden! Öffne...`
+                : currentLocale === "hu"
+                  ? `${foundName} meghívója megtalálva! Megnyitás...`
+                  : `Invitation found for ${foundName}! Opening...`}
           </div>
         )}
 
         {status === "not_found" && (
           <div className="lookup-message is-error" role="alert">
             {currentLocale === "es"
-              ? "No encontramos una invitación con ese nombre. Por favor intenta con tu nombre completo o contacta a los novios."
+              ? "No encontramos una invitación con esos datos. Comprueba el nombre, correo o teléfono y vuelve a intentarlo."
               : currentLocale === "de"
-              ? "Keine Einladung unter diesem Namen gefunden. Bitte versuche deinen vollständigen Namen."
-              : "No invitation found matching that name. Please check spelling or explore below."}
+                ? "Mit diesen Angaben wurde keine Einladung gefunden. Bitte prüfe deinen Namen, deine E-Mail oder deine Telefonnummer."
+                : currentLocale === "hu"
+                  ? "Ezzel az adatbázissal nem találtunk meghívót. Ellenőrizd a nevet, e-mailt vagy telefonszámot, és próbáld újra."
+                  : "We couldn’t find an invitation for that information. Please check the name, email, or phone number and try again."}
           </div>
         )}
       </div>

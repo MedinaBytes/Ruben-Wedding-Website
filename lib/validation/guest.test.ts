@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { deriveInvitationStatus, resolveLocalePreference } from "../invitations/status";
 import { supportedLocales } from "../wedding-config";
-import { songRequestPayloadSchema, spotifySongSubmissionSchema, validateRsvpForInvitation } from "./guest";
+import {
+  isManualSongRequestPayload,
+  isSpotifySongSubmissionPayload,
+  songRequestPayloadSchema,
+  spotifySongSubmissionSchema,
+  validateRsvpForInvitation,
+} from "./guest";
 
 describe("guest request validation", () => {
   it("enforces the invitation guest allowance and plus-one flag", () => {
@@ -25,6 +31,22 @@ describe("guest request validation", () => {
 
     expect(songRequestPayloadSchema.safeParse({ requests: threeSongs, language: "en" }).success).toBe(true);
     expect(songRequestPayloadSchema.safeParse({ requests: fourSongs, language: "en" }).success).toBe(false);
+  });
+
+  it("distinguishes manual song requests from Spotify track submissions", () => {
+    const manualPayload = {
+      requests: [{ title: "Love Song", artist: "The Artist", spotifyUrl: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh" }],
+      language: "en",
+    };
+    const spotifyPayload = {
+      trackIds: ["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M"],
+      language: "en",
+    };
+
+    expect(isManualSongRequestPayload(manualPayload)).toBe(true);
+    expect(isSpotifySongSubmissionPayload(spotifyPayload)).toBe(true);
+    expect(isManualSongRequestPayload(spotifyPayload)).toBe(false);
+    expect(isSpotifySongSubmissionPayload(manualPayload)).toBe(false);
   });
 
   it("accepts at most three valid, distinct Spotify track IDs", () => {
