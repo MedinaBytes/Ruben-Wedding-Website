@@ -38,11 +38,11 @@ test("language switcher updates the locale on the public page", async ({ page })
   ).toBeVisible();
 });
 
-test("homepage renders welcome modal with language selector and invitation lookup", async ({ page }) => {
-  await page.goto("/");
+test("homepage renders invitation lookup card with language selector", async ({ page }) => {
+  await page.goto("/?lang=en");
 
-  await expect(page.getByRole("heading", { name: /Find Your Invitation|Encuentra tu Invitación/ })).toBeVisible();
-  await expect(page.getByPlaceholder(/John Doe|Juan Pérez/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
+  await expect(page.getByPlaceholder(/John Doe/)).toBeVisible();
 });
 
 test("admin sign-in renders translated labels and stays noindex", async ({ page }) => {
@@ -55,7 +55,7 @@ test("admin sign-in renders translated labels and stays noindex", async ({ page 
 
 test("photo story gallery spans the full row at tablet width", async ({ page }) => {
   await page.setViewportSize({ width: 905, height: 800 });
-  await page.goto("/");
+  await page.goto("/?lang=en");
 
   const bounds = await page.locator(".photo-story").evaluate((section) => {
     const intro = section.querySelector(".photo-story__intro")?.getBoundingClientRect();
@@ -74,7 +74,7 @@ test("photo story gallery spans the full row at tablet width", async ({ page }) 
 });
 
 test("venue map exposes localized controls and OpenStreetMap attribution", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?lang=en");
 
   const map = page.getByRole("region", { name: "Interactive map of the wedding venues in Vienna" });
   await map.scrollIntoViewIfNeeded();
@@ -93,7 +93,7 @@ test("venue map exposes localized controls and OpenStreetMap attribution", async
 });
 
 test("photo archive filters and restores focus after keyboard viewing", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?lang=en");
 
   const filters = page.getByRole("group", { name: "Filter memories" });
   const adventuresFilter = filters.getByRole("button", { name: "Adventures & Sea" });
@@ -118,7 +118,7 @@ test("photo archive filters and restores focus after keyboard viewing", async ({
 test("hero and photo story fit mobile and desktop and honor reduced motion", async ({ page }) => {
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/");
+    await page.goto("/?lang=en");
 
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -128,7 +128,7 @@ test("hero and photo story fit mobile and desktop and honor reduced motion", asy
   }
 
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/?lang=en");
   await expect(page.getByRole("heading", { name: "Ruben & Andrea" })).toBeVisible();
 
   const animationDuration = await page.locator(".hero__copy").evaluate((element) =>

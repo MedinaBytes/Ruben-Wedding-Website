@@ -3,8 +3,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
+import { WelcomeLookupModal } from "@/components/invitation/welcome-lookup-modal";
 import { SiteHeader } from "@/components/invitation/site-header";
-import { InvitationLookupCard } from "@/components/invitation/invitation-lookup-card";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
@@ -46,6 +46,7 @@ export default async function HomePage({
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
       />
+      <WelcomeLookupModal currentLocale={locale} />
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__inner">
@@ -97,7 +98,6 @@ export default async function HomePage({
             </div>
           </div>
         </section>
-        <InvitationLookupCard currentLocale={locale} />
         <WeddingSections locale={locale} />
       </main>
       <footer className="site-footer">

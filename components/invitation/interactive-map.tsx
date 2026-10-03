@@ -116,7 +116,7 @@ export function InteractiveMap({
         const currentWrapper = wrapperRef.current;
         if (!currentWrapper) return;
         const bounds = currentWrapper.getBoundingClientRect();
-        if (bounds.top <= window.innerHeight + 240 && bounds.bottom >= -240) {
+        if (bounds.top <= window.innerHeight + 600 && bounds.bottom >= -600) {
           loadWhenNear();
         }
       });
@@ -126,7 +126,7 @@ export function InteractiveMap({
       ([entry]) => {
         if (entry.isIntersecting) loadWhenNear();
       },
-      { rootMargin: "240px 0px" },
+      { rootMargin: "600px 0px" },
     );
 
     observer.observe(wrapper);
