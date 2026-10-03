@@ -18,7 +18,7 @@ export type ImageCuration = {
 };
 
 const source = (number?: number) =>
-  number === undefined
+  !number
     ? "WhatsApp Image 2026-10-03 at 10.38.02.jpeg"
     : `WhatsApp Image 2026-10-03 at 10.38.02 (${number}).jpeg`;
 
