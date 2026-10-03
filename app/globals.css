@@ -1573,126 +1573,138 @@ a {
 }
 
 /* ==========================================================================
-   HOMEPAGE WELCOME & INVITATION LOOKUP MODAL
+   HOMEPAGE INVITATION LOOKUP SECTION
    ========================================================================== */
-.welcome-modal__paper {
-  text-align: center;
-  max-width: 36rem;
-  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+.lookup-section {
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 2.5rem);
+  max-width: 48rem;
+  margin-inline: auto;
 }
 
-.welcome-modal__lang-selector {
+.lookup-card {
+  background:
+    radial-gradient(ellipse at 50% 0%, oklch(0.96 0.018 12 / 70%), transparent 60%),
+    var(--color-neutral-light);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1rem 3.5rem oklch(0.2 0.02 30 / 6%);
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+  position: relative;
+}
+
+.lookup-card::before {
+  content: "";
+  position: absolute;
+  inset: 0.5rem;
+  border: 1px solid oklch(0.72 0.06 25 / 35%);
+  pointer-events: none;
+}
+
+.lookup-card__header .section-label {
+  color: var(--color-matcha-strong);
+  margin-bottom: 0.6rem;
+}
+
+.lookup-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+}
+
+.lookup-card__desc {
+  font-size: 0.86rem;
+  color: oklch(0.45 0.015 40);
+  line-height: 1.5;
+  margin: 0 auto 1.5rem;
+  max-width: 42ch;
+}
+
+.lookup-card__lang-row {
   display: inline-flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
   background: var(--color-matcha-pale);
   padding: 0.25rem;
   border-radius: 9999px;
 }
 
-.welcome-modal__lang-btn {
+.lookup-lang-btn {
   background: transparent;
   border: 0;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.72rem;
+  padding: 0.35rem 0.95rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.04em;
   color: var(--color-ink);
   cursor: pointer;
   border-radius: 9999px;
   transition: all var(--duration-fast) ease-out;
 }
 
-.welcome-modal__lang-btn.is-active {
+.lookup-lang-btn.is-active {
   background: var(--color-ink);
   color: var(--color-neutral-light);
 }
 
-.welcome-modal__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 2.35rem);
-  font-weight: 400;
-  line-height: 1.15;
-  margin: 0 0 0.6rem;
-}
-
-.welcome-modal__subtitle {
-  font-size: 0.82rem;
-  color: oklch(0.45 0.015 40);
-  line-height: 1.5;
-  margin: 0 auto 1.5rem;
-  max-width: 38ch;
-}
-
-.welcome-modal__form {
+.lookup-card__form {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  max-width: 26rem;
+  max-width: 27rem;
   margin-inline: auto;
 }
 
-.welcome-modal__input {
+.lookup-card__input {
   width: 100%;
-  min-height: 3rem;
-  padding: 0.65rem 1rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.25rem;
   border: 1px solid var(--color-border);
   background: var(--color-neutral-light);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--color-ink);
   text-align: center;
-  border-radius: 3px;
+  border-radius: 2px;
   transition: border-color var(--duration-fast) ease-out;
 }
 
-.welcome-modal__input:focus {
+.lookup-card__input:focus {
   outline: none;
   border-color: var(--color-ink);
 }
 
-.welcome-modal__form .text-button {
+.lookup-card__form .text-button {
   background: var(--color-ink);
   border: 1px solid var(--color-ink);
   color: var(--color-neutral-light);
-  min-height: 3rem;
+  min-height: 3.25rem;
   justify-content: center;
   width: 100%;
+  font-size: 0.88rem;
 }
 
-.welcome-modal__form .text-button:hover {
+.lookup-card__form .text-button:hover {
   background: var(--color-matcha-strong);
   border-color: var(--color-matcha-strong);
   color: white;
 }
 
-.welcome-modal__message {
-  margin-top: 1rem;
-  font-size: 0.78rem;
-  padding: 0.65rem 1rem;
-  border-radius: 3px;
+.lookup-message {
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
 }
 
-.welcome-modal__message.is-success {
+.lookup-message.is-success {
   background: var(--color-matcha-pale);
   color: oklch(0.32 0.08 135);
+  font-weight: 550;
 }
 
-.welcome-modal__message.is-error {
+.lookup-message.is-error {
   background: var(--color-strawberry-pale);
   color: oklch(0.42 0.12 25);
-}
-
-.welcome-modal__footer {
-  margin-top: 1.75rem;
-  border-top: 1px solid var(--color-border);
-  padding-top: 1.25rem;
-}
-
-.welcome-modal__footer .text-button {
-  font-size: 0.75rem;
-  color: oklch(0.45 0.015 40);
-  text-decoration: underline;
-  text-underline-offset: 0.25em;
 }
 
 .photo-story__frame img,

@@ -12,11 +12,7 @@ test("homepage renders the invitation shell", async ({ page }) => {
 
 test("day navigation targets the shared timeline", async ({ page }) => {
   await page.goto("/?lang=en");
-
-  const continueBtn = page.getByRole("button", { name: /Continue to Wedding Details|Continuar a los detalles/ });
-  if (await continueBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-    await continueBtn.click();
-  }
+  await page.keyboard.press("Escape");
 
   await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "The day" }).click();
 
@@ -32,6 +28,7 @@ test("invalid invitation token shows a safe not-found response", async ({ page }
 
 test("language switcher updates the locale on the public page", async ({ page }) => {
   await page.goto("/");
+  await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "Español" }).first().click();
 
@@ -39,6 +36,13 @@ test("language switcher updates the locale on the public page", async ({ page })
   await expect(
     page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Privacidad" }),
   ).toBeVisible();
+});
+
+test("homepage renders welcome modal with language selector and invitation lookup", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: /Find Your Invitation|Encuentra tu Invitación/ })).toBeVisible();
+  await expect(page.getByPlaceholder(/John Doe|Juan Pérez/)).toBeVisible();
 });
 
 test("admin sign-in renders translated labels and stays noindex", async ({ page }) => {

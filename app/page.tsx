@@ -4,7 +4,7 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
 import { SiteHeader } from "@/components/invitation/site-header";
-import { WelcomeLookupModal } from "@/components/invitation/welcome-lookup-modal";
+import { InvitationLookupCard } from "@/components/invitation/invitation-lookup-card";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
