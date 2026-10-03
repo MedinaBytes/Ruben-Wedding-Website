@@ -1,0 +1,16 @@
+{
+  "node": {
+    "603f09f49b7f12dd795d81b4e48236003edd0c656f": {
+      "workers": {
+        "app/i/[token]/page": {
+          "moduleId": 55448,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "setManualLocale",
+      "filename": "app/actions/set-locale.ts"
+    }
+  },
+  "edge": {}
+}

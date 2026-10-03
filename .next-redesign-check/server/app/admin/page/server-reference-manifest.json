@@ -1,0 +1,38 @@
+{
+  "node": {
+    "408768b6405c4101e193110a21a20c60de75c55b22": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 60058,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "deleteWeddingData",
+      "filename": "app/actions/admin-data.ts"
+    },
+    "001994b26d88855b0b59f64b16c7443eef210409cd": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 60058,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "signOutAdmin",
+      "filename": "app/actions/admin-auth.ts"
+    },
+    "40bf7302d476cf7cca33215df831d41a54d6c93f27": {
+      "workers": {
+        "app/admin/page": {
+          "moduleId": 60058,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "signInAdmin",
+      "filename": "app/actions/admin-auth.ts"
+    }
+  },
+  "edge": {}
+}

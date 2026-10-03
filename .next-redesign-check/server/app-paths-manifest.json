@@ -1,0 +1,14 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/export/route": "app/admin/export/route.js",
+  "/admin/page": "app/admin/page.js",
+  "/api/invitation/[token]/events/route": "app/api/invitation/[token]/events/route.js",
+  "/api/invitation/[token]/open/route": "app/api/invitation/[token]/open/route.js",
+  "/api/invitation/[token]/route": "app/api/invitation/[token]/route.js",
+  "/api/invitation/[token]/rsvp/route": "app/api/invitation/[token]/rsvp/route.js",
+  "/api/invitation/[token]/songs/route": "app/api/invitation/[token]/songs/route.js",
+  "/i/[token]/page": "app/i/[token]/page.js",
+  "/page": "app/page.js",
+  "/privacy/page": "app/privacy/page.js"
+}

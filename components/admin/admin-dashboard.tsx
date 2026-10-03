@@ -134,7 +134,7 @@ export async function AdminDashboard({
             <h1>{labels.title}</h1>
           </div>
           <div className="admin-header__actions">
-            <a className="admin-export" href="/admin/export">{labels.exportCsv}<span aria-hidden="true">↗</span></a>
+            <a aria-label={labels.exportCsv} className="admin-export" href="/admin/export">{labels.exportCsv}<span aria-hidden="true">↗</span></a>
             <form action={signOutAdmin}><button className="admin-signout" type="submit">{labels.signOut}</button></form>
           </div>
         </header>
