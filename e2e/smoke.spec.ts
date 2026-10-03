@@ -11,7 +11,7 @@ test("homepage renders the invitation shell", async ({ page }) => {
 });
 
 test("day navigation targets the shared timeline", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?lang=en");
 
   await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "The day" }).click();
 

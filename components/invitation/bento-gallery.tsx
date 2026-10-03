@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
+import { BotanicalCornerAccent } from "@/components/invitation/botanical-accents";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
 import type { Locale } from "@/lib/wedding-config";

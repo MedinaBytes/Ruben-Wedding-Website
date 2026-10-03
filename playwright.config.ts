@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
+const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
 const port = new URL(baseURL).port || "3000";
 const serverMode = process.env.PLAYWRIGHT_SERVER_MODE === "production" ? "start" : "dev";
 
@@ -17,8 +17,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `node ./node_modules/next/dist/bin/next ${serverMode} --hostname 127.0.0.1 --port ${port}`,
+    command: `node ./node_modules/next/dist/bin/next ${serverMode} --hostname localhost --port ${port}`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI && !process.env.PLAYWRIGHT_BASE_URL,
+    reuseExistingServer: true,
   },
 });
