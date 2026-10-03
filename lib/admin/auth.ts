@@ -12,12 +12,18 @@ export function isAdminAllowlisted(email: string | undefined) {
   return Boolean(allowlist?.includes(email.toLowerCase()));
 }
 
-export async function hasAuthenticatedAdmin() {
+export async function getAuthenticatedAdminIdentity() {
   try {
     const client = await createSupabaseServerClient();
     const { data, error } = await client.auth.getUser();
-    return !error && isAdminAllowlisted(data.user?.email);
+    const email = data.user?.email;
+    if (error || !data.user?.id || !email || !isAdminAllowlisted(email)) return null;
+    return { id: data.user.id, email };
   } catch {
-    return false;
+    return null;
   }
+}
+
+export async function hasAuthenticatedAdmin() {
+  return (await getAuthenticatedAdminIdentity()) !== null;
 }

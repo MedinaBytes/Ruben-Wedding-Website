@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { hasAuthenticatedAdmin } from "@/lib/admin/auth";
+import { recordAdminAudit } from "@/lib/admin/audit";
+import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const deleteConfirmationSchema = z.object({
@@ -11,7 +12,8 @@ const deleteConfirmationSchema = z.object({
 });
 
 export async function deleteWeddingData(formData: FormData) {
-  if (!(await hasAuthenticatedAdmin())) redirect("/admin");
+  const actor = await getAuthenticatedAdminIdentity();
+  if (!actor) redirect("/admin");
 
   const confirmation = deleteConfirmationSchema.safeParse({
     confirmation: formData.get("confirmation"),
@@ -19,6 +21,11 @@ export async function deleteWeddingData(formData: FormData) {
   if (!confirmation.success) redirect("/admin?error=delete-confirmation");
 
   try {
+    await recordAdminAudit({
+      actor,
+      action: "WEDDING_DATA_DELETED",
+      resourceType: "wedding_data",
+    });
     const { error } = await createSupabaseAdminClient().rpc("delete_wedding_data");
     if (error) throw new Error("Wedding data deletion failed.");
   } catch {

@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { isAdminAllowlisted } from "@/lib/admin/auth";
+import { recordAdminAudit } from "@/lib/admin/audit";
+import { getAuthenticatedAdminIdentity, isAdminAllowlisted } from "@/lib/admin/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const credentialsSchema = z.object({
@@ -31,11 +32,27 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin?error=credentials");
   }
 
+  if (data.user?.id && data.user.email) {
+    await recordAdminAudit({
+      actor: { id: data.user.id, email: data.user.email },
+      action: "ADMIN_SIGNED_IN",
+      resourceType: "admin_session",
+    }).catch(() => undefined);
+  }
+
   redirect("/admin");
 }
 
 export async function signOutAdmin() {
   try {
+    const actor = await getAuthenticatedAdminIdentity();
+    if (actor) {
+      await recordAdminAudit({
+        actor,
+        action: "ADMIN_SIGNED_OUT",
+        resourceType: "admin_session",
+      }).catch(() => undefined);
+    }
     const client = await createSupabaseServerClient();
     await client.auth.signOut();
   } catch {

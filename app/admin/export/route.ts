@@ -1,4 +1,5 @@
-import { hasAuthenticatedAdmin } from "@/lib/admin/auth";
+import { recordAdminAudit } from "@/lib/admin/audit";
+import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 function csvCell(value: unknown) {
@@ -8,7 +9,8 @@ function csvCell(value: unknown) {
 }
 
 export async function GET() {
-  if (!(await hasAuthenticatedAdmin())) {
+  const actor = await getAuthenticatedAdminIdentity();
+  if (!actor) {
     return new Response("Unauthorized", { status: 401, headers: { "Cache-Control": "private, no-store" } });
   }
 
@@ -40,6 +42,13 @@ export async function GET() {
       ];
     });
     const csv = [columns, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+
+    await recordAdminAudit({
+      actor,
+      action: "INVITATIONS_EXPORTED",
+      resourceType: "guest_export",
+      metadata: { invitationCount: rows.length },
+    });
 
     return new Response(`\uFEFF${csv}`, {
       headers: {
