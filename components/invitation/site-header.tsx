@@ -7,11 +7,13 @@ export function SiteHeader({
   privacyLabel,
   languageLabel,
   mainNavigationLabel,
+  invitation,
 }: {
   detailsLabel: string;
   privacyLabel: string;
   languageLabel: string;
   mainNavigationLabel: string;
+  invitation?: { id: string; token: string };
 }) {
   return (
     <header className="site-header">
@@ -22,7 +24,7 @@ export function SiteHeader({
         <a href="#event-note">{detailsLabel}</a>
         <Link href="/privacy">{privacyLabel}</Link>
       </nav>
-      <LanguageSwitcher label={languageLabel} />
+      <LanguageSwitcher invitation={invitation} label={languageLabel} />
     </header>
   );
 }

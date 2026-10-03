@@ -60,7 +60,8 @@
     "pleaseArriveBy": "Kérjük, érkezzetek eddig",
     "receptionEnd": "Amíg bírja a test.",
     "openMap": "Megnyitás a Google Térképen",
-    "directions": "Útvonaltervezés"
+    "directions": "Útvonaltervezés",
+    "mapTitle": "Térkép: {name}"
   },
   "travel": {
     "label": "Közlekedés",
@@ -88,7 +89,10 @@
     "intro": "Van három dal, amelyet különösen szívesen hallanánk.",
     "playlistPending": "A három dalból álló listánkat később tesszük ide.",
     "requestsTitle": "Dalötleteitek",
-    "requestsIntro": "A személyes meghívótokban legfeljebb három dalt javasolhattok."
+    "requestsIntro": "A személyes meghívótokban legfeljebb három dalt javasolhattok.",
+    "embedTitle": "Ruben és Andrea esküvői lejátszási listája",
+    "playPlaylist": "Spotify-lista betöltése",
+    "playlistUnavailable": "A lejátszási lista akkor jelenik meg itt, ha elkészült."
   },
   "gifts": {
     "label": "Egy rövid megjegyzés",

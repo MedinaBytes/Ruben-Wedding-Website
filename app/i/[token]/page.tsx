@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -11,7 +12,7 @@ import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { getWeddingDateLabel } from "@/lib/event-time";
-import { weddingConfig, type Locale } from "@/lib/wedding-config";
+import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +36,11 @@ export default async function InvitationPage({
 
   if (!invitation) notFound();
 
-  const requestLocale = await getLocale();
-  const locale = (invitation.language ?? requestLocale) as Locale;
+  const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+  const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
+  const locale = supportedLocales.includes(manualLocale as Locale)
+    ? (manualLocale as Locale)
+    : invitation.language ?? (requestLocale as Locale);
   const [messages, navigation, hero, intro, wedding] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "navigation" }),
@@ -53,6 +57,7 @@ export default async function InvitationPage({
         privacyLabel={navigation("privacy")}
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
+        invitation={{ id: invitation.id, token }}
       />
       <InvitationIntro
         invitationId={invitation.id}
@@ -95,6 +100,7 @@ export default async function InvitationPage({
         <WeddingSections
           locale={locale}
           invitation={{
+            id: invitation.id,
             token,
             displayName: invitation.display_name,
             maxGuests: invitation.max_guests,

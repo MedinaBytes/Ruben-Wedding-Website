@@ -60,7 +60,8 @@
     "pleaseArriveBy": "Please arrive by",
     "receptionEnd": "Until the body can stand it.",
     "openMap": "Open in Google Maps",
-    "directions": "Get directions"
+    "directions": "Get directions",
+    "mapTitle": "Map showing {name}"
   },
   "travel": {
     "label": "Getting around",
@@ -88,7 +89,10 @@
     "intro": "There are three songs we would especially love to hear.",
     "playlistPending": "Our three-song playlist will be added here once it is ready.",
     "requestsTitle": "Your song requests",
-    "requestsIntro": "We will ask you for up to three songs in your personal invitation."
+    "requestsIntro": "We will ask you for up to three songs in your personal invitation.",
+    "embedTitle": "Ruben and Andrea's wedding playlist",
+    "playPlaylist": "Load the Spotify playlist",
+    "playlistUnavailable": "The playlist will appear here once it is ready."
   },
   "gifts": {
     "label": "A little note",

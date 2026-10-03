@@ -2,7 +2,10 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { recordInvitationInteraction } from "@/lib/client/invitation-events";
+import type { Locale } from "@/lib/wedding-config";
 
 type SongEntry = {
   title: string;
@@ -13,6 +16,7 @@ type SongEntry = {
 type RsvpState = "yes" | "no" | "";
 
 type InvitationFormProps = {
+  id: string;
   token: string;
   displayName: string;
   maxGuests: number;
@@ -27,7 +31,9 @@ async function readErrorCode(response: Response) {
 
 export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
   const locale = useLocale();
+  const typedLocale = locale as Locale;
   const t = useTranslations("rsvp");
+  const hasTrackedStart = useRef(false);
   const [attendance, setAttendance] = useState<RsvpState>("");
   const [attendeeCount, setAttendeeCount] = useState(1);
   const [guestNames, setGuestNames] = useState("");
@@ -97,7 +103,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
               : [],
           dietaryRequirements: attendance === "yes" ? dietaryRequirements.trim() : undefined,
           notes: notes.trim() || undefined,
-          language: locale,
+          language: typedLocale,
         }),
       });
 
@@ -133,7 +139,21 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
           <p>{t(confirmation === "yes" ? "confirmedMessage" : "declinedMessage", { name: invitation.displayName })}</p>
         </motion.div>
       ) : (
-        <form className="guest-form" onSubmit={submitRsvp} aria-busy={isLoading || isSaving}>
+        <form
+          className="guest-form"
+          onFocusCapture={() => {
+            if (hasTrackedStart.current) return;
+            hasTrackedStart.current = true;
+            recordInvitationInteraction({
+              token: invitation.token,
+              invitationId: invitation.id,
+              eventType: "RSVP_STARTED",
+              locale: typedLocale,
+            });
+          }}
+          onSubmit={submitRsvp}
+          aria-busy={isLoading || isSaving}
+        >
           <fieldset className="guest-form__fieldset">
             <legend>{t("attendanceQuestion")}</legend>
             <label className="choice-row">
@@ -223,6 +243,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
 
 export function SongRequestForm({ token }: { token: string }) {
   const locale = useLocale();
+  const typedLocale = locale as Locale;
   const t = useTranslations("songForm");
   const [requests, setRequests] = useState<SongEntry[]>([{ title: "", artist: "", spotifyUrl: "" }]);
   const [isSaving, setIsSaving] = useState(false);
@@ -286,7 +307,7 @@ export function SongRequestForm({ token }: { token: string }) {
             artist: request.artist.trim() || undefined,
             spotifyUrl: request.spotifyUrl.trim() || undefined,
           })),
-          language: locale,
+          language: typedLocale,
         }),
       });
 

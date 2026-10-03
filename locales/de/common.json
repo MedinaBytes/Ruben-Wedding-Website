@@ -60,7 +60,8 @@
     "pleaseArriveBy": "Bitte bis spätestens",
     "receptionEnd": "Bis der Körper nicht mehr kann.",
     "openMap": "In Google Maps öffnen",
-    "directions": "Route planen"
+    "directions": "Route planen",
+    "mapTitle": "Karte von {name}"
   },
   "travel": {
     "label": "Unterwegs in Wien",
@@ -88,7 +89,10 @@
     "intro": "Drei Lieder würden wir besonders gerne hören.",
     "playlistPending": "Unsere drei Lieder ergänzen wir hier, sobald die Auswahl feststeht.",
     "requestsTitle": "Eure Liedwünsche",
-    "requestsIntro": "In eurer persönlichen Einladung könnt ihr bis zu drei Lieder vorschlagen."
+    "requestsIntro": "In eurer persönlichen Einladung könnt ihr bis zu drei Lieder vorschlagen.",
+    "embedTitle": "Hochzeitsplaylist von Ruben und Andrea",
+    "playPlaylist": "Spotify-Playlist laden",
+    "playlistUnavailable": "Die Playlist erscheint hier, sobald sie bereit ist."
   },
   "gifts": {
     "label": "Eine kleine Nachricht",

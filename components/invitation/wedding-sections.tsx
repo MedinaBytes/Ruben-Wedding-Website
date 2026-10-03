@@ -2,6 +2,9 @@ import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
 import { RsvpForm, SongRequestForm } from "@/components/invitation/guest-forms";
+import { LazyMap } from "@/components/invitation/lazy-map";
+import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
+import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
 
 type SectionNamespace = "event" | "venue" | "travel" | "stay" | "dress" | "music" | "gifts" | "closing";
@@ -22,6 +25,7 @@ function mapsLink(name: string, address: string, mode: "search" | "directions") 
 }
 
 export type GuestInvitationDetails = {
+  id: string;
   token: string;
   displayName: string;
   maxGuests: number;
@@ -119,6 +123,11 @@ export async function WeddingSections({
                 <h3>{place.name}</h3>
                 <p className="venue__local-name">{place.localName}</p>
                 <address>{place.address}</address>
+                <LazyMap
+                  name={place.name}
+                  address={place.address}
+                  title={venue("mapTitle", { name: place.name })}
+                />
                 <p className="venue__time">
                   <span>{place.id === "ceremony" ? venue("ceremonyTime") : venue("receptionTime")}</span>
                   <strong>{place.time}</strong>
@@ -131,12 +140,16 @@ export async function WeddingSections({
                 {place.id === "reception" && <p className="venue__personality">{venue("receptionEnd")}</p>}
               </div>
               <div className="venue__links">
-                <a href={mapsLink(place.name, place.address, "search")} rel="noreferrer" target="_blank">
-                  {venue("openMap")}
-                </a>
-                <a href={mapsLink(place.name, place.address, "directions")} rel="noreferrer" target="_blank">
-                  {venue("directions")}
-                </a>
+                <TrackedMapLink
+                  href={mapsLink(place.name, place.address, "search")}
+                  invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
+                  label={venue("openMap")}
+                />
+                <TrackedMapLink
+                  href={mapsLink(place.name, place.address, "directions")}
+                  invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
+                  label={venue("directions")}
+                />
               </div>
             </article>
           ))}
@@ -184,7 +197,12 @@ export async function WeddingSections({
         </div>
         <div className="music-note__copy">
           <p>{music("intro")}</p>
-          <p>{music("playlistPending")}</p>
+          <SpotifyPlaylist
+            title={music("embedTitle")}
+            playLabel={music("playPlaylist")}
+            fallback={music("playlistUnavailable")}
+            invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
+          />
           <h3>{music("requestsTitle")}</h3>
           <p>{music("requestsIntro")}</p>
           {invitation && <SongRequestForm token={invitation.token} />}

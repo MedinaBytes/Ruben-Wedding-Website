@@ -564,6 +564,27 @@ a {
   margin: 0.9rem 0 0;
 }
 
+.venue__map {
+  aspect-ratio: 1.6;
+  margin-top: 1.25rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.venue__map iframe,
+.spotify-embed {
+  border: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.venue__map-placeholder {
+  background: var(--color-matcha-pale);
+  height: 100%;
+  width: 100%;
+}
+
 .venue__links {
   display: flex;
   flex-wrap: wrap;
@@ -663,6 +684,11 @@ a {
   font-size: 1.5rem;
   font-weight: 400;
   margin: 2rem 0 0.75rem;
+}
+
+.spotify-embed {
+  height: 352px;
+  margin-top: 1rem;
 }
 
 .gift-details {

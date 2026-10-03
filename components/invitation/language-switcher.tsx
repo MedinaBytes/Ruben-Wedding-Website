@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { setManualLocale } from "@/app/actions/set-locale";
+import { recordInvitationInteraction } from "@/lib/client/invitation-events";
 import { supportedLocales, type Locale } from "@/lib/wedding-config";
 
 const localeLabels: Record<Locale, string> = {
@@ -21,13 +22,27 @@ const localeCodes: Record<Locale, string> = {
   hu: "HU",
 };
 
-export function LanguageSwitcher({ label }: { label: string }) {
+export function LanguageSwitcher({
+  label,
+  invitation,
+}: {
+  label: string;
+  invitation?: { id: string; token: string };
+}) {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   async function selectLocale(nextLocale: Locale) {
-    await setManualLocale(nextLocale);
+    await setManualLocale(nextLocale, invitation?.id);
+    if (invitation) {
+      recordInvitationInteraction({
+        invitationId: invitation.id,
+        token: invitation.token,
+        eventType: "LANGUAGE_CHANGED",
+        locale: nextLocale,
+      });
+    }
     startTransition(() => router.refresh());
   }
 
