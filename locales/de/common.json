@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "titleSuffix": "Hochzeitseinladung",
+    "description": "Eine private Einladung zu einer Hochzeit in Wien."
+  },
+  "accessibility": {
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "foundation": {
+    "homeTitle": "Eine private Hochzeitseinladung",
+    "homeDescription": "Öffne deinen persönlichen Einladungslink für alle Details.",
+    "privacyLink": "Datenschutz",
+    "invitationTitle": "Deine Einladung",
+    "invitationUnavailable": "Dieser Einladungslink ist noch nicht aktiv.",
+    "adminTitle": "Private Verwaltung",
+    "adminUnavailable": "Der Administratorzugang wird nach der Einrichtung verfügbar sein."
+  },
+  "privacy": {
+    "title": "Datenschutz",
+    "notice": "Der Datenschutzhinweis wird vorbereitet und steht vor dem Versand der Einladungen zur Verfügung.",
+    "contactPlaceholder": "Kontaktdaten des Paares: noch offen."
+  },
+  "navigation": {
+    "details": "Der Tag",
+    "privacy": "Datenschutz",
+    "language": "Sprache wählen",
+    "main": "Hauptnavigation"
+  },
+  "hero": {
+    "eyebrow": "Eine Hochzeit in Wien",
+    "statement": "Wir heiraten",
+    "place": "Wien, Österreich",
+    "detailsLink": "Die wichtigsten Details ansehen",
+    "portraitCaption": "Ruben und Andrea"
+  },
+  "event": {
+    "dayLabel": "Ein gemeinsamer Tag",
+    "arrivalTitle": "Die Trauung",
+    "pleaseArrive": "Bitte eintreffen",
+    "ceremonyBegins": "Trauung",
+    "arrivalReminder": "Bitte kommt 30 Minuten früher. Wirklich, bitte.",
+    "timelineTitle": "Ein gemeinsamer Tag",
+    "ceremony": "Katholische Trauung",
+    "ceremonyDescription": "Die Trauung in St. Oswald.",
+    "reception": "Die Feier",
+    "receptionDescription": "Danach geht es weiter zum Schloss Hetzendorf."
+  },
+  "wedding": {
+    "photos": {
+      "formalStaircasePortrait": "Ruben und Andrea in festlicher Kleidung auf einer prächtigen Treppe."
+    }
+  },
+  "venue": {
+    "label": "Die Orte",
+    "title": "Zwei Orte, eine Feier",
+    "ceremony": "Trauung",
+    "reception": "Feier",
+    "ceremonyTime": "Trauung",
+    "receptionTime": "Ab",
+    "pleaseArriveBy": "Bitte bis spätestens",
+    "receptionEnd": "Bis der Körper nicht mehr kann.",
+    "openMap": "In Google Maps öffnen",
+    "directions": "Route planen"
+  },
+  "travel": {
+    "label": "Unterwegs in Wien",
+    "title": "Ein paar Hinweise zur Anreise",
+    "publicTransport": "Für öffentliche Verkehrsmittel nutzt bitte am Tag selbst eine aktuelle Routenplanung.",
+    "car": "Wenn ihr mit dem Auto kommt, prüft bitte vor der Abfahrt Verkehr und Parkmöglichkeiten.",
+    "betweenVenues": "Trauung und Feier finden beide im 12. Wiener Gemeindebezirk statt. Prüft die Route zwischen den Orten vor der Abfahrt.",
+    "liveDirections": "Die Links bei den Orten öffnen aktuelle Karten- und Navigationsoptionen."
+  },
+  "stay": {
+    "label": "Übernachten",
+    "title": "Wo ihr übernachten könnt",
+    "quietArea": "Die Gegend rund um die Feier ist ruhig und vorwiegend ein Wohngebiet.",
+    "cityCenter": "Das Viertel ist auch vom Stadtzentrum aus gut an die U6 angebunden.",
+    "recommendations": "Wenn ihr uns fragt, teilen wir gerne Unterkunftsempfehlungen."
+  },
+  "dress": {
+    "label": "Kleidung",
+    "title": "Dresscode",
+    "formality": "Cocktail. Festliche Kleidung ist ebenfalls willkommen."
+  },
+  "music": {
+    "label": "Ein Hinweis für die Tanzfläche",
+    "title": "Musik",
+    "intro": "Drei Lieder würden wir besonders gerne hören.",
+    "playlistPending": "Unsere drei Lieder ergänzen wir hier, sobald die Auswahl feststeht.",
+    "requestsTitle": "Eure Liedwünsche",
+    "requestsIntro": "In eurer persönlichen Einladung könnt ihr bis zu drei Lieder vorschlagen."
+  },
+  "gifts": {
+    "label": "Eine kleine Nachricht",
+    "title": "Eure Anwesenheit ist das schönste Geschenk",
+    "presence": "Mit euch zu feiern ist bereits mehr, als wir uns wünschen könnten.",
+    "contribution": "Wenn ihr uns etwas schenken möchtet, freuen wir uns über einen Beitrag für unsere nächsten gemeinsamen Abenteuer.",
+    "detailsLabel": "Geschenkdetails",
+    "detailsPending": "Weitere Informationen zu Geschenken ergänzen wir hier, sobald sie feststehen."
+  },
+  "countdown": {
+    "label": "Bis zur Feier",
+    "title": "Der Tag rückt näher",
+    "today": "Heute ist es so weit",
+    "ariaLabel": "Verbleibende Zeit bis zur Hochzeit",
+    "days": "Tage",
+    "hours": "Stunden",
+    "minutes": "Minuten",
+    "seconds": "Sekunden"
+  },
+  "closing": {
+    "label": "In Liebe",
+    "title": "Wir freuen uns darauf, mit euch zu feiern",
+    "message": "Danke, dass ihr Teil unseres Lebens seid. Wir freuen uns sehr darauf, diesen Tag mit euch zu verbringen."
+  },
+  "rsvp": {
+    "label": "Eure Antwort",
+    "title": "Feiert ihr mit uns?",
+    "attendanceQuestion": "Seid ihr dabei?",
+    "attending": "Ja, sehr gerne",
+    "declining": "Leider kann ich nicht kommen",
+    "attendeeCount": "Anzahl der teilnehmenden Personen",
+    "additionalNames": "Namen der weiteren Gäste",
+    "dietaryLabel": "Ernährungswünsche oder Allergien",
+    "notesLabel": "Eine Nachricht an das Paar",
+    "chooseAttendance": "Bitte wählt aus, ob ihr dabei seid.",
+    "guestLimitError": "Diese Einladung gilt nicht für so viele Personen.",
+    "rateLimitError": "Bitte wartet einen Moment und versucht es erneut.",
+    "loadError": "Eure gespeicherte Antwort konnte nicht geladen werden. Ihr könnt trotzdem eine Aktualisierung senden.",
+    "saveError": "Eure Antwort konnte nicht gespeichert werden. Bitte versucht es erneut.",
+    "saving": "Antwort wird gespeichert…",
+    "submit": "Antwort speichern",
+    "confirmedTitle": "Teilnahme bestätigt",
+    "declinedTitle": "Danke für eure Rückmeldung",
+    "confirmedMessage": "Danke, {name}. Wir freuen uns darauf, mit euch zu feiern.",
+    "declinedMessage": "Danke, {name}. Wir werden euch vermissen und danken für die Rückmeldung."
+  },
+  "songForm": {
+    "songNumber": "Lied {number}",
+    "titleLabel": "Liedtitel",
+    "artistLabel": "Interpret:in",
+    "spotifyLabel": "Spotify-Link, optional",
+    "addSong": "Lied hinzufügen",
+    "removeSong": "Lied entfernen",
+    "saveSongs": "Liedwünsche speichern",
+    "saving": "Lieder werden gespeichert…",
+    "saved": "Eure Liedwünsche wurden gespeichert.",
+    "invalidUrl": "Bitte gebt eine vollständige Webadresse für den Musiklink ein.",
+    "tooManyError": "Ihr könnt bis zu drei Lieder vorschlagen.",
+    "rateLimitError": "Bitte wartet einen Moment und versucht es erneut.",
+    "loadError": "Eure gespeicherten Liedwünsche konnten nicht geladen werden.",
+    "saveError": "Eure Liedwünsche konnten nicht gespeichert werden. Bitte versucht es erneut."
+  },
+  "intro": {
+    "greeting": "Hallo, {name},",
+    "open": "Einladung öffnen",
+    "skip": "Einführung überspringen"
+  }
+}

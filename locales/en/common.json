@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "titleSuffix": "Wedding Invitation",
+    "description": "A private invitation for a wedding in Vienna."
+  },
+  "accessibility": {
+    "skipToContent": "Skip to content"
+  },
+  "foundation": {
+    "homeTitle": "A private wedding invitation",
+    "homeDescription": "Open your personal invitation link to see the details.",
+    "privacyLink": "Privacy",
+    "invitationTitle": "Your invitation",
+    "invitationUnavailable": "This invitation link is not active yet.",
+    "adminTitle": "Private administration",
+    "adminUnavailable": "Administrator access will be available after setup."
+  },
+  "privacy": {
+    "title": "Privacy",
+    "notice": "The privacy notice is being prepared and will be available before invitations are sent.",
+    "contactPlaceholder": "Couple contact details: to be provided."
+  },
+  "navigation": {
+    "details": "The day",
+    "privacy": "Privacy",
+    "language": "Choose language",
+    "main": "Main navigation"
+  },
+  "hero": {
+    "eyebrow": "A wedding in Vienna",
+    "statement": "We are getting married",
+    "place": "Vienna, Austria",
+    "detailsLink": "See the important details",
+    "portraitCaption": "Ruben and Andrea"
+  },
+  "event": {
+    "dayLabel": "A day together",
+    "arrivalTitle": "The ceremony",
+    "pleaseArrive": "Please arrive",
+    "ceremonyBegins": "Ceremony",
+    "arrivalReminder": "Please arrive 30 minutes earlier. Seriously. Please.",
+    "timelineTitle": "The day, together",
+    "ceremony": "Catholic ceremony",
+    "ceremonyDescription": "The wedding ceremony at St. Oswald.",
+    "reception": "The celebration",
+    "receptionDescription": "Then on to Hetzendorf Palace."
+  },
+  "wedding": {
+    "photos": {
+      "formalStaircasePortrait": "Ruben and Andrea in formal attire on a grand staircase."
+    }
+  },
+  "venue": {
+    "label": "Where to be",
+    "title": "Two places, one celebration",
+    "ceremony": "Ceremony",
+    "reception": "Reception",
+    "ceremonyTime": "Ceremony",
+    "receptionTime": "From",
+    "pleaseArriveBy": "Please arrive by",
+    "receptionEnd": "Until the body can stand it.",
+    "openMap": "Open in Google Maps",
+    "directions": "Get directions"
+  },
+  "travel": {
+    "label": "Getting around",
+    "title": "A little help with the journey",
+    "publicTransport": "For public transport, use a live directions service on the day.",
+    "car": "If you are driving, check current traffic and parking before you leave.",
+    "betweenVenues": "The ceremony and reception are both in Vienna's 12th district. Check the route between them before setting out.",
+    "liveDirections": "The venue links above open current map and navigation options."
+  },
+  "stay": {
+    "label": "Staying nearby",
+    "title": "Where to stay",
+    "quietArea": "The area around the celebration is residential and quiet.",
+    "cityCenter": "The neighborhood is well connected to the U6 metro, including from the city center.",
+    "recommendations": "We are happy to share accommodation recommendations when you reach out to us."
+  },
+  "dress": {
+    "label": "What to wear",
+    "title": "Dress code",
+    "formality": "Cocktail attire. Formal is very welcome."
+  },
+  "music": {
+    "label": "A note for the dance floor",
+    "title": "Music",
+    "intro": "There are three songs we would especially love to hear.",
+    "playlistPending": "Our three-song playlist will be added here once it is ready.",
+    "requestsTitle": "Your song requests",
+    "requestsIntro": "We will ask you for up to three songs in your personal invitation."
+  },
+  "gifts": {
+    "label": "A little note",
+    "title": "Your presence is the gift",
+    "presence": "Having you with us to celebrate is already more than enough.",
+    "contribution": "If you would like to give us something, a contribution toward our next adventures together would mean a great deal.",
+    "detailsLabel": "Gift details",
+    "detailsPending": "Gift information will be shared here once it is ready."
+  },
+  "countdown": {
+    "label": "Until we celebrate",
+    "title": "The day is getting closer",
+    "today": "Today is the day",
+    "ariaLabel": "Time remaining until the wedding",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "closing": {
+    "label": "With love",
+    "title": "We cannot wait to celebrate with you",
+    "message": "Thank you for being part of our lives. We are looking forward to sharing this day with you."
+  },
+  "rsvp": {
+    "label": "Your reply",
+    "title": "Will you celebrate with us?",
+    "attendanceQuestion": "Will you join us?",
+    "attending": "Yes, gladly",
+    "declining": "Sadly, I cannot make it",
+    "attendeeCount": "Number of people attending",
+    "additionalNames": "Names of additional guests",
+    "dietaryLabel": "Dietary requirements or allergies",
+    "notesLabel": "A note for the couple",
+    "chooseAttendance": "Choose whether you will attend.",
+    "guestLimitError": "This invitation does not include that many guests.",
+    "rateLimitError": "Please wait a moment before trying again.",
+    "loadError": "We could not load your saved reply. You can still submit an update.",
+    "saveError": "We could not save your reply. Please try again.",
+    "saving": "Saving reply…",
+    "submit": "Save RSVP",
+    "confirmedTitle": "Attendance confirmed",
+    "declinedTitle": "Thank you for letting us know",
+    "confirmedMessage": "Thank you, {name}. We cannot wait to celebrate with you.",
+    "declinedMessage": "Thank you, {name}. We will miss you and appreciate you letting us know."
+  },
+  "songForm": {
+    "songNumber": "Song {number}",
+    "titleLabel": "Song title",
+    "artistLabel": "Artist",
+    "spotifyLabel": "Spotify link, optional",
+    "addSong": "Add a song",
+    "removeSong": "Remove song",
+    "saveSongs": "Save song requests",
+    "saving": "Saving songs…",
+    "saved": "Your song requests have been saved.",
+    "invalidUrl": "Enter a complete web address for the music link.",
+    "tooManyError": "You can request up to three songs.",
+    "rateLimitError": "Please wait a moment before trying again.",
+    "loadError": "We could not load your saved song requests.",
+    "saveError": "We could not save your song requests. Please try again."
+  },
+  "intro": {
+    "greeting": "Dear {name},",
+    "open": "Open invitation",
+    "skip": "Skip intro"
+  }
+}

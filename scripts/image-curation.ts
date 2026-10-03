@@ -1,0 +1,58 @@
+export const imageCurations = [
+  {
+    id: "formal-staircase-hero",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (14).jpeg",
+    role: "hero",
+    focalPoint: { x: 50, y: 46 },
+    altTextKey: "wedding.photos.formalStaircasePortrait",
+  },
+  {
+    id: "garden-formal-portrait",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (6).jpeg",
+    role: "editorial",
+    focalPoint: { x: 50, y: 52 },
+    altTextKey: "wedding.photos.formalGardenPortrait",
+  },
+  {
+    id: "lake-church-portrait",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (3).jpeg",
+    role: "editorial",
+    focalPoint: { x: 51, y: 69 },
+    altTextKey: "wedding.photos.lakesidePortrait",
+  },
+  {
+    id: "sunset-coast-portrait",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (1).jpeg",
+    role: "editorial",
+    focalPoint: { x: 48, y: 55 },
+    altTextKey: "wedding.photos.coastalPortrait",
+  },
+  {
+    id: "birthday-kiss",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (17).jpeg",
+    role: "editorial",
+    focalPoint: { x: 52, y: 48 },
+    altTextKey: "wedding.photos.celebrationPortrait",
+  },
+  {
+    id: "city-observatory",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (24).jpeg",
+    role: "editorial",
+    focalPoint: { x: 50, y: 66 },
+    altTextKey: "wedding.photos.cityViewPortrait",
+  },
+  {
+    id: "historic-rooftop",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (28).jpeg",
+    role: "editorial",
+    focalPoint: { x: 50, y: 70 },
+    altTextKey: "wedding.photos.rooftopPortrait",
+  },
+  {
+    id: "coastal-full-length",
+    sourceFilename: "WhatsApp Image 2026-10-03 at 10.38.02 (33).jpeg",
+    role: "editorial",
+    focalPoint: { x: 50, y: 56 },
+    altTextKey: "wedding.photos.coastalFullLengthPortrait",
+  },
+] as const;

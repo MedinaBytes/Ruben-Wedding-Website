@@ -1,0 +1,149 @@
+/* SevenSides universal style switcher — works on any template via filters. */
+
+.ss-style-switcher {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 2147483600;
+  transform: translateY(-50%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #fff;
+}
+
+.ss-style-switcher__toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  background: rgba(15, 17, 21, 0.78);
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: width 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.ss-style-switcher[data-state="peek"] .ss-style-switcher__toggle {
+  width: 0.55rem;
+  background: rgba(15, 17, 21, 0.55);
+}
+
+.ss-style-switcher[data-state="peek"] .ss-style-switcher__toggle:focus-visible,
+.ss-style-switcher[data-state="peek"] .ss-style-switcher__toggle:hover {
+  width: 0.85rem;
+  background: rgba(15, 17, 21, 0.85);
+}
+
+.ss-style-switcher__toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.ss-style-switcher[data-state="peek"] .ss-style-switcher__toggle svg {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.ss-style-switcher[data-state="ready"] .ss-style-switcher__toggle,
+.ss-style-switcher[data-state="open"] .ss-style-switcher__toggle {
+  width: 2.4rem;
+  background: rgba(20, 24, 32, 0.92);
+}
+
+.ss-style-switcher__panel {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 0.6rem;
+  width: min(15rem, calc(100vw - 4rem));
+  padding: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(12, 14, 18, 0.94);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px) saturate(1.1);
+}
+
+.ss-style-switcher__panel[hidden] { display: none; }
+
+.ss-style-switcher__legend {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ss-style-switcher__list {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ss-style-switcher__list button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.ss-style-switcher__list button:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ss-style-switcher__list button[aria-pressed="true"] {
+  border-color: #66f2d1;
+  background: rgba(102, 242, 209, 0.16);
+  color: #d9fff0;
+}
+
+.ss-style-switcher__swatch {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  flex: 0 0 auto;
+}
+
+.ss-style-switcher__swatch--default { background: linear-gradient(135deg, #2a2a2a, #c9a84c); }
+.ss-style-switcher__swatch--light { background: linear-gradient(135deg, #f5f5f5, #d8d8d8); }
+.ss-style-switcher__swatch--warm { background: linear-gradient(135deg, #f4d6a3, #b56b2c); }
+.ss-style-switcher__swatch--contrast { background: linear-gradient(135deg, #000, #fff); }
+
+/* Variant overrides are emitted per-template into themes.css.
+   The chrome itself must never be themed. */
+html[data-ss-theme] .ss-style-switcher,
+html[data-ss-theme] .ss-style-switcher * {
+  background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-style-switcher__toggle,
+  .ss-style-switcher__list button {
+    transition: none;
+  }
+}

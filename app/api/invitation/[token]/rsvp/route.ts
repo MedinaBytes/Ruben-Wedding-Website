@@ -1,0 +1,101 @@
+import { NextResponse } from "next/server";
+
+import {
+  consumeInvitationRateLimit,
+  findActiveInvitation,
+  recordInvitationEvent,
+  saveRsvp,
+} from "@/lib/invitations/store";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { validateRsvpForInvitation } from "@/lib/validation/guest";
+
+const privateHeaders = {
+  "Cache-Control": "private, no-store",
+  "X-Robots-Tag": "noindex, nofollow",
+};
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ token: string }> },
+) {
+  const { token } = await context.params;
+
+  try {
+    const client = createSupabaseAdminClient();
+    const invitation = await findActiveInvitation(client, token);
+    if (!invitation) {
+      return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
+    }
+
+    const { data, error } = await client
+      .from("rsvps")
+      .select("attendance_status, attendee_count, guest_names, dietary_requirements, notes")
+      .eq("invitation_id", invitation.id)
+      .maybeSingle();
+
+    if (error) throw new Error("RSVP lookup failed.");
+
+    return NextResponse.json(
+      {
+        rsvp: data
+          ? {
+              attendanceStatus: data.attendance_status,
+              attendeeCount: data.attendee_count,
+              guestNames: data.guest_names,
+              dietaryRequirements: data.dietary_requirements,
+              notes: data.notes,
+            }
+          : null,
+      },
+      { headers: privateHeaders },
+    );
+  } catch {
+    return NextResponse.json({ error: "service_unavailable" }, { status: 503, headers: privateHeaders });
+  }
+}
+
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ token: string }> },
+) {
+  const { token } = await context.params;
+
+  try {
+    const client = createSupabaseAdminClient();
+    const invitation = await findActiveInvitation(client, token);
+    if (!invitation) {
+      return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
+    }
+
+    const isAllowed = await consumeInvitationRateLimit(client, invitation.id, "rsvp", 5, 60);
+    if (!isAllowed) {
+      return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: privateHeaders });
+    }
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
+    }
+
+    const result = validateRsvpForInvitation(body, {
+      maxGuests: invitation.max_guests,
+      plusOneAllowed: invitation.plus_one_allowed,
+    });
+    if (!result.success) {
+      return NextResponse.json({ error: result.reason }, { status: 422, headers: privateHeaders });
+    }
+
+    await saveRsvp(client, invitation.id, result.data);
+    await recordInvitationEvent(client, {
+      invitationId: invitation.id,
+      eventType: result.data.attendanceStatus === "yes" ? "RSVP_CONFIRMED" : "RSVP_DECLINED",
+      locale: result.data.language,
+    }).catch(() => undefined);
+
+    return NextResponse.json({ saved: true }, { headers: privateHeaders });
+  } catch {
+    return NextResponse.json({ error: "service_unavailable" }, { status: 503, headers: privateHeaders });
+  }
+}

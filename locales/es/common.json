@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "titleSuffix": "Invitación de boda",
+    "description": "Una invitación privada para una boda en Viena."
+  },
+  "accessibility": {
+    "skipToContent": "Saltar al contenido"
+  },
+  "foundation": {
+    "homeTitle": "Una invitación de boda privada",
+    "homeDescription": "Abre tu enlace personal para ver los detalles.",
+    "privacyLink": "Privacidad",
+    "invitationTitle": "Tu invitación",
+    "invitationUnavailable": "Este enlace de invitación aún no está activo.",
+    "adminTitle": "Administración privada",
+    "adminUnavailable": "El acceso de administración estará disponible cuando termine la configuración."
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "notice": "El aviso de privacidad está en preparación y estará disponible antes de enviar las invitaciones.",
+    "contactPlaceholder": "Datos de contacto de la pareja: pendientes."
+  },
+  "navigation": {
+    "details": "El día",
+    "privacy": "Privacidad",
+    "language": "Elegir idioma",
+    "main": "Navegación principal"
+  },
+  "hero": {
+    "eyebrow": "Una boda en Viena",
+    "statement": "Nos casamos",
+    "place": "Viena, Austria",
+    "detailsLink": "Ver los detalles importantes",
+    "portraitCaption": "Ruben y Andrea"
+  },
+  "event": {
+    "dayLabel": "Un día juntos",
+    "arrivalTitle": "La ceremonia",
+    "pleaseArrive": "Hora de llegada",
+    "ceremonyBegins": "Ceremonia",
+    "arrivalReminder": "Por favor, lleguen 30 minutos antes. En serio, por favor.",
+    "timelineTitle": "Un día para compartir",
+    "ceremony": "Ceremonia católica",
+    "ceremonyDescription": "La ceremonia de boda en San Osvaldo.",
+    "reception": "La celebración",
+    "receptionDescription": "Después, nos vemos en el Palacio Hetzendorf."
+  },
+  "wedding": {
+    "photos": {
+      "formalStaircasePortrait": "Ruben y Andrea vestidos de forma elegante en una gran escalera."
+    }
+  },
+  "venue": {
+    "label": "Dónde estaremos",
+    "title": "Dos lugares, una celebración",
+    "ceremony": "Ceremonia",
+    "reception": "Recepción",
+    "ceremonyTime": "Ceremonia",
+    "receptionTime": "Desde",
+    "pleaseArriveBy": "Por favor, lleguen antes de las",
+    "receptionEnd": "Hasta que el cuerpo aguante.",
+    "openMap": "Abrir en Google Maps",
+    "directions": "Cómo llegar"
+  },
+  "travel": {
+    "label": "Cómo desplazarse",
+    "title": "Una ayuda para el trayecto",
+    "publicTransport": "Para el transporte público, consulten las indicaciones actualizadas el mismo día.",
+    "car": "Si vienen en coche, comprueben el tráfico y el aparcamiento antes de salir.",
+    "betweenVenues": "La ceremonia y la recepción están en el distrito 12 de Viena. Comprueben el trayecto entre ambos lugares antes de salir.",
+    "liveDirections": "Los enlaces de los lugares abren opciones actuales de mapas y navegación."
+  },
+  "stay": {
+    "label": "Alojamiento",
+    "title": "Dónde alojarse",
+    "quietArea": "La zona de la celebración es residencial y tranquila.",
+    "cityCenter": "El barrio está bien conectado con la línea de metro U6, también desde el centro.",
+    "recommendations": "Estaremos encantados de compartir recomendaciones de alojamiento cuando nos contacten."
+  },
+  "dress": {
+    "label": "Qué ponerse",
+    "title": "Código de vestimenta",
+    "formality": "Cóctel. La vestimenta formal también es bienvenida."
+  },
+  "music": {
+    "label": "Una nota para la pista de baile",
+    "title": "Música",
+    "intro": "Hay tres canciones que nos encantaría escuchar.",
+    "playlistPending": "Añadiremos aquí nuestra lista de tres canciones cuando esté lista.",
+    "requestsTitle": "Vuestras canciones",
+    "requestsIntro": "En la invitación personal podréis sugerir hasta tres canciones."
+  },
+  "gifts": {
+    "label": "Una pequeña nota",
+    "title": "Tu presencia es el regalo",
+    "presence": "Celebrar con vosotros ya es más que suficiente.",
+    "contribution": "Si queréis hacernos un regalo, una aportación para nuestras próximas aventuras juntos significaría mucho para nosotros.",
+    "detailsLabel": "Detalles del regalo",
+    "detailsPending": "La información sobre los regalos se añadirá aquí cuando esté lista."
+  },
+  "countdown": {
+    "label": "Hasta la celebración",
+    "title": "Cada vez falta menos",
+    "today": "Hoy es el gran día",
+    "ariaLabel": "Tiempo que falta para la boda",
+    "days": "Días",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos"
+  },
+  "closing": {
+    "label": "Con cariño",
+    "title": "Tenemos muchas ganas de celebrarlo con vosotros",
+    "message": "Gracias por formar parte de nuestras vidas. Nos hace mucha ilusión compartir este día con vosotros."
+  },
+  "rsvp": {
+    "label": "Tu respuesta",
+    "title": "¿Celebrarás con nosotros?",
+    "attendanceQuestion": "¿Podrás acompañarnos?",
+    "attending": "Sí, con mucho gusto",
+    "declining": "Lo siento, no podré asistir",
+    "attendeeCount": "Personas que asistirán",
+    "additionalNames": "Nombres de los acompañantes",
+    "dietaryLabel": "Requisitos alimentarios o alergias",
+    "notesLabel": "Un mensaje para la pareja",
+    "chooseAttendance": "Indica si asistirás.",
+    "guestLimitError": "Esta invitación no incluye a tantas personas.",
+    "rateLimitError": "Espera un momento antes de volver a intentarlo.",
+    "loadError": "No pudimos cargar tu respuesta guardada. Aún puedes enviar una actualización.",
+    "saveError": "No pudimos guardar tu respuesta. Inténtalo de nuevo.",
+    "saving": "Guardando respuesta…",
+    "submit": "Guardar respuesta",
+    "confirmedTitle": "Asistencia confirmada",
+    "declinedTitle": "Gracias por avisarnos",
+    "confirmedMessage": "Gracias, {name}. Tenemos muchas ganas de celebrarlo contigo.",
+    "declinedMessage": "Gracias, {name}. Te echaremos de menos y agradecemos que nos lo hayas comunicado."
+  },
+  "songForm": {
+    "songNumber": "Canción {number}",
+    "titleLabel": "Título de la canción",
+    "artistLabel": "Artista",
+    "spotifyLabel": "Enlace de Spotify, opcional",
+    "addSong": "Añadir canción",
+    "removeSong": "Eliminar canción",
+    "saveSongs": "Guardar canciones",
+    "saving": "Guardando canciones…",
+    "saved": "Tus canciones se han guardado.",
+    "invalidUrl": "Introduce una dirección web completa para el enlace musical.",
+    "tooManyError": "Puedes proponer hasta tres canciones.",
+    "rateLimitError": "Espera un momento antes de volver a intentarlo.",
+    "loadError": "No pudimos cargar tus canciones guardadas.",
+    "saveError": "No pudimos guardar tus canciones. Inténtalo de nuevo."
+  },
+  "intro": {
+    "greeting": "Hola, {name}:",
+    "open": "Abrir invitación",
+    "skip": "Saltar introducción"
+  }
+}
