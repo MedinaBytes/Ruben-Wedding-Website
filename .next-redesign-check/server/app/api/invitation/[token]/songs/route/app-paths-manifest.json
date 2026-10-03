@@ -1,3 +1,0 @@
-{
-  "/api/invitation/[token]/songs/route": "app/api/invitation/[token]/songs/route.js"
-}
