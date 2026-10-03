@@ -24,6 +24,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
     headers(),
   ]);
   const manualLocale = cookieStore.get("wedding_manual_locale")?.value;
+  const referer = headerStore.get("referer");
+  let refererLang: string | undefined;
+  if (referer) {
+    try {
+      refererLang = new URL(referer).searchParams.get("lang") ?? undefined;
+    } catch {}
+  }
   const browserLocales = headerStore
     .get("accept-language")
     ?.split(",")
@@ -33,9 +40,11 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // The invitation route will explicitly set its stored locale before loading messages.
   const locale = isLocale(manualLocale)
     ? manualLocale
-    : isLocale(requestedLocale)
-      ? requestedLocale
-      : browserLocale ?? "en";
+    : isLocale(refererLang)
+      ? refererLang
+      : isLocale(requestedLocale)
+        ? requestedLocale
+        : browserLocale ?? "en";
 
   return {
     locale,

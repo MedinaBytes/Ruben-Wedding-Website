@@ -38,6 +38,7 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
         title={t("title")}
         subtitle={t("description")}
         eyebrow={t("eyebrow")}
+        excludeIds={["birthday-kiss", "city-observatory", "sunset-coast-portrait", "formal-staircase-hero"]}
       />
     </section>
   );

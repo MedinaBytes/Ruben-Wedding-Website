@@ -11,12 +11,23 @@ import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-conf
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ lang?: string }>;
+} = {}) {
+  const [params, requestLocale, cookieStore] = await Promise.all([
+    searchParams,
+    getLocale(),
+    cookies(),
+  ]);
+  const queryLocale = params?.lang;
   const manualLocale = cookieStore.get("wedding_manual_locale")?.value;
-  const locale: Locale = supportedLocales.includes(manualLocale as Locale)
-    ? (manualLocale as Locale)
-    : (requestLocale as Locale);
+  const locale: Locale = supportedLocales.includes(queryLocale as Locale)
+    ? (queryLocale as Locale)
+    : supportedLocales.includes(manualLocale as Locale)
+      ? (manualLocale as Locale)
+      : (requestLocale as Locale);
 
   const [messages, navigation, hero, event, wedding] = await Promise.all([
     getMessages({ locale }),

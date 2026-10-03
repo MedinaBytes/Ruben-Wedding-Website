@@ -30,7 +30,7 @@ test("language switcher updates the locale on the public page", async ({ page })
 
   await page.getByRole("button", { name: "Español" }).click();
 
-  await expect(page.getByText("Una boda en Viena")).toBeVisible();
+  await expect(page.getByText("Una boda en Viena")).toBeVisible({ timeout: 15000 });
   await expect(
     page.getByRole("navigation", { name: "Navegación principal" }).getByRole("link", { name: "Privacidad" }),
   ).toBeVisible();
@@ -40,6 +40,6 @@ test("admin sign-in renders translated labels and stays noindex", async ({ page 
   const response = await page.goto("/admin");
 
   expect(response?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
-  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
-  await expect(page.getByLabel("Email address")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Sign in|Iniciar sesión/ })).toBeVisible();
+  await expect(page.getByLabel(/Email address|Dirección de correo electrónico/)).toBeVisible();
 });

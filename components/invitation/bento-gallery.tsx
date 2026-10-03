@@ -2,55 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
-import { imageCurations } from "@/scripts/image-curation";
+import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
+import type { Locale } from "@/lib/wedding-config";
 
 type Category = "all" | "editorial" | "travel" | "celebration" | "adventures" | "candid";
 
-const categoryMap: Record<string, Category> = {
-  "formal-staircase-hero": "editorial",
-  "birthday-kiss": "celebration",
-  "city-observatory": "travel",
-  "sunset-coast-portrait": "editorial",
-  "garden-formal-portrait": "editorial",
-  "coastal-full-length": "editorial",
-  "night-city-embrace": "travel",
-  "garden-hug": "celebration",
-  "lake-church-portrait": "travel",
-  "boat-deck-sunshine": "travel",
-  "kayak-adventure": "adventures",
-  "kayak-sea-view": "adventures",
-  "palace-square": "travel",
-  "wine-toast": "celebration",
-  "modern-waterfront": "travel",
-  "river-city-view": "travel",
-  "birthday-balloon": "celebration",
-  "white-horse-meeting": "adventures",
-  "country-lane-ride": "adventures",
-  "scooter-helmets": "adventures",
-  "bay-lookout": "travel",
-  "historic-rooftop": "travel",
-  "city-skyline-selfie": "candid",
-  "turquoise-sea-toast": "celebration",
-  "cinema-night": "candid",
-  "party-glasses": "candid",
-  "evening-swing": "candid",
-  "waterfront-selfie": "candid",
-  "forest-hilltop": "adventures",
-  "flight-selfie": "travel",
-  "rooftop-pool-swim": "adventures",
-  "cafe-lunch": "candid",
-  "winter-elevator-selfie": "candid",
-  "turquoise-sea-smile": "celebration",
-  "silly-faces": "candid",
-};
-
-const categoryLabels: Record<Category, { en: string; es: string; de: string; hu: string }> = {
-  all: { en: "All Moments (35)", es: "Todos los momentos (35)", de: "Alle Momente (35)", hu: "Minden pillanat (35)" },
-  editorial: { en: "Editorial & Portraits", es: "Editoriales y Retratos", de: "Porträts", hu: "Portrék" },
-  travel: { en: "Travel & Panoramas", es: "Viajes y Panorámicas", de: "Reisen & Städte", hu: "Utazások" },
-  celebration: { en: "Celebrations & Dates", es: "Celebraciones", de: "Feiern", hu: "Ünneplések" },
-  adventures: { en: "Adventures & Nature", es: "Aventuras", de: "Abenteuer", hu: "Kalandok" },
-  candid: { en: "Candid & Fun", es: "Espontáneas", de: "Spontan & Spaß", hu: "Spontán fotók" },
+const categoryLabels: Record<Category, Record<Locale, string>> = {
+  all: { en: "All Memories (35)", es: "Todos los momentos (35)", de: "Alle Momente (35)", hu: "Minden pillanat (35)" },
+  editorial: { en: "Portraits & Editorial", es: "Retratos y Especiales", de: "Porträts", hu: "Portrék" },
+  travel: { en: "Travel & Skylines", es: "Viajes y Horizontes", de: "Reisen & Städte", hu: "Utazások" },
+  celebration: { en: "Celebrations & Dates", es: "Celebraciones y Citas", de: "Feiern", hu: "Ünneplések" },
+  adventures: { en: "Adventures & Nature", es: "Aventuras y Naturaleza", de: "Abenteuer", hu: "Kalandok" },
+  candid: { en: "Candid & Laughter", es: "Risas y Espontáneas", de: "Spontan & Spaß", hu: "Spontán fotók" },
 };
 
 export function BentoGallery({
@@ -58,19 +21,25 @@ export function BentoGallery({
   title = "A life, collected in little moments",
   subtitle = "From small celebrations to faraway sunsets, these are the 35 memories that brought us here.",
   eyebrow = "Curated Memory Matrix",
+  excludeIds = [],
 }: {
-  locale?: "en" | "es" | "de" | "hu";
+  locale?: Locale;
   title?: string;
   subtitle?: string;
   eyebrow?: string;
+  excludeIds?: readonly string[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
 
   const filteredPhotos = useMemo(() => {
-    if (selectedCategory === "all") return imageCurations;
-    return imageCurations.filter((item) => (categoryMap[item.id] ?? "candid") === selectedCategory);
-  }, [selectedCategory]);
+    let items = photoCatalog as readonly PhotoStoryItem[];
+    if (excludeIds.length > 0) {
+      items = items.filter((item) => !excludeIds.includes(item.id));
+    }
+    if (selectedCategory === "all") return items;
+    return items.filter((item) => item.category === selectedCategory);
+  }, [selectedCategory, excludeIds]);
 
   const activePhoto = activePhotoIndex !== null ? filteredPhotos[activePhotoIndex] : null;
 
@@ -86,10 +55,10 @@ export function BentoGallery({
   }
 
   return (
-    <section className="bento-gallery-section" aria-labelledby="bento-gallery-title">
+    <div className="bento-gallery-block" aria-labelledby="bento-gallery-title">
       <div className="bento-gallery-header">
         <p className="section-label">{eyebrow}</p>
-        <h2 id="bento-gallery-title">{title}</h2>
+        <h3 id="bento-gallery-title" className="bento-gallery-heading">{title}</h3>
         <p className="bento-gallery-subtitle">{subtitle}</p>
 
         {/* Category Pills */}
@@ -112,9 +81,10 @@ export function BentoGallery({
       {/* Asymmetrical Bento Grid */}
       <div className="bento-grid">
         {filteredPhotos.map((photo, index) => {
-          // Compute asymmetrical grid span classes for visual dynamism
           const isWide = index % 5 === 0 || index % 7 === 0;
           const isTall = index % 4 === 0 && !isWide;
+          const photoTitle = photo.title[locale] ?? photo.title.en;
+          const photoCaption = photo.caption[locale] ?? photo.caption.en;
 
           return (
             <figure
@@ -123,7 +93,7 @@ export function BentoGallery({
               onClick={() => setActivePhotoIndex(index)}
               tabIndex={0}
               role="button"
-              aria-label={`View photo ${photo.id.replace(/-/g, " ")}`}
+              aria-label={`${photoTitle}: ${photoCaption}`}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
@@ -133,13 +103,14 @@ export function BentoGallery({
             >
               <WeddingPhoto
                 id={photo.id}
-                alt={photo.id.replace(/-/g, " ")}
+                alt={photoCaption}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="bento-image"
               />
               <div className="bento-overlay">
-                <span className="bento-tag">{categoryMap[photo.id] ?? "memory"}</span>
-                <p className="bento-caption">{photo.id.replace(/-/g, " ")}</p>
+                <span className="bento-tag">{categoryLabels[photo.category][locale]}</span>
+                <p className="bento-caption">{photoTitle}</p>
+                <p className="bento-subcaption">{photoCaption}</p>
                 <span className="bento-zoom-icon" aria-hidden="true">↗</span>
               </div>
             </figure>
@@ -153,7 +124,7 @@ export function BentoGallery({
           className="bento-lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label="Full screen photo view"
+          aria-label={activePhoto.title[locale] ?? activePhoto.title.en}
           tabIndex={0}
           onKeyDown={handleKeyDown}
           onClick={(e) => {
@@ -184,16 +155,16 @@ export function BentoGallery({
           <div className="lightbox-content">
             <WeddingPhoto
               id={activePhoto.id}
-              alt={activePhoto.id.replace(/-/g, " ")}
+              alt={activePhoto.caption[locale] ?? activePhoto.caption.en}
               sizes="(max-width: 1200px) 90vw, 1200px"
               className="lightbox-image"
             />
             <div className="lightbox-footer">
               <span className="lightbox-counter">
-                {(activePhotoIndex ?? 0) + 1} / {filteredPhotos.length}
+                {(activePhotoIndex ?? 0) + 1} / {filteredPhotos.length} · {categoryLabels[activePhoto.category][locale]}
               </span>
-              <p className="lightbox-title">{activePhoto.id.replace(/-/g, " ")}</p>
-              <span className="lightbox-role">Category: {categoryMap[activePhoto.id] ?? "memory"}</span>
+              <h4 className="lightbox-title">{activePhoto.title[locale] ?? activePhoto.title.en}</h4>
+              <p className="lightbox-desc">{activePhoto.caption[locale] ?? activePhoto.caption.en}</p>
             </div>
           </div>
 
@@ -210,6 +181,6 @@ export function BentoGallery({
           </button>
         </div>
       )}
-    </section>
+    </div>
   );
 }

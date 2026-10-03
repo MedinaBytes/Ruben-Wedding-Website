@@ -1,8 +1,6 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 
 import { setManualLocale } from "@/app/actions/set-locale";
 import { recordInvitationInteraction } from "@/lib/client/invitation-events";
@@ -36,10 +34,8 @@ export function LanguageSwitcher({
   invitation?: { id: string; token: string };
 }) {
   const locale = useLocale() as Locale;
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
-  function selectLocale(nextLocale: Locale) {
+  function onSelect(nextLocale: Locale) {
     const cookieName = invitation ? `wedding_manual_locale_${invitation.id}` : "wedding_manual_locale";
     persistClientLocaleCookie(cookieName, nextLocale);
 
@@ -52,26 +48,23 @@ export function LanguageSwitcher({
       });
     }
 
-    startTransition(async () => {
-      await setManualLocale(nextLocale, invitation?.id);
-      router.refresh();
-    });
+    void setManualLocale(nextLocale, invitation?.id).catch(() => {});
   }
 
   return (
     <div className="language-switcher" role="group" aria-label={label}>
       {supportedLocales.map((option) => (
-        <button
+        <a
           aria-current={locale === option ? "true" : undefined}
           aria-label={localeLabels[option]}
           className="language-switcher__option"
-          disabled={isPending || locale === option}
+          href={`?lang=${option}`}
           key={option}
-          onClick={() => void selectLocale(option)}
-          type="button"
+          onClick={() => onSelect(option)}
+          role="button"
         >
           {localeCodes[option]}
-        </button>
+        </a>
       ))}
     </div>
   );
