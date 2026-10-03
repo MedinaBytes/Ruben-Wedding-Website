@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
+import { lookupInvitation } from "@/app/actions/lookup-invitation";
 import { setManualLocale } from "@/app/actions/set-locale";
 import type { Locale } from "@/lib/wedding-config";
 
@@ -22,6 +23,9 @@ export function WelcomeLookupModal({ currentLocale }: { currentLocale: Locale })
   const dialogRef = useRef<HTMLDialogElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "found" | "not_found">("idle");
+  const [foundName, setFoundName] = useState("");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -47,14 +51,37 @@ export function WelcomeLookupModal({ currentLocale }: { currentLocale: Locale })
       sessionStorage.setItem("wedding_welcome_seen", "true");
     } catch {}
     setIsOpen(false);
-    dialogRef.current?.close();
+    if (dialogRef.current?.open) {
+      dialogRef.current.close();
+    }
   }
 
   function handleLanguageChange(locale: Locale) {
     startTransition(async () => {
       await setManualLocale(locale);
-      router.replace("/", { scroll: false });
+      router.replace(`/?lang=${locale}`, { scroll: false });
     });
+  }
+
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!searchQuery.trim() || searchQuery.trim().length < 2) return;
+
+    setStatus("loading");
+    const result = await lookupInvitation(searchQuery);
+
+    if (result.success) {
+      setStatus("found");
+      setFoundName(result.displayName);
+      try {
+        sessionStorage.setItem("wedding_welcome_seen", "true");
+      } catch {}
+      setTimeout(() => {
+        router.push(result.url);
+      }, 1000);
+    } else {
+      setStatus("not_found");
+    }
   }
 
   if (!isOpen) return null;
@@ -87,6 +114,7 @@ export function WelcomeLookupModal({ currentLocale }: { currentLocale: Locale })
           R <span>&</span> A
         </span>
 
+        {/* Language Selection */}
         <div className="welcome-modal__lang-selector" role="group" aria-label={navigation("language")}>
           {languages.map(({ code, label }) => (
             <button
@@ -105,8 +133,66 @@ export function WelcomeLookupModal({ currentLocale }: { currentLocale: Locale })
         <h2 className="welcome-modal__title" id="welcome-modal-title">{t("title")}</h2>
         <p className="welcome-modal__subtitle">{t("message")}</p>
 
+        {/* Name / Email Lookup Form */}
+        <form onSubmit={handleSearch} className="welcome-modal__form">
+          <div className="field-group">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={
+                currentLocale === "es"
+                  ? "Ej. Juan Pérez o Familia Rodríguez"
+                  : currentLocale === "de"
+                  ? "z. B. Max Mustermann"
+                  : "e.g. John Doe or Garcia Family"
+              }
+              className="welcome-modal__input"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="text-button"
+            disabled={status === "loading" || !searchQuery.trim()}
+          >
+            {status === "loading"
+              ? currentLocale === "es"
+                ? "Buscando..."
+                : currentLocale === "de"
+                ? "Suche..."
+                : "Searching..."
+              : currentLocale === "es"
+              ? "Buscar mi Invitación"
+              : currentLocale === "de"
+              ? "Einladung finden"
+              : "Find My Invitation"}
+          </button>
+        </form>
+
+        {status === "found" && (
+          <div className="welcome-modal__message is-success" role="status">
+            ✓{" "}
+            {currentLocale === "es"
+              ? `¡Invitación encontrada para ${foundName}! Abriendo...`
+              : currentLocale === "de"
+              ? `Einladung für ${foundName} gefunden! Öffne...`
+              : `Invitation found for ${foundName}! Opening...`}
+          </div>
+        )}
+
+        {status === "not_found" && (
+          <div className="welcome-modal__message is-error" role="alert">
+            {currentLocale === "es"
+              ? "No encontramos una invitación con ese nombre. Prueba con tu nombre completo o continúa abajo."
+              : currentLocale === "de"
+              ? "Keine Einladung unter diesem Namen gefunden. Bitte überprüfe die Schreibweise."
+              : "No invitation found matching that name. Try your full name or continue below."}
+          </div>
+        )}
+
         <div className="welcome-modal__footer">
-          <button className="text-button" onClick={handleDismiss} type="button">
+          <button className="text-button text-button--quiet" onClick={handleDismiss} type="button">
             {t("continue")}
           </button>
         </div>
