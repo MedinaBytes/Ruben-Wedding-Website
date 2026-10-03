@@ -67,6 +67,8 @@ export default async function AdminPage({
     "confirmedGuests", "confirmedGuestsNote", "songCount", "songRequestsNote", "exportCsv", "invitationList", "invitationName",
     "guestPlaces", "response", "attending", "declined", "pending", "songRequests", "artistUnknown", "responseDetails",
     "guestNames", "noInvitations", "noSongs", "noRsvps", "deleteSectionTitle",
+    "createInvitation", "creatingInvitation", "createInvitationSuccess", "createInvitationError", "displayName", "groupName",
+    "preferredLanguage", "languageDefault", "plusOneAllowed", "invitationUrl",
     "deleteWarning", "deleteConfirmationLabel", "deleteAction",
   ] as const;
   const labels = Object.fromEntries(await Promise.all(labelKeys.map(async (key) => [key, t(key)])));

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { supportedLocales, type Locale } from "@/lib/wedding-config";
+import { supportedLocales } from "@/lib/wedding-config";
 
 export function CreateInvitationForm({ labels }: { labels: Record<string, string> }) {
   const router = useRouter();

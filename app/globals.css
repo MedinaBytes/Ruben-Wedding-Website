@@ -953,7 +953,8 @@ a {
 }
 
 .field-group input,
-.field-group textarea {
+.field-group textarea,
+.field-group select {
   background: var(--color-neutral-light);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
@@ -1214,6 +1215,10 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.field-group select {
+  appearance: auto;
 }
 
 /* A personal photo interlude adds the warmth that a logistics-first layout was missing. */
@@ -1737,6 +1742,58 @@ a {
   padding-inline: 0.3rem;
 }
 
+.admin-create-form {
+  align-items: end;
+  border-bottom: 1px solid oklch(0.89 0.012 75);
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+}
+
+.admin-create-form .choice-row {
+  font-size: 0.75rem;
+}
+
+.admin-create-form .text-button {
+  align-self: end;
+  justify-self: start;
+}
+
+.admin-create-form .form-message,
+.admin-invitation-url {
+  grid-column: 1 / -1;
+}
+
+.admin-create-form .form-message {
+  color: oklch(0.39 0.08 130);
+  font-size: 0.74rem;
+}
+
+.admin-invitation-url {
+  background: var(--color-matcha-pale);
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem;
+}
+
+.admin-invitation-url label {
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.admin-invitation-url input {
+  background: var(--color-neutral-light);
+  border: 1px solid oklch(0.75 0.035 130);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.72rem;
+  min-height: 2.5rem;
+  padding: 0.45rem;
+  width: 100%;
+}
+
 .admin-table-wrap {
   overflow-x: auto;
 }
@@ -2188,6 +2245,10 @@ a {
 
   .admin-panel--wide {
     grid-column: auto;
+  }
+
+  .admin-create-form {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .admin-delete__form {
