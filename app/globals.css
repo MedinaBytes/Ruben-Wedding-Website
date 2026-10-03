@@ -146,17 +146,18 @@ a {
 }
 
 .hero__inner {
-  align-items: center;
-  display: grid;
-  gap: clamp(2rem, 6vw, 7.5rem);
-  grid-template-columns: minmax(0, 0.82fr) minmax(22rem, 1fr);
-  min-height: min(69vw, 48rem);
+  min-height: clamp(30rem, 62svh, 44rem);
+  position: relative;
 }
 
 .hero__copy {
-  padding-block: 2rem;
-  position: relative;
-  z-index: 1;
+  left: 0;
+  max-width: min(54%, 39rem);
+  padding-block: 1.5rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -172,12 +173,12 @@ a {
 @keyframes hero-copy-arrive {
   from {
     opacity: 0;
-    transform: translateY(0.75rem);
+    translate: 0 0.75rem;
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0 0;
   }
 }
 
@@ -242,9 +243,19 @@ a {
 
 .hero__portrait {
   aspect-ratio: 0.83;
+  height: min(60svh, 43rem);
   margin: 0;
-  max-height: 46rem;
-  position: relative;
+  max-height: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+}
+
+.hero__image-motion {
+  height: 100%;
+  width: 100%;
 }
 
 .photo-frame {
@@ -1115,13 +1126,20 @@ a {
   }
 
   .hero__inner {
+    display: grid;
     gap: 1.5rem;
     grid-template-columns: minmax(0, 1fr);
     min-height: auto;
+    position: relative;
   }
 
   .hero__copy {
+    left: auto;
+    max-width: none;
     padding-block: 1rem 0;
+    position: relative;
+    top: auto;
+    transform: none;
   }
 
   .hero__eyebrow {
@@ -1147,7 +1165,13 @@ a {
 
   .hero__portrait {
     aspect-ratio: 0.94;
+    height: auto;
     margin-right: 1.25rem;
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: auto;
   }
 
   .hero__orchid {
@@ -1431,6 +1455,10 @@ a {
   padding: 0.38rem 0.4rem 0.28rem;
 }
 
+.invitation-intro:not([open]) {
+  display: none !important;
+}
+
 .invitation-intro::backdrop {
   background: oklch(0.24 0.018 30 / 76%);
   backdrop-filter: blur(4px);
@@ -1542,6 +1570,129 @@ a {
 
 .invitation-intro {
   overscroll-behavior: contain;
+}
+
+/* ==========================================================================
+   HOMEPAGE WELCOME & INVITATION LOOKUP MODAL
+   ========================================================================== */
+.welcome-modal__paper {
+  text-align: center;
+  max-width: 36rem;
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem);
+}
+
+.welcome-modal__lang-selector {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--color-matcha-pale);
+  padding: 0.25rem;
+  border-radius: 9999px;
+}
+
+.welcome-modal__lang-btn {
+  background: transparent;
+  border: 0;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: all var(--duration-fast) ease-out;
+}
+
+.welcome-modal__lang-btn.is-active {
+  background: var(--color-ink);
+  color: var(--color-neutral-light);
+}
+
+.welcome-modal__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0 0 0.6rem;
+}
+
+.welcome-modal__subtitle {
+  font-size: 0.82rem;
+  color: oklch(0.45 0.015 40);
+  line-height: 1.5;
+  margin: 0 auto 1.5rem;
+  max-width: 38ch;
+}
+
+.welcome-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+.welcome-modal__input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-neutral-light);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  text-align: center;
+  border-radius: 3px;
+  transition: border-color var(--duration-fast) ease-out;
+}
+
+.welcome-modal__input:focus {
+  outline: none;
+  border-color: var(--color-ink);
+}
+
+.welcome-modal__form .text-button {
+  background: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-neutral-light);
+  min-height: 3rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.welcome-modal__form .text-button:hover {
+  background: var(--color-matcha-strong);
+  border-color: var(--color-matcha-strong);
+  color: white;
+}
+
+.welcome-modal__message {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  padding: 0.65rem 1rem;
+  border-radius: 3px;
+}
+
+.welcome-modal__message.is-success {
+  background: var(--color-matcha-pale);
+  color: oklch(0.32 0.08 135);
+}
+
+.welcome-modal__message.is-error {
+  background: var(--color-strawberry-pale);
+  color: oklch(0.42 0.12 25);
+}
+
+.welcome-modal__footer {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.25rem;
+}
+
+.welcome-modal__footer .text-button {
+  font-size: 0.75rem;
+  color: oklch(0.45 0.015 40);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
 .photo-story__frame img,
@@ -2645,6 +2796,23 @@ a {
   transform: scale(0.985);
 }
 
+.bento-item__open {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  cursor: pointer;
+  inset: 0;
+  position: absolute;
+  z-index: 3;
+}
+
+.bento-item__open:focus-visible {
+  outline: 3px solid var(--color-neutral-light);
+  outline-offset: -5px;
+  box-shadow: inset 0 0 0 6px var(--color-ink);
+}
+
 .bento-item--wide {
   grid-column: span 1;
 }
@@ -2686,15 +2854,13 @@ a {
 
 .bento-tag {
   align-self: flex-start;
-  font-size: 0.65rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: rgba(194, 155, 98, 0.85);
-  color: #1a1a1a;
-  font-weight: 700;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  margin-bottom: 0.35rem;
+  border-bottom: 1px solid var(--color-strawberry-soft);
+  color: var(--color-neutral-light);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+  padding-bottom: 0.15rem;
 }
 
 .bento-gallery-block {
@@ -2714,17 +2880,17 @@ a {
 
 .bento-caption {
   font-family: var(--font-display, serif);
-  font-size: 1.05rem;
-  font-weight: 500;
-  margin: 0 0 0.2rem;
-  line-height: 1.25;
-  color: #fdfaf3;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 0.35rem;
+  text-wrap: balance;
 }
 
 .bento-subcaption {
-  font-size: 0.76rem;
-  color: rgba(253, 250, 243, 0.85);
-  line-height: 1.35;
+  color: rgba(253, 250, 243, 0.92);
+  font-size: 0.82rem;
+  line-height: 1.4;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;

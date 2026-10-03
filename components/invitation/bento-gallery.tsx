@@ -113,15 +113,9 @@ export function BentoGallery({
           const photoCaption = photo.caption[locale] ?? photo.caption.en;
 
           return (
-            <button
+            <figure
               key={photo.id}
               className={`bento-item ${isWide ? "bento-item--wide" : ""} ${isTall ? "bento-item--tall" : ""}`}
-              aria-label={openPhotoLabel.replace("{title}", photoTitle)}
-              onClick={(event) => {
-                openingButtonRef.current = event.currentTarget;
-                setActivePhotoIndex(index);
-              }}
-              type="button"
             >
               <WeddingPhoto
                 id={photo.id}
@@ -135,7 +129,16 @@ export function BentoGallery({
                 <p className="bento-subcaption">{photoCaption}</p>
                 <span className="bento-zoom-icon" aria-hidden="true">↗</span>
               </div>
-            </button>
+              <button
+                aria-label={openPhotoLabel.replace("{title}", photoTitle)}
+                className="bento-item__open"
+                onClick={(event) => {
+                  openingButtonRef.current = event.currentTarget;
+                  setActivePhotoIndex(index);
+                }}
+                type="button"
+              />
+            </figure>
           );
         })}
       </div>

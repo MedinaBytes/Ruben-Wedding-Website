@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     const { data, error } = await client
       .from("invitations")
       .insert({
+        token,
         token_hash: hashInvitationToken(token),
         display_name: payload.data.displayName,
         greeting_override: payload.data.greetingOverride ?? null,

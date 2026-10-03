@@ -13,6 +13,11 @@ test("homepage renders the invitation shell", async ({ page }) => {
 test("day navigation targets the shared timeline", async ({ page }) => {
   await page.goto("/?lang=en");
 
+  const continueBtn = page.getByRole("button", { name: /Continue to Wedding Details|Continuar a los detalles/ });
+  if (await continueBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await continueBtn.click();
+  }
+
   await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "The day" }).click();
 
   await expect(page).toHaveURL(/#event-note$/);
@@ -28,7 +33,7 @@ test("invalid invitation token shows a safe not-found response", async ({ page }
 test("language switcher updates the locale on the public page", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Español" }).click();
+  await page.getByRole("button", { name: "Español" }).first().click();
 
   await expect(page.getByText("Una boda en Viena")).toBeVisible({ timeout: 15000 });
   await expect(
@@ -76,6 +81,11 @@ test("venue map exposes localized controls and OpenStreetMap attribution", async
   const ceremonyControl = page.getByRole("button", { name: "Ceremony: Catholic Church of Altmannsdorf (St. Oswald)" });
   await ceremonyControl.click();
   await expect(ceremonyControl).toHaveAttribute("aria-pressed", "true");
+  const selectedColors = await ceremonyControl.evaluate((button) => {
+    const styles = getComputedStyle(button);
+    return { background: styles.backgroundColor, foreground: styles.color };
+  });
+  expect(selectedColors.foreground).not.toBe(selectedColors.background);
 });
 
 test("photo archive filters and restores focus after keyboard viewing", async ({ page }) => {
@@ -85,6 +95,8 @@ test("photo archive filters and restores focus after keyboard viewing", async ({
   const adventuresFilter = filters.getByRole("button", { name: "Adventures & Sea" });
   await adventuresFilter.click();
   await expect(adventuresFilter).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".bento-tag").first()).toHaveCSS("text-transform", "none");
+  await expect(page.locator(".bento-tag").first()).toHaveCSS("border-radius", "0px");
 
   const firstPhoto = page.getByRole("button", { name: /^Open photo:/ }).first();
   await firstPhoto.focus();
@@ -97,6 +109,28 @@ test("photo archive filters and restores focus after keyboard viewing", async ({
   await page.keyboard.press("Escape");
   await expect(viewer).not.toBeVisible();
   await expect(firstPhoto).toBeFocused();
+});
+
+test("hero and photo story fit mobile and desktop and honor reduced motion", async ({ page }) => {
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      document: document.documentElement.scrollWidth,
+    }));
+    expect(widths.document).toBeLessThanOrEqual(widths.viewport);
+  }
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Ruben & Andrea" })).toBeVisible();
+
+  const animationDuration = await page.locator(".hero__copy").evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).animationDuration),
+  );
+  expect(animationDuration).toBeLessThan(0.001);
 });
 
 

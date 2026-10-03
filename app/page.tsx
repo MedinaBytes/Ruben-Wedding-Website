@@ -2,7 +2,9 @@ import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
+import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
 import { SiteHeader } from "@/components/invitation/site-header";
+import { WelcomeLookupModal } from "@/components/invitation/welcome-lookup-modal";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
@@ -44,6 +46,7 @@ export default async function HomePage({
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
       />
+      <WelcomeLookupModal currentLocale={locale} />
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__inner">
@@ -60,13 +63,15 @@ export default async function HomePage({
               </a>
             </div>
             <figure className="hero__portrait">
-              <WeddingPhoto
-                id="formal-staircase-hero"
-                alt={wedding("photos.formalStaircasePortrait")}
-                sizes="(max-width: 760px) 100vw, 53vw"
-                preload
-                className="hero__image"
-              />
+              <HeroPhotoMotion>
+                <WeddingPhoto
+                  id="formal-staircase-hero"
+                  alt={wedding("photos.formalStaircasePortrait")}
+                  sizes="(max-width: 760px) 100vw, 53vw"
+                  preload
+                  className="hero__image"
+                />
+              </HeroPhotoMotion>
               <figcaption>{hero("portraitCaption")}</figcaption>
             </figure>
           </div>

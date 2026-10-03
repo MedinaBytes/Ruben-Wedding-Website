@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
+import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
 import { InvitationIntro } from "@/components/invitation/invitation-intro";
 import { InviteOpenTracker } from "@/components/invitation/invite-open-tracker";
 import { SiteHeader } from "@/components/invitation/site-header";
@@ -81,13 +82,15 @@ export default async function InvitationPage({
               <p className="hero__place">{hero("place")}</p>
             </div>
             <figure className="hero__portrait">
-              <WeddingPhoto
-                id="formal-staircase-hero"
-                alt={wedding("photos.formalStaircasePortrait")}
-                sizes="(max-width: 760px) 100vw, 53vw"
-                preload
-                className="hero__image"
-              />
+              <HeroPhotoMotion>
+                <WeddingPhoto
+                  id="formal-staircase-hero"
+                  alt={wedding("photos.formalStaircasePortrait")}
+                  sizes="(max-width: 760px) 100vw, 53vw"
+                  preload
+                  className="hero__image"
+                />
+              </HeroPhotoMotion>
               <figcaption>{hero("portraitCaption")}</figcaption>
             </figure>
           </div>
