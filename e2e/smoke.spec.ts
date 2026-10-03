@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("homepage renders the invitation shell", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/?lang=en");
 
   await expect(page.getByRole("heading", { name: "Ruben & Andrea" })).toBeVisible();
   await expect(page.getByText("A wedding in Vienna")).toBeVisible();
@@ -77,3 +77,26 @@ test("venue map exposes localized controls and OpenStreetMap attribution", async
   await ceremonyControl.click();
   await expect(ceremonyControl).toHaveAttribute("aria-pressed", "true");
 });
+
+test("photo archive filters and restores focus after keyboard viewing", async ({ page }) => {
+  await page.goto("/");
+
+  const filters = page.getByRole("group", { name: "Filter memories" });
+  const adventuresFilter = filters.getByRole("button", { name: "Adventures & Sea" });
+  await adventuresFilter.click();
+  await expect(adventuresFilter).toHaveAttribute("aria-pressed", "true");
+
+  const firstPhoto = page.getByRole("button", { name: /^Open photo:/ }).first();
+  await firstPhoto.focus();
+  await page.keyboard.press("Enter");
+
+  const viewer = page.getByRole("dialog", { name: "Photo viewer" });
+  await expect(viewer).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(viewer.locator(".lightbox-counter")).toContainText("2 of");
+  await page.keyboard.press("Escape");
+  await expect(viewer).not.toBeVisible();
+  await expect(firstPhoto).toBeFocused();
+});
+
+

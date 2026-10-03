@@ -8,7 +8,7 @@ export default defineConfig({
   testDir: "./e2e",
   use: {
     baseURL,
-    trace: "retain-on-failure",
+    trace: "off",
   },
   projects: [
     {
@@ -16,9 +16,11 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: `node ./node_modules/next/dist/bin/next ${serverMode} --hostname localhost --port ${port}`,
-    url: baseURL,
-    reuseExistingServer: true,
-  },
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: `node ./node_modules/next/dist/bin/next ${serverMode} --hostname localhost --port ${port}`,
+        url: baseURL,
+        reuseExistingServer: true,
+      },
 });

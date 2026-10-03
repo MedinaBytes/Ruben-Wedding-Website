@@ -39,11 +39,11 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
         subtitle={t("collectionDescription")}
         filterLabel={t("filterLabel")}
         viewerLabel={t("viewerLabel")}
-        openPhotoLabel={t("openPhotoLabel")}
+        openPhotoLabel={t.raw("openPhotoLabel")}
         closeViewerLabel={t("closeViewerLabel")}
         previousPhotoLabel={t("previousPhotoLabel")}
         nextPhotoLabel={t("nextPhotoLabel")}
-        photoCountLabel={t("photoCountLabel")}
+        photoCountLabel={t.raw("photoCountLabel")}
         excludeIds={["birthday-kiss", "city-observatory", "sunset-coast-portrait", "formal-staircase-hero"]}
       />
     </section>

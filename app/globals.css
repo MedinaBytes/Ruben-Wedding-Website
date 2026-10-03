@@ -2591,25 +2591,25 @@ a {
 .bento-pill {
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
-  padding: 0.45rem 1.15rem;
+  border-radius: var(--radius-control);
+  min-height: 2.75rem;
+  padding: 0.45rem 0.9rem;
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 220ms cubic-bezier(0.25, 1, 0.5, 1);
-  color: var(--color-foreground, #1a1a1a);
+  transition: color var(--duration-fast) ease, background-color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+  color: var(--color-ink);
 }
 
 .bento-pill:hover {
-  border-color: #c29b62;
-  transform: translateY(-1px);
+  border-color: var(--color-strawberry-strong);
+  background: var(--color-strawberry-pale);
 }
 
 .bento-pill--active {
-  background: var(--color-foreground, #1c1917);
-  border-color: var(--color-foreground, #1c1917);
-  color: #fdfaf3;
-  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.2);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-neutral-light);
 }
 
 .bento-grid {
@@ -2619,28 +2619,30 @@ a {
 }
 
 .bento-item {
-  position: relative;
-  border-radius: 12px;
+  appearance: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-neutral-light);
+  cursor: pointer;
+  font: inherit;
   overflow: hidden;
-  background: #f2ede4;
+  padding: 0;
+  position: relative;
+  background: var(--color-neutral-soft);
   aspect-ratio: 4 / 5;
   margin: 0;
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.08);
-  transition: transform 350ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 350ms cubic-bezier(0.25, 1, 0.5, 1);
+  text-align: left;
+  width: 100%;
+  transition: transform 240ms var(--ease-editorial), box-shadow 240ms var(--ease-editorial);
 }
 
-.bento-item:hover,
-.bento-item:focus-visible {
-  transform: translateY(-6px) scale(1.015);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.18);
+.bento-item:hover {
+  transform: translateY(-3px);
   z-index: 2;
 }
 
-.bento-item:focus-visible {
-  outline: 2px solid #c29b62;
-  outline-offset: 3px;
+.bento-item:active {
+  transform: scale(0.985);
 }
 
 .bento-item--wide {
@@ -2752,30 +2754,45 @@ a {
   justify-content: center;
   color: #fdfaf3;
   font-size: 0.9rem;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: all 250ms ease;
+  opacity: 0.92;
+  transform: scale(1);
+  transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
 }
 
 .bento-item:hover .bento-zoom-icon {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1.04);
 }
 
 /* ==========================================================================
    LIGHTBOX MODAL VIEWER
    ========================================================================== */
-.bento-lightbox {
+.bento-lightbox:not([open]) {
+  display: none !important;
+}
+
+.bento-lightbox[open] {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 1000;
+  border: 0;
+  margin: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  overflow: auto;
   background: rgba(12, 10, 8, 0.92);
   backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
   animation: lightboxFadeIn 240ms ease-out;
+}
+
+.bento-lightbox::backdrop {
+  background: transparent;
 }
 
 @keyframes lightboxFadeIn {
@@ -2836,7 +2853,7 @@ a {
   color: #fff;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 50%;
+  border-radius: 4px;
   font-size: 1.2rem;
   display: flex;
   align-items: center;
@@ -2858,13 +2875,19 @@ a {
   color: #fff;
   width: 3.25rem;
   height: 3.25rem;
-  border-radius: 50%;
+  border-radius: 4px;
   font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 200ms ease;
+}
+
+.lightbox-close,
+.lightbox-nav {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
 }
 
 .lightbox-nav:hover {
@@ -2878,6 +2901,45 @@ a {
 
 .lightbox-nav--next {
   right: 1.5rem;
+}
+
+@media (hover: none) {
+  .bento-item:hover {
+    transform: none;
+  }
+
+  .bento-item:hover .bento-image {
+    transform: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .bento-lightbox {
+    padding: 4.25rem 0.75rem 1rem;
+  }
+
+  .lightbox-content {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .lightbox-image {
+    max-width: calc(100vw - 1.5rem);
+    max-height: 68dvh;
+  }
+
+  .lightbox-close {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .lightbox-nav--prev {
+    left: 0.75rem;
+  }
+
+  .lightbox-nav--next {
+    right: 0.75rem;
+  }
 }
 
 
