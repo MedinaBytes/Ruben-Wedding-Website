@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -6,18 +7,23 @@ import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
-import { weddingConfig } from "@/lib/wedding-config";
+import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [locale, messages, navigation, hero, event, wedding] = await Promise.all([
-    getLocale(),
-    getMessages(),
-    getTranslations("navigation"),
-    getTranslations("hero"),
-    getTranslations("event"),
-    getTranslations("wedding"),
+  const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+  const manualLocale = cookieStore.get("wedding_manual_locale")?.value;
+  const locale: Locale = supportedLocales.includes(manualLocale as Locale)
+    ? (manualLocale as Locale)
+    : (requestLocale as Locale);
+
+  const [messages, navigation, hero, event, wedding] = await Promise.all([
+    getMessages({ locale }),
+    getTranslations({ locale, namespace: "navigation" }),
+    getTranslations({ locale, namespace: "hero" }),
+    getTranslations({ locale, namespace: "event" }),
+    getTranslations({ locale, namespace: "wedding" }),
   ]);
 
   return (
@@ -78,7 +84,7 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
-        <WeddingSections />
+        <WeddingSections locale={locale} />
       </main>
       <footer className="site-footer">
         <span>{weddingConfig.couple.displayNames}</span>
