@@ -698,6 +698,27 @@ a {
   margin: 0 0 1.15rem;
 }
 
+.music-note__status {
+  color: var(--color-ink-soft);
+  font-size: 0.84rem;
+  margin-top: 0.6rem;
+}
+
+.stay-note__links {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+}
+
+.stay-note__links a {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-rose-gold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
 .stay-note {
   background: var(--color-matcha-pale);
   grid-template-columns: minmax(14rem, 0.8fr) minmax(0, 1.2fr);
@@ -789,6 +810,12 @@ a {
 .closing-note > p:last-child {
   margin: 1rem auto 0;
   max-width: 55ch;
+}
+
+.closing-note__story {
+  margin: 1rem auto 0;
+  max-width: 58ch;
+  white-space: pre-line;
 }
 
 .hero__guest-greeting {

@@ -80,6 +80,8 @@
     "pleaseArriveBy": "Please arrive by",
     "receptionEnd": "Until the body can stand it.",
     "openMap": "Open in OpenStreetMap",
+    "appleMaps": "Open in Apple Maps",
+    "googleMaps": "Open in Google Maps",
     "directions": "Get directions",
     "mapTitle": "Map showing {name}"
   },
@@ -112,6 +114,8 @@
     "requestsIntro": "We will ask you for up to three songs in your personal invitation.",
     "embedTitle": "Ruben and Andrea's wedding playlist",
     "playPlaylist": "Load the Spotify playlist",
+    "spotifyReady": "Spotify is connected and the playlist is ready to open.",
+    "spotifyPending": "Spotify is not connected yet, but your suggestions are saved here and can be used to build the playlist later.",
     "playlistUnavailable": "The playlist will appear here once it is ready."
   },
   "gifts": {
@@ -135,7 +139,8 @@
   "closing": {
     "label": "With love",
     "title": "We cannot wait to celebrate with you",
-    "message": "Thank you for being part of our lives. We are looking forward to sharing this day with you."
+    "message": "Thank you for being part of our lives. We are looking forward to sharing this day with you.",
+    "story": "If you’re reading this, consider yourself part of a very special group of people that Ruben, Andrea, or both of us have chosen to celebrate one of the most important days of our lives with.\n\nIt may have taken us a while to find each other, but once we did, we were immediately inseparable. If you’ve spent time with us during these almost two years, you probably already know how happy we are together.\n\nWe would truly love to have you there to celebrate with us. In one way or another, you’ve been part of our lives, and we treasure the memories and moments we’ve shared with you.\n\nIf you live in Europe, you have very few excuses. 😂 If you’re coming from Venezuela or another part of the world, please don’t feel pressured — we completely understand that such a long trip isn’t always possible, and we love you either way.\n\nBut if you can make it, come ready to eat, drink, dance and celebrate. We’ll do our best to make it an unforgettable day for all of us. ❤️\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Your reply",

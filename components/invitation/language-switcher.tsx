@@ -33,17 +33,21 @@ export function LanguageSwitcher({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  async function selectLocale(nextLocale: Locale) {
-    await setManualLocale(nextLocale, invitation?.id);
-    if (invitation) {
-      recordInvitationInteraction({
-        invitationId: invitation.id,
-        token: invitation.token,
-        eventType: "LANGUAGE_CHANGED",
-        locale: nextLocale,
-      });
+  function selectLocale(nextLocale: Locale) {
+    if (typeof document !== "undefined") {
+      const cookieName = invitation ? `wedding_manual_locale_${invitation.id}` : "wedding_manual_locale";
+      document.cookie = `${cookieName}=${nextLocale}; path=/; max-age=15811200; SameSite=Lax`;
     }
-    startTransition(() => {
+    startTransition(async () => {
+      await setManualLocale(nextLocale, invitation?.id);
+      if (invitation) {
+        recordInvitationInteraction({
+          invitationId: invitation.id,
+          token: invitation.token,
+          eventType: "LANGUAGE_CHANGED",
+          locale: nextLocale,
+        });
+      }
       router.refresh();
     });
   }

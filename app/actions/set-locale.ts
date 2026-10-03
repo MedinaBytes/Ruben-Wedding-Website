@@ -21,7 +21,7 @@ export async function setManualLocale(value: string, invitationId?: string) {
     ? `wedding_manual_locale_${parsedInvitationId.data}`
     : "wedding_manual_locale";
   cookieStore.set(cookieName, result.data, {
-    httpOnly: true,
+    httpOnly: false,
     maxAge: 60 * 60 * 24 * 183,
     path: "/",
     sameSite: "lax",

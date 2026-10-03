@@ -108,6 +108,7 @@ export default async function InvitationPage({
             maxGuests: invitation.max_guests,
             plusOneAllowed: invitation.plus_one_allowed,
             locale,
+            personalMessage: invitation.personal_message,
           }}
         />
       </main>

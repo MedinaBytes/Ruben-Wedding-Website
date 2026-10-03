@@ -13,19 +13,86 @@ function getSectionTranslations(locale: Locale | undefined, namespace: SectionNa
   return locale ? getTranslations({ locale, namespace }) : getTranslations(namespace);
 }
 
-function openStreetMapLink(
-  name: string,
-  address: string,
-  coordinates: { latitude: number; longitude: number },
-  mode: "search" | "directions",
-) {
-  const url = new URL(mode === "search" ? "https://www.openstreetmap.org/search" : "https://www.openstreetmap.org/directions");
-  if (mode === "search") {
-    url.searchParams.set("query", `${name}, ${address}`);
-  } else {
-    url.searchParams.set("to", `${coordinates.latitude},${coordinates.longitude}`);
-  }
+function googleMapsLink(name: string, address: string) {
+  const url = new URL("https://www.google.com/maps/search/");
+  url.searchParams.set("api", "1");
+  url.searchParams.set("query", `${name}, ${address}`);
   return url.toString();
+}
+
+function appleMapsLink(name: string, address: string, coordinates: { latitude: number; longitude: number }) {
+  const url = new URL("https://maps.apple.com/");
+  url.searchParams.set("q", `${name}, ${address}`);
+  url.searchParams.set("ll", `${coordinates.latitude},${coordinates.longitude}`);
+  url.searchParams.set("z", "15");
+  return url.toString();
+}
+
+function getStayLinks(locale: Locale | undefined) {
+  const areaQuery = "Vienna%20Meidling%20hotel%20or%20apartment";
+  const baseLinks = [
+    { label: "Booking.com", href: `https://www.booking.com/searchresults.html?ss=Meidling%2C+Vienna&nflt=class%3D1%3B2%3B3` },
+    { label: "Expedia", href: `https://www.expedia.com/Hotel-Search?destination=${areaQuery}` },
+    { label: "Hotels.com", href: `https://www.hotels.com/search.do?destination=${areaQuery}` },
+  ];
+
+  if (locale === "es") {
+    return [
+      { label: "Buscar hoteles en Meidling", href: "https://www.booking.com/searchresults.html?ss=Meidling%2C+Vienna" },
+      { label: "Opciones económicas y hostels", href: "https://www.hostelworld.com/search?search_keywords=Vienna%20Meidling" },
+      { label: "Apartamento o casa cerca del evento", href: "https://www.airbnb.com/s/Vienna--Austria/homes?query=Vienna%20Meidling" },
+    ];
+  }
+
+  if (locale === "de") {
+    return [
+      { label: "Hotels in Meidling suchen", href: "https://www.booking.com/searchresults.html?ss=Meidling%2C+Vienna" },
+      { label: "Budget-Optionen", href: "https://www.booking.com/searchresults.html?ss=Vienna%20Meidling&nflt=class%3D1%3B2%3B3" },
+      { label: "Apartment & Ferienwohnung", href: "https://www.airbnb.com/s/Vienna--Austria/homes?query=Vienna%20Meidling" },
+    ];
+  }
+
+  if (locale === "hu") {
+    return [
+      { label: "Szállások Meidlingben", href: "https://www.booking.com/searchresults.html?ss=Meidling%2C+Vienna" },
+      { label: "Költséghatékony lehetőségek", href: "https://www.booking.com/searchresults.html?ss=Vienna%20Meidling&nflt=class%3D1%3B2%3B3" },
+      { label: "Lakás vagy apartman", href: "https://www.airbnb.com/s/Vienna--Austria/homes?query=Vienna%20Meidling" },
+    ];
+  }
+
+  return baseLinks;
+}
+
+function getTravelNotes(locale: Locale | undefined) {
+  if (locale === "es") {
+    return [
+      "Desde España o Venezuela, hay vuelos directos y conexiones frecuentes a Viena con varias aerolíneas europeas y de largo recorrido.",
+      "Si venís desde el centro de Europa, la opción más fácil es llegar a Viena y seguir en U-Bahn o taxi hasta el barrio de la ceremonia.",
+      "En la ciudad, la red de transporte es muy clara: U-Bahn, tram y autobús funcionan bien y son la mejor opción para moverse entre ceremonia, recepción y alojamiento.",
+    ];
+  }
+
+  if (locale === "de") {
+    return [
+      "Wenn ihr aus Österreich oder aus dem Rest Europas anreist, ist Wien besonders gut erreichbar; die Verbindung per Zug, Flug oder Auto ist unkompliziert.",
+      "Im Stadtgebiet macht die U-Bahn, Straßenbahn und der Bus am meisten Sinn. Für die kurze Strecke zwischen den Veranstaltungsorten ist es einfach und zuverlässig.",
+      "Wenn ihr in der Nähe übernachten möchtet, lohnt sich ein Bereich um Meidling oder das Zentrum, damit ihr unkompliziert und ohne Stress anreisen könnt.",
+    ];
+  }
+
+  if (locale === "hu") {
+    return [
+      "Budapestről könnyen eljuthattok Bécsbe repülővel vagy vonattal, és a közlekedés a városban nagyon egyszerű.",
+      "A bécsi közlekedés ideális a szertartás, a fogadás és a szállás között: a metró, a villamos és a busz a legpraktikusabb opció.",
+      "Ha a városból érkeztek, érdemes a Meidling vagy a belváros közelében szállást választani, hogy egyszerűbb legyen az utazás.",
+    ];
+  }
+
+  return [
+    "Vienna is easy to reach by rail, plane, or car, and the city is very comfortable to navigate once you are there.",
+    "The best way to move around is by U-Bahn, tram, and bus, especially between the ceremony, the reception, and your accommodation.",
+    "If you are staying nearby, Meidling and the city center are both practical, easy, and very well connected.",
+  ];
 }
 
 export type GuestInvitationDetails = {
@@ -35,6 +102,7 @@ export type GuestInvitationDetails = {
   maxGuests: number;
   plusOneAllowed: boolean;
   locale: Locale;
+  personalMessage?: string | null;
 };
 
 export async function WeddingSections({
@@ -75,6 +143,11 @@ export async function WeddingSections({
       coordinates: weddingConfig.reception.coordinates,
     },
   ] as const;
+
+  const storyParagraphs = (invitation?.personalMessage ?? closing("story")).split(/\n\s*\n|\r\n\s*\r\n/).filter(Boolean);
+  const travelNotes = getTravelNotes(locale);
+  const stayLinks = getStayLinks(locale);
+  const spotifyConfigured = Boolean(process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL);
 
   return (
     <>
@@ -143,12 +216,17 @@ export async function WeddingSections({
               </div>
               <div className="venue__links">
                 <TrackedMapLink
-                  href={openStreetMapLink(place.name, place.address, place.coordinates, "search")}
+                  href={appleMapsLink(place.name, place.address, place.coordinates)}
                   invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
-                  label={venue("openMap")}
+                  label={venue("appleMaps")}
                 />
                 <TrackedMapLink
-                  href={openStreetMapLink(place.name, place.address, place.coordinates, "directions")}
+                  href={googleMapsLink(place.name, place.address)}
+                  invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
+                  label={venue("googleMaps")}
+                />
+                <TrackedMapLink
+                  href={googleMapsLink(place.name, place.address)}
                   invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
                   label={venue("directions")}
                 />
@@ -163,9 +241,7 @@ export async function WeddingSections({
           <h2 id="travel-title">{travel("title")}</h2>
         </div>
         <div className="travel-note__copy">
-          <p>{travel("publicTransport")}</p>
-          <p>{travel("car")}</p>
-          <p>{travel("betweenVenues")}</p>
+          {travelNotes.map((line) => <p key={line}>{line}</p>)}
           <p>{travel("liveDirections")}</p>
         </div>
       </section>
@@ -178,6 +254,11 @@ export async function WeddingSections({
           <p>{stay("quietArea")}</p>
           <p>{stay("cityCenter")}</p>
           <p>{stay("recommendations")}</p>
+          <ul className="stay-note__links">
+            {stayLinks.map((link) => (
+              <li key={link.label}><a href={link.href} rel="noreferrer" target="_blank">{link.label}</a></li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -196,6 +277,7 @@ export async function WeddingSections({
         </div>
         <div className="music-note__copy">
           <p>{music("intro")}</p>
+          <p className="music-note__status">{spotifyConfigured ? music("spotifyReady") : music("spotifyPending")}</p>
           <SpotifyPlaylist
             title={music("embedTitle")}
             playLabel={music("playPlaylist")}
@@ -226,7 +308,9 @@ export async function WeddingSections({
 
       <section className="closing-note" aria-labelledby="closing-title">
         <h2 id="closing-title">{closing("title")}</h2>
-        <p>{closing("message")}</p>
+        {storyParagraphs.map((paragraph) => (
+          <p className="closing-note__story" key={paragraph}>{paragraph}</p>
+        ))}
       </section>
     </>
   );

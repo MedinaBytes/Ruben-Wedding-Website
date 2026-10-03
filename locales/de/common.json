@@ -80,6 +80,8 @@
     "pleaseArriveBy": "Bitte bis spätestens",
     "receptionEnd": "Bis der Körper nicht mehr kann.",
     "openMap": "In OpenStreetMap öffnen",
+    "appleMaps": "In Apple Maps öffnen",
+    "googleMaps": "In Google Maps öffnen",
     "directions": "Route planen",
     "mapTitle": "Karte von {name}"
   },
@@ -112,6 +114,8 @@
     "requestsIntro": "In eurer persönlichen Einladung könnt ihr bis zu drei Lieder vorschlagen.",
     "embedTitle": "Hochzeitsplaylist von Ruben und Andrea",
     "playPlaylist": "Spotify-Playlist laden",
+    "spotifyReady": "Spotify ist verbunden und die Playlist ist zum Öffnen bereit.",
+    "spotifyPending": "Spotify ist noch nicht verbunden, aber eure Vorschläge werden hier gespeichert und können später für die Playlist genutzt werden.",
     "playlistUnavailable": "Die Playlist erscheint hier, sobald sie bereit ist."
   },
   "gifts": {
@@ -135,7 +139,8 @@
   "closing": {
     "label": "In Liebe",
     "title": "Wir freuen uns darauf, mit euch zu feiern",
-    "message": "Danke, dass ihr Teil unseres Lebens seid. Wir freuen uns sehr darauf, diesen Tag mit euch zu verbringen."
+    "message": "Danke, dass ihr Teil unseres Lebens seid. Wir freuen uns sehr darauf, diesen Tag mit euch zu verbringen.",
+    "story": "Wenn ihr das hier lest, dann seid ihr Teil einer ganz besonderen Gruppe von Menschen, die Ruben, Andrea oder wir beide ausgewählt haben, um einen der wichtigsten Tage unseres Lebens mit uns zu feiern.\n\nEs hat etwas gedauert, bis wir zueinander gefunden haben, aber als wir es endlich getan haben, waren wir sofort unzertrennlich. Wenn ihr mit uns in den letzten fast zwei Jahren Zeit verbracht habt, wisst ihr wahrscheinlich bereits, wie glücklich wir zusammen sind.\n\nWir würden uns wirklich freuen, wenn ihr dabei seid, um mit uns zu feiern. Auf die eine oder andere Weise wart ihr Teil unseres Lebens, und wir schätzen die Erinnerungen und Momente, die wir mit euch geteilt haben.\n\nWenn ihr in Europa lebt, habt ihr kaum Ausreden. 😂 Wenn ihr aus Venezuela oder einem anderen Teil der Welt kommt, fühlt euch bitte nicht gedrängt – wir verstehen vollkommen, dass so eine lange Reise nicht immer möglich ist, und wir lieben euch trotzdem.\n\nAber wenn ihr kommen könnt, dann kommt bereit, um zu essen, zu trinken, zu tanzen und zu feiern. Wir werden unser Bestes geben, damit es ein unvergesslicher Tag für uns alle wird. ❤️\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Eure Antwort",

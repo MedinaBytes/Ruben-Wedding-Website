@@ -80,6 +80,8 @@
     "pleaseArriveBy": "Por favor, lleguen antes de las",
     "receptionEnd": "Hasta que el cuerpo aguante.",
     "openMap": "Abrir en OpenStreetMap",
+    "appleMaps": "Abrir en Apple Maps",
+    "googleMaps": "Abrir en Google Maps",
     "directions": "Cómo llegar",
     "mapTitle": "Mapa de {name}"
   },
@@ -112,6 +114,8 @@
     "requestsIntro": "En la invitación personal podréis sugerir hasta tres canciones.",
     "embedTitle": "Lista de reproducción de boda de Ruben y Andrea",
     "playPlaylist": "Cargar la lista de Spotify",
+    "spotifyReady": "Spotify está conectado y la playlist está lista para abrirse.",
+    "spotifyPending": "Spotify aún no está conectado, pero vuestras sugerencias quedan guardadas aquí y pueden servir para preparar la playlist más adelante.",
     "playlistUnavailable": "La lista de reproducción aparecerá aquí cuando esté lista."
   },
   "gifts": {
@@ -135,7 +139,8 @@
   "closing": {
     "label": "Con cariño",
     "title": "Tenemos muchas ganas de celebrarlo con vosotros",
-    "message": "Gracias por formar parte de nuestras vidas. Nos hace mucha ilusión compartir este día con vosotros."
+    "message": "Gracias por formar parte de nuestras vidas. Nos hace mucha ilusión compartir este día con vosotros.",
+    "story": "Si estás leyendo esto, considera que formas parte de un grupo muy especial de personas que Ruben, Andrea o ambos hemos elegido para celebrar uno de los días más importantes de nuestras vidas.\n\nPuede que nos haya llevado un tiempo encontrar la otra mitad, pero cuando lo hicimos, fuimos inseparables desde el primer momento. Si has compartido tiempo con nosotros durante estos casi dos años, probablemente ya sepas lo felices que somos juntos.\n\nDe verdad nos encantaría que estuvieras allí para celebrarlo con nosotros. De una forma u otra, has sido parte de nuestras vidas y valoramos mucho los recuerdos y momentos que hemos compartido.\n\nSi vives en Europa, tienes pocas excusas. 😂 Si vienes desde Venezuela o desde cualquier otra parte del mundo, por favor no te sientas presionado: entendemos perfectamente que un viaje tan largo no siempre sea posible, y te queremos igual de mucho.\n\nPero si puedes venir, prepárate para comer, beber, bailar y celebrar. Haremos lo posible para que sea un día inolvidable para todos. ❤️\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Tu respuesta",

@@ -80,6 +80,8 @@
     "pleaseArriveBy": "Kérjük, érkezzetek eddig",
     "receptionEnd": "Amíg bírja a test.",
     "openMap": "Megnyitás az OpenStreetMapben",
+    "appleMaps": "Megnyitás az Apple Mapsben",
+    "googleMaps": "Megnyitás a Google Térképen",
     "directions": "Útvonaltervezés",
     "mapTitle": "Térkép: {name}"
   },
@@ -112,6 +114,8 @@
     "requestsIntro": "A személyes meghívótokban legfeljebb három dalt javasolhattok.",
     "embedTitle": "Ruben és Andrea esküvői lejátszási listája",
     "playPlaylist": "Spotify-lista betöltése",
+    "spotifyReady": "A Spotify kapcsolat aktív, a lejátszási lista megnyitható.",
+    "spotifyPending": "A Spotify integráció még nincs bekötve, de a javaslatok itt mentésre kerülnek, és később használhatók a lista összeállításához.",
     "playlistUnavailable": "A lejátszási lista akkor jelenik meg itt, ha elkészült."
   },
   "gifts": {
@@ -135,7 +139,8 @@
   "closing": {
     "label": "Szeretettel",
     "title": "Alig várjuk, hogy együtt ünnepeljünk",
-    "message": "Köszönjük, hogy az életünk részei vagytok. Nagyon várjuk, hogy megoszthassuk veletek ezt a napot."
+    "message": "Köszönjük, hogy az életünk részei vagytok. Nagyon várjuk, hogy megoszthassuk veletek ezt a napot.",
+    "story": "Ha ezt olvassátok, akkor egy nagyon különleges embercsoport részesei vagytok: Ruben, Andrea vagy mindketten kiválasztottunk titeket arra, hogy együtt ünnepeljünk egy életünk egyik legfontosabb napján.\n\nLehet, hogy egy ideig tartott, amíg megtaláltuk egymást, de amikor megtörtént, azonnal elválaszthatatlanok lettünk. Ha az elmúlt közel két évben velünk töltöttetek időt, valószínűleg már tudjátok, mennyire boldogok vagyunk együtt.\n\nŐszintén szeretnénk, ha velemennétek ezt az ünnepet. Bármilyen módon is, ti részei vagytok az életünknek, és nagyon értékeljük azokat az emlékeket és pillanatokat, amelyeket megosztottunk veletek.\n\nHa Európában laktok, nagyon kevés kifogásotok lehet. 😂 Ha Venezuelából vagy a világ más részéről jöttök, ne érezzétek magatokat kényszerítve – teljesen megértjük, hogy ilyen hosszú utazás nem mindig lehetséges, és szeretünk titeket így is.\n\nDe ha el tudtok jönni, készüljetek arra, hogy együnk, igyunk, táncoljunk és ünnepeljünk. Minden tőlünk telhetőt megteszünk, hogy ez számunkra is felejthetetlen nap legyen. ❤️\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Visszajelzés",
