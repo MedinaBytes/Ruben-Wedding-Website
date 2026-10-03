@@ -30,7 +30,6 @@ export default async function PrivacyPage() {
           <h2 id="privacy-contact">{t("contact.title")}</h2>
           <p>{t("contact.body")}</p>
         </section>
-        <p>{t("reviewNote")}</p>
       </article>
     </main>
   );

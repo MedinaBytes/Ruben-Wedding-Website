@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
+import { BentoGallery } from "@/components/invitation/bento-gallery";
 import { Reveal } from "@/components/invitation/reveal";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import type { Locale } from "@/lib/wedding-config";
@@ -31,6 +32,13 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
           <p>{t("coastCaption")}</p>
         </Reveal>
       </div>
+
+      <BentoGallery
+        locale={locale ?? "en"}
+        title={t("title")}
+        subtitle={t("description")}
+        eyebrow={t("eyebrow")}
+      />
     </section>
   );
 }

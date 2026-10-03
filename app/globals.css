@@ -2364,3 +2364,414 @@ a {
     transform: none;
   }
 }
+
+/* ==========================================================================
+   INTERACTIVE MAP COMPONENT (LEAFLET + OPENSTREETMAP SHADERS)
+   ========================================================================== */
+.interactive-map-wrapper {
+  margin-top: 2.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-surface, #fff);
+  box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.08);
+}
+
+.interactive-map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.map-tab {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 200ms ease;
+  color: var(--color-foreground, #1a1a1a);
+}
+
+.map-tab:hover {
+  border-color: #c29b62;
+  color: #c29b62;
+}
+
+.map-tab--active {
+  background: #c29b62;
+  border-color: #c29b62;
+  color: #fff;
+}
+
+.interactive-map-canvas {
+  height: 420px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Editorial Tile Shader */
+.osm-tile-layer {
+  filter: brightness(0.95) contrast(1.05) saturate(0.88) sepia(0.06);
+}
+
+.custom-map-pin {
+  background: transparent !important;
+  border: none !important;
+}
+
+.map-pin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(28, 25, 23, 0.94);
+  color: #fdfaf3;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #c29b62;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+.map-pin-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  background: #c29b62;
+  color: #1a1a1a;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.map-pin-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.map-pin-content strong {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.map-pin-content small {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+
+.map-popup-inner h4 {
+  font-family: var(--font-display, serif);
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  color: #1a1a1a;
+}
+
+.map-popup-address {
+  font-size: 0.78rem;
+  color: #666;
+  margin: 0 0 0.35rem;
+}
+
+.map-popup-time {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c29b62;
+  margin: 0;
+}
+
+/* ==========================================================================
+   BENTO GALLERY COMPONENT (35-PHOTO CURATED MATRIX)
+   ========================================================================== */
+.bento-gallery-section {
+  margin-top: 4.5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.bento-gallery-header {
+  margin-bottom: 2.5rem;
+}
+
+.bento-gallery-subtitle {
+  color: var(--color-muted, #737373);
+  max-width: 55ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+.bento-category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.bento-pill {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.45rem 1.15rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(0.25, 1, 0.5, 1);
+  color: var(--color-foreground, #1a1a1a);
+}
+
+.bento-pill:hover {
+  border-color: #c29b62;
+  transform: translateY(-1px);
+}
+
+.bento-pill--active {
+  background: var(--color-foreground, #1c1917);
+  border-color: var(--color-foreground, #1c1917);
+  color: #fdfaf3;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.2);
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.bento-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f2ede4;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.08);
+  transition: transform 350ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 350ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.bento-item:hover,
+.bento-item:focus-visible {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+}
+
+.bento-item:focus-visible {
+  outline: 2px solid #c29b62;
+  outline-offset: 3px;
+}
+
+.bento-item--wide {
+  grid-column: span 1;
+}
+
+@media (min-width: 900px) {
+  .bento-item--wide {
+    grid-column: span 2;
+    aspect-ratio: 16 / 10;
+  }
+  .bento-item--tall {
+    grid-row: span 2;
+    aspect-ratio: 9 / 16;
+  }
+}
+
+.bento-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-item:hover .bento-image {
+  transform: scale(1.06);
+}
+
+.bento-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(18, 16, 14, 0.88) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  color: #fff;
+  opacity: 0.92;
+  transition: opacity 300ms ease;
+}
+
+.bento-tag {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(194, 155, 98, 0.85);
+  color: #1a1a1a;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.35rem;
+}
+
+.bento-caption {
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin: 0;
+  text-transform: capitalize;
+  line-height: 1.25;
+  color: #fdfaf3;
+}
+
+.bento-zoom-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(28, 25, 23, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fdfaf3;
+  font-size: 0.9rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 250ms ease;
+}
+
+.bento-item:hover .bento-zoom-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ==========================================================================
+   LIGHTBOX MODAL VIEWER
+   ========================================================================== */
+.bento-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(12, 10, 8, 0.92);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: lightboxFadeIn 240ms ease-out;
+}
+
+@keyframes lightboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lightbox-image {
+  max-width: 85vw;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-footer {
+  margin-top: 1rem;
+  text-align: center;
+  color: #fdfaf3;
+}
+
+.lightbox-counter {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.lightbox-title {
+  font-family: var(--font-display, serif);
+  font-size: 1.25rem;
+  margin: 0.25rem 0;
+  text-transform: capitalize;
+}
+
+.lightbox-role {
+  font-size: 0.75rem;
+  color: #c29b62;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.lightbox-nav:hover {
+  background: #c29b62;
+  border-color: #c29b62;
+}
+
+.lightbox-nav--prev {
+  left: 1.5rem;
+}
+
+.lightbox-nav--next {
+  right: 1.5rem;
+}
+

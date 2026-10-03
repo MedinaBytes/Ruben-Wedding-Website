@@ -24,21 +24,20 @@
     },
     "purpose": {
       "title": "Uso y acceso",
-      "body": "Esta información se utiliza para organizar la celebración y gestionar tu invitación. Solo la pareja y las personas administradoras autorizadas pueden acceder a ella; se almacena mediante el proveedor de base de datos del sitio. Trata el enlace de invitación como privado."
+      "body": "Ruben y Andrea utilizan esta información para organizar la boda y gestionar las respuestas. Solo ellos podrán consultar los datos de invitados desde el panel privado. No se comparten con otros invitados ni se usan para publicidad. El proveedor de alojamiento y la base de datos pueden tratarlos únicamente para operar y proteger el sitio. Mantén privado tu enlace de invitación."
     },
     "services": {
       "title": "Proveedores de servicios",
-      "body": "El proveedor de despliegue aloja el sitio y Supabase proporciona la base de datos. Los enlaces de los lugares abren OpenStreetMap, que puede procesar datos técnicos según su propia política de privacidad. El reproductor de Spotify solo se carga cuando eliges su botón y hay una lista configurada."
+      "body": "El proveedor de alojamiento del sitio y Supabase almacenan y procesan información para que funcionen la invitación y la base de datos. No usan los datos de invitados para su propia publicidad. Los enlaces de los lugares abren OpenStreetMap, que puede procesar datos técnicos según su política de privacidad. Spotify solo carga un reproductor cuando eliges abrir la lista y hay una lista configurada."
     },
     "retention": {
       "title": "Conservación",
-      "body": "El plazo de conservación aún no se ha decidido. Debe confirmarse antes de enviar las invitaciones; los datos de la boda se eliminarán cuando ya no sean necesarios."
+      "body": "Cuando termine la boda y las gestiones relacionadas, Ruben y Andrea eliminarán de la base de datos la información de invitados, respuestas, necesidades alimentarias, canciones y actividad de las invitaciones. Es posible que queden copias técnicas de seguridad durante un tiempo, según los plazos de los proveedores; después también se eliminarán."
     },
     "contact": {
       "title": "Contacto",
-      "body": "Los datos de contacto de la pareja se facilitarán antes de enviar las invitaciones."
-    },
-    "reviewNote": "Este aviso es un borrador y requiere revisión legal antes de publicarse."
+      "body": "Si quieres consultar, corregir o eliminar tus datos, contacta directamente con Ruben y Andrea por el canal habitual que ya compartes con ellos. Indica el nombre que aparece en tu invitación para que puedan localizarla."
+    }
   },
   "navigation": {
     "details": "El día",

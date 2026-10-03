@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
 import { RsvpForm, SongRequestForm } from "@/components/invitation/guest-forms";
+import { InteractiveMap } from "@/components/invitation/interactive-map";
 import { PhotoStory } from "@/components/invitation/photo-story";
 import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
@@ -228,6 +229,10 @@ export async function WeddingSections({
             </article>
           ))}
         </div>
+        <InteractiveMap
+          ceremonyLabel={`${venue("ceremony")}: ${weddingConfig.ceremony.name}`}
+          receptionLabel={`${venue("reception")}: ${weddingConfig.reception.name}`}
+        />
       </section>
 
       <section className="travel-note" aria-labelledby="travel-title">

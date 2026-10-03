@@ -24,21 +24,20 @@
     },
     "purpose": {
       "title": "Verwendung und Zugriff",
-      "body": "Diese Informationen dienen der Organisation der Feier und der Verwaltung deiner Einladung. Zugriff haben das Paar und autorisierte Administratoren; gespeichert werden sie über den serverseitigen Datenbankanbieter der Website. Bitte behandle deinen Einladungslink vertraulich."
+      "body": "Ruben und Andrea verwenden diese Angaben, um die Hochzeit zu organisieren und Rückmeldungen zu verwalten. Nur sie dürfen die Gästedaten im privaten Verwaltungsbereich einsehen. Die Daten werden weder mit anderen Gästen geteilt noch für Werbung verwendet. Hosting- und Datenbankanbieter dürfen sie verarbeiten, soweit es für den Betrieb und die Sicherheit der Website nötig ist. Bitte behandle deinen Einladungslink vertraulich."
     },
     "services": {
       "title": "Dienstleister",
-      "body": "Der Hosting-Anbieter stellt die Website bereit, Supabase die Datenbank. Die Links zu den Veranstaltungsorten öffnen OpenStreetMap, das technische Daten gemäß seiner eigenen Datenschutzerklärung verarbeiten kann. Das Spotify-Embed wird nur geladen, wenn du die Playlist-Schaltfläche auswählst und eine Playlist konfiguriert ist."
+      "body": "Der Hosting-Anbieter und Supabase speichern und verarbeiten Daten, damit Einladung und Datenbank funktionieren. Sie verwenden Gästedaten nicht für eigene Werbung. Links zu den Veranstaltungsorten öffnen OpenStreetMap; dabei können gemäß der dortigen Datenschutzerklärung technische Daten verarbeitet werden. Spotify wird nur eingebunden, wenn du die Playlist-Schaltfläche auswählst und eine Playlist eingerichtet ist."
     },
     "retention": {
       "title": "Speicherdauer",
-      "body": "Die Speicherdauer ist noch nicht festgelegt. Sie muss vor dem Versand der Einladungen bestätigt werden; Hochzeitsdaten sollten gelöscht werden, sobald sie nicht mehr benötigt werden."
+      "body": "Nach der Hochzeit und den damit verbundenen Erledigungen löschen Ruben und Andrea die Gästedaten, Rückmeldungen, Essenshinweise, Musikwünsche und Einladungsereignisse aus der Hochzeitsdatenbank. Technische Sicherungskopien können gemäß den Aufbewahrungsfristen der Dienstleister vorübergehend bestehen bleiben und werden anschließend ebenfalls gelöscht."
     },
     "contact": {
       "title": "Kontakt",
-      "body": "Die Kontaktdaten des Paares werden vor dem Versand der Einladungen ergänzt."
-    },
-    "reviewNote": "Dieser Hinweis ist ein Entwurf und muss vor der Veröffentlichung rechtlich geprüft werden."
+      "body": "Wenn du deine Daten einsehen, ändern oder löschen lassen möchtest, wende dich direkt über den üblichen Kontaktweg an Ruben und Andrea. Nenne den Namen auf deiner Einladung, damit sie den passenden Eintrag finden."
+    }
   },
   "navigation": {
     "details": "Der Tag",

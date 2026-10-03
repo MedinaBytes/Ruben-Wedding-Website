@@ -24,21 +24,20 @@
     },
     "purpose": {
       "title": "Felhasználás és hozzáférés",
-      "body": "Az adatokat az ünnepség megszervezésére és a meghívás kezelésére használjuk. Azokhoz a pár és az arra jogosult adminisztrátorok férhetnek hozzá; az adatokat az oldal szerveroldali adatbázis-szolgáltatója tárolja. A meghívólinket kezeld bizalmasan."
+      "body": "Ruben és Andrea az adatokat az esküvő megszervezésére és a visszajelzések kezelésére használják. A vendégek adatait kizárólag ők tekinthetik meg a privát adminfelületen. Az adatokat nem osztják meg más vendégekkel, és nem használják reklámcélra. A tárhely- és adatbázis-szolgáltató csak a weboldal működtetéséhez és védelméhez szükséges mértékben kezelheti azokat. A meghívólinket kezeld bizalmasan."
     },
     "services": {
       "title": "Szolgáltatók",
-      "body": "Az oldalt a telepítési szolgáltató üzemelteti, az adatbázist a Supabase biztosítja. A helyszínlinkek az OpenStreetMapet nyitják meg, amely saját adatvédelmi szabályzata szerint technikai adatokat kezelhet. A Spotify-beágyazás csak a lejátszási lista gombjának kiválasztásakor, és csak beállított lista esetén töltődik be."
+      "body": "A weboldal tárhelyszolgáltatója és a Supabase tárolja, illetve kezeli az adatokat a meghívó és az adatbázis működtetéséhez. A vendégek adatait nem használják saját reklámcélra. A helyszínek linkjei az OpenStreetMap oldalára vezetnek, ahol a saját adatvédelmi tájékoztatójuk szerint technikai adatokat kezelhetnek. A Spotify-lejátszó csak akkor töltődik be, ha megnyitod a lejátszási listát, és az már be van állítva."
     },
     "retention": {
       "title": "Adatmegőrzés",
-      "body": "Az adatmegőrzési idő még nincs meghatározva. Ezt a meghívók kiküldése előtt jóvá kell hagyni; az esküvői adatokat törölni kell, amikor már nincs rájuk szükség."
+      "body": "Az esküvő és az ahhoz kapcsolódó teendők után Ruben és Andrea törli a vendégek adatait, a válaszokat, az étkezési igényeket, a zenei kéréseket és a meghívókkal kapcsolatos eseményadatokat az esküvői adatbázisból. A szolgáltatók biztonsági másolatai a saját megőrzési idejük szerint átmenetileg megmaradhatnak, majd azokat is törlik."
     },
     "contact": {
       "title": "Kapcsolat",
-      "body": "A pár elérhetőségeit a meghívók kiküldése előtt adjuk meg."
-    },
-    "reviewNote": "Ez a tájékoztató tervezet, megjelenés előtt jogi felülvizsgálat szükséges."
+      "body": "Ha szeretnéd megtekinteni, módosítani vagy töröltetni az adataidat, közvetlenül Rubent és Andreát keresd azon a csatornán, amelyen általában kapcsolatban vagytok. Írd meg a meghívón szereplő nevet, hogy megtalálják a megfelelő bejegyzést."
+    }
   },
   "navigation": {
     "details": "A nap",

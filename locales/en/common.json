@@ -24,21 +24,20 @@
     },
     "purpose": {
       "title": "Why and who can access it",
-      "body": "This information is used to organize the celebration and respond to your invitation. It is available to the couple and authorized administrators, and is stored through the site's server-side database provider. Invitation links should be treated as private."
+      "body": "Ruben and Andrea use this information to organize the wedding and manage replies. They are the only people authorized to view guest information in the private admin area. It is not shared with other guests or used for advertising. The hosting and database providers may process it as needed to operate and secure the site. Please keep your invitation link private."
     },
     "services": {
       "title": "Service providers",
-      "body": "The site is hosted by its deployment provider and uses Supabase for its database. Venue links open OpenStreetMap, which may process technical data under its own privacy policy. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
+      "body": "The site's hosting provider and Supabase store and process information to run the invitation and database. They do not use guest details for their own advertising. Venue links open OpenStreetMap, which may process technical data under its own privacy policy. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
     },
     "retention": {
       "title": "Retention",
-      "body": "The retention period has not yet been decided. It must be confirmed before invitations are sent; wedding data should be deleted when it is no longer needed."
+      "body": "After the wedding and the related follow-up are complete, Ruben and Andrea will delete the guest, RSVP, dietary, song-request, and invitation-event information from the wedding database. Technical backups may remain temporarily under the service providers' retention schedules before they are removed."
     },
     "contact": {
       "title": "Contact",
-      "body": "Couple contact details: to be provided before invitations are sent."
-    },
-    "reviewNote": "This notice is a draft and requires legal review before launch."
+      "body": "To view, correct, or delete your information, contact Ruben and Andrea directly through the channel you normally use to reach them. Include the name shown on your invitation so they can find the right record."
+    }
   },
   "navigation": {
     "details": "The day",

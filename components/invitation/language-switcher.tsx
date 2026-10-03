@@ -55,9 +55,6 @@ export function LanguageSwitcher({
     startTransition(async () => {
       await setManualLocale(nextLocale, invitation?.id);
       router.refresh();
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
     });
   }
 
