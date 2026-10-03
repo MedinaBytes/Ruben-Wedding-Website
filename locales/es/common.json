@@ -15,6 +15,11 @@
     "adminTitle": "Administración privada",
     "adminUnavailable": "El acceso de administración estará disponible cuando termine la configuración."
   },
+  "welcome": {
+    "title": "Bienvenidos",
+    "message": "El enlace personal de tu invitación incluye los detalles de tu grupo. Si te invitaron pero no encuentras el enlace, contacta directamente con Ruben o Andrea y te lo volverán a enviar.",
+    "continue": "Continuar a los detalles de la boda"
+  },
   "privacy": {
     "title": "Privacidad",
     "notice": "Este sitio utiliza únicamente la información necesaria para gestionar las invitaciones, las respuestas y las peticiones de canciones.",

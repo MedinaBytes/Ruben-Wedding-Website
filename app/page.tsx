@@ -46,7 +46,6 @@ export default async function HomePage({
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
       />
-      <WelcomeLookupModal currentLocale={locale} />
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__inner">
@@ -98,6 +97,7 @@ export default async function HomePage({
             </div>
           </div>
         </section>
+        <InvitationLookupCard currentLocale={locale} />
         <WeddingSections locale={locale} />
       </main>
       <footer className="site-footer">

@@ -15,6 +15,11 @@
     "adminTitle": "Private Verwaltung",
     "adminUnavailable": "Der Administratorzugang wird nach der Einrichtung verfügbar sein."
   },
+  "welcome": {
+    "title": "Schön, dass du da bist",
+    "message": "Dein persönlicher Einladungslink enthält die Details für deine Gruppe. Wenn du eingeladen wurdest, den Link aber nicht findest, wende dich direkt an Ruben oder Andrea. Sie schicken ihn dir gerne noch einmal.",
+    "continue": "Zu den Hochzeitsdetails"
+  },
   "privacy": {
     "title": "Datenschutz",
     "notice": "Diese Einladungsseite verwendet nur die Informationen, die zur Verwaltung der Einladungen, Rückmeldungen und Musikwünsche erforderlich sind.",

@@ -15,6 +15,11 @@
     "adminTitle": "Private administration",
     "adminUnavailable": "Administrator access will be available after setup."
   },
+  "welcome": {
+    "title": "Welcome, friends",
+    "message": "Your personal invitation link has the details for your group. If you were invited but cannot find the link, contact Ruben or Andrea directly and they will send it again.",
+    "continue": "Continue to wedding details"
+  },
   "privacy": {
     "title": "Privacy",
     "notice": "This invitation site uses only the information needed to manage wedding invitations, replies, and song requests.",

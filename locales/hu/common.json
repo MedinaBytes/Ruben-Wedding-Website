@@ -15,6 +15,11 @@
     "adminTitle": "Privát adminisztráció",
     "adminUnavailable": "Az adminisztrátori hozzáférés a beállítás után lesz elérhető."
   },
+  "welcome": {
+    "title": "Örülünk, hogy itt vagy",
+    "message": "A személyes meghívólinkeden találod a csoportod részleteit. Ha meghívtunk, de nem találod a linket, keresd közvetlenül Rubent vagy Andreát, és szívesen elküldik újra.",
+    "continue": "Tovább az esküvő részleteihez"
+  },
   "privacy": {
     "title": "Adatvédelem",
     "notice": "Ez a meghívóoldal kizárólag a meghívók, visszajelzések és zenei kérések kezeléséhez szükséges adatokat használja.",
