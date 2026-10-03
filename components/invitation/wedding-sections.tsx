@@ -190,6 +190,17 @@ export async function WeddingSections({
 
       <PhotoStory locale={locale} />
 
+      <section className="closing-note" aria-labelledby="closing-title">
+        <div className="closing-note__layout">
+          <h2 id="closing-title">{closing("title")}</h2>
+          <div className="closing-note__letter">
+            {storyParagraphs.map((paragraph) => (
+              <p className="closing-note__story" key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="venues" id="locations" aria-labelledby="venues-title">
         <div className="section-heading">
           <p className="section-label">{venue("label")}</p>
@@ -305,13 +316,6 @@ export async function WeddingSections({
       </section>
 
       {invitation && <RsvpForm invitation={invitation} />}
-
-      <section className="closing-note" aria-labelledby="closing-title">
-        <h2 id="closing-title">{closing("title")}</h2>
-        {storyParagraphs.map((paragraph) => (
-          <p className="closing-note__story" key={paragraph}>{paragraph}</p>
-        ))}
-      </section>
     </>
   );
 }
