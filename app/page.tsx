@@ -1,4 +1,5 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { OrchidBranch } from "@/components/invitation/orchid-branch";
 import { SiteHeader } from "@/components/invitation/site-header";
@@ -7,17 +8,20 @@ import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { weddingConfig } from "@/lib/wedding-config";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
-  const [navigation, hero, event, wedding, locale] = await Promise.all([
+  const [locale, messages, navigation, hero, event, wedding] = await Promise.all([
+    getLocale(),
+    getMessages(),
     getTranslations("navigation"),
     getTranslations("hero"),
     getTranslations("event"),
     getTranslations("wedding"),
-    getLocale(),
   ]);
 
   return (
-    <>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <SiteHeader
         detailsLabel={navigation("details")}
         privacyLabel={navigation("privacy")}
@@ -80,6 +84,6 @@ export default async function HomePage() {
         <span>{weddingConfig.couple.displayNames}</span>
         <a href="/privacy">{navigation("privacy")}</a>
       </footer>
-    </>
+    </NextIntlClientProvider>
   );
 }

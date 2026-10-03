@@ -21,13 +21,14 @@ export async function deleteWeddingData(formData: FormData) {
   if (!confirmation.success) redirect("/admin?error=delete-confirmation");
 
   try {
+    const { error } = await createSupabaseAdminClient().rpc("delete_wedding_data");
+    if (error) throw new Error("Wedding data deletion failed.");
+
     await recordAdminAudit({
       actor,
       action: "WEDDING_DATA_DELETED",
       resourceType: "wedding_data",
     });
-    const { error } = await createSupabaseAdminClient().rpc("delete_wedding_data");
-    if (error) throw new Error("Wedding data deletion failed.");
   } catch {
     redirect("/admin?error=delete");
   }

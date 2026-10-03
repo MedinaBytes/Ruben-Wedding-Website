@@ -34,10 +34,6 @@ export function LanguageSwitcher({
   const [isPending, startTransition] = useTransition();
 
   async function selectLocale(nextLocale: Locale) {
-    if (typeof document !== "undefined") {
-      const cookieName = invitation ? `wedding_manual_locale_${invitation.id}` : "wedding_manual_locale";
-      document.cookie = `${cookieName}=${nextLocale}; path=/; max-age=15811200; SameSite=Lax`;
-    }
     await setManualLocale(nextLocale, invitation?.id);
     if (invitation) {
       recordInvitationInteraction({
@@ -47,7 +43,9 @@ export function LanguageSwitcher({
         locale: nextLocale,
       });
     }
-    startTransition(() => router.refresh());
+    startTransition(() => {
+      router.refresh();
+    });
   }
 
   return (

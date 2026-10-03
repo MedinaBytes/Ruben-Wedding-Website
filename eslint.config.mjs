@@ -7,6 +7,7 @@ export default defineConfig([
   ...nextTs,
   globalIgnores([
     ".next/**",
+    ".next-nav-validation/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
