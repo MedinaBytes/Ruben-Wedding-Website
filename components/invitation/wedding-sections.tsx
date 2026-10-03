@@ -137,10 +137,7 @@ export async function WeddingSections({
     <>
       <Countdown />
 
-      <BotanicalDivider />
-
       <section className="day-story" id="event-note" aria-labelledby="day-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="section-heading">
           <h2 id="day-title">{day("timelineTitle")}</h2>
         </div>
@@ -175,15 +172,9 @@ export async function WeddingSections({
         </ol>
       </section>
 
-      <BotanicalDivider />
-
       <PhotoStory locale={locale} />
 
-      <BotanicalDivider />
-
       <section className="closing-note" aria-labelledby="closing-title">
-        <BotanicalCornerAccent position="top-left" />
-        <BotanicalCornerAccent position="bottom-right" />
         <div className="closing-note__layout">
           <h2 id="closing-title">{closing("title")}</h2>
           <div className="closing-note__letter">
@@ -194,8 +185,6 @@ export async function WeddingSections({
         </div>
       </section>
 
-      <BotanicalDivider />
-
       <section className="venues" id="locations" aria-labelledby="venues-title">
         <div className="section-heading">
           <p className="section-label">{venue("label")}</p>
@@ -204,7 +193,6 @@ export async function WeddingSections({
         <div className="venue-list">
           {venues.map((place) => (
             <article className="venue" key={place.id}>
-              <BotanicalCornerAccent position="top-right" />
               <div className="venue__details">
                 <p className="venue__type">{venue(place.id)}</p>
                 <h3>{place.name}</h3>
@@ -256,10 +244,7 @@ export async function WeddingSections({
         />
       </section>
 
-      <BotanicalDivider />
-
       <section className="travel-note" aria-labelledby="travel-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="section-heading">
           <h2 id="travel-title">{travel("title")}</h2>
         </div>
@@ -276,10 +261,7 @@ export async function WeddingSections({
         </div>
       </section>
 
-      <BotanicalDivider />
-
       <section className="stay-note" aria-labelledby="stay-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="section-heading">
           <h2 id="stay-title">{stay("title")}</h2>
         </div>
@@ -295,10 +277,7 @@ export async function WeddingSections({
         </div>
       </section>
 
-      <BotanicalDivider />
-
       <section className="dress-note" aria-labelledby="dress-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="dress-note__heading">
           <h2 id="dress-title">{dress("title")}</h2>
         </div>
@@ -306,10 +285,7 @@ export async function WeddingSections({
         <p className="dress-note__copy">{dress("formality")}</p>
       </section>
 
-      <BotanicalDivider />
-
       <section className="music-note" id="music" aria-labelledby="music-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="section-heading">
           <p className="section-label">{music("label")}</p>
           <h2 id="music-title">{music("title")}</h2>
@@ -329,10 +305,7 @@ export async function WeddingSections({
         </div>
       </section>
 
-      <BotanicalDivider />
-
       <section className="gift-note" aria-labelledby="gifts-title">
-        <BotanicalCornerAccent position="top-right" />
         <div className="section-heading">
           <h2 id="gifts-title">{gifts("title")}</h2>
         </div>
@@ -347,8 +320,6 @@ export async function WeddingSections({
       </section>
 
       {invitation && <RsvpForm invitation={invitation} />}
-
-      <RsvpBotanicalCluster />
     </>
   );
 }

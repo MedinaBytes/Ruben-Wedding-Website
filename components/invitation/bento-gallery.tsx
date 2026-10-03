@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { BotanicalCornerAccent } from "@/components/invitation/botanical-accents";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
 import type { Locale } from "@/lib/wedding-config";
@@ -9,7 +9,7 @@ import type { Locale } from "@/lib/wedding-config";
 type Category = "all" | "editorial" | "travel" | "celebration" | "adventures";
 
 const categoryLabels: Record<Category, Record<Locale, string>> = {
-  all: { en: "All Memories", es: "Todos los momentos", de: "Alle Momente", hu: "Minden pillanat" },
+  all: { en: "All memories", es: "Todos los recuerdos", de: "Alle Erinnerungen", hu: "Minden emlék" },
   editorial: { en: "Portraits & Gala", es: "Retratos de Gala", de: "Porträts", hu: "Portrék" },
   travel: { en: "Travel & Horizons", es: "Viajes y Horizontes", de: "Reisen", hu: "Utazások" },
   celebration: { en: "Celebrations & Love", es: "Celebraciones", de: "Feiern", hu: "Ünneplések" },
@@ -20,36 +20,65 @@ export function BentoGallery({
   locale = "en",
   title = "A life, collected in little moments",
   subtitle = "From small celebrations to faraway sunsets, these are the moments we carry with us.",
-  eyebrow = "Curated Memories",
+  filterLabel = "Filter memories",
+  viewerLabel = "Photo viewer",
+  openPhotoLabel = "Open photo: {title}",
+  closeViewerLabel = "Close photo viewer",
+  previousPhotoLabel = "Previous photo",
+  nextPhotoLabel = "Next photo",
+  photoCountLabel = "{current} of {total} photos",
   excludeIds = [],
 }: {
   locale?: Locale;
   title?: string;
   subtitle?: string;
-  eyebrow?: string;
+  filterLabel?: string;
+  viewerLabel?: string;
+  openPhotoLabel?: string;
+  closeViewerLabel?: string;
+  previousPhotoLabel?: string;
+  nextPhotoLabel?: string;
+  photoCountLabel?: string;
   excludeIds?: readonly string[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const openingButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const filteredPhotos = useMemo(() => {
-    let items = photoCatalog as readonly PhotoStoryItem[];
-    if (excludeIds.length > 0) {
-      items = items.filter((item) => !excludeIds.includes(item.id));
-    }
-    if (selectedCategory === "all") return items;
-    return items.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory, excludeIds]);
+  const availablePhotos = useMemo(
+    () => (photoCatalog as readonly PhotoStoryItem[]).filter((item) => !excludeIds.includes(item.id)),
+    [excludeIds],
+  );
+  const filteredPhotos = useMemo(
+    () => selectedCategory === "all"
+      ? availablePhotos
+      : availablePhotos.filter((item) => item.category === selectedCategory),
+    [availablePhotos, selectedCategory],
+  );
 
   const activePhoto = activePhotoIndex !== null ? filteredPhotos[activePhotoIndex] : null;
 
-  function handleKeyDown(e: React.KeyboardEvent) {
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (activePhoto && !dialog.open) {
+      dialog.showModal();
+      closeButtonRef.current?.focus();
+    } else if (!activePhoto && dialog.open) {
+      dialog.close();
+    }
+  }, [activePhoto]);
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
     if (activePhotoIndex === null) return;
-    if (e.key === "Escape") {
-      setActivePhotoIndex(null);
-    } else if (e.key === "ArrowRight") {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
       setActivePhotoIndex((prev) => (prev !== null && prev < filteredPhotos.length - 1 ? prev + 1 : 0));
-    } else if (e.key === "ArrowLeft") {
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
       setActivePhotoIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : filteredPhotos.length - 1));
     }
   }
@@ -57,22 +86,19 @@ export function BentoGallery({
   return (
     <div className="bento-gallery-block" aria-labelledby="bento-gallery-title">
       <div className="bento-gallery-header">
-        <p className="section-label">{eyebrow}</p>
         <h3 id="bento-gallery-title" className="bento-gallery-heading">{title}</h3>
         <p className="bento-gallery-subtitle">{subtitle}</p>
 
-        {/* Category Pills */}
-        <div className="bento-category-nav" role="tablist" aria-label="Photo categories">
+        <div aria-label={filterLabel} className="bento-category-nav" role="group">
           {(Object.keys(categoryLabels) as Category[]).map((cat) => (
             <button
+              aria-pressed={selectedCategory === cat}
               key={cat}
-              role="tab"
-              aria-selected={selectedCategory === cat}
               className={`bento-pill ${selectedCategory === cat ? "bento-pill--active" : ""}`}
               onClick={() => setSelectedCategory(cat)}
               type="button"
             >
-              {categoryLabels[cat][locale] ?? categoryLabels[cat].en}
+              {categoryLabels[cat][locale]}{cat === "all" ? ` (${availablePhotos.length})` : ""}
             </button>
           ))}
         </div>
@@ -87,24 +113,19 @@ export function BentoGallery({
           const photoCaption = photo.caption[locale] ?? photo.caption.en;
 
           return (
-            <figure
+            <button
               key={photo.id}
               className={`bento-item ${isWide ? "bento-item--wide" : ""} ${isTall ? "bento-item--tall" : ""}`}
-              onClick={() => setActivePhotoIndex(index)}
-              tabIndex={0}
-              role="button"
-              aria-label={`${photoTitle}: ${photoCaption}`}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setActivePhotoIndex(index);
-                }
+              aria-label={openPhotoLabel.replace("{title}", photoTitle)}
+              onClick={(event) => {
+                openingButtonRef.current = event.currentTarget;
+                setActivePhotoIndex(index);
               }}
+              type="button"
             >
-              {isWide && <BotanicalCornerAccent position="top-right" />}
               <WeddingPhoto
                 id={photo.id}
-                alt={photoCaption}
+                alt=""
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="bento-image"
               />
@@ -114,28 +135,36 @@ export function BentoGallery({
                 <p className="bento-subcaption">{photoCaption}</p>
                 <span className="bento-zoom-icon" aria-hidden="true">↗</span>
               </div>
-            </figure>
+            </button>
           );
         })}
       </div>
 
-      {/* Full-Screen Lightbox Modal */}
-      {activePhoto && (
-        <div
-          className="bento-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={activePhoto.title[locale] ?? activePhoto.title.en}
-          tabIndex={0}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setActivePhotoIndex(null);
-          }}
-        >
+      <dialog
+        aria-label={viewerLabel}
+        className="bento-lightbox"
+        onCancel={(event) => {
+          event.preventDefault();
+          setActivePhotoIndex(null);
+        }}
+        onClose={() => {
+          openingButtonRef.current?.focus();
+          openingButtonRef.current = null;
+          setActivePhotoIndex(null);
+        }}
+        onKeyDown={handleKeyDown}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setActivePhotoIndex(null);
+        }}
+        ref={dialogRef}
+      >
+        {activePhoto && (
+          <>
           <button
             className="lightbox-close"
             onClick={() => setActivePhotoIndex(null)}
-            aria-label="Close photo viewer"
+            aria-label={closeViewerLabel}
+            ref={closeButtonRef}
             type="button"
           >
             ✕
@@ -147,7 +176,7 @@ export function BentoGallery({
               e.stopPropagation();
               setActivePhotoIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : filteredPhotos.length - 1));
             }}
-            aria-label="Previous photo"
+            aria-label={previousPhotoLabel}
             type="button"
           >
             ‹
@@ -162,7 +191,9 @@ export function BentoGallery({
             />
             <div className="lightbox-footer">
               <span className="lightbox-counter">
-                {(activePhotoIndex ?? 0) + 1} / {filteredPhotos.length} · {categoryLabels[activePhoto.category][locale]}
+                {photoCountLabel
+                  .replace("{current}", String((activePhotoIndex ?? 0) + 1))
+                  .replace("{total}", String(filteredPhotos.length))} · {categoryLabels[activePhoto.category][locale]}
               </span>
               <h4 className="lightbox-title">{activePhoto.title[locale] ?? activePhoto.title.en}</h4>
               <p className="lightbox-desc">{activePhoto.caption[locale] ?? activePhoto.caption.en}</p>
@@ -175,13 +206,14 @@ export function BentoGallery({
               e.stopPropagation();
               setActivePhotoIndex((prev) => (prev !== null && prev < filteredPhotos.length - 1 ? prev + 1 : 0));
             }}
-            aria-label="Next photo"
+            aria-label={nextPhotoLabel}
             type="button"
           >
             ›
           </button>
-        </div>
-      )}
+          </>
+        )}
+      </dialog>
     </div>
   );
 }

@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
-import { HeroBotanicalArrangement } from "@/components/invitation/botanical-accents";
 import { InvitationIntro } from "@/components/invitation/invitation-intro";
 import { InviteOpenTracker } from "@/components/invitation/invite-open-tracker";
 import { OrchidBranch } from "@/components/invitation/orchid-branch";
@@ -72,7 +71,6 @@ export default async function InvitationPage({
       <main id="main">
         <InviteOpenTracker invitationId={invitation.id} token={token} />
         <section className="hero" aria-labelledby="hero-title">
-          <HeroBotanicalArrangement className="hero__botanical-bg" />
           <div className="hero__inner">
             <div className="hero__copy">
               <p className="hero__eyebrow">{hero("eyebrow")}</p>
