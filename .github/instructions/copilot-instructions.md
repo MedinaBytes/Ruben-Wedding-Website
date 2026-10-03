@@ -1,7 +1,8 @@
-# Wedding Website — Binding Rules for the AI Agent
+# Supplemental Agent Guidance
 
-Place this file at `.github/copilot-instructions.md`.
-These rules are **mandatory**. They are not suggestions. If a rule conflicts with your own preference, the rule wins. If two rules conflict, the lower-numbered section wins. If you cannot comply with a rule, STOP and report why before continuing.
+The canonical wedding project instructions are in [`.github/copilot-instructions.md`](../copilot-instructions.md), and the product specification is in `wedding_invitation_website_spec.md`. Follow those sources instead of maintaining a second copy of the same requirements here.
+
+Path-specific guidance remains in the focused files in this directory: animation, assets, data/privacy, and web design.
 
 ---
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
@@ -24,6 +25,7 @@ export async function setManualLocale(value: string, invitationId?: string) {
     maxAge: 60 * 60 * 24 * 183,
     path: "/",
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && process.env.VERCEL === "1",
   });
+  revalidatePath("/", "layout");
 }

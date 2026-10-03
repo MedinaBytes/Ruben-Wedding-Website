@@ -58,7 +58,7 @@ export default async function HomePage() {
           </p>
         </section>
 
-        <section className="arrival-note" id="event-note" aria-labelledby="arrival-title">
+        <section className="arrival-note" aria-labelledby="arrival-title">
           <div className="arrival-note__heading">
             <p className="section-label">{event("dayLabel")}</p>
             <h2 id="arrival-title">{event("arrivalTitle")}</h2>

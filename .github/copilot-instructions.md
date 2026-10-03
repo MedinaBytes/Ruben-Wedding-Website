@@ -34,6 +34,10 @@ wedding_invitation_website_spec.md # primary product specification
 
 The folders under `Templates previously designed/` are REFERENCE MATERIAL ONLY. You may inspect them for ideas such as layout patterns, component structure, spacing, typography choices, interaction patterns, or technical approaches. Do not copy a previous site's branding, exact visual composition, copy, data, assets, or component implementation verbatim. Do not make this website look like a recolored old template.
 
+`Resources/Previous-Wedding-Template/` is an additional reference project supplied by the user. Inspect it only to compare useful guest-facing features and interaction patterns with the existing app. Never carry over its couple's content, private data, assets, insecure API patterns, visual identity, or implementation wholesale.
+
+This is an existing Next.js application. Continue from its current implementation and the earliest verified gap; do not scaffold or recreate working routes, services, components, or infrastructure. Keep the canonical product requirements here and in `wedding_invitation_website_spec.md`; avoid duplicating them in bootstrap prompts or status documents.
+
 The existing `.github/skills/` directory contains project-relevant skills. Inspect applicable `SKILL.md` files before making major design, frontend, UX, template-selection, redesign, or research decisions. Prefer reusing a skill's principles over duplicating them in code.
 
 `Resources/Photos/` is the source of truth for the couple's original photography. Treat it as private source material, not as a public web directory.

@@ -80,7 +80,7 @@ export async function WeddingSections({
     <>
       <Countdown />
 
-      <section className="day-story" aria-labelledby="day-title">
+      <section className="day-story" id="event-note" aria-labelledby="day-title">
         <div className="section-heading">
           <h2 id="day-title">{day("timelineTitle")}</h2>
         </div>

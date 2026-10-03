@@ -10,6 +10,15 @@ test("homepage renders the invitation shell", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("day navigation targets the shared timeline", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "The day" }).click();
+
+  await expect(page).toHaveURL(/#event-note$/);
+  await expect(page.getByRole("heading", { name: "The day, together" })).toBeVisible();
+});
+
 test("invalid invitation token shows a safe not-found response", async ({ page }) => {
   const response = await page.goto("/i/not-a-real-token");
 

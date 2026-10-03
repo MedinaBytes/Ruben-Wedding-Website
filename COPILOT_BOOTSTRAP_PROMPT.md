@@ -21,22 +21,19 @@ wedding_invitation_website_spec.md
 .github/skills/website-template/SKILL.md
 ```
 
-Then inspect:
+Then inspect only the relevant parts of:
 
 ```text
 Resources/Photos/
-Templates previously designed/wedding-classic/
-Templates previously designed/wedding-deco/
-Templates previously designed/wedding-garden/
-Templates previously designed/wedding-modern/
-Templates previously designed/wedding-rustic/
+Resources/Previous-Wedding-Template/
+the current app routes, components, tests, and deployment docs
 ```
 
-Read only as much of the previous projects as needed to identify reusable engineering/design patterns. Do NOT copy their visual identity or implementation wholesale.
+Use the supplied previous project only to compare feature patterns. Do not copy its wedding content, visuals, assets, unsafe APIs, or implementation.
 
 ## Mission
 
-Build a new premium wedding invitation site for 2 October 2027 in Vienna with:
+Continue the existing wedding invitation app for 2 October 2027 in Vienna. Preserve working code and close verified gaps. The product includes:
 
 - personalized invitation URL
 - personalized animated intro with guest name
@@ -55,125 +52,13 @@ Build a new premium wedding invitation site for 2 October 2027 in Vienna with:
 - premium, bespoke animation
 - optimized couple photography
 
-## Before implementation
+## Working rules
 
-Do NOT immediately start writing the hero page.
-
-First:
-
-1. inspect package.json and existing stack
-2. identify whether Next.js App Router is already present
-3. identify existing component/system conventions
-4. inspect the current skills
-5. inspect previous wedding projects for patterns only
-6. audit `Resources/Photos/`
-7. choose a source-image manifest strategy
-8. create an implementation checklist
-9. identify missing configuration values
-10. decide which free public skills are worth installing
-
-Then execute the plan in phases.
-
-## Required first phases
-
-### Phase 1 — Foundation
-
-Set up or adapt:
-
-- routing
-- design tokens
-- typography
-- i18n foundation
-- component architecture
-- environment variable conventions
-- Supabase server/client boundaries
-- privacy/noindex behavior
-
-### Phase 2 — Image pipeline
-
-Create an idempotent `npm run optimize:images` command using Sharp.
-
-Read from `Resources/Photos/`.
-
-Generate responsive AVIF/WebP derivatives and a manifest.
-
-Never modify source files.
-
-Do not place originals under `public/`.
-
-Verify generated file sizes and dimensions.
-
-### Phase 3 — Visual system
-
-Create the strawberry-matcha + orchid design system from scratch.
-
-Use previous templates only to identify what patterns are worth keeping.
-
-Build the page so the real photos, typography and botanical elements are clearly authored for this wedding.
-
-### Phase 4 — Premium motion
-
-Use the official free Motion skill when available. Use Motion as default and GSAP only for genuinely complex sequences.
-
-Do NOT create a generic collection of AI fade-ins.
-
-Create a small motion language with:
-
-- intro choreography
-- editorial photo reveals
-- orchid SVG path drawing
-- timeline reveal
-- subtle section transitions
-- RSVP success animation
-
-Every scene must support reduced motion.
-
-### Phase 5 — Wedding content
-
-Implement the content from `wedding_invitation_website_spec.md` exactly unless the user's later instruction changes it.
-
-Never invent names, exact playlist songs, hotel recommendations, dress wording, or missing details.
-
-### Phase 6 — Data and RSVP
-
-Implement server-validated RSVP and song request flows.
-
-Use opaque invitation tokens.
-
-Use Supabase RLS/server authorization.
-
-Do not expose service-role secrets.
-
-### Phase 7 — Tracking
-
-Track invitation interaction minimally.
-
-Distinguish a raw request from an actual client-side visit/interacted event because link previews can prefetch invitation URLs.
-
-Do not fingerprint users.
-
-Do not send private guest information to third-party analytics.
-
-### Phase 8 — Integrations
-
-Lazy-load maps and Spotify embeds.
-
-For maps, use Google Maps Embed if configured and provide direct navigation links as fallback.
-
-Never autoplay audio.
-
-### Phase 9 — QA
-
-Run:
-
-```bash
-npm run lint
-npm run typecheck
-npm test
-npm run build
-```
-
-Also perform a responsive/accessibility/motion review.
+- Follow `.github/copilot-instructions.md`, the wedding spec, and applicable path-specific instructions as the source of truth.
+- Inspect the current owner and its tests before each change. Work on one verified gap at a time; do not rebuild working foundations or add status/checklist files that duplicate the canonical docs.
+- Never invent couple details or expose source photos, guest data, invitation tokens, or secrets.
+- Preserve the existing stack. Add dependencies or components only when they deliver a needed capability that existing code cannot provide.
+- Validate each change with the narrowest relevant test, then run the required lint, typecheck, unit tests, and production build at the release gate.
 
 ## Important design rule
 
