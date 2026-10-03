@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { BotanicalCornerAccent } from "@/components/invitation/botanical-accents";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
 import type { Locale } from "@/lib/wedding-config";
@@ -100,6 +101,7 @@ export function BentoGallery({
                 }
               }}
             >
+              {isWide && <BotanicalCornerAccent position="top-right" />}
               <WeddingPhoto
                 id={photo.id}
                 alt={photoCaption}

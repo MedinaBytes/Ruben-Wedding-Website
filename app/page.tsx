@@ -2,6 +2,10 @@ import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
+import {
+  BotanicalCornerAccent,
+  HeroBotanicalArrangement,
+} from "@/components/invitation/botanical-accents";
 import { OrchidBranch } from "@/components/invitation/orchid-branch";
 import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
@@ -47,6 +51,7 @@ export default async function HomePage({
       />
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
+          <HeroBotanicalArrangement className="hero__botanical-bg" />
           <div className="hero__inner">
             <div className="hero__copy">
               <p className="hero__eyebrow">{hero("eyebrow")}</p>
@@ -80,6 +85,7 @@ export default async function HomePage({
         </section>
 
         <section className="arrival-note" aria-labelledby="arrival-title">
+          <BotanicalCornerAccent position="top-right" />
           <div className="arrival-note__heading">
             <p className="section-label">{event("dayLabel")}</p>
             <h2 id="arrival-title">{event("arrivalTitle")}</h2>

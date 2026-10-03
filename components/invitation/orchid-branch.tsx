@@ -2,56 +2,85 @@
 
 import { motion, useReducedMotion } from "motion/react";
 
+/**
+ * Natural, realistic Phalaenopsis orchid stem with soft pastel strawberry-matcha tones.
+ */
 export function OrchidBranch({ className }: { className?: string }) {
   const shouldReduceMotion = useReducedMotion();
-  const initial = shouldReduceMotion ? false : { opacity: 0.55, pathLength: 0 };
-  const transition = (delay = 0) =>
-    shouldReduceMotion
-      ? { duration: 0 }
-      : { delay, duration: 1.1, ease: [0.2, 0.7, 0.2, 1] as const };
+  const initial = shouldReduceMotion ? false : { opacity: 0, scale: 0.95 };
+  const transition = { duration: 1.1, ease: [0.2, 0.7, 0.2, 1] as const };
 
   return (
-    <svg
+    <motion.svg
       aria-hidden="true"
       className={className}
       fill="none"
       focusable="false"
-      viewBox="0 0 240 390"
+      viewBox="0 0 260 400"
       xmlns="http://www.w3.org/2000/svg"
+      initial={initial}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={transition}
     >
       <defs>
-        <linearGradient id="orchid-petal" x1="32" y1="20" x2="112" y2="163" gradientUnits="userSpaceOnUse">
-          <stop stopColor="var(--color-neutral-light)" />
-          <stop offset="0.58" stopColor="var(--color-strawberry-pale)" />
-          <stop offset="1" stopColor="var(--color-strawberry-soft)" />
+        <linearGradient id="branch-real-petal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="65%" stopColor="#FFF7F6" />
+          <stop offset="100%" stopColor="#F9D7D2" />
         </linearGradient>
-        <linearGradient id="orchid-leaf" x1="80" y1="250" x2="170" y2="330" gradientUnits="userSpaceOnUse">
-          <stop stopColor="var(--color-matcha-pale)" />
-          <stop offset="1" stopColor="var(--color-matcha-soft)" />
+        <linearGradient id="branch-real-leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#B3C5A2" />
+          <stop offset="100%" stopColor="#5E744A" />
         </linearGradient>
+        <radialGradient id="branch-real-throat" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#C0392B" stopOpacity="0.9" />
+          <stop offset="60%" stopColor="#E67E73" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#FADBD8" stopOpacity="0" />
+        </radialGradient>
       </defs>
-      <g stroke="var(--color-matcha-strong)" strokeLinecap="round" strokeWidth="1.15">
-        <motion.path d="M202 375C176 318 179 264 143 222 108 181 79 142 70 70" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition()} />
-        <motion.path d="M167 308C132 307 110 289 100 260c29-4 51 9 67 48Z" fill="url(#orchid-leaf)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.12)} />
-        <motion.path d="M149 263c29-9 46-29 50-58-28 2-47 18-50 58Z" fill="url(#orchid-leaf)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.2)} />
-        <motion.path d="M116 216c-29-3-48-19-56-44 28-4 49 9 56 44Z" fill="url(#orchid-leaf)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.28)} />
-        <motion.path d="M92 168c27-10 41-30 42-57-26 5-41 22-42 57Z" fill="url(#orchid-leaf)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.36)} />
-        <motion.path d="M78 119c-24-8-36-26-38-50 24 5 37 20 38 50Z" fill="url(#orchid-leaf)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.44)} />
+
+      {/* Matcha Stem & Leaf Nodes */}
+      <g stroke="#7D9366" strokeLinecap="round">
+        <path d="M 215,385 C 190,325 185,265 145,215 C 110,170 82,130 72,55" strokeWidth="3" />
+        <path d="M 145,215 C 175,200 195,190 210,185" strokeWidth="2" />
       </g>
-      <g stroke="var(--color-strawberry-strong)" strokeLinejoin="round" strokeWidth="1.2">
-        <motion.path d="M67 79C43 75 27 59 26 39c1-17 14-27 29-22 12 4 19 17 18 31 8-19 26-31 42-25 15 6 19 22 10 37-5 8-13 14-23 18 24-5 46 4 50 20 4 15-9 28-27 29-12 1-24-4-33-13 7 22 3 43-12 50-15 7-31-2-35-20-3-11-1-23 5-34-18 16-40 20-52 8-12-11-8-29 6-40 10-8 23-11 43-9Z" fill="url(#orchid-petal)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.48)} />
-        <motion.path d="M195 194c-18-5-28-18-27-33 1-13 11-21 23-17 10 3 15 13 14 24 6-15 21-24 33-19 12 5 15 17 8 29-4 7-10 11-18 14 19-4 36 3 39 16 3 12-7 22-21 23-10 1-19-3-26-10 6 17 2 33-9 38-12 6-24-2-27-16-2-9-1-18 4-27-14 12-31 15-40 6-10-9-6-23 5-32 7-6 18-9 32-8Z" fill="url(#orchid-petal)" initial={initial} animate={{ opacity: 1, pathLength: 1 }} transition={transition(0.58)} />
+
+      {/* Realistic Matcha Leaves */}
+      <path d="M 175,315 C 135,312 110,292 98,260 C 130,255 155,270 175,315 Z" fill="url(#branch-real-leaf)" opacity="0.9" />
+      <path d="M 152,268 C 182,258 200,235 204,204 C 174,208 154,225 152,268 Z" fill="url(#branch-real-leaf)" opacity="0.85" />
+      <path d="M 118,220 C 88,216 68,198 59,170 C 88,168 110,182 118,220 Z" fill="url(#branch-real-leaf)" opacity="0.85" />
+
+      {/* Top Bloom: Realistic Full Phalaenopsis */}
+      <g transform="translate(68, 65) scale(0.72)">
+        {/* Sepals */}
+        <path d="M -16,-10 C -24,-52 -16,-88 0,-96 C 16,-88 24,-52 16,-10 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.8" />
+        <path d="M -12,8 C -42,20 -76,42 -68,72 C -52,90 -18,74 4,28 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.8" />
+        <path d="M 12,8 C 42,20 76,42 68,72 C 52,90 18,74 -4,28 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.8" />
+
+        {/* Wings */}
+        <path d="M -8,-10 C -42,-46 -94,-38 -108,-6 C -118,28 -76,56 -20,20 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.9" />
+        <path d="M 8,-10 C 42,-46 94,-38 108,-6 C 118,28 76,56 20,20 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.9" />
+
+        {/* Throat */}
+        <circle cx="0" cy="4" r="28" fill="url(#branch-real-throat)" />
+
+        {/* Lip & Cirrhi */}
+        <path d="M -14,14 C -20,32 -15,50 0,58 C 15,50 20,32 14,14 Z" fill="#C0392B" />
+        <path d="M -2,56 C -12,70 -20,66 -16,80" stroke="#922B21" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+        <path d="M 2,56 C 12,70 20,66 16,80" stroke="#922B21" strokeWidth="1.4" strokeLinecap="round" fill="none" />
+        <ellipse cx="0" cy="8" rx="5" ry="4" fill="#F39C12" />
+        <ellipse cx="0" cy="-2" rx="4" ry="5.5" fill="#FFFFFF" />
       </g>
-      <g fill="var(--color-strawberry-soft)" stroke="var(--color-strawberry-strong)" strokeWidth="0.7">
-        <path d="M65 74c-8-7-17-7-21-1-4 6 1 15 9 18l14 5 8-12c4-7 2-15-4-17-4-1-8 1-10 7 3-3 7-3 9-1 2 2 1 5-1 8Z" />
-        <path d="M194 190c-6-5-13-5-16 0-3 4 1 11 7 13l11 4 6-9c3-5 1-11-4-12-3-1-6 1-8 5 2-2 5-2 7-1 1 2 1 4-1 6Z" />
+
+      {/* Lower Bloom: Angled Realistic Bloom */}
+      <g transform="translate(205, 185) rotate(-15) scale(0.6)">
+        <path d="M -16,-10 C -24,-52 -16,-88 0,-96 C 16,-88 24,-52 16,-10 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.8" />
+        <path d="M -8,-10 C -42,-46 -94,-38 -108,-6 C -118,28 -76,56 -20,20 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.9" />
+        <path d="M 8,-10 C 42,-46 94,-38 108,-6 C 118,28 76,56 20,20 Z" fill="url(#branch-real-petal)" stroke="#FADBD8" strokeWidth="0.9" />
+        <circle cx="0" cy="4" r="24" fill="url(#branch-real-throat)" />
+        <path d="M -14,14 C -20,32 -15,50 0,58 C 15,50 20,32 14,14 Z" fill="#C0392B" />
+        <ellipse cx="0" cy="8" rx="4" ry="3" fill="#F39C12" />
       </g>
-      <g fill="var(--color-rose-gold)" stroke="var(--color-rose-gold)" strokeLinecap="round" strokeWidth="1">
-        <circle cx="68" cy="78" r="2.5" />
-        <circle cx="197" cy="193" r="2" />
-        <path d="M65 77c-6-9-13-13-22-15M69 76c4-10 11-16 20-19M69 80c-9-1-17 3-24 9" fill="none" />
-        <path d="M131 356c11-4 22-5 34-1M42 212c-8-6-13-14-16-24" />
-      </g>
-    </svg>
+    </motion.svg>
   );
 }

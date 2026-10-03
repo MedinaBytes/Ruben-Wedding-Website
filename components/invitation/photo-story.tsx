@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { BentoGallery } from "@/components/invitation/bento-gallery";
+import { BotanicalCornerAccent } from "@/components/invitation/botanical-accents";
 import { Reveal } from "@/components/invitation/reveal";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import type { Locale } from "@/lib/wedding-config";
@@ -20,6 +21,7 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
       </Reveal>
       <div className="photo-story__gallery">
         <Reveal className="photo-story__frame photo-story__frame--first">
+          <BotanicalCornerAccent position="top-right" />
           <WeddingPhoto id="birthday-kiss" alt={t("birthdayAlt")} sizes="(max-width: 760px) 76vw, 29vw" />
           <p>{t("birthdayCaption")}</p>
         </Reveal>
@@ -28,6 +30,7 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
           <p>{t("cityCaption")}</p>
         </Reveal>
         <Reveal className="photo-story__frame photo-story__frame--third" delay={0.2}>
+          <BotanicalCornerAccent position="top-left" />
           <WeddingPhoto id="sunset-coast-portrait" alt={t("coastAlt")} sizes="(max-width: 760px) 72vw, 27vw" />
           <p>{t("coastCaption")}</p>
         </Reveal>

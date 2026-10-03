@@ -2880,3 +2880,131 @@ a {
   right: 1.5rem;
 }
 
+/* ==========================================================================
+   Botanical Visual System: Orchids, Strawberry Blush & Matcha Greens
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__botanical-bg {
+  position: absolute;
+  top: -1.5rem;
+  right: -2rem;
+  width: clamp(18rem, 36vw, 34rem);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.88;
+  filter: drop-shadow(0 12px 28px oklch(0.3 0.04 120 / 0.06));
+}
+
+@media (max-width: 960px) {
+  .hero__botanical-bg {
+    top: -2rem;
+    right: -3rem;
+    width: clamp(14rem, 42vw, 22rem);
+    opacity: 0.72;
+  }
+}
+
+.botanical-divider-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 58rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 4.5vw, 4rem) 1.5rem;
+  pointer-events: none;
+}
+
+.botanical-divider-svg {
+  width: 100%;
+  max-width: 42rem;
+  height: auto;
+  opacity: 0.85;
+}
+
+.botanical-corner-accent {
+  position: absolute;
+  width: clamp(2.5rem, 4vw, 3.75rem);
+  height: clamp(2.5rem, 4vw, 3.75rem);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.75;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.botanical-corner-accent--top-right {
+  top: 0.6rem;
+  right: 0.6rem;
+}
+
+.botanical-corner-accent--top-left {
+  top: 0.6rem;
+  left: 0.6rem;
+}
+
+.botanical-corner-accent--bottom-right {
+  bottom: 0.6rem;
+  right: 0.6rem;
+}
+
+.botanical-corner-accent--bottom-left {
+  bottom: 0.6rem;
+  left: 0.6rem;
+}
+
+.botanical-corner-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Ensure card containers have relative positioning and subtle botanical borders */
+.arrival-note,
+.closing-note,
+.venue,
+.travel-note,
+.stay-note,
+.dress-note,
+.music-note,
+.gift-note,
+.photo-story__frame,
+.bento-item {
+  position: relative;
+}
+
+.arrival-note:hover .botanical-corner-accent,
+.venue:hover .botanical-corner-accent,
+.travel-note:hover .botanical-corner-accent,
+.stay-note:hover .botanical-corner-accent,
+.dress-note:hover .botanical-corner-accent,
+.music-note:hover .botanical-corner-accent,
+.gift-note:hover .botanical-corner-accent,
+.closing-note:hover .botanical-corner-accent {
+  opacity: 0.95;
+}
+
+.rsvp-botanical-cluster {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline: auto;
+  max-width: 50rem;
+  padding: clamp(3rem, 6vw, 5.5rem) 1.5rem clamp(2rem, 4vw, 3.5rem);
+  pointer-events: none;
+}
+
+.rsvp-botanical-svg {
+  width: 100%;
+  max-width: 36rem;
+  height: auto;
+  opacity: 0.92;
+  filter: drop-shadow(0 8px 24px oklch(0.7 0.08 14 / 0.08));
+}
+
+

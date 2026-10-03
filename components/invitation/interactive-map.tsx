@@ -99,18 +99,47 @@ export function InteractiveMap({
       return () => window.cancelAnimationFrame(frame);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShouldLoadMap(true);
-          observer.disconnect();
+    let observer: IntersectionObserver | null = null;
+    let frame = 0;
+
+    function loadWhenNear() {
+      setShouldLoadMap(true);
+      observer?.disconnect();
+      window.removeEventListener("scroll", checkDistance);
+      window.removeEventListener("resize", checkDistance);
+    }
+
+    function checkDistance() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const currentWrapper = wrapperRef.current;
+        if (!currentWrapper) return;
+        const bounds = currentWrapper.getBoundingClientRect();
+        if (bounds.top <= window.innerHeight + 240 && bounds.bottom >= -240) {
+          loadWhenNear();
         }
+      });
+    }
+
+    observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) loadWhenNear();
       },
       { rootMargin: "240px 0px" },
     );
 
     observer.observe(wrapper);
-    return () => observer.disconnect();
+    window.addEventListener("scroll", checkDistance, { passive: true });
+    window.addEventListener("resize", checkDistance, { passive: true });
+    checkDistance();
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("scroll", checkDistance);
+      window.removeEventListener("resize", checkDistance);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
