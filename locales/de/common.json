@@ -33,7 +33,7 @@
     },
     "services": {
       "title": "Dienstleister",
-      "body": "Der Hosting-Anbieter und Supabase speichern und verarbeiten Daten, damit Einladung und Datenbank funktionieren. Sie verwenden Gästedaten nicht für eigene Werbung. Die eingebundene Karte lädt OpenStreetMap-Kacheln, sobald du den Abschnitt mit den Veranstaltungsorten erreichst. Dein Browser verbindet sich dabei direkt mit OpenStreetMap; gemäß der dortigen Datenschutzerklärung können technische Anfragedaten wie deine IP-Adresse verarbeitet werden. Apple-Maps- und Google-Maps-Links öffnen diese Dienste, wenn du sie auswählst. Spotify wird nur eingebunden, wenn du die Playlist-Schaltfläche auswählst und eine Playlist eingerichtet ist."
+      "body": "Der Hosting-Anbieter und Supabase speichern und verarbeiten Daten, damit Einladung und Datenbank funktionieren. Sie verwenden Gästedaten nicht für eigene Werbung. Die eingebundene Karte lädt OpenStreetMap-Kacheln, sobald du den Abschnitt mit den Veranstaltungsorten erreichst. Dein Browser verbindet sich dabei direkt mit OpenStreetMap; gemäß der dortigen Datenschutzerklärung können technische Anfragedaten wie deine IP-Adresse verarbeitet werden. Apple-Maps- und Google-Maps-Links öffnen diese Dienste, wenn du sie auswählst. Der Spotify-Player lädt automatisch, sobald der Musikabschnitt sichtbar wird. Dein Browser verbindet sich direkt mit Spotify, um den Player anzuzeigen. Spotify erhält außerdem Suchanfragen und ausgewählte Lieder über den Server der Website, damit sie der Hochzeitsplaylist hinzugefügt werden können."
     },
     "retention": {
       "title": "Speicherdauer",
@@ -132,12 +132,37 @@
     "intro": "Drei Lieder würden wir besonders gerne hören.",
     "playlistPending": "Unsere drei Lieder ergänzen wir hier, sobald die Auswahl feststeht.",
     "requestsTitle": "Eure Liedwünsche",
-    "requestsIntro": "In eurer persönlichen Einladung könnt ihr bis zu drei Lieder vorschlagen.",
+    "requestsIntro": "Wir möchten wissen, wozu ihr gerne tanzen würdet. Fügt der Hochzeitsplaylist bis zu drei Lieder hinzu.",
     "embedTitle": "Hochzeitsplaylist von Ruben und Andrea",
-    "playPlaylist": "Spotify-Playlist laden",
-    "spotifyReady": "Spotify ist verbunden und die Playlist ist zum Öffnen bereit.",
-    "spotifyPending": "Spotify ist noch nicht verbunden, aber eure Vorschläge werden hier gespeichert und können später für die Playlist genutzt werden.",
-    "playlistUnavailable": "Die Playlist erscheint hier, sobald sie bereit ist."
+    "spotifyLoading": "Die Hochzeitsplaylist wird geladen…",
+    "openSpotify": "In Spotify öffnen",
+    "playlistUnavailable": "Spotify ist gerade nicht erreichbar. Bitte versucht es gleich noch einmal.",
+    "searchLabel": "Bei Spotify suchen",
+    "searchPlaceholder": "Nach Liedern oder Interpret:innen suchen",
+    "selectedCount": "{count} von 3 Liedern ausgewählt",
+    "maximumReached": "Ihr habt das Maximum von 3 Liedern erreicht.",
+    "searching": "Spotify-Suche läuft…",
+    "searchMinimum": "Gebt mindestens zwei Zeichen ein.",
+    "searchResultsLabel": "Spotify-Suchergebnisse",
+    "noResults": "Keine Lieder gefunden.",
+    "alreadyAdded": "Ausgewählt",
+    "addTrack": "Hinzufügen",
+    "selectedTitle": "Ausgewählte Lieder",
+    "emptySelection": "Hier erscheinen eure ausgewählten Lieder.",
+    "removeTrack": "{title} entfernen",
+    "addMySongs": "Meine Lieder hinzufügen",
+    "addingSongs": "Eure Lieder werden hinzugefügt...",
+    "spotifyUnavailable": "Spotify ist gerade nicht erreichbar. Bitte versucht es gleich noch einmal.",
+    "invalidSelection": "Wählt bitte ein bis drei unterschiedliche Spotify-Lieder aus.",
+    "submissionError": "Eure Liedwünsche konnten nicht gespeichert werden. Bitte versucht es erneut.",
+    "rateLimitError": "Bitte wartet einen Moment und versucht es erneut.",
+    "partialFailure": "Einige Lieder konnten nicht hinzugefügt werden. Die erfolgreichen Wünsche sind gespeichert; versucht es bitte mit den übrigen erneut.",
+    "submissionSuccess": "Eure Lieder sind jetzt in der Playlist! 🎶",
+    "viewPlaylist": "Playlist auf Spotify ansehen",
+    "submittedTitle": "Eure gesendeten Lieder",
+    "alreadyInPlaylist": "Bereits in der Playlist",
+    "submitted": "Gesendet",
+    "loadRequestsError": "Eure gespeicherten Liedwünsche konnten nicht geladen werden."
   },
   "gifts": {
     "label": "Eine kleine Nachricht",
@@ -145,7 +170,7 @@
     "presence": "Mit euch zu feiern ist bereits mehr, als wir uns wünschen könnten.",
     "contribution": "Wenn ihr uns etwas schenken möchtet, freuen wir uns über einen Beitrag für unsere nächsten gemeinsamen Abenteuer.",
     "detailsLabel": "Geschenkdetails",
-    "detailsPending": "Weitere Informationen zu Geschenken ergänzen wir hier, sobald sie feststehen."
+    "detailsPending": "Wenn ihr uns etwas schenken möchtet, freuen wir uns sehr über einen Geldbeitrag für unsere nächsten gemeinsamen Abenteuer."
   },
   "countdown": {
     "label": "Bis zur Feier",
@@ -265,6 +290,7 @@
     "plusOneAllowed": "Zusätzlichen Gast erlauben",
     "invitationUrl": "Privater Einladungslink",
     "dataUnavailable": "Die Hochzeitsdaten sind vorübergehend nicht verfügbar.",
+    "schemaUnavailable": "Supabase findet die Hochzeitstabellen nicht. Wendet die Datenbankmigrationen auf dieses Projekt an und ladet die Seite anschließend neu.",
     "invitationCount": "Aktive Einladungen",
     "invitationDenominator": "Aktive Einladungen",
     "guestCount": "Maximale Zahl eingeladener Gäste",

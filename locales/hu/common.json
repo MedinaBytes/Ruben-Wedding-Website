@@ -33,7 +33,7 @@
     },
     "services": {
       "title": "Szolgáltatók",
-      "body": "A weboldal tárhelyszolgáltatója és a Supabase tárolja, illetve kezeli az adatokat a meghívó és az adatbázis működtetéséhez. A vendégek adatait nem használják saját reklámcélra. A beágyazott térkép az OpenStreetMap térképcsempéit tölti be, amikor eléred a helyszínek részét. A böngésződ közvetlenül csatlakozik az OpenStreetMaphez, amely az adatvédelmi tájékoztatója szerint technikai adatokat, például IP-címet kaphat. Az Apple Maps- és Google Térkép-linkek megnyitják ezeket a szolgáltatásokat, ha kiválasztod őket. A Spotify-lejátszó csak akkor töltődik be, ha megnyitod a lejátszási listát, és az már be van állítva."
+      "body": "A weboldal tárhelyszolgáltatója és a Supabase tárolja, illetve kezeli az adatokat a meghívó és az adatbázis működtetéséhez. A vendégek adatait nem használják saját reklámcélra. A beágyazott térkép az OpenStreetMap térképcsempéit tölti be, amikor eléred a helyszínek részét. A böngésződ közvetlenül csatlakozik az OpenStreetMaphez, amely az adatvédelmi tájékoztatója szerint technikai adatokat, például IP-címet kaphat. Az Apple Maps- és Google Térkép-linkek megnyitják ezeket a szolgáltatásokat, ha kiválasztod őket. A Spotify-lejátszó automatikusan betöltődik, amikor a zenei rész a képernyőre kerül, és a megjelenítéshez a böngésződ közvetlenül csatlakozik a Spotifyhoz. A Spotify a weboldal szerverén keresztül a kereséseket és a kiválasztott dalokat is megkapja, hogy azokat hozzá lehessen adni az esküvői lejátszási listához."
     },
     "retention": {
       "title": "Adatmegőrzés",
@@ -132,12 +132,37 @@
     "intro": "Van három dal, amelyet különösen szívesen hallanánk.",
     "playlistPending": "A három dalból álló listánkat később tesszük ide.",
     "requestsTitle": "Dalötleteitek",
-    "requestsIntro": "A személyes meghívótokban legfeljebb három dalt javasolhattok.",
+    "requestsIntro": "Szívesen meghallgatnánk, mire táncolnátok! Legfeljebb három dalt adhattok az esküvői lejátszási listához.",
     "embedTitle": "Ruben és Andrea esküvői lejátszási listája",
-    "playPlaylist": "Spotify-lista betöltése",
-    "spotifyReady": "A Spotify kapcsolat aktív, a lejátszási lista megnyitható.",
-    "spotifyPending": "A Spotify integráció még nincs bekötve, de a javaslatok itt mentésre kerülnek, és később használhatók a lista összeállításához.",
-    "playlistUnavailable": "A lejátszási lista akkor jelenik meg itt, ha elkészült."
+    "spotifyLoading": "Az esküvői lejátszási lista betöltése…",
+    "openSpotify": "Megnyitás a Spotifyban",
+    "playlistUnavailable": "Most nem sikerült kapcsolódni a Spotifyhoz. Kérjük, próbáljátok újra egy kicsit később.",
+    "searchLabel": "Keresés a Spotifyon",
+    "searchPlaceholder": "Keress dalra vagy előadóra",
+    "selectedCount": "{count} / 3 dal kiválasztva",
+    "maximumReached": "Elérted a legfeljebb 3 dalos korlátot.",
+    "searching": "Keresés a Spotifyon…",
+    "searchMinimum": "Írj be legalább két karaktert.",
+    "searchResultsLabel": "Spotify keresési találatok",
+    "noResults": "Nem találtunk dalokat.",
+    "alreadyAdded": "Kiválasztva",
+    "addTrack": "Hozzáadás",
+    "selectedTitle": "Kiválasztott dalok",
+    "emptySelection": "A kiválasztott dalok itt jelennek meg.",
+    "removeTrack": "{title} eltávolítása",
+    "addMySongs": "Dalaim hozzáadása",
+    "addingSongs": "Dalok hozzáadása...",
+    "spotifyUnavailable": "Most nem sikerült kapcsolódni a Spotifyhoz. Kérjük, próbáljátok újra egy kicsit később.",
+    "invalidSelection": "Válassz egy és három közötti különböző Spotify-dalt.",
+    "submissionError": "A dalkéréseket nem sikerült elmenteni. Kérjük, próbáld újra.",
+    "rateLimitError": "Kérjük, várj egy kicsit, majd próbáld újra.",
+    "partialFailure": "Néhány dalt nem sikerült hozzáadni. A sikeres kérések mentésre kerültek; kérjük, próbáld újra a többit.",
+    "submissionSuccess": "A dalok felkerültek a lejátszási listára! 🎶",
+    "viewPlaylist": "Lejátszási lista megtekintése a Spotifyon",
+    "submittedTitle": "Elküldött dalok",
+    "alreadyInPlaylist": "Már szerepel a lejátszási listán",
+    "submitted": "Elküldve",
+    "loadRequestsError": "A mentett dalkéréseket nem sikerült betölteni."
   },
   "gifts": {
     "label": "Egy rövid megjegyzés",
@@ -145,7 +170,7 @@
     "presence": "Már az is rengeteget jelent, hogy velünk ünnepeltek.",
     "contribution": "Ha szeretnétek ajándékot adni, a közös jövőbeli kalandjainkhoz adott hozzájárulásnak nagyon örülnénk.",
     "detailsLabel": "Ajándékozási részletek",
-    "detailsPending": "Az ajándékozással kapcsolatos információkat később tesszük ide."
+    "detailsPending": "Ha szeretnétek megajándékozni minket, örömmel fogadunk egy pénzbeli hozzájárulást a közös jövőbeli kalandjainkhoz."
   },
   "countdown": {
     "label": "Az ünneplésig",
@@ -265,6 +290,7 @@
     "plusOneAllowed": "További vendég engedélyezése",
     "invitationUrl": "Privát meghívólink",
     "dataUnavailable": "Az esküvői adatok átmenetileg nem érhetők el.",
+    "schemaUnavailable": "A Supabase nem találja az esküvői táblákat. Futtassátok le az adatbázis-migrációkat ezen a projekten, majd töltsétek újra az oldalt.",
     "invitationCount": "Aktív meghívók",
     "invitationDenominator": "Aktív meghívók",
     "guestCount": "Meghívott vendégek maximális száma",

@@ -795,6 +795,24 @@ a {
   grid-template-columns: minmax(14rem, 0.8fr) minmax(0, 1.2fr);
 }
 
+.music-note {
+  isolation: isolate;
+  position: relative;
+}
+
+.music-note::before {
+  background: url("/images/botanicals/music-orchid.svg") center / contain no-repeat;
+  bottom: 1rem;
+  content: "";
+  height: 9rem;
+  left: 0.5rem;
+  opacity: 0.16;
+  pointer-events: none;
+  position: absolute;
+  width: 9rem;
+  z-index: -1;
+}
+
 .music-note .section-heading,
 .gift-note .section-heading {
   margin-bottom: 0;
@@ -809,7 +827,248 @@ a {
 
 .spotify-embed {
   height: 352px;
+  margin: 0;
+}
+
+.spotify-player {
   margin-top: 1rem;
+  min-width: 0;
+}
+
+.spotify-player__loading,
+.spotify-player__message {
+  align-items: center;
+  background: var(--color-neutral-soft);
+  border-radius: 4px;
+  color: var(--color-ink);
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  min-height: 22rem;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.spotify-player__open {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  min-height: 2.75rem;
+  text-decoration-color: var(--color-rose-gold);
+  text-underline-offset: 0.25em;
+}
+
+.song-request {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+  min-width: 0;
+}
+
+.song-request__search > label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.45rem;
+}
+
+.song-request__search > input {
+  background: var(--color-neutral-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 1rem;
+  min-height: 3rem;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+}
+
+.song-request__search > input:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.song-request__search > input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.song-request__count,
+.song-request__limit,
+.song-request__hint {
+  font-size: 0.82rem;
+  margin: 0.55rem 0 0;
+}
+
+.song-request__limit {
+  color: oklch(0.4 0.09 18);
+}
+
+.song-request__results,
+.song-request__selected {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  max-width: 100%;
+  padding: 0;
+}
+
+.song-request__results {
+  max-height: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.song-request__result,
+.song-request__selected-item {
+  align-items: center;
+  background: var(--color-neutral-light);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px oklch(0.31 0.005 122 / 6%);
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  min-height: 4.25rem;
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  width: 100%;
+}
+
+.song-request__result {
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: background-color var(--duration-fast) ease-out, border-color var(--duration-fast) ease-out;
+}
+
+.song-request__result:hover:not(:disabled) {
+  background: var(--color-matcha-pale);
+  border-color: var(--color-matcha-soft);
+}
+
+.song-request__result:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.song-request__artwork {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  display: block;
+  height: 3.25rem;
+  object-fit: cover;
+  width: 3.25rem;
+}
+
+.song-request__artwork--empty {
+  background: var(--color-matcha-pale);
+}
+
+.song-request__track-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.song-request__track-copy strong,
+.song-request__track-copy span {
+  overflow-wrap: anywhere;
+}
+
+.song-request__track-copy strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.song-request__track-copy > span {
+  color: var(--color-ink);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  margin-top: 0.15rem;
+}
+
+.song-request__add-label {
+  color: var(--color-matcha-strong);
+  font-size: 0.78rem;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.song-request__selection h4,
+.song-request__submitted h4 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.song-request__selected-item {
+  grid-template-columns: 3.25rem minmax(0, 1fr) 2.75rem;
+  list-style: none;
+}
+
+.song-request__remove {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  color: var(--color-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 1.35rem;
+  height: 2.75rem;
+  justify-content: center;
+  justify-self: end;
+  width: 2.75rem;
+}
+
+.song-request__remove:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.song-request__submit {
+  margin-top: 0.8rem;
+}
+
+.song-request__success {
+  border-bottom: 1px solid var(--color-matcha-strong);
+  border-top: 1px solid var(--color-matcha-strong);
+  margin-top: 1rem;
+  padding: 0.85rem 0;
+}
+
+.song-request__success p {
+  margin: 0 0 0.35rem;
+}
+
+.song-request__success a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 2.75rem;
+  text-decoration-color: var(--color-rose-gold);
+  text-underline-offset: 0.25em;
+}
+
+.song-request__submitted-mark {
+  color: var(--color-matcha-strong);
+  font-size: 1.1rem;
+  justify-self: end;
+}
+
+.visually-hidden {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .gift-details {
@@ -1269,6 +1528,37 @@ a {
     gap: 2rem;
     grid-template-columns: minmax(0, 1fr);
     padding: 3rem 1.25rem;
+  }
+
+  .music-note::before {
+    bottom: 0.25rem;
+    height: 7rem;
+    left: auto;
+    right: 0.25rem;
+    width: 7rem;
+  }
+
+  .spotify-player__loading,
+  .spotify-player__message,
+  .spotify-embed {
+    height: 22rem;
+    min-height: 22rem;
+  }
+
+  .song-request__result,
+  .song-request__selected-item {
+    gap: 0.55rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+    padding-inline: 0.45rem;
+  }
+
+  .song-request__selected-item {
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+  }
+
+  .song-request__artwork {
+    height: 2.75rem;
+    width: 2.75rem;
   }
 }
 

@@ -60,7 +60,7 @@ export default async function AdminPage({
 
   const labelKeys = [
     "label", "title", "signOut", "navigation", "overview", "invitations", "rsvps", "music", "analytics", "summary",
-    "dataUnavailable", "invitationCount", "invitationDenominator", "guestCount", "guestDenominator", "openedCount",
+    "dataUnavailable", "schemaUnavailable", "invitationCount", "invitationDenominator", "guestCount", "guestDenominator", "openedCount",
     "openedDenominator", "attendingCount", "declinedCount", "attendanceResponses", "pendingCount", "pendingDenominator",
     "confirmedGuests", "confirmedGuestsNote", "songCount", "songRequestsNote", "exportCsv", "invitationList", "invitationName",
     "guestPlaces", "response", "attending", "declined", "pending", "songRequests", "artistUnknown", "responseDetails",
@@ -69,7 +69,10 @@ export default async function AdminPage({
     "preferredLanguage", "languageDefault", "plusOneAllowed", "invitationUrl",
     "deleteWarning", "deleteConfirmationLabel", "deleteAction",
   ] as const;
-  const labels = Object.fromEntries(await Promise.all(labelKeys.map(async (key) => [key, t(key)])));
+  const labels = Object.fromEntries(labelKeys.map((key) => [
+    key,
+    key === "openedDenominator" ? t.raw(key) as string : t(key),
+  ]));
   const statusMessage = params.deleted === "1"
     ? t("deleteSuccess")
     : params.error === "delete-confirmation"

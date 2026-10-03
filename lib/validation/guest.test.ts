@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { deriveInvitationStatus, resolveLocalePreference } from "../invitations/status";
 import { supportedLocales } from "../wedding-config";
-import { songRequestPayloadSchema, validateRsvpForInvitation } from "./guest";
+import { songRequestPayloadSchema, spotifySongSubmissionSchema, validateRsvpForInvitation } from "./guest";
 
 describe("guest request validation", () => {
   it("enforces the invitation guest allowance and plus-one flag", () => {
@@ -25,6 +25,16 @@ describe("guest request validation", () => {
 
     expect(songRequestPayloadSchema.safeParse({ requests: threeSongs, language: "en" }).success).toBe(true);
     expect(songRequestPayloadSchema.safeParse({ requests: fourSongs, language: "en" }).success).toBe(false);
+  });
+
+  it("accepts at most three valid, distinct Spotify track IDs", () => {
+    const trackIds = ["4iV5W9uYEdYUVa79Axb7Rh", "1301WleyT98MSxVHPZCA6M", "0eGsygTp906u18L0OimcLq"];
+
+    expect(spotifySongSubmissionSchema.safeParse({ trackIds, language: "en" }).success).toBe(true);
+    expect(spotifySongSubmissionSchema.safeParse({ trackIds: trackIds.slice(0, 2), language: "en" }).success).toBe(true);
+    expect(spotifySongSubmissionSchema.safeParse({ trackIds: [...trackIds, "3n3Ppam7vgaVa1iaRUc9Lp"], language: "en" }).success).toBe(false);
+    expect(spotifySongSubmissionSchema.safeParse({ trackIds: [trackIds[0], trackIds[0]], language: "en" }).success).toBe(false);
+    expect(spotifySongSubmissionSchema.safeParse({ trackIds: ["not-a-spotify-id"], language: "en" }).success).toBe(false);
   });
 
   it("resolves locale using invitation, manual, browser, then English priority", () => {

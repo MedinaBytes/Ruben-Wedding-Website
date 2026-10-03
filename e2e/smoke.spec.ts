@@ -10,6 +10,19 @@ test("homepage renders the invitation shell", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("Spotify playlist loads on visibility and offers an app fallback", async ({ page }) => {
+  await page.goto("/?lang=en");
+
+  const player = page.locator(".spotify-player");
+  await player.scrollIntoViewIfNeeded();
+  const iframe = player.locator("iframe");
+  await expect.poll(async () => (await iframe.count()) + (await player.locator(".spotify-player__message").count())).toBeGreaterThan(0);
+  test.skip(!(await iframe.count()), "Spotify playlist is not configured in this environment.");
+
+  await expect(iframe).toHaveAttribute("src", /^https:\/\/open\.spotify\.com\/embed\/playlist\/[A-Za-z0-9]{22}$/);
+  await expect(player.getByRole("link", { name: "Open in Spotify" })).toBeVisible();
+});
+
 test("day navigation targets the shared timeline", async ({ page }) => {
   await page.goto("/?lang=en");
 

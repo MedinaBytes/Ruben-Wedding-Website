@@ -43,8 +43,21 @@ export const songRequestPayloadSchema = z
   })
   .strict();
 
+export const spotifySongSubmissionSchema = z
+  .object({
+    trackIds: z.array(z.string().regex(/^[A-Za-z0-9]{22}$/)).min(1).max(3),
+    language: z.enum(supportedLocales),
+  })
+  .strict()
+  .superRefine(({ trackIds }, context) => {
+    if (new Set(trackIds).size !== trackIds.length) {
+      context.addIssue({ code: "custom", message: "duplicate_tracks", path: ["trackIds"] });
+    }
+  });
+
 export type RsvpPayload = z.infer<typeof rsvpPayloadSchema>;
 export type SongRequestPayload = z.infer<typeof songRequestPayloadSchema>;
+export type SpotifySongSubmission = z.infer<typeof spotifySongSubmissionSchema>;
 
 export function validateRsvpForInvitation(
   value: unknown,

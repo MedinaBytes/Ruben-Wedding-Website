@@ -118,7 +118,7 @@ begin
 
   v_window_started_at := pg_catalog.to_timestamp(
     pg_catalog.floor(
-      pg_catalog.extract(epoch from pg_catalog.clock_timestamp()) / p_window_seconds
+      extract(epoch from pg_catalog.clock_timestamp()) / p_window_seconds
     ) * p_window_seconds
   );
 

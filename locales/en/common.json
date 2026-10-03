@@ -33,7 +33,7 @@
     },
     "services": {
       "title": "Service providers",
-      "body": "The site's hosting provider and Supabase store and process information to run the invitation and database. They do not use guest details for their own advertising. The embedded map loads OpenStreetMap tiles when you reach the venue section; your browser connects directly to OpenStreetMap, which may receive technical request data such as your IP address under its privacy policy. Apple Maps and Google Maps links open those services if you choose them. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
+      "body": "The site's hosting provider and Supabase store and process information to run the invitation and database. They do not use guest details for their own advertising. The embedded map loads OpenStreetMap tiles when you reach the venue section; your browser connects directly to OpenStreetMap, which may receive technical request data such as your IP address under its privacy policy. Apple Maps and Google Maps links open those services if you choose them. The Spotify player loads automatically when the Music section comes into view, and your browser connects directly to Spotify to display it. Spotify also receives song searches and selected track requests through the site's server so requested songs can be added to the wedding playlist."
     },
     "retention": {
       "title": "Retention",
@@ -132,12 +132,37 @@
     "intro": "There are three songs we would especially love to hear.",
     "playlistPending": "Our three-song playlist will be added here once it is ready.",
     "requestsTitle": "Your song requests",
-    "requestsIntro": "We will ask you for up to three songs in your personal invitation.",
+    "requestsIntro": "We would love to hear what you want to dance to! Add up to three songs to the wedding playlist.",
     "embedTitle": "Ruben and Andrea's wedding playlist",
-    "playPlaylist": "Load the Spotify playlist",
-    "spotifyReady": "Spotify is connected and the playlist is ready to open.",
-    "spotifyPending": "Spotify is not connected yet, but your suggestions are saved here and can be used to build the playlist later.",
-    "playlistUnavailable": "The playlist will appear here once it is ready."
+    "spotifyLoading": "Loading the wedding playlist…",
+    "openSpotify": "Open in Spotify",
+    "playlistUnavailable": "We couldn't connect to Spotify right now. Please try again in a moment.",
+    "searchLabel": "Search Spotify",
+    "searchPlaceholder": "Search songs or artists",
+    "selectedCount": "{count} / 3 songs selected",
+    "maximumReached": "You've reached the maximum of 3 songs.",
+    "searching": "Searching Spotify…",
+    "searchMinimum": "Enter at least two characters.",
+    "searchResultsLabel": "Spotify search results",
+    "noResults": "No songs found.",
+    "alreadyAdded": "Added",
+    "addTrack": "Add",
+    "selectedTitle": "Selected songs",
+    "emptySelection": "Your selected songs will appear here.",
+    "removeTrack": "Remove {title}",
+    "addMySongs": "Add my songs",
+    "addingSongs": "Adding your songs...",
+    "spotifyUnavailable": "We couldn't connect to Spotify right now. Please try again in a moment.",
+    "invalidSelection": "Choose between one and three different Spotify songs.",
+    "submissionError": "We couldn't save your song requests. Please try again.",
+    "rateLimitError": "Please wait a moment before trying again.",
+    "partialFailure": "Some songs could not be added. Your successful requests are saved; please try the others again.",
+    "submissionSuccess": "Your songs are on the playlist! 🎶",
+    "viewPlaylist": "View playlist on Spotify",
+    "submittedTitle": "Your submitted songs",
+    "alreadyInPlaylist": "Already on the playlist",
+    "submitted": "Submitted",
+    "loadRequestsError": "We couldn't load your saved requests."
   },
   "gifts": {
     "label": "A little note",
@@ -145,7 +170,7 @@
     "presence": "Having you with us to celebrate is already more than enough.",
     "contribution": "If you would like to give us something, a contribution toward our next adventures together would mean a great deal.",
     "detailsLabel": "Gift details",
-    "detailsPending": "Gift information will be shared here once it is ready."
+    "detailsPending": "If you would like to give us a gift, a contribution in cash toward our next adventures together would be very much appreciated."
   },
   "countdown": {
     "label": "Until we celebrate",
@@ -265,6 +290,7 @@
     "plusOneAllowed": "Allow an additional guest",
     "invitationUrl": "Private invitation link",
     "dataUnavailable": "Wedding data is temporarily unavailable.",
+    "schemaUnavailable": "Supabase cannot find the wedding tables. Apply the database migrations to this project, then reload.",
     "invitationCount": "Active invitations",
     "invitationDenominator": "Active invitations",
     "guestCount": "Maximum invited guests",

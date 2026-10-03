@@ -1,11 +1,13 @@
 import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
-import { RsvpForm, SongRequestForm } from "@/components/invitation/guest-forms";
+import { RsvpForm } from "@/components/invitation/guest-forms";
 import { InteractiveMap } from "@/components/invitation/interactive-map";
 import { PhotoStory } from "@/components/invitation/photo-story";
 import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
+import { SpotifySongRequests } from "@/components/invitation/spotify-song-requests";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
+import { getSpotifyPlaylistConfig } from "@/lib/spotify/api";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
 
 type SectionNamespace = "event" | "venue" | "travel" | "stay" | "dress" | "music" | "gifts" | "closing";
@@ -131,7 +133,7 @@ export async function WeddingSections({
     ...(locale === "en" ? [{ label: travel("catTickets"), href: "https://www.cityairporttrain.com/en/" }] : []),
   ];
   const stayLinks = getStayLinks(locale);
-  const spotifyConfigured = Boolean(process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL);
+  const spotifyPlaylist = getSpotifyPlaylistConfig();
 
   return (
     <>
@@ -292,16 +294,18 @@ export async function WeddingSections({
         </div>
         <div className="music-note__copy">
           <p>{music("intro")}</p>
-          <p className="music-note__status">{spotifyConfigured ? music("spotifyReady") : music("spotifyPending")}</p>
           <SpotifyPlaylist
             title={music("embedTitle")}
-            playLabel={music("playPlaylist")}
+            loadingLabel={music("spotifyLoading")}
             fallback={music("playlistUnavailable")}
+            openSpotifyLabel={music("openSpotify")}
+            embedUrl={spotifyPlaylist?.embedUrl ?? null}
+            openUrl={spotifyPlaylist?.openUrl ?? null}
             invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
           />
           <h3>{music("requestsTitle")}</h3>
           <p>{music("requestsIntro")}</p>
-          {invitation && <SongRequestForm token={invitation.token} />}
+          {invitation && <SpotifySongRequests token={invitation.token} playlistUrl={spotifyPlaylist?.openUrl ?? null} />}
         </div>
       </section>
 

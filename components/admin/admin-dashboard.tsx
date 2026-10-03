@@ -56,6 +56,7 @@ export async function AdminDashboard({
   let rsvps: AdminRsvp[];
   let songs: AdminSong[];
   let openedInvitationIds: Set<string>;
+  let schemaUnavailable = false;
 
   try {
     const client = createSupabaseAdminClient();
@@ -66,7 +67,12 @@ export async function AdminDashboard({
       client.from("invitation_events").select("invitation_id").eq("event_type", "INVITE_OPENED"),
     ]);
 
-    if (invitationResult.error || rsvpResult.error || songResult.error || eventResult.error) {
+    const queryErrors = [invitationResult.error, rsvpResult.error, songResult.error, eventResult.error];
+    if (queryErrors.some((error) => error?.code === "PGRST205")) {
+      schemaUnavailable = true;
+      throw new Error("Admin database schema unavailable.");
+    }
+    if (queryErrors.some(Boolean)) {
       throw new Error("Admin dashboard data unavailable.");
     }
 
@@ -96,7 +102,7 @@ export async function AdminDashboard({
       songs: songs.length,
     };
   } catch {
-    return <p className="admin-status" role="status">{labels.dataUnavailable}</p>;
+    return <p className="admin-status" role="status">{schemaUnavailable ? labels.schemaUnavailable : labels.dataUnavailable}</p>;
   }
 
   const metricsList = [

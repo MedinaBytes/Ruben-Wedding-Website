@@ -14,7 +14,7 @@ const securityHeaders = [
       "object-src 'none'",
       "frame-ancestors 'self'",
       "form-action 'self'",
-      "img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org",
+      "img-src 'self' data: https://i.scdn.co https://*.tile.openstreetmap.org https://tile.openstreetmap.org",
       "font-src 'self' data:",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",

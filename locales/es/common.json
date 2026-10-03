@@ -33,7 +33,7 @@
     },
     "services": {
       "title": "Proveedores de servicios",
-      "body": "El proveedor de alojamiento del sitio y Supabase almacenan y procesan información para que funcionen la invitación y la base de datos. No usan los datos de invitados para su propia publicidad. El mapa integrado carga los mapas de OpenStreetMap al llegar a la sección de los lugares; tu navegador se conecta directamente con OpenStreetMap, que puede recibir datos técnicos de la solicitud, como la dirección IP, según su política de privacidad. Si eliges los enlaces de Apple Maps o Google Maps, se abrirán esos servicios. Spotify solo carga un reproductor cuando eliges abrir la lista y hay una lista configurada."
+      "body": "El proveedor de alojamiento del sitio y Supabase almacenan y procesan información para que funcionen la invitación y la base de datos. No usan los datos de invitados para su propia publicidad. El mapa integrado carga los mapas de OpenStreetMap al llegar a la sección de los lugares; tu navegador se conecta directamente con OpenStreetMap, que puede recibir datos técnicos de la solicitud, como la dirección IP, según su política de privacidad. Si eliges los enlaces de Apple Maps o Google Maps, se abrirán esos servicios. El reproductor de Spotify se carga automáticamente al llegar a la sección de música, y tu navegador se conecta directamente con Spotify para mostrarlo. Spotify también recibe las búsquedas y las canciones seleccionadas a través del servidor del sitio para añadirlas a la lista de la boda."
     },
     "retention": {
       "title": "Conservación",
@@ -132,12 +132,37 @@
     "intro": "Hay tres canciones que nos encantaría escuchar.",
     "playlistPending": "Añadiremos aquí nuestra lista de tres canciones cuando esté lista.",
     "requestsTitle": "Vuestras canciones",
-    "requestsIntro": "En la invitación personal podréis sugerir hasta tres canciones.",
+    "requestsIntro": "¡Nos encantaría saber qué queréis bailar! Añadid hasta tres canciones a la lista de la boda.",
     "embedTitle": "Lista de reproducción de boda de Ruben y Andrea",
-    "playPlaylist": "Cargar la lista de Spotify",
-    "spotifyReady": "Spotify está conectado y la playlist está lista para abrirse.",
-    "spotifyPending": "Spotify aún no está conectado, pero vuestras sugerencias quedan guardadas aquí y pueden servir para preparar la playlist más adelante.",
-    "playlistUnavailable": "La lista de reproducción aparecerá aquí cuando esté lista."
+    "spotifyLoading": "Cargando la lista de la boda…",
+    "openSpotify": "Abrir en Spotify",
+    "playlistUnavailable": "No hemos podido conectar con Spotify ahora mismo. Vuelve a intentarlo dentro de un momento.",
+    "searchLabel": "Buscar en Spotify",
+    "searchPlaceholder": "Busca canciones o artistas",
+    "selectedCount": "{count} / 3 canciones seleccionadas",
+    "maximumReached": "Has alcanzado el máximo de 3 canciones.",
+    "searching": "Buscando en Spotify…",
+    "searchMinimum": "Escribe al menos dos caracteres.",
+    "searchResultsLabel": "Resultados de búsqueda de Spotify",
+    "noResults": "No se han encontrado canciones.",
+    "alreadyAdded": "Añadida",
+    "addTrack": "Añadir",
+    "selectedTitle": "Canciones seleccionadas",
+    "emptySelection": "Aquí aparecerán las canciones que elijas.",
+    "removeTrack": "Eliminar {title}",
+    "addMySongs": "Añadir mis canciones",
+    "addingSongs": "Añadiendo tus canciones...",
+    "spotifyUnavailable": "No hemos podido conectar con Spotify ahora mismo. Vuelve a intentarlo dentro de un momento.",
+    "invalidSelection": "Elige entre una y tres canciones distintas de Spotify.",
+    "submissionError": "No hemos podido guardar tus peticiones. Inténtalo de nuevo.",
+    "rateLimitError": "Espera un momento antes de volver a intentarlo.",
+    "partialFailure": "No se han podido añadir algunas canciones. Tus peticiones completadas están guardadas; vuelve a intentar las demás.",
+    "submissionSuccess": "¡Tus canciones ya están en la lista! 🎶",
+    "viewPlaylist": "Ver la lista en Spotify",
+    "submittedTitle": "Tus canciones enviadas",
+    "alreadyInPlaylist": "Ya está en la lista",
+    "submitted": "Enviada",
+    "loadRequestsError": "No hemos podido cargar tus peticiones guardadas."
   },
   "gifts": {
     "label": "Una pequeña nota",
@@ -145,7 +170,7 @@
     "presence": "Celebrar con vosotros ya es más que suficiente.",
     "contribution": "Si queréis hacernos un regalo, una aportación para nuestras próximas aventuras juntos significaría mucho para nosotros.",
     "detailsLabel": "Detalles del regalo",
-    "detailsPending": "La información sobre los regalos se añadirá aquí cuando esté lista."
+    "detailsPending": "Si queréis hacernos un regalo, agradeceremos mucho una aportación en efectivo para nuestras próximas aventuras juntos."
   },
   "countdown": {
     "label": "Hasta la celebración",
@@ -265,6 +290,7 @@
     "plusOneAllowed": "Permitir un invitado adicional",
     "invitationUrl": "Enlace privado de invitación",
     "dataUnavailable": "Los datos de la boda no están disponibles temporalmente.",
+    "schemaUnavailable": "Supabase no encuentra las tablas de la boda. Aplica las migraciones de la base de datos en este proyecto y vuelve a cargar la página.",
     "invitationCount": "Invitaciones activas",
     "invitationDenominator": "Invitaciones activas",
     "guestCount": "Máximo de personas invitadas",

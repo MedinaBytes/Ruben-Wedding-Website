@@ -9,6 +9,7 @@ Every externally sourced visual asset must be reviewed before production use.
 ## Approved approach
 
 The orchid branch in `components/invitation/orchid-branch.tsx` is original, project-authored artwork and uses no external source material or attribution.
+The music-section orchid in `public/images/botanicals/music-orchid.svg` is also original project artwork and uses no external source material or attribution.
 
 Prefer, in order:
 

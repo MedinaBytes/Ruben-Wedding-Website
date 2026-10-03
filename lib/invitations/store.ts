@@ -56,7 +56,7 @@ export async function findActiveInvitationByToken(token: string) {
 export async function consumeInvitationRateLimit(
   client: SupabaseClient,
   invitationId: string,
-  action: "rsvp" | "songs" | "event",
+  action: "rsvp" | "songs" | "spotify_search" | "event",
   limit: number,
   windowSeconds: number,
 ) {
