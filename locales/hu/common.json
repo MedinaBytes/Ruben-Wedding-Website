@@ -87,11 +87,19 @@
   },
   "travel": {
     "label": "Közlekedés",
-    "title": "Néhány tipp az úthoz",
-    "publicTransport": "A tömegközlekedéshez aznap használjatok aktuális útvonaltervezőt.",
-    "car": "Autóval érkezve indulás előtt ellenőrizzétek a forgalmat és a parkolást.",
-    "betweenVenues": "A szertartás és a fogadás is Bécs 12. kerületében lesz. Indulás előtt nézzétek meg a két helyszín közötti útvonalat.",
-    "liveDirections": "A helyszínek linkjei aktuális térképet és útvonaltervezési lehetőségeket nyitnak meg."
+    "title": "Utazás Bécsbe és közlekedés a városban",
+    "originInfo": "Budapestről közvetlen nappali vonatokkal juthattok Bécsbe. A MÁV START Europa másodosztályú jegyei Ausztriába 13 eurótól indulnak; a kedvező árú jegyek száma korlátozott, ezért érdemes időben foglalni. Az indulási időt és a jegyet a MÁV-nál vagy az ÖBB-nél tudjátok ellenőrizni.",
+    "airportInfo": "A bécsi repülőtérről az S7-es vonat körülbelül 25 perc alatt ér Wien Mitte állomásra, a Railjet pedig Wien Hauptbahnhofra közlekedik. A CAT megállás nélkül 21 perc alatt ér Wien Mitte-re; jelenleg 14,90 euró az egyirányú jegy. Pályafelújítás miatt prémiumbuszként közlekedik, a tervek szerint 2027. október 31-ig. A repülőtér nincs benne a bécsi városi jegy zónájában, oda külön jegy kell.",
+    "cityTicketInfo": "Bécsben a metróra, villamosra és buszra ugyanaz a belvárosi zónára érvényes jegy kell. Jelenleg a digitális egyszeri jegy 1,50 euró (egy, legfeljebb 80 perces, megszakítás nélküli útra, átszállással), a 24 órás jegy pedig 9,70 euró. A digitális jegy névre szól, és fényképes igazolvánnyal együtt érvényes.",
+    "priceNote": "Az árakat 2026. október 3-án ellenőriztük. A jegyárak, menetrendek és a felújítási munkák változhatnak; indulás előtt nézzetek utána újra.",
+    "flightMadrid": "Ryanair: Madrid–Bécs járatok",
+    "flightBarcelona": "Vueling: Barcelona–Bécs járatok",
+    "flightCaracas": "Iberia: Caracas–Madrid járatok",
+    "trainMav": "MÁV: START Europa jegyek Budapest és Ausztria között",
+    "trainOebb": "ÖBB: menetrendek és jegyek",
+    "cityTickets": "Wiener Linien: bécsi jegyek és árak",
+    "airportConnections": "Bécsi repülőtér: S7, Railjet, CAT és buszok",
+    "catTickets": "CAT: aktuális menetrend és jegyek"
   },
   "stay": {
     "label": "Szállás",

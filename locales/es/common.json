@@ -87,11 +87,19 @@
   },
   "travel": {
     "label": "Cómo desplazarse",
-    "title": "Una ayuda para el trayecto",
-    "publicTransport": "Para el transporte público, consulten las indicaciones actualizadas el mismo día.",
-    "car": "Si vienen en coche, comprueben el tráfico y el aparcamiento antes de salir.",
-    "betweenVenues": "La ceremonia y la recepción están en el distrito 12 de Viena. Comprueben el trayecto entre ambos lugares antes de salir.",
-    "liveDirections": "Los enlaces de los lugares abren opciones actuales de mapas y navegación."
+    "title": "Cómo llegar y moverse por Viena",
+    "originInfo": "Desde Madrid podéis consultar los vuelos directos a Viena de Ryanair; desde Barcelona, los de Vueling. Desde Caracas, Iberia comercializa la ruta a Madrid y desde allí habría que enlazar con Viena. Las frecuencias pueden cambiar: si compráis los tramos por separado, dejad margen para recoger y volver a facturar el equipaje.",
+    "airportInfo": "Desde el aeropuerto, el tren S7 tarda unos 25 minutos hasta Wien Mitte y los Railjet de ÖBB llegan a Wien Hauptbahnhof. El CAT llega sin paradas a Wien Mitte en 21 minutos; hoy cuesta €14,90 por trayecto y, por obras, funciona como autobús premium, previsto hasta el 31 de octubre de 2027. El aeropuerto queda fuera de la tarifa urbana: hace falta otro billete.",
+    "cityTicketInfo": "En Viena, metro (U-Bahn), tranvía y autobús usan el mismo billete de zona núcleo. Ahora el billete digital sencillo cuesta €1,50 y permite un trayecto de hasta 80 minutos, con transbordos pero sin interrumpirlo; el pase de 24 horas cuesta €9,70. Los billetes digitales son personales y requieren un documento de identidad con foto.",
+    "priceNote": "Precios consultados el 3 de octubre de 2026. Las tarifas, rutas y obras pueden cambiar antes de la boda; comprobadlas de nuevo cuando se acerque el viaje.",
+    "flightMadrid": "Ryanair: consultar vuelos Madrid–Viena",
+    "flightBarcelona": "Vueling: consultar vuelos Barcelona–Viena",
+    "flightCaracas": "Iberia: consultar vuelos Caracas–Madrid",
+    "trainMav": "MÁV: tarifas Budapest–Austria desde 13 €",
+    "trainOebb": "ÖBB: horarios y billetes",
+    "cityTickets": "Wiener Linien: billetes y tarifas de Viena",
+    "airportConnections": "Aeropuerto de Viena: S7, Railjet, CAT y autobuses",
+    "catTickets": "CAT: horarios y billetes actuales"
   },
   "stay": {
     "label": "Alojamiento",

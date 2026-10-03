@@ -698,6 +698,27 @@ a {
   margin: 0 0 1.15rem;
 }
 
+.travel-note__price-note {
+  font-size: 0.82rem;
+}
+
+.travel-note__links {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.travel-note__links a {
+  align-items: center;
+  color: var(--color-ink);
+  display: inline-flex;
+  min-height: 2.75rem;
+  text-decoration-color: var(--color-rose-gold);
+  text-underline-offset: 0.2em;
+}
+
 .music-note__status {
   color: var(--color-ink-soft);
   font-size: 0.84rem;

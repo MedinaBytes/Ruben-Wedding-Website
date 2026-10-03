@@ -87,11 +87,19 @@
   },
   "travel": {
     "label": "Unterwegs in Wien",
-    "title": "Ein paar Hinweise zur Anreise",
-    "publicTransport": "Für öffentliche Verkehrsmittel nutzt bitte am Tag selbst eine aktuelle Routenplanung.",
-    "car": "Wenn ihr mit dem Auto kommt, prüft bitte vor der Abfahrt Verkehr und Parkmöglichkeiten.",
-    "betweenVenues": "Trauung und Feier finden beide im 12. Wiener Gemeindebezirk statt. Prüft die Route zwischen den Orten vor der Abfahrt.",
-    "liveDirections": "Die Links bei den Orten öffnen aktuelle Karten- und Navigationsoptionen."
+    "title": "Anreise und Öffis in Wien",
+    "originInfo": "Aus Österreich kommt ihr gut mit den ÖBB nach Wien; prüft die passende Verbindung für euren Reisetag. Wer am Flughafen landet, kann mit der S7 in etwa 25 Minuten nach Wien Mitte fahren oder den Railjet zum Hauptbahnhof nehmen.",
+    "airportInfo": "Der CAT fährt ohne Zwischenhalt in 21 Minuten nach Wien Mitte. Er kostet derzeit 14,90 € pro Strecke und wird wegen Bauarbeiten als Premiumbus betrieben, voraussichtlich bis 31. Oktober 2027. Der Flughafen liegt außerhalb der Wiener Kernzone; für die Fahrt dorthin braucht ihr ein separates Ticket.",
+    "cityTicketInfo": "U-Bahn, Straßenbahn und Bus fahren mit demselben Ticket für die Wiener Kernzone. Aktuell kostet ein digitales Einzelticket 1,50 € (eine Fahrt, bis zu 80 Minuten, Umsteigen ist erlaubt) oder ein 24-Stunden-Ticket 9,70 €. Digitale Tickets sind persönlich und nur mit amtlichem Lichtbildausweis gültig.",
+    "priceNote": "Preise geprüft am 3. Oktober 2026. Tarife, Verbindungen und Baustellen können sich bis zur Hochzeit ändern; bitte kurz vor der Reise noch einmal nachsehen.",
+    "flightMadrid": "Ryanair: Flüge Madrid–Wien prüfen",
+    "flightBarcelona": "Vueling: Flüge Barcelona–Wien prüfen",
+    "flightCaracas": "Iberia: Flüge Caracas–Madrid prüfen",
+    "trainMav": "MÁV: START-Europa-Tickets Budapest–Österreich",
+    "trainOebb": "ÖBB: Fahrpläne und Tickets",
+    "cityTickets": "Wiener Linien: Tickets und Tarife",
+    "airportConnections": "Flughafen Wien: S7, Railjet, CAT und Busse",
+    "catTickets": "CAT: aktueller Fahrplan und Tickets"
   },
   "stay": {
     "label": "Übernachten",

@@ -87,11 +87,19 @@
   },
   "travel": {
     "label": "Getting around",
-    "title": "A little help with the journey",
-    "publicTransport": "For public transport, use a live directions service on the day.",
-    "car": "If you are driving, check current traffic and parking before you leave.",
-    "betweenVenues": "The ceremony and reception are both in Vienna's 12th district. Check the route between them before setting out.",
-    "liveDirections": "The venue links above open current map and navigation options."
+    "title": "Getting to Vienna and getting around",
+    "originInfo": "If you are coming from elsewhere in Austria, ÖBB trains are a practical way to reach Vienna. Check the timetable for your travel date; international flight schedules can also change before October 2027.",
+    "airportInfo": "From Vienna Airport, the S7 takes about 25 minutes to Wien Mitte and ÖBB Railjets serve Wien Hauptbahnhof. The CAT reaches Wien Mitte in 21 minutes; it currently costs €14.90 one way and is running as a premium bus during rail works, currently scheduled through 31 October 2027.",
+    "cityTicketInfo": "U-Bahn, trams and buses use the same Vienna core-zone ticket. Current prices are €1.50 for a digital single ticket (one uninterrupted journey, up to 80 minutes) or €9.70 for 24 hours. The airport is outside this zone, so the airport train needs a separate ticket. Digital tickets are personal and require photo ID.",
+    "priceNote": "Prices checked on 3 October 2026. Fares, routes and construction plans may change before the wedding, so please check again close to your trip.",
+    "flightMadrid": "Ryanair: check Madrid–Vienna flights",
+    "flightBarcelona": "Vueling: check Barcelona–Vienna flights",
+    "flightCaracas": "Iberia: check Caracas–Madrid flights",
+    "trainMav": "MÁV: Budapest–Austria START Europa fares",
+    "trainOebb": "ÖBB: timetables and tickets",
+    "cityTickets": "Wiener Linien: city tickets and fares",
+    "airportConnections": "Vienna Airport: S7, Railjet, CAT and buses",
+    "catTickets": "CAT: current timetable and tickets"
   },
   "stay": {
     "label": "Staying nearby",

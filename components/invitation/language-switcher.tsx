@@ -22,6 +22,12 @@ const localeCodes: Record<Locale, string> = {
   hu: "HU",
 };
 
+function persistClientLocaleCookie(cookieName: string, locale: Locale) {
+  if (typeof document !== "undefined") {
+    document.cookie = `${cookieName}=${locale}; path=/; max-age=15811200; SameSite=Lax`;
+  }
+}
+
 export function LanguageSwitcher({
   label,
   invitation,
@@ -35,9 +41,8 @@ export function LanguageSwitcher({
 
   function selectLocale(nextLocale: Locale) {
     const cookieName = invitation ? `wedding_manual_locale_${invitation.id}` : "wedding_manual_locale";
-    if (typeof document !== "undefined") {
-      document.cookie = `${cookieName}=${nextLocale}; path=/; max-age=15811200; SameSite=Lax`;
-    }
+    persistClientLocaleCookie(cookieName, nextLocale);
+
     if (invitation) {
       recordInvitationInteraction({
         invitationId: invitation.id,
@@ -46,10 +51,14 @@ export function LanguageSwitcher({
         locale: nextLocale,
       });
     }
-    void setManualLocale(nextLocale, invitation?.id).catch(() => {});
-    if (typeof window !== "undefined") {
-      window.location.reload();
-    }
+
+    startTransition(async () => {
+      await setManualLocale(nextLocale, invitation?.id);
+      router.refresh();
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
+    });
   }
 
   return (

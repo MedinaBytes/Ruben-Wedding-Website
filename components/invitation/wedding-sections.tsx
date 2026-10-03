@@ -63,38 +63,6 @@ function getStayLinks(locale: Locale | undefined) {
   return baseLinks;
 }
 
-function getTravelNotes(locale: Locale | undefined) {
-  if (locale === "es") {
-    return [
-      "Desde España o Venezuela, hay vuelos directos y conexiones frecuentes a Viena con varias aerolíneas europeas y de largo recorrido.",
-      "Si venís desde el centro de Europa, la opción más fácil es llegar a Viena y seguir en U-Bahn o taxi hasta el barrio de la ceremonia.",
-      "En la ciudad, la red de transporte es muy clara: U-Bahn, tram y autobús funcionan bien y son la mejor opción para moverse entre ceremonia, recepción y alojamiento.",
-    ];
-  }
-
-  if (locale === "de") {
-    return [
-      "Wenn ihr aus Österreich oder aus dem Rest Europas anreist, ist Wien besonders gut erreichbar; die Verbindung per Zug, Flug oder Auto ist unkompliziert.",
-      "Im Stadtgebiet macht die U-Bahn, Straßenbahn und der Bus am meisten Sinn. Für die kurze Strecke zwischen den Veranstaltungsorten ist es einfach und zuverlässig.",
-      "Wenn ihr in der Nähe übernachten möchtet, lohnt sich ein Bereich um Meidling oder das Zentrum, damit ihr unkompliziert und ohne Stress anreisen könnt.",
-    ];
-  }
-
-  if (locale === "hu") {
-    return [
-      "Budapestről könnyen eljuthattok Bécsbe repülővel vagy vonattal, és a közlekedés a városban nagyon egyszerű.",
-      "A bécsi közlekedés ideális a szertartás, a fogadás és a szállás között: a metró, a villamos és a busz a legpraktikusabb opció.",
-      "Ha a városból érkeztek, érdemes a Meidling vagy a belváros közelében szállást választani, hogy egyszerűbb legyen az utazás.",
-    ];
-  }
-
-  return [
-    "Vienna is easy to reach by rail, plane, or car, and the city is very comfortable to navigate once you are there.",
-    "The best way to move around is by U-Bahn, tram, and bus, especially between the ceremony, the reception, and your accommodation.",
-    "If you are staying nearby, Meidling and the city center are both practical, easy, and very well connected.",
-  ];
-}
-
 export type GuestInvitationDetails = {
   id: string;
   token: string;
@@ -145,7 +113,22 @@ export async function WeddingSections({
   ] as const;
 
   const storyParagraphs = (invitation?.personalMessage ?? closing("story")).split(/\n\s*\n|\r\n\s*\r\n/).filter(Boolean);
-  const travelNotes = getTravelNotes(locale);
+  const travelLinks = [
+    ...(locale === "es" ? [
+      { label: travel("flightMadrid"), href: "https://www.ryanair.com/flights/es/es/vuelos-desde-madrid-a-viena" },
+      { label: travel("flightBarcelona"), href: "https://www.vueling.com/en/flights-from-vienna-to-barcelona" },
+      { label: travel("flightCaracas"), href: "https://www.iberia.com/es/vuelos-baratos/Caracas-Madrid/" },
+    ] : []),
+    ...(locale === "hu" ? [
+      { label: travel("trainMav"), href: "https://www.mavcsoport.hu/en/mav-szemelyszallitas/international-travels/start-europa-tickets" },
+      { label: travel("trainOebb"), href: "https://www.oebb.at/en/" },
+    ] : []),
+    ...(locale === "de" ? [{ label: travel("trainOebb"), href: "https://www.oebb.at/de/" }] : []),
+    ...(!locale || locale === "en" ? [{ label: travel("trainOebb"), href: "https://www.oebb.at/en/" }] : []),
+    { label: travel("cityTickets"), href: "https://www.wienerlinien.at/web/wl-en/24-hours-vienna" },
+    { label: travel("airportConnections"), href: "https://www.viennaairport.com/en/passengers/arrival__parking/public_transport" },
+    ...(locale === "en" ? [{ label: travel("catTickets"), href: "https://www.cityairporttrain.com/en/" }] : []),
+  ];
   const stayLinks = getStayLinks(locale);
   const spotifyConfigured = Boolean(process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL);
 
@@ -252,8 +235,15 @@ export async function WeddingSections({
           <h2 id="travel-title">{travel("title")}</h2>
         </div>
         <div className="travel-note__copy">
-          {travelNotes.map((line) => <p key={line}>{line}</p>)}
-          <p>{travel("liveDirections")}</p>
+          <p>{travel("originInfo")}</p>
+          <p>{travel("airportInfo")}</p>
+          <p>{travel("cityTicketInfo")}</p>
+          <p className="travel-note__price-note">{travel("priceNote")}</p>
+          <ul className="travel-note__links">
+            {travelLinks.map((link) => (
+              <li key={link.label}><a href={link.href} rel="noreferrer" target="_blank">{link.label}</a></li>
+            ))}
+          </ul>
         </div>
       </section>
 
