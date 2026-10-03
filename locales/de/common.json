@@ -6,6 +6,9 @@
   "accessibility": {
     "skipToContent": "Zum Inhalt springen"
   },
+  "footer": {
+    "credit": "Von Jonathan Medina mit <heart>Liebe</heart>"
+  },
   "foundation": {
     "homeTitle": "Eine private Hochzeitseinladung",
     "homeDescription": "Öffne deinen persönlichen Einladungslink für alle Details.",
@@ -46,6 +49,7 @@
   },
   "navigation": {
     "details": "Der Tag",
+    "lookup": "Einladung finden",
     "privacy": "Datenschutz",
     "language": "Sprache wählen",
     "main": "Hauptnavigation"
@@ -54,8 +58,12 @@
     "eyebrow": "Eine Hochzeit in Wien",
     "statement": "Wir heiraten",
     "place": "Wien, Österreich",
-    "detailsLink": "Die wichtigsten Details ansehen",
+    "detailsLink": "Einladung finden",
     "portraitCaption": "Ruben und Andrea"
+  },
+  "lookup": {
+    "languageLabel": "Sprache wählen",
+    "inputLabel": "Name, E-Mail oder Telefonnummer"
   },
   "event": {
     "dayLabel": "Ein gemeinsamer Tag",
@@ -127,7 +135,7 @@
     "formality": "Cocktail. Festliche Kleidung ist ebenfalls willkommen."
   },
   "music": {
-    "label": "Ein Hinweis für die Tanzfläche",
+    "label": "Für die Tanzfläche",
     "title": "Musik",
     "intro": "Drei Lieder würden wir besonders gerne hören.",
     "playlistPending": "Unsere drei Lieder ergänzen wir hier, sobald die Auswahl feststeht.",
@@ -167,10 +175,10 @@
   "gifts": {
     "label": "Eine kleine Nachricht",
     "title": "Eure Anwesenheit ist das schönste Geschenk",
-    "presence": "Mit euch zu feiern ist bereits mehr, als wir uns wünschen könnten.",
-    "contribution": "Wenn ihr uns etwas schenken möchtet, freuen wir uns über einen Beitrag für unsere nächsten gemeinsamen Abenteuer.",
+    "presence": "Mit euch zu feiern ist alles, was wir uns wünschen.",
+    "contribution": "Wenn ihr uns zusätzlich etwas schenken möchtet, freuen wir uns über einen Geldbeitrag für unsere gemeinsame Zukunft.",
     "detailsLabel": "Geschenkdetails",
-    "detailsPending": "Wenn ihr uns etwas schenken möchtet, freuen wir uns sehr über einen Geldbeitrag für unsere nächsten gemeinsamen Abenteuer."
+    "detailsPending": "Ein Geldgeschenk für unsere nächsten gemeinsamen Abenteuer würde uns sehr freuen."
   },
   "countdown": {
     "label": "Bis zur Feier",
@@ -186,7 +194,7 @@
     "label": "In Liebe",
     "title": "Wir freuen uns darauf, mit euch zu feiern",
     "message": "Danke, dass ihr Teil unseres Lebens seid. Wir freuen uns sehr darauf, diesen Tag mit euch zu verbringen.",
-    "story": "Wenn ihr das hier lest, dann seid ihr Teil einer ganz besonderen Gruppe von Menschen, die Ruben, Andrea oder wir beide ausgewählt haben, um einen der wichtigsten Tage unseres Lebens mit uns zu feiern.\n\nEs hat etwas gedauert, bis wir zueinander gefunden haben, aber als wir es endlich getan haben, waren wir sofort unzertrennlich. Wenn ihr mit uns in den letzten fast zwei Jahren Zeit verbracht habt, wisst ihr wahrscheinlich bereits, wie glücklich wir zusammen sind.\n\nWir würden uns wirklich freuen, wenn ihr dabei seid, um mit uns zu feiern. Auf die eine oder andere Weise wart ihr Teil unseres Lebens, und wir schätzen die Erinnerungen und Momente, die wir mit euch geteilt haben.\n\nWenn ihr in Europa lebt, habt ihr kaum Ausreden. 😂 Wenn ihr aus Venezuela oder einem anderen Teil der Welt kommt, fühlt euch bitte nicht gedrängt – wir verstehen vollkommen, dass so eine lange Reise nicht immer möglich ist, und wir lieben euch trotzdem.\n\nAber wenn ihr kommen könnt, dann kommt bereit, um zu essen, zu trinken, zu tanzen und zu feiern. Wir werden unser Bestes geben, damit es ein unvergesslicher Tag für uns alle wird. ❤️\n\nRuben & Andrea"
+    "story": "Wenn ihr das hier lest, dann seid ihr Teil einer ganz besonderen Gruppe von Menschen, die Ruben, Andrea oder wir beide ausgewählt haben, um einen der wichtigsten Tage unseres Lebens mit uns zu feiern.\n\nEs hat etwas gedauert, bis wir zueinander gefunden haben, aber als wir es endlich getan haben, waren wir sofort unzertrennlich. Wenn ihr mit uns in den letzten fast zwei Jahren Zeit verbracht habt, wisst ihr wahrscheinlich bereits, wie glücklich wir zusammen sind.\n\nWir würden uns wirklich freuen, wenn ihr dabei seid, um mit uns zu feiern. Auf die eine oder andere Weise wart ihr Teil unseres Lebens, und wir schätzen die Erinnerungen und Momente, die wir mit euch geteilt haben.\n\nWenn ihr in Europa lebt, habt ihr kaum Ausreden. Wenn ihr aus Venezuela oder einem anderen Teil der Welt kommt, fühlt euch bitte nicht gedrängt – wir verstehen vollkommen, dass so eine lange Reise nicht immer möglich ist, und wir lieben euch trotzdem.\n\nAber wenn ihr kommen könnt, dann kommt bereit, um zu essen, zu trinken, zu tanzen und zu feiern. Wir werden unser Bestes geben, damit es ein unvergesslicher Tag für uns alle wird.\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Eure Antwort",
@@ -230,8 +238,8 @@
     "eyebrow": "Ein paar Seiten unserer Geschichte",
     "title": "Ein Leben voller kleiner Augenblicke",
     "description": "Von kleinen Feiern bis zu fernen Sonnenuntergängen – diese Erinnerungen tragen wir bei uns.",
-    "collectionTitle": "Und all die kleinen Abenteuer dazwischen",
-    "collectionDescription": "Weitere Orte, Feiern und ganz normale Tage, die wir miteinander erlebt haben.",
+    "collectionTitle": "Weitere Momente unserer gemeinsamen Geschichte",
+    "collectionDescription": "Kleine Feiern, ferne Orte und gewöhnliche Tage, die Teil unserer gemeinsamen Geschichte wurden.",
     "filterLabel": "Erinnerungen filtern",
     "viewerLabel": "Fotogalerie",
     "openPhotoLabel": "Foto öffnen: {title}",

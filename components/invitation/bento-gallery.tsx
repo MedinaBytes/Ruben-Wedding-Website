@@ -117,18 +117,20 @@ export function BentoGallery({
               key={photo.id}
               className={`bento-item ${isWide ? "bento-item--wide" : ""} ${isTall ? "bento-item--tall" : ""}`}
             >
-              <WeddingPhoto
-                id={photo.id}
-                alt=""
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="bento-image"
-              />
-              <div className="bento-overlay">
+              <div className="bento-item__photo">
+                <WeddingPhoto
+                  id={photo.id}
+                  alt=""
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="bento-image"
+                />
+                <span className="bento-zoom-icon" aria-hidden="true">↗</span>
+              </div>
+              <figcaption className="bento-overlay">
                 <span className="bento-tag">{categoryLabels[photo.category][locale]}</span>
                 <p className="bento-caption">{photoTitle}</p>
                 <p className="bento-subcaption">{photoCaption}</p>
-                <span className="bento-zoom-icon" aria-hidden="true">↗</span>
-              </div>
+              </figcaption>
               <button
                 aria-label={openPhotoLabel.replace("{title}", photoTitle)}
                 className="bento-item__open"

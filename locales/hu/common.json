@@ -6,6 +6,9 @@
   "accessibility": {
     "skipToContent": "Ugrás a tartalomhoz"
   },
+  "footer": {
+    "credit": "Készítette Jonathan Medina, <heart>szeretettel</heart>"
+  },
   "foundation": {
     "homeTitle": "Személyes esküvői meghívó",
     "homeDescription": "A részletek megtekintéséhez nyisd meg a személyes meghívólinket.",
@@ -46,6 +49,7 @@
   },
   "navigation": {
     "details": "A nap",
+    "lookup": "Meghívó keresése",
     "privacy": "Adatvédelem",
     "language": "Nyelv választása",
     "main": "Fő navigáció"
@@ -54,8 +58,12 @@
     "eyebrow": "Esküvő Bécsben",
     "statement": "Összeházasodunk",
     "place": "Bécs, Ausztria",
-    "detailsLink": "Fontos részletek megtekintése",
+    "detailsLink": "Találd meg a meghívódat",
     "portraitCaption": "Ruben és Andrea"
+  },
+  "lookup": {
+    "languageLabel": "Válassz nyelvet",
+    "inputLabel": "Név, e-mail-cím vagy telefonszám"
   },
   "event": {
     "dayLabel": "Egy közös nap",
@@ -127,7 +135,7 @@
     "formality": "Koktélruha. Az elegánsabb öltözet is szívesen látott."
   },
   "music": {
-    "label": "Üzenet a táncparkettre",
+    "label": "A táncparkettre",
     "title": "Zene",
     "intro": "Van három dal, amelyet különösen szívesen hallanánk.",
     "playlistPending": "A három dalból álló listánkat később tesszük ide.",
@@ -167,10 +175,10 @@
   "gifts": {
     "label": "Egy rövid megjegyzés",
     "title": "A jelenlétetek a legnagyobb ajándék",
-    "presence": "Már az is rengeteget jelent, hogy velünk ünnepeltek.",
-    "contribution": "Ha szeretnétek ajándékot adni, a közös jövőbeli kalandjainkhoz adott hozzájárulásnak nagyon örülnénk.",
+    "presence": "Számunkra az a legfontosabb, hogy velünk ünnepeljetek.",
+    "contribution": "Ha ezen felül ajándékot is szeretnétek adni, örömmel fogadunk egy pénzbeli hozzájárulást a közös jövőnkhöz.",
     "detailsLabel": "Ajándékozási részletek",
-    "detailsPending": "Ha szeretnétek megajándékozni minket, örömmel fogadunk egy pénzbeli hozzájárulást a közös jövőbeli kalandjainkhoz."
+    "detailsPending": "A következő közös kalandjainkhoz adott pénzbeli hozzájárulás különösen kedves ajándék lenne."
   },
   "countdown": {
     "label": "Az ünneplésig",
@@ -186,7 +194,7 @@
     "label": "Szeretettel",
     "title": "Alig várjuk, hogy együtt ünnepeljünk",
     "message": "Köszönjük, hogy az életünk részei vagytok. Nagyon várjuk, hogy megoszthassuk veletek ezt a napot.",
-    "story": "Ha ezt olvassátok, akkor egy nagyon különleges embercsoport részesei vagytok: Ruben, Andrea vagy mindketten kiválasztottunk titeket arra, hogy együtt ünnepeljünk egy életünk egyik legfontosabb napján.\n\nLehet, hogy egy ideig tartott, amíg megtaláltuk egymást, de amikor megtörtént, azonnal elválaszthatatlanok lettünk. Ha az elmúlt közel két évben velünk töltöttetek időt, valószínűleg már tudjátok, mennyire boldogok vagyunk együtt.\n\nŐszintén szeretnénk, ha velemennétek ezt az ünnepet. Bármilyen módon is, ti részei vagytok az életünknek, és nagyon értékeljük azokat az emlékeket és pillanatokat, amelyeket megosztottunk veletek.\n\nHa Európában laktok, nagyon kevés kifogásotok lehet. 😂 Ha Venezuelából vagy a világ más részéről jöttök, ne érezzétek magatokat kényszerítve – teljesen megértjük, hogy ilyen hosszú utazás nem mindig lehetséges, és szeretünk titeket így is.\n\nDe ha el tudtok jönni, készüljetek arra, hogy együnk, igyunk, táncoljunk és ünnepeljünk. Minden tőlünk telhetőt megteszünk, hogy ez számunkra is felejthetetlen nap legyen. ❤️\n\nRuben & Andrea"
+    "story": "Ha ezt olvassátok, akkor egy nagyon különleges embercsoport részesei vagytok: Ruben, Andrea vagy mindketten kiválasztottunk titeket arra, hogy együtt ünnepeljünk egy életünk egyik legfontosabb napján.\n\nLehet, hogy egy ideig tartott, amíg megtaláltuk egymást, de amikor megtörtént, azonnal elválaszthatatlanok lettünk. Ha az elmúlt közel két évben velünk töltöttetek időt, valószínűleg már tudjátok, mennyire boldogok vagyunk együtt.\n\nŐszintén szeretnénk, ha velemennétek ezt az ünnepet. Bármilyen módon is, ti részei vagytok az életünknek, és nagyon értékeljük azokat az emlékeket és pillanatokat, amelyeket megosztottunk veletek.\n\nHa Európában laktok, nagyon kevés kifogásotok lehet. Ha Venezuelából vagy a világ más részéről jöttök, ne érezzétek magatokat kényszerítve – teljesen megértjük, hogy ilyen hosszú utazás nem mindig lehetséges, és szeretünk titeket így is.\n\nDe ha el tudtok jönni, készüljetek arra, hogy együnk, igyunk, táncoljunk és ünnepeljünk. Minden tőlünk telhetőt megteszünk, hogy ez számunkra is felejthetetlen nap legyen.\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Visszajelzés",
@@ -230,8 +238,8 @@
     "eyebrow": "Történetünk néhány oldala",
     "title": "Egy élet apró pillanatokból",
     "description": "Kis ünnepektől a távoli naplementékig: néhány emlék, amelyet magunkkal viszünk.",
-    "collectionTitle": "És a köztes apró kalandok",
-    "collectionDescription": "Még néhány hely, ünnep és hétköznap, amelyet együtt éltünk át.",
+    "collectionTitle": "További pillanatok a közös történetünkből",
+    "collectionDescription": "Ünnepek, távoli helyek és hétköznapi napok, amelyek a közös történetünk részévé váltak.",
     "filterLabel": "Emlékek szűrése",
     "viewerLabel": "Fotónézegető",
     "openPhotoLabel": "Fotó megnyitása: {title}",

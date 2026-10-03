@@ -6,7 +6,6 @@ import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
 import { InvitationLookupCard } from "@/components/invitation/invitation-lookup-card";
 import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
-import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
@@ -30,23 +29,25 @@ export default async function HomePage({
       ? (manualLocale as Locale)
       : (requestLocale as Locale);
 
-  const [messages, navigation, hero, event, wedding] = await Promise.all([
+  const [messages, navigation, hero, lookup, wedding, footer] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "navigation" }),
     getTranslations({ locale, namespace: "hero" }),
-    getTranslations({ locale, namespace: "event" }),
+    getTranslations({ locale, namespace: "lookup" }),
     getTranslations({ locale, namespace: "wedding" }),
+    getTranslations({ locale, namespace: "footer" }),
   ]);
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <SiteHeader
-        detailsLabel={navigation("details")}
+        detailsLabel={navigation("lookup")}
+        detailsHref="#lookup-section"
         privacyLabel={navigation("privacy")}
         languageLabel={navigation("language")}
         mainNavigationLabel={navigation("main")}
       />
-      <main id="main">
+      <main className="guest-entry" id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__inner">
             <div className="hero__copy">
@@ -56,10 +57,11 @@ export default async function HomePage({
               </h1>
               <p className="hero__statement">{hero("statement")}</p>
               <p className="hero__place">{hero("place")}</p>
-              <a className="hero__link" href="#event-note">
+              <a className="hero__link" href="#lookup-section">
                 <span>{hero("detailsLink")}</span>
                 <span aria-hidden="true">↓</span>
               </a>
+              <InvitationLookupCard currentLocale={locale} languageLabel={lookup("languageLabel")} inputLabel={lookup("inputLabel")} />
             </div>
             <figure className="hero__portrait">
               <HeroPhotoMotion>
@@ -81,29 +83,25 @@ export default async function HomePage({
           </p>
         </section>
 
-        <section className="arrival-note" aria-labelledby="arrival-title">
-          <div className="arrival-note__heading">
-            <p className="section-label">{event("dayLabel")}</p>
-            <h2 id="arrival-title">{event("arrivalTitle")}</h2>
-          </div>
-          <div className="arrival-note__times">
-            <div>
-              <span className="arrival-note__label">{event("pleaseArrive")}</span>
-              <strong>{weddingConfig.ceremony.guestArrival}</strong>
-            </div>
-            <div>
-              <span className="arrival-note__label">{event("ceremonyBegins")}</span>
-              <strong>{weddingConfig.ceremony.time}</strong>
-            </div>
-          </div>
-        </section>
-
-        <InvitationLookupCard currentLocale={locale} />
-        <WeddingSections locale={locale} />
       </main>
       <footer className="site-footer">
         <span>{weddingConfig.couple.displayNames}</span>
         <a href="/privacy">{navigation("privacy")}</a>
+        <a
+          className="site-footer__credit"
+          href="https://www.sevensides.technology/"
+          rel="noreferrer"
+          target="_blank"
+        >
+          {footer.rich("credit", {
+            heart: (children) => (
+              <>
+                <span aria-hidden="true" className="site-footer__heart">♥</span>
+                <span className="visually-hidden">{children}</span>
+              </>
+            ),
+          })}
+        </a>
       </footer>
     </NextIntlClientProvider>
   );

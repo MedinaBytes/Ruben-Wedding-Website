@@ -6,6 +6,9 @@
   "accessibility": {
     "skipToContent": "Saltar al contenido"
   },
+  "footer": {
+    "credit": "Hecho por Jonathan Medina con <heart>amor</heart>"
+  },
   "foundation": {
     "homeTitle": "Una invitación de boda privada",
     "homeDescription": "Abre tu enlace personal para ver los detalles.",
@@ -46,6 +49,7 @@
   },
   "navigation": {
     "details": "El día",
+    "lookup": "Buscar invitación",
     "privacy": "Privacidad",
     "language": "Elegir idioma",
     "main": "Navegación principal"
@@ -54,8 +58,12 @@
     "eyebrow": "Una boda en Viena",
     "statement": "Nos casamos",
     "place": "Viena, Austria",
-    "detailsLink": "Ver los detalles importantes",
+    "detailsLink": "Encuentra tu invitación",
     "portraitCaption": "Ruben y Andrea"
+  },
+  "lookup": {
+    "languageLabel": "Elige el idioma",
+    "inputLabel": "Nombre, correo o teléfono"
   },
   "event": {
     "dayLabel": "Un día juntos",
@@ -127,7 +135,7 @@
     "formality": "Cóctel. La vestimenta formal también es bienvenida."
   },
   "music": {
-    "label": "Una nota para la pista de baile",
+    "label": "Para bailar",
     "title": "Música",
     "intro": "Hay tres canciones que nos encantaría escuchar.",
     "playlistPending": "Añadiremos aquí nuestra lista de tres canciones cuando esté lista.",
@@ -166,11 +174,11 @@
   },
   "gifts": {
     "label": "Una pequeña nota",
-    "title": "Tu presencia es el regalo",
-    "presence": "Celebrar con vosotros ya es más que suficiente.",
-    "contribution": "Si queréis hacernos un regalo, una aportación para nuestras próximas aventuras juntos significaría mucho para nosotros.",
+    "title": "Vuestra presencia es el mejor regalo",
+    "presence": "Celebrar con vosotros es todo lo que podemos pedir.",
+    "contribution": "Si además queréis hacernos un regalo, agradeceremos mucho una aportación económica para nuestro futuro juntos.",
     "detailsLabel": "Detalles del regalo",
-    "detailsPending": "Si queréis hacernos un regalo, agradeceremos mucho una aportación en efectivo para nuestras próximas aventuras juntos."
+    "detailsPending": "Una aportación en efectivo para nuestras próximas aventuras juntos sería un detalle muy especial."
   },
   "countdown": {
     "label": "Hasta la celebración",
@@ -186,7 +194,7 @@
     "label": "Con cariño",
     "title": "Tenemos muchas ganas de celebrarlo con vosotros",
     "message": "Gracias por formar parte de nuestras vidas. Nos hace mucha ilusión compartir este día con vosotros.",
-    "story": "Si estás leyendo esto, considera que formas parte de un grupo muy especial de personas que Ruben, Andrea o ambos hemos elegido para celebrar uno de los días más importantes de nuestras vidas.\n\nPuede que nos haya llevado un tiempo encontrar la otra mitad, pero cuando lo hicimos, fuimos inseparables desde el primer momento. Si has compartido tiempo con nosotros durante estos casi dos años, probablemente ya sepas lo felices que somos juntos.\n\nDe verdad nos encantaría que estuvieras allí para celebrarlo con nosotros. De una forma u otra, has sido parte de nuestras vidas y valoramos mucho los recuerdos y momentos que hemos compartido.\n\nSi vives en Europa, tienes pocas excusas. 😂 Si vienes desde Venezuela o desde cualquier otra parte del mundo, por favor no te sientas presionado: entendemos perfectamente que un viaje tan largo no siempre sea posible, y te queremos igual de mucho.\n\nPero si puedes venir, prepárate para comer, beber, bailar y celebrar. Haremos lo posible para que sea un día inolvidable para todos. ❤️\n\nRuben & Andrea"
+    "story": "Si estás leyendo esto, considera que formas parte de un grupo muy especial de personas que Ruben, Andrea o ambos hemos elegido para celebrar uno de los días más importantes de nuestras vidas.\n\nPuede que nos haya llevado un tiempo encontrar la otra mitad, pero cuando lo hicimos, fuimos inseparables desde el primer momento. Si has compartido tiempo con nosotros durante estos casi dos años, probablemente ya sepas lo felices que somos juntos.\n\nDe verdad nos encantaría que estuvieras allí para celebrarlo con nosotros. De una forma u otra, has sido parte de nuestras vidas y valoramos mucho los recuerdos y momentos que hemos compartido.\n\nSi vives en Europa, tienes pocas excusas. Si vienes desde Venezuela o desde cualquier otra parte del mundo, por favor no te sientas presionado: entendemos perfectamente que un viaje tan largo no siempre sea posible, y te queremos igual de mucho.\n\nPero si puedes venir, prepárate para comer, beber, bailar y celebrar. Haremos lo posible para que sea un día inolvidable para todos.\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Tu respuesta",
@@ -230,8 +238,8 @@
     "eyebrow": "Algunas páginas de nuestra historia",
     "title": "Una vida hecha de pequeños momentos",
     "description": "De celebraciones sencillas a atardeceres lejanos, estos son algunos recuerdos que llevamos con nosotros.",
-    "collectionTitle": "Y todas las pequeñas aventuras de por medio",
-    "collectionDescription": "Más lugares, celebraciones y días corrientes que hemos compartido.",
+    "collectionTitle": "Más momentos de nuestra historia",
+    "collectionDescription": "Celebraciones, lugares lejanos y días sencillos que se convirtieron en parte de nuestra historia.",
     "filterLabel": "Filtrar recuerdos",
     "viewerLabel": "Visor de fotos",
     "openPhotoLabel": "Abrir foto: {title}",

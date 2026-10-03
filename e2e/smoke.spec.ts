@@ -10,26 +10,20 @@ test("homepage renders the invitation shell", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("Spotify playlist loads on visibility and offers an app fallback", async ({ page }) => {
+test("public entry keeps personalized wedding sections private", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  const player = page.locator(".spotify-player");
-  await player.scrollIntoViewIfNeeded();
-  const iframe = player.locator("iframe");
-  await expect.poll(async () => (await iframe.count()) + (await player.locator(".spotify-player__message").count())).toBeGreaterThan(0);
-  test.skip(!(await iframe.count()), "Spotify playlist is not configured in this environment.");
-
-  await expect(iframe).toHaveAttribute("src", /^https:\/\/open\.spotify\.com\/embed\/playlist\/[A-Za-z0-9]{22}$/);
-  await expect(player.getByRole("link", { name: "Open in Spotify" })).toBeVisible();
+  await expect(page.locator(".guest-entry .lookup-section")).toHaveCount(1);
+  await expect(page.locator(".day-story, .photo-story, .venues, .music-note, .gift-note, .rsvp-section")).toHaveCount(0);
 });
 
-test("day navigation targets the shared timeline", async ({ page }) => {
+test("entry navigation targets guest lookup", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "The day" }).click();
+  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "Find invitation" }).click();
 
-  await expect(page).toHaveURL(/#event-note$/);
-  await expect(page.getByRole("heading", { name: "The day, together" })).toBeVisible();
+  await expect(page).toHaveURL(/#lookup-section$/);
+  await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
 });
 
 test("invalid invitation token shows a safe not-found response", async ({ page }) => {
@@ -53,6 +47,7 @@ test("homepage renders invitation lookup card with language selector", async ({ 
   await page.goto("/?lang=en");
 
   await expect(page.getByRole("heading", { name: "Find Your Invitation" })).toBeVisible();
+  await expect(page.getByLabel("Your name, email, or phone number")).toBeVisible();
   await expect(page.getByPlaceholder(/John Doe/)).toBeVisible();
 });
 
@@ -64,69 +59,7 @@ test("admin sign-in renders translated labels and stays noindex", async ({ page 
   await expect(page.getByLabel(/Email address|Dirección de correo electrónico/)).toBeVisible();
 });
 
-test("photo story gallery spans the full row at tablet width", async ({ page }) => {
-  await page.setViewportSize({ width: 905, height: 800 });
-  await page.goto("/?lang=en");
-
-  const bounds = await page.locator(".photo-story").evaluate((section) => {
-    const intro = section.querySelector(".photo-story__intro")?.getBoundingClientRect();
-    const gallery = section.querySelector(".photo-story__gallery")?.getBoundingClientRect();
-    const bento = section.querySelector(".bento-gallery-block")?.getBoundingClientRect();
-
-    return {
-      introWidth: intro?.width ?? 0,
-      galleryWidth: gallery?.width ?? 0,
-      bentoWidth: bento?.width ?? 0,
-    };
-  });
-
-  expect(bounds.bentoWidth).toBeGreaterThan(bounds.galleryWidth);
-  expect(bounds.bentoWidth).toBeGreaterThan(bounds.introWidth + bounds.galleryWidth * 0.7);
-});
-
-test("venue map exposes localized controls and OpenStreetMap attribution", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  const map = page.getByRole("region", { name: "Interactive map of the wedding venues in Vienna" });
-  await map.scrollIntoViewIfNeeded();
-  await expect(map).toHaveAttribute("aria-busy", "false", { timeout: 15000 });
-  await expect(page.getByRole("button", { name: "View both venues" })).toBeEnabled();
-  await expect(page.locator(".leaflet-control-attribution")).toContainText("OpenStreetMap contributors");
-
-  const ceremonyControl = page.getByRole("button", { name: "Ceremony: Catholic Church of Altmannsdorf (St. Oswald)" });
-  await ceremonyControl.click();
-  await expect(ceremonyControl).toHaveAttribute("aria-pressed", "true");
-  const selectedColors = await ceremonyControl.evaluate((button) => {
-    const styles = getComputedStyle(button);
-    return { background: styles.backgroundColor, foreground: styles.color };
-  });
-  expect(selectedColors.foreground).not.toBe(selectedColors.background);
-});
-
-test("photo archive filters and restores focus after keyboard viewing", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  const filters = page.getByRole("group", { name: "Filter memories" });
-  const adventuresFilter = filters.getByRole("button", { name: "Adventures & Sea" });
-  await adventuresFilter.click();
-  await expect(adventuresFilter).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".bento-tag").first()).toHaveCSS("text-transform", "none");
-  await expect(page.locator(".bento-tag").first()).toHaveCSS("border-radius", "0px");
-
-  const firstPhoto = page.getByRole("button", { name: /^Open photo:/ }).first();
-  await firstPhoto.focus();
-  await page.keyboard.press("Enter");
-
-  const viewer = page.getByRole("dialog", { name: "Photo viewer" });
-  await expect(viewer).toBeVisible();
-  await page.keyboard.press("ArrowRight");
-  await expect(viewer.locator(".lightbox-counter")).toContainText("2 of");
-  await page.keyboard.press("Escape");
-  await expect(viewer).not.toBeVisible();
-  await expect(firstPhoto).toBeFocused();
-});
-
-test("hero and photo story fit mobile and desktop and honor reduced motion", async ({ page }) => {
+test("guest entry fits mobile and desktop and honors reduced motion", async ({ page }) => {
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/?lang=en");
@@ -136,6 +69,7 @@ test("hero and photo story fit mobile and desktop and honor reduced motion", asy
       document: document.documentElement.scrollWidth,
     }));
     expect(widths.document).toBeLessThanOrEqual(widths.viewport);
+    await expect(page.locator(".guest-entry .lookup-section")).toBeVisible();
   }
 
   await page.emulateMedia({ reducedMotion: "reduce" });

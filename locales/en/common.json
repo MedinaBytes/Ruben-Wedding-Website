@@ -6,6 +6,9 @@
   "accessibility": {
     "skipToContent": "Skip to content"
   },
+  "footer": {
+    "credit": "Made with <heart>love</heart> by Jonathan Medina"
+  },
   "foundation": {
     "homeTitle": "A private wedding invitation",
     "homeDescription": "Open your personal invitation link to see the details.",
@@ -46,6 +49,7 @@
   },
   "navigation": {
     "details": "The day",
+    "lookup": "Find invitation",
     "privacy": "Privacy",
     "language": "Choose language",
     "main": "Main navigation"
@@ -54,8 +58,12 @@
     "eyebrow": "A wedding in Vienna",
     "statement": "We are getting married",
     "place": "Vienna, Austria",
-    "detailsLink": "See the important details",
+    "detailsLink": "Find your invitation",
     "portraitCaption": "Ruben and Andrea"
+  },
+  "lookup": {
+    "languageLabel": "Choose a language",
+    "inputLabel": "Your name, email, or phone number"
   },
   "event": {
     "dayLabel": "A day together",
@@ -127,7 +135,7 @@
     "formality": "Cocktail attire. Formal is very welcome."
   },
   "music": {
-    "label": "A note for the dance floor",
+    "label": "For the dance floor",
     "title": "Music",
     "intro": "There are three songs we would especially love to hear.",
     "playlistPending": "Our three-song playlist will be added here once it is ready.",
@@ -167,10 +175,10 @@
   "gifts": {
     "label": "A little note",
     "title": "Your presence is the gift",
-    "presence": "Having you with us to celebrate is already more than enough.",
-    "contribution": "If you would like to give us something, a contribution toward our next adventures together would mean a great deal.",
+    "presence": "Celebrating with you is all we could ask for.",
+    "contribution": "If you would also like to give a gift, a monetary contribution toward our future together would be warmly appreciated.",
     "detailsLabel": "Gift details",
-    "detailsPending": "If you would like to give us a gift, a contribution in cash toward our next adventures together would be very much appreciated."
+    "detailsPending": "A contribution in cash toward our next adventures together would be a thoughtful gift."
   },
   "countdown": {
     "label": "Until we celebrate",
@@ -186,7 +194,7 @@
     "label": "With love",
     "title": "We cannot wait to celebrate with you",
     "message": "Thank you for being part of our lives. We are looking forward to sharing this day with you.",
-    "story": "If you’re reading this, consider yourself part of a very special group of people that Ruben, Andrea, or both of us have chosen to celebrate one of the most important days of our lives with.\n\nIt may have taken us a while to find each other, but once we did, we were immediately inseparable. If you’ve spent time with us during these almost two years, you probably already know how happy we are together.\n\nWe would truly love to have you there to celebrate with us. In one way or another, you’ve been part of our lives, and we treasure the memories and moments we’ve shared with you.\n\nIf you live in Europe, you have very few excuses. 😂 If you’re coming from Venezuela or another part of the world, please don’t feel pressured — we completely understand that such a long trip isn’t always possible, and we love you either way.\n\nBut if you can make it, come ready to eat, drink, dance and celebrate. We’ll do our best to make it an unforgettable day for all of us. ❤️\n\nRuben & Andrea"
+    "story": "If you’re reading this, consider yourself part of a very special group of people that Ruben, Andrea, or both of us have chosen to celebrate one of the most important days of our lives with.\n\nIt may have taken us a while to find each other, but once we did, we were immediately inseparable. If you’ve spent time with us during these almost two years, you probably already know how happy we are together.\n\nWe would truly love to have you there to celebrate with us. In one way or another, you’ve been part of our lives, and we treasure the memories and moments we’ve shared with you.\n\nIf you live in Europe, you have very few excuses. If you’re coming from Venezuela or another part of the world, please don’t feel pressured — we completely understand that such a long trip isn’t always possible, and we love you either way.\n\nBut if you can make it, come ready to eat, drink, dance and celebrate. We’ll do our best to make it an unforgettable day for all of us.\n\nRuben & Andrea"
   },
   "rsvp": {
     "label": "Your reply",
@@ -230,8 +238,8 @@
     "eyebrow": "A few pages in our story",
     "title": "A life, collected in little moments",
     "description": "From small celebrations to faraway sunsets, these are a few of the memories we carry with us.",
-    "collectionTitle": "And all the little adventures in between",
-    "collectionDescription": "Browse a few more places, celebrations, and ordinary days we have shared.",
+    "collectionTitle": "More moments from our story",
+    "collectionDescription": "Celebrations, faraway places, and ordinary days that became part of our story.",
     "filterLabel": "Filter memories",
     "viewerLabel": "Photo viewer",
     "openPhotoLabel": "Open photo: {title}",

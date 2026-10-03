@@ -14,7 +14,15 @@ const languages: { code: Locale; label: string }[] = [
   { code: "hu", label: "Magyar" },
 ];
 
-export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale }) {
+export function InvitationLookupCard({
+  currentLocale,
+  languageLabel,
+  inputLabel,
+}: {
+  currentLocale: Locale;
+  languageLabel: string;
+  inputLabel: string;
+}) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "found" | "not_found">("idle");
@@ -47,7 +55,7 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
   }
 
   return (
-    <section className="lookup-section" aria-labelledby="lookup-title">
+    <section className="lookup-section" id="lookup-section" aria-labelledby="lookup-title">
       <div className="lookup-card">
         <div className="lookup-card__header">
           <span className="section-label">
@@ -80,7 +88,7 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
         </div>
 
         {/* Quick Language Switcher */}
-        <div className="lookup-card__lang-row" role="group" aria-label="Select Language">
+        <div className="lookup-card__lang-row" role="group" aria-label={languageLabel}>
           {languages.map(({ code, label }) => (
             <button
               key={code}
@@ -96,7 +104,9 @@ export function InvitationLookupCard({ currentLocale }: { currentLocale: Locale 
 
         <form onSubmit={handleSearch} className="lookup-card__form">
           <div className="field-group">
+            <label className="visually-hidden" htmlFor="invitation-lookup-input">{inputLabel}</label>
             <input
+              id="invitation-lookup-input"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
