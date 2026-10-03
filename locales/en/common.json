@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Service providers",
-      "body": "The site's hosting provider and Supabase store and process information to run the invitation and database. They do not use guest details for their own advertising. Venue links open OpenStreetMap, which may process technical data under its own privacy policy. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
+      "body": "The site's hosting provider and Supabase store and process information to run the invitation and database. They do not use guest details for their own advertising. The embedded map loads OpenStreetMap tiles when you reach the venue section; your browser connects directly to OpenStreetMap, which may receive technical request data such as your IP address under its privacy policy. Apple Maps and Google Maps links open those services if you choose them. A Spotify embed loads only after you choose its playlist button and if a playlist is configured."
     },
     "retention": {
       "title": "Retention",
@@ -82,7 +82,16 @@
     "appleMaps": "Open in Apple Maps",
     "googleMaps": "Open in Google Maps",
     "directions": "Get directions",
-    "mapTitle": "Map showing {name}"
+    "mapTitle": "Map showing {name}",
+    "mapOverview": "View both venues",
+    "mapRegion": "Interactive map of the wedding venues in Vienna",
+    "mapLoading": "The map will load as you reach this section.",
+    "mapReady": "Choose a venue above to center the map.",
+    "mapUnavailable": "The map is unavailable right now. Use the Apple Maps or Google Maps links above instead.",
+    "mapTileError": "Some map tiles could not load. The venue links above are still available.",
+    "mapArrival": "Guest arrival",
+    "mapBegins": "Ceremony begins",
+    "mapReceptionFrom": "Reception from"
   },
   "travel": {
     "label": "Getting around",

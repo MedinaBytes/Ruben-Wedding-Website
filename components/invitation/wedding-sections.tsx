@@ -232,6 +232,15 @@ export async function WeddingSections({
         <InteractiveMap
           ceremonyLabel={`${venue("ceremony")}: ${weddingConfig.ceremony.name}`}
           receptionLabel={`${venue("reception")}: ${weddingConfig.reception.name}`}
+          overviewLabel={venue("mapOverview")}
+          regionLabel={venue("mapRegion")}
+          loadingLabel={venue("mapLoading")}
+          readyLabel={venue("mapReady")}
+          unavailableLabel={venue("mapUnavailable")}
+          tileErrorLabel={venue("mapTileError")}
+          arrivalLabel={venue("mapArrival")}
+          beginsLabel={venue("mapBegins")}
+          receptionFromLabel={venue("mapReceptionFrom")}
         />
       </section>
 

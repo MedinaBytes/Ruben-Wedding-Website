@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Szolgáltatók",
-      "body": "A weboldal tárhelyszolgáltatója és a Supabase tárolja, illetve kezeli az adatokat a meghívó és az adatbázis működtetéséhez. A vendégek adatait nem használják saját reklámcélra. A helyszínek linkjei az OpenStreetMap oldalára vezetnek, ahol a saját adatvédelmi tájékoztatójuk szerint technikai adatokat kezelhetnek. A Spotify-lejátszó csak akkor töltődik be, ha megnyitod a lejátszási listát, és az már be van állítva."
+      "body": "A weboldal tárhelyszolgáltatója és a Supabase tárolja, illetve kezeli az adatokat a meghívó és az adatbázis működtetéséhez. A vendégek adatait nem használják saját reklámcélra. A beágyazott térkép az OpenStreetMap térképcsempéit tölti be, amikor eléred a helyszínek részét. A böngésződ közvetlenül csatlakozik az OpenStreetMaphez, amely az adatvédelmi tájékoztatója szerint technikai adatokat, például IP-címet kaphat. Az Apple Maps- és Google Térkép-linkek megnyitják ezeket a szolgáltatásokat, ha kiválasztod őket. A Spotify-lejátszó csak akkor töltődik be, ha megnyitod a lejátszási listát, és az már be van állítva."
     },
     "retention": {
       "title": "Adatmegőrzés",
@@ -82,7 +82,16 @@
     "appleMaps": "Megnyitás az Apple Mapsben",
     "googleMaps": "Megnyitás a Google Térképen",
     "directions": "Útvonaltervezés",
-    "mapTitle": "Térkép: {name}"
+    "mapTitle": "Térkép: {name}",
+    "mapOverview": "Mindkét helyszín megtekintése",
+    "mapRegion": "Az esküvői helyszínek interaktív térképe Bécsben",
+    "mapLoading": "A térkép akkor töltődik be, amikor ehhez a részhez érsz.",
+    "mapReady": "Válassz fent egy helyszínt a térkép középre igazításához.",
+    "mapUnavailable": "A térkép most nem érhető el. Használd inkább a fenti Apple Maps- vagy Google Térkép-linkeket.",
+    "mapTileError": "A térkép egyes részei nem töltődtek be. A helyszínekhez vezető linkek továbbra is használhatók.",
+    "mapArrival": "Vendégek érkezése",
+    "mapBegins": "A szertartás kezdete",
+    "mapReceptionFrom": "Az ünneplés kezdete"
   },
   "travel": {
     "label": "Közlekedés",

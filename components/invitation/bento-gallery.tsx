@@ -5,22 +5,21 @@ import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { photoCatalog, type PhotoStoryItem } from "@/lib/photo-catalog";
 import type { Locale } from "@/lib/wedding-config";
 
-type Category = "all" | "editorial" | "travel" | "celebration" | "adventures" | "candid";
+type Category = "all" | "editorial" | "travel" | "celebration" | "adventures";
 
 const categoryLabels: Record<Category, Record<Locale, string>> = {
-  all: { en: "All Memories (35)", es: "Todos los momentos (35)", de: "Alle Momente (35)", hu: "Minden pillanat (35)" },
-  editorial: { en: "Portraits & Editorial", es: "Retratos y Especiales", de: "Porträts", hu: "Portrék" },
-  travel: { en: "Travel & Skylines", es: "Viajes y Horizontes", de: "Reisen & Städte", hu: "Utazások" },
-  celebration: { en: "Celebrations & Dates", es: "Celebraciones y Citas", de: "Feiern", hu: "Ünneplések" },
-  adventures: { en: "Adventures & Nature", es: "Aventuras y Naturaleza", de: "Abenteuer", hu: "Kalandok" },
-  candid: { en: "Candid & Laughter", es: "Risas y Espontáneas", de: "Spontan & Spaß", hu: "Spontán fotók" },
+  all: { en: "All Memories", es: "Todos los momentos", de: "Alle Momente", hu: "Minden pillanat" },
+  editorial: { en: "Portraits & Gala", es: "Retratos de Gala", de: "Porträts", hu: "Portrék" },
+  travel: { en: "Travel & Horizons", es: "Viajes y Horizontes", de: "Reisen", hu: "Utazások" },
+  celebration: { en: "Celebrations & Love", es: "Celebraciones", de: "Feiern", hu: "Ünneplések" },
+  adventures: { en: "Adventures & Sea", es: "Aventuras y Mar", de: "Abenteuer", hu: "Kalandok" },
 };
 
 export function BentoGallery({
   locale = "en",
   title = "A life, collected in little moments",
-  subtitle = "From small celebrations to faraway sunsets, these are the 35 memories that brought us here.",
-  eyebrow = "Curated Memory Matrix",
+  subtitle = "From small celebrations to faraway sunsets, these are the moments we carry with us.",
+  eyebrow = "Curated Memories",
   excludeIds = [],
 }: {
   locale?: Locale;

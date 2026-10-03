@@ -28,7 +28,7 @@
     },
     "services": {
       "title": "Proveedores de servicios",
-      "body": "El proveedor de alojamiento del sitio y Supabase almacenan y procesan información para que funcionen la invitación y la base de datos. No usan los datos de invitados para su propia publicidad. Los enlaces de los lugares abren OpenStreetMap, que puede procesar datos técnicos según su política de privacidad. Spotify solo carga un reproductor cuando eliges abrir la lista y hay una lista configurada."
+      "body": "El proveedor de alojamiento del sitio y Supabase almacenan y procesan información para que funcionen la invitación y la base de datos. No usan los datos de invitados para su propia publicidad. El mapa integrado carga los mapas de OpenStreetMap al llegar a la sección de los lugares; tu navegador se conecta directamente con OpenStreetMap, que puede recibir datos técnicos de la solicitud, como la dirección IP, según su política de privacidad. Si eliges los enlaces de Apple Maps o Google Maps, se abrirán esos servicios. Spotify solo carga un reproductor cuando eliges abrir la lista y hay una lista configurada."
     },
     "retention": {
       "title": "Conservación",
@@ -82,7 +82,16 @@
     "appleMaps": "Abrir en Apple Maps",
     "googleMaps": "Abrir en Google Maps",
     "directions": "Cómo llegar",
-    "mapTitle": "Mapa de {name}"
+    "mapTitle": "Mapa de {name}",
+    "mapOverview": "Ver ambos lugares",
+    "mapRegion": "Mapa interactivo de los lugares de la boda en Viena",
+    "mapLoading": "El mapa se cargará al llegar a esta sección.",
+    "mapReady": "Elige un lugar arriba para centrar el mapa.",
+    "mapUnavailable": "El mapa no está disponible ahora. Puedes usar los enlaces de Apple Maps o Google Maps de arriba.",
+    "mapTileError": "No se han podido cargar algunas partes del mapa. Los enlaces de los lugares siguen disponibles.",
+    "mapArrival": "Llegada de invitados",
+    "mapBegins": "Empieza la ceremonia",
+    "mapReceptionFrom": "Recepción desde"
   },
   "travel": {
     "label": "Cómo desplazarse",

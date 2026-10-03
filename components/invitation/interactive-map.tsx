@@ -94,9 +94,9 @@ export function InteractiveMap({
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    if (!("IntersectionObserver" in window)) {
-      setShouldLoadMap(true);
-      return;
+    if (typeof IntersectionObserver === "undefined") {
+      const frame = window.requestAnimationFrame(() => setShouldLoadMap(true));
+      return () => window.cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(
