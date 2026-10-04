@@ -63,8 +63,11 @@ export async function POST(request: Request) {
 
     const token = generateInvitationToken();
     const tokenHash = hashInvitationToken(token);
-    const maxGuests = Math.min(20, Math.max(1, Number(row.maxGuests) || 1));
+    let maxGuests = Math.min(20, Math.max(1, Number(row.maxGuests) || 1));
     const plusOneAllowed = Boolean(row.plusOneAllowed);
+    if (plusOneAllowed && maxGuests < 2) {
+      maxGuests = 2;
+    }
     const groupName = row.groupName?.trim() || null;
     const language = ["en", "es", "de-AT", "hu"].includes(String(row.language)) ? (row.language as Locale) : null;
     const id = crypto.randomUUID();

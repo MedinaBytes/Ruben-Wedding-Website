@@ -13,6 +13,28 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
   const [invitationUrl, setInvitationUrl] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const [maxGuests, setMaxGuests] = useState(1);
+  const [plusOneAllowed, setPlusOneAllowed] = useState(false);
+
+  function handlePlusOneToggle(checked: boolean) {
+    setPlusOneAllowed(checked);
+    if (checked && maxGuests < 2) {
+      setMaxGuests(2);
+    } else if (!checked && maxGuests === 2) {
+      setMaxGuests(1);
+    }
+  }
+
+  function handleMaxGuestsChange(val: number) {
+    const num = isNaN(val) ? 1 : Math.max(1, Math.min(20, val));
+    setMaxGuests(num);
+    if (num >= 2 && num === 2 && !plusOneAllowed) {
+      setPlusOneAllowed(true);
+    } else if (num === 1 && plusOneAllowed) {
+      setPlusOneAllowed(false);
+    }
+  }
+
   async function handleSubmit(formData: FormData) {
     setErrorMessage("");
     setSuccessMessage("");
@@ -97,27 +119,44 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", alignItems: "center" }}>
-          <div>
-            <label htmlFor="invitation-max-guests" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
-              {labels.guestPlaces}
-            </label>
-            <input
-              id="invitation-max-guests"
-              name="maxGuests"
-              type="number"
-              min={1}
-              max={20}
-              defaultValue={1}
-              style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.9rem" }}
-            />
-          </div>
+        <div style={{ background: "#FAF7F5", border: "1px solid #EBE4DE", borderRadius: "8px", padding: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", alignItems: "center" }}>
+            <div>
+              <label htmlFor="invitation-max-guests" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
+                {labels.guestPlaces}
+              </label>
+              <input
+                id="invitation-max-guests"
+                name="maxGuests"
+                type="number"
+                min={1}
+                max={20}
+                value={maxGuests}
+                onChange={(e) => handleMaxGuestsChange(parseInt(e.target.value, 10))}
+                style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.9rem", background: "#FFFFFF" }}
+              />
+            </div>
 
-          <div style={{ paddingTop: "1.2rem" }}>
-            <label htmlFor="invitation-plus-one" style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", cursor: "pointer", color: "#2B2425" }}>
-              <input id="invitation-plus-one" name="plusOneAllowed" type="checkbox" style={{ width: "18px", height: "18px" }} />
-              <span>{labels.plusOneAllowed}</span>
-            </label>
+            <div>
+              <label htmlFor="invitation-plus-one" style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.88rem", fontWeight: 600, cursor: "pointer", color: "#2B2425" }}>
+                <input
+                  id="invitation-plus-one"
+                  name="plusOneAllowed"
+                  type="checkbox"
+                  checked={plusOneAllowed}
+                  onChange={(e) => handlePlusOneToggle(e.target.checked)}
+                  style={{ width: "18px", height: "18px", accentColor: "#8C2836" }}
+                />
+                <span>{labels.plusOneAllowed}</span>
+              </label>
+              <span style={{ display: "block", fontSize: "0.78rem", color: "#776A6C", marginTop: "0.35rem", lineHeight: 1.3 }}>
+                {plusOneAllowed
+                  ? `✓ Allows 1 guest + 1 companion (${maxGuests} total)`
+                  : maxGuests > 1
+                    ? `Group/family invitation for ${maxGuests} named guests`
+                    : "Solo invitation (single attendee)"}
+              </span>
+            </div>
           </div>
         </div>
 

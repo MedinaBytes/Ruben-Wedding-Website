@@ -48,8 +48,11 @@ export function BulkImportForm() {
       if (!name) continue;
 
       const lang = langIdx !== -1 ? parts[langIdx] : "en";
-      const maxGuests = guestsIdx !== -1 ? parseInt(parts[guestsIdx], 10) || 1 : 1;
+      let maxGuests = guestsIdx !== -1 ? parseInt(parts[guestsIdx], 10) || 1 : 1;
       const plusOne = plusOneIdx !== -1 ? parts[plusOneIdx]?.toLowerCase() === "true" : false;
+      if (plusOne && maxGuests < 2) {
+        maxGuests = 2;
+      }
       const group = groupIdx !== -1 ? parts[groupIdx] : undefined;
 
       rows.push({
