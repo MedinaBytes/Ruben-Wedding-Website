@@ -1,15 +1,24 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
-import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
 import { InvitationLookupCard } from "@/components/invitation/invitation-lookup-card";
-import { SiteHeader } from "@/components/invitation/site-header";
-import { WeddingPhoto } from "@/components/invitation/wedding-photo";
-import { getWeddingDateLabel } from "@/lib/event-time";
-import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
+import { supportedLocales, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
+
+// The public entry is a private gate: it must not reveal the couple, date, or venue
+// before a guest has identified themselves and confirmed their invitation.
+export async function generateMetadata(): Promise<Metadata> {
+  const gate = await getTranslations("gate");
+
+  return {
+    title: gate("metaTitle"),
+    description: gate("metaDescription"),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function HomePage({
   searchParams,
@@ -29,65 +38,24 @@ export default async function HomePage({
       ? (manualLocale as Locale)
       : (requestLocale as Locale);
 
-  const [messages, navigation, hero, wedding, footer] = await Promise.all([
+  const [messages, navigation, footer] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "navigation" }),
-    getTranslations({ locale, namespace: "hero" }),
-    getTranslations({ locale, namespace: "wedding" }),
     getTranslations({ locale, namespace: "footer" }),
   ]);
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <SiteHeader
-        detailsLabel={navigation("lookup")}
-        detailsHref="#lookup-section"
-        privacyLabel={navigation("privacy")}
-        languageLabel={navigation("language")}
-        mainNavigationLabel={navigation("main")}
-        showDetailsLink={false}
-        showLanguageSwitcher={false}
-      />
-      <main className="guest-entry" id="main">
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero__inner">
-            <div className="hero__copy">
-              <p className="hero__eyebrow">{hero("eyebrow")}</p>
-              <h1 className="hero__names" id="hero-title">
-                {weddingConfig.couple.displayNames}
-              </h1>
-              <p className="hero__statement">{hero("statement")}</p>
-              <p className="hero__place">{hero("place")}</p>
-              <a className="hero__link" href="#lookup-section">
-                <span>{hero("detailsLink")}</span>
-                <span aria-hidden="true">↓</span>
-              </a>
-              <InvitationLookupCard currentLocale={locale} />
-            </div>
-            <figure className="hero__portrait">
-              <HeroPhotoMotion>
-                <WeddingPhoto
-                  id="formal-staircase-hero"
-                  alt={wedding("photos.formalStaircasePortrait")}
-                  sizes="(max-width: 760px) 100vw, 53vw"
-                  preload
-                  className="hero__image"
-                />
-              </HeroPhotoMotion>
-              <figcaption>{hero("portraitCaption")}</figcaption>
-            </figure>
-          </div>
-          <p className="hero__date">
-            <span>{getWeddingDateLabel(locale, true)}</span>
-            <span aria-hidden="true">·</span>
-            <span>{weddingConfig.event.city}</span>
-          </p>
-        </section>
-
+      <main className="guest-gate" id="main">
+        <div aria-hidden="true" className="guest-gate__atmosphere">
+          <span className="guest-gate__glow guest-gate__glow--rose" />
+          <span className="guest-gate__glow guest-gate__glow--matcha" />
+        </div>
+        <InvitationLookupCard currentLocale={locale} />
       </main>
-      <footer className="site-footer">
-        <span>{weddingConfig.couple.displayNames}</span>
+      <footer className="guest-gate__footer">
         <a href="/privacy">{navigation("privacy")}</a>
+        <span aria-hidden="true">·</span>
         <a
           className="site-footer__credit"
           href="https://www.sevensides.technology/"

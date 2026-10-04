@@ -75,7 +75,24 @@
     "notFound": "We couldn’t find an active invitation with those details. Check them and try again.",
     "rateLimited": "Please wait a few minutes before trying again.",
     "lookupError": "We couldn’t open your invitation just now. Please try again shortly.",
-    "changeLanguage": "Change language"
+    "changeLanguage": "Change language",
+    "confirmTitle": "Is this you?",
+    "confirmDescription": "We found an invitation under this name. Please confirm it’s yours before we open it.",
+    "confirmYes": "Yes, that’s me",
+    "confirmNo": "No, search again",
+    "opening": "Opening your invitation…"
+  },
+  "gate": {
+    "metaTitle": "A private invitation",
+    "metaDescription": "A personal invitation, opened only by its guest.",
+    "eyebrow": "A private invitation",
+    "progressLabel": "Steps to open your invitation",
+    "steps": {
+      "language": "Language",
+      "identify": "Your details",
+      "confirm": "Confirm"
+    },
+    "privacyNote": "Your details are only used to find your invitation and are never shared."
   },
   "event": {
     "dayLabel": "A day together",

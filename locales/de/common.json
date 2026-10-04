@@ -75,7 +75,24 @@
     "notFound": "Mit diesen Angaben wurde keine aktive Einladung gefunden. Bitte prüfe sie und versuche es erneut.",
     "rateLimited": "Bitte warte ein paar Minuten und versuche es dann erneut.",
     "lookupError": "Deine Einladung konnte gerade nicht geöffnet werden. Bitte versuche es gleich noch einmal.",
-    "changeLanguage": "Sprache ändern"
+    "changeLanguage": "Sprache ändern",
+    "confirmTitle": "Bist du das?",
+    "confirmDescription": "Wir haben eine Einladung unter diesem Namen gefunden. Bitte bestätige, dass sie dir gehört, bevor wir sie öffnen.",
+    "confirmYes": "Ja, das bin ich",
+    "confirmNo": "Nein, erneut suchen",
+    "opening": "Deine Einladung wird geöffnet…"
+  },
+  "gate": {
+    "metaTitle": "Eine private Einladung",
+    "metaDescription": "Eine persönliche Einladung, die nur ihr Gast öffnet.",
+    "eyebrow": "Eine private Einladung",
+    "progressLabel": "Schritte zum Öffnen deiner Einladung",
+    "steps": {
+      "language": "Sprache",
+      "identify": "Deine Angaben",
+      "confirm": "Bestätigen"
+    },
+    "privacyNote": "Deine Angaben werden nur verwendet, um deine Einladung zu finden, und niemals weitergegeben."
   },
   "event": {
     "dayLabel": "Ein gemeinsamer Tag",

@@ -75,7 +75,24 @@
     "notFound": "Ezekkel az adatokkal nem találtunk aktív meghívót. Ellenőrizd őket, és próbáld újra.",
     "rateLimited": "Várj néhány percet, mielőtt újra próbálkozol.",
     "lookupError": "Most nem sikerült megnyitni a meghívódat. Kérjük, próbáld újra hamarosan.",
-    "changeLanguage": "Nyelv módosítása"
+    "changeLanguage": "Nyelv módosítása",
+    "confirmTitle": "Te vagy az?",
+    "confirmDescription": "Találtunk egy meghívót ezen a néven. Kérjük, erősítsd meg, hogy a tiéd, mielőtt megnyitjuk.",
+    "confirmYes": "Igen, én vagyok",
+    "confirmNo": "Nem, új keresés",
+    "opening": "Meghívód megnyitása…"
+  },
+  "gate": {
+    "metaTitle": "Személyes meghívó",
+    "metaDescription": "Személyes meghívó, amelyet csak a vendége nyithat meg.",
+    "eyebrow": "Személyes meghívó",
+    "progressLabel": "A meghívó megnyitásának lépései",
+    "steps": {
+      "language": "Nyelv",
+      "identify": "Adataid",
+      "confirm": "Megerősítés"
+    },
+    "privacyNote": "Adataidat csak a meghívód megkeresésére használjuk, és soha nem adjuk tovább."
   },
   "event": {
     "dayLabel": "Egy közös nap",

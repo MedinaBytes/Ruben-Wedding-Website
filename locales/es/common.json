@@ -75,7 +75,24 @@
     "notFound": "No encontramos una invitación activa con esos datos. Revísalos e inténtalo de nuevo.",
     "rateLimited": "Espera unos minutos antes de volver a intentarlo.",
     "lookupError": "Ahora no pudimos abrir tu invitación. Inténtalo de nuevo en un momento.",
-    "changeLanguage": "Cambiar idioma"
+    "changeLanguage": "Cambiar idioma",
+    "confirmTitle": "¿Eres tú?",
+    "confirmDescription": "Encontramos una invitación con este nombre. Confirma que es tuya antes de abrirla.",
+    "confirmYes": "Sí, soy yo",
+    "confirmNo": "No, buscar de nuevo",
+    "opening": "Abriendo tu invitación…"
+  },
+  "gate": {
+    "metaTitle": "Una invitación privada",
+    "metaDescription": "Una invitación personal que solo abre su invitado.",
+    "eyebrow": "Una invitación privada",
+    "progressLabel": "Pasos para abrir tu invitación",
+    "steps": {
+      "language": "Idioma",
+      "identify": "Tus datos",
+      "confirm": "Confirmar"
+    },
+    "privacyNote": "Tus datos solo se usan para encontrar tu invitación y nunca se comparten."
   },
   "event": {
     "dayLabel": "Un día juntos",
