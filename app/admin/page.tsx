@@ -46,7 +46,7 @@ export default async function AdminOverviewPage() {
   // RSVPs
   const confirmedRsvps = rsvps.filter((r) => r.attendance_status === "yes");
   const declinedRsvps = rsvps.filter((r) => r.attendance_status === "no");
-  const confirmedAttendees = confirmedRsvps.reduce((sum, r) => sum + (r.attendeeCount || 0), 0);
+  const confirmedAttendees = confirmedRsvps.reduce((sum, r) => sum + (r.attendee_count || 0), 0);
   const pendingCount = activeInvitations - (confirmedRsvps.length + declinedRsvps.length);
   const attendanceRatePercent = totalGuestCapacity > 0 ? Math.round((confirmedAttendees / totalGuestCapacity) * 100) : 0;
 
@@ -78,7 +78,7 @@ export default async function AdminOverviewPage() {
             </span>
           </div>
           <p style={{ fontSize: "0.85rem", color: "#544648", margin: "0.4rem 0 0 0" }}>
-            <strong>{openedCount}</strong> of <strong>{activeInvitations}</strong> active invitations opened
+            <strong>{openedCount}</strong> of <strong>{activeInvitations}</strong> active invitations opened ({totalInvitations} total created)
           </p>
         </div>
 

@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useSound } from "@/lib/sound";
 
 interface EnvelopeIntroProps {
@@ -36,17 +36,22 @@ export function EnvelopeIntro({
 
   // Intro states: "idle" -> "opening" -> "revealed" -> "navigating"
   const [step, setStep] = useState<"idle" | "opening" | "revealed" | "navigating">("idle");
-  const [alreadySeen, setAlreadySeen] = useState<boolean>(false);
 
   const storageKey = `wedding_intro_seen_${token}`;
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(storageKey) === "true") {
-        setAlreadySeen(true);
+  const alreadySeen = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("storage", onStoreChange);
+      return () => window.removeEventListener("storage", onStoreChange);
+    },
+    () => {
+      try {
+        return sessionStorage.getItem(storageKey) === "true";
+      } catch {
+        return false;
       }
-    } catch {}
-  }, [storageKey]);
+    },
+    () => false,
+  );
 
   function markSeenAndNavigate() {
     try {

@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     await recordAdminAudit({
       actor,
       action: "INVITATION_CREATED",
-      resourceType: "invitation_bulk",
+      resourceType: "invitation",
       metadata: { importedCount: created.length, failedCount: errors.length },
     });
   }

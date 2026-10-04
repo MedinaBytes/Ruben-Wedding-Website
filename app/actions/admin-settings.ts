@@ -28,8 +28,8 @@ export async function updateSiteSettings(formData: FormData) {
 
   await recordAdminAudit({
     actor,
-    action: "SITE_SETTINGS_UPDATED",
-    resourceType: "site_settings",
+    action: "INVITATION_UPDATED",
+    resourceType: "invitation",
     metadata: { showGiftDetails, showPrivateAddress },
   });
 

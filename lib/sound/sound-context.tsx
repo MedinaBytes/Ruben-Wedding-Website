@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useState, useSyncExternalStore, type ReactNode } from "react";
 import { playSynthesizedSound, type SoundEffect } from "./synthesizer";
 
 interface SoundContextValue {
@@ -14,46 +14,54 @@ interface SoundContextValue {
 const SoundContext = createContext<SoundContextValue | null>(null);
 
 const STORAGE_KEY = "wedding_sound_enabled";
+const CHANGE_EVENT = "wedding_sound_changed";
+
+function subscribeSound(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(CHANGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function getSoundSnapshot(): boolean {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === null ? true : stored === "true";
+  } catch {
+    return true;
+  }
+}
+
+function getServerSnapshot(): boolean {
+  return true;
+}
 
 export function SoundProvider({ children }: { children: ReactNode }) {
-  const [soundEnabled, setSoundEnabledState] = useState<boolean>(true);
+  const soundEnabled = useSyncExternalStore(subscribeSound, getSoundSnapshot, getServerSnapshot);
   const [hasUnlockedAudio, setHasUnlockedAudio] = useState<boolean>(false);
 
-  // Read stored preference once mounted
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored !== null) {
-        setSoundEnabledState(stored === "true");
-      }
-    } catch {
-      // Storage access disabled or restricted
-    }
-  }, []);
-
   const setSoundEnabled = useCallback((enabled: boolean) => {
-    setSoundEnabledState(enabled);
     try {
       localStorage.setItem(STORAGE_KEY, enabled ? "true" : "false");
+      window.dispatchEvent(new Event(CHANGE_EVENT));
     } catch {}
   }, []);
 
   const toggleSound = useCallback(() => {
-    setSoundEnabledState((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(STORAGE_KEY, next ? "true" : "false");
-      } catch {}
+    try {
+      const next = !getSoundSnapshot();
+      localStorage.setItem(STORAGE_KEY, next ? "true" : "false");
+      window.dispatchEvent(new Event(CHANGE_EVENT));
       if (next) {
         playSynthesizedSound("toggle");
       }
-      return next;
-    });
+    } catch {}
   }, []);
 
   const play = useCallback(
     (effect: SoundEffect) => {
-      // Any call to play marks user interaction and unlocks Web Audio
       setHasUnlockedAudio(true);
       if (soundEnabled) {
         playSynthesizedSound(effect);
@@ -72,7 +80,6 @@ export function SoundProvider({ children }: { children: ReactNode }) {
 export function useSound(): SoundContextValue {
   const context = useContext(SoundContext);
   if (!context) {
-    // Graceful fallback for components rendered outside provider
     return {
       soundEnabled: false,
       setSoundEnabled: () => {},
