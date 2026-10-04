@@ -291,8 +291,8 @@
     "coastCaption": "Nuestra clase de tarde favorita"
   },
   "intro": {
-    "greeting": "Hola, {name}:",
-    "open": "Abrir invitación",
+    "greeting": "Querido/a {name},",
+    "open": "Romper sello y abrir",
     "skip": "Saltar introducción",
     "soundOn": "Activar sonido",
     "soundOff": "Desactivar sonido",

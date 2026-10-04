@@ -291,8 +291,8 @@
     "coastCaption": "Unser liebster Abendhimmel"
   },
   "intro": {
-    "greeting": "Hallo, {name},",
-    "open": "Einladung öffnen",
+    "greeting": "Liebe/r {name},",
+    "open": "Siegel brechen & öffnen",
     "skip": "Einführung überspringen",
     "soundOn": "Ton einschalten",
     "soundOff": "Ton ausschalten",

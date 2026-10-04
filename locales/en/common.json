@@ -292,7 +292,7 @@
   },
   "intro": {
     "greeting": "Dear {name},",
-    "open": "Open invitation",
+    "open": "Break seal & open",
     "skip": "Skip intro",
     "soundOn": "Turn sound on",
     "soundOff": "Turn sound off",
