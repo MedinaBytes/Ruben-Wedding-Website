@@ -51,6 +51,16 @@ export function LanguageSwitcher({
     void setManualLocale(nextLocale, invitation?.id).catch(() => {});
   }
 
+  function handleSelect(e: React.MouseEvent<HTMLAnchorElement>, nextLocale: Locale) {
+    e.preventDefault();
+    onSelect(nextLocale);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", nextLocale);
+      window.location.href = url.toString();
+    }
+  }
+
   return (
     <div className="language-switcher" role="group" aria-label={label}>
       {supportedLocales.map((option) => (
@@ -60,7 +70,7 @@ export function LanguageSwitcher({
           className="language-switcher__option"
           href={`?lang=${option}`}
           key={option}
-          onClick={() => onSelect(option)}
+          onClick={(e) => handleSelect(e, option)}
           role="button"
         >
           {localeCodes[option]}
