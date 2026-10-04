@@ -4,6 +4,7 @@ const redirectMock = vi.fn();
 const authMock = vi.fn();
 const auditMock = vi.fn();
 const rpcMock = vi.fn();
+const purgeMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
   redirect: redirectMock,
@@ -21,6 +22,12 @@ vi.mock("@/lib/supabase/admin", () => ({
   createSupabaseAdminClient: () => ({
     rpc: rpcMock,
   }),
+}));
+
+vi.mock("@/lib/storage/resilient-store", () => ({
+  resilientStore: {
+    purgeWeddingData: purgeMock,
+  },
 }));
 
 describe("deleteWeddingData", () => {
@@ -53,6 +60,7 @@ describe("deleteWeddingData", () => {
 
     await expect(deleteWeddingData(formData)).rejects.toThrow("redirect:/admin?deleted=1");
     expect(order).toEqual(["rpc", "audit", "redirect:/admin?deleted=1"]);
+    expect(purgeMock).toHaveBeenCalledWith(true);
   });
 });
 

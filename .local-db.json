@@ -1,6 +1,23 @@
 {
   "invitations": [
     {
+      "id": "e306af30-9e90-4cf7-c323-05a3d826ebcb",
+      "token": "HQmq3YD_HPw",
+      "token_hash": "306af309e907cf7c32305a3d826ebcb4407ad0a316eb7366cc8875518c5cfbab",
+      "display_name": "Familia & Amigos",
+      "normalized_name": "familia amigos",
+      "language": "es",
+      "max_guests": 2,
+      "plus_one_allowed": true,
+      "group_name": "Familia & Amigos",
+      "normalized_group_name": "familia amigos",
+      "personal_message": "¡Nos hace muchísima ilusión celebrar este gran día con vosotros en Viena!",
+      "phone": null,
+      "whatsapp": null,
+      "status": "active",
+      "created_at": "2026-10-04T17:55:00.000Z"
+    },
+    {
       "id": "00000000-0000-0000-0000-000000000001",
       "token": "demo",
       "token_hash": "demo_hash",

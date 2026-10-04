@@ -67,7 +67,11 @@ interface LocalDatabase {
   };
 }
 
-const DB_PATH = path.resolve(process.cwd(), ".local-db.json");
+const isTestEnv = process.env.NODE_ENV === "test" || Boolean(process.env.VITEST);
+const DB_PATH = isTestEnv
+  ? path.resolve(process.cwd(), ".local-db.test.json")
+  : path.resolve(process.cwd(), ".local-db.json");
+const BACKUP_PATH = path.resolve(process.cwd(), ".local-db.backup.json");
 
 function getDefaultDb(): LocalDatabase {
   return {
@@ -131,6 +135,16 @@ function getDefaultDb(): LocalDatabase {
 function loadDb(): LocalDatabase {
   try {
     if (!fs.existsSync(DB_PATH)) {
+      if (!isTestEnv && fs.existsSync(BACKUP_PATH)) {
+        try {
+          const backupRaw = fs.readFileSync(BACKUP_PATH, "utf-8");
+          const backupParsed = JSON.parse(backupRaw) as LocalDatabase;
+          if (Array.isArray(backupParsed.invitations) && backupParsed.invitations.length > 0) {
+            saveDb(backupParsed);
+            return backupParsed;
+          }
+        } catch {}
+      }
       const initial = getDefaultDb();
       saveDb(initial);
       return initial;
@@ -138,6 +152,28 @@ function loadDb(): LocalDatabase {
     const raw = fs.readFileSync(DB_PATH, "utf-8");
     const parsed = JSON.parse(raw) as LocalDatabase;
     if (!Array.isArray(parsed.events)) parsed.events = [];
+    if (!Array.isArray(parsed.invitations)) parsed.invitations = [];
+    if (!Array.isArray(parsed.rsvps)) parsed.rsvps = [];
+    if (!Array.isArray(parsed.songRequests)) parsed.songRequests = [];
+
+    // Fallback recovery: If invitations was somehow emptied or lost non-demo records, check backup
+    if (!isTestEnv && parsed.invitations.length <= 1 && fs.existsSync(BACKUP_PATH)) {
+      try {
+        const backupRaw = fs.readFileSync(BACKUP_PATH, "utf-8");
+        const backupParsed = JSON.parse(backupRaw) as LocalDatabase;
+        if (Array.isArray(backupParsed.invitations) && backupParsed.invitations.length > parsed.invitations.length) {
+          // Merge backup invitations so nothing is ever dropped
+          const existingIds = new Set(parsed.invitations.map((i) => i.id));
+          for (const bInv of backupParsed.invitations) {
+            if (!existingIds.has(bInv.id)) {
+              parsed.invitations.push(bInv);
+            }
+          }
+          saveDb(parsed);
+        }
+      } catch {}
+    }
+
     return parsed;
   } catch {
     return getDefaultDb();
@@ -147,6 +183,9 @@ function loadDb(): LocalDatabase {
 function saveDb(db: LocalDatabase) {
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+    if (!isTestEnv && Array.isArray(db.invitations) && db.invitations.length > 0) {
+      fs.writeFileSync(BACKUP_PATH, JSON.stringify(db, null, 2), "utf-8");
+    }
   } catch {}
 }
 
@@ -297,6 +336,15 @@ export const resilientStore = {
 
   purgeWeddingData(keepDemo = true) {
     const db = loadDb();
+    if (!isTestEnv) {
+      try {
+        fs.writeFileSync(
+          path.resolve(process.cwd(), ".local-db.purge-backup.json"),
+          JSON.stringify(db, null, 2),
+          "utf-8",
+        );
+      } catch {}
+    }
     if (keepDemo) {
       db.invitations = getDefaultDb().invitations;
     } else {
