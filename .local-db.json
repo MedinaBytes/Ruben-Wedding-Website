@@ -1,23 +1,6 @@
 {
   "invitations": [
     {
-      "id": "e306af30-9e90-4cf7-c323-05a3d826ebcb",
-      "token": "HQmq3YD_HPw",
-      "token_hash": "306af309e907cf7c32305a3d826ebcb4407ad0a316eb7366cc8875518c5cfbab",
-      "display_name": "Familia & Amigos",
-      "normalized_name": "familia amigos",
-      "language": "es",
-      "max_guests": 2,
-      "plus_one_allowed": true,
-      "group_name": "Familia & Amigos",
-      "normalized_group_name": "familia amigos",
-      "personal_message": "¡Nos hace muchísima ilusión celebrar este gran día con vosotros en Viena!",
-      "phone": null,
-      "whatsapp": null,
-      "status": "active",
-      "created_at": "2026-10-04T17:55:00.000Z"
-    },
-    {
       "id": "00000000-0000-0000-0000-000000000001",
       "token": "demo",
       "token_hash": "demo_hash",
@@ -37,9 +20,106 @@
   ],
   "rsvps": [],
   "songRequests": [],
-  "events": [],
+  "events": [
+    {
+      "id": "evt-1791145680503-ow00t",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "e1ba9aa5-eb74-4e94-a747-2bba8e9a3524",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-04T20:28:00.503Z"
+    },
+    {
+      "id": "evt-1791145665801-5d9z3",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "e1ba9aa5-eb74-4e94-a747-2bba8e9a3524",
+      "event_type": "INVITE_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-04T20:27:45.801Z"
+    },
+    {
+      "id": "evt-1791145493903-oohbb",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": null,
+      "event_type": "RSVP_CONFIRMED",
+      "locale": "es",
+      "created_at": "2026-10-04T20:24:53.903Z"
+    },
+    {
+      "id": "evt-1791145458446-br3hs",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "eeaeb3c6-1577-4bf4-805f-b29668df60a3",
+      "event_type": "RSVP_STARTED",
+      "locale": "es",
+      "created_at": "2026-10-04T20:24:18.446Z"
+    },
+    {
+      "id": "evt-1791145445490-08oey",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "eeaeb3c6-1577-4bf4-805f-b29668df60a3",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-04T20:24:05.490Z"
+    },
+    {
+      "id": "evt-1791145436894-wqg9n",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "eeaeb3c6-1577-4bf4-805f-b29668df60a3",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "es",
+      "created_at": "2026-10-04T20:23:56.894Z"
+    },
+    {
+      "id": "evt-1791145402913-q2fu1",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "eeaeb3c6-1577-4bf4-805f-b29668df60a3",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "de-AT",
+      "created_at": "2026-10-04T20:23:22.913Z"
+    },
+    {
+      "id": "evt-1791145398732-7e3ch",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "eeaeb3c6-1577-4bf4-805f-b29668df60a3",
+      "event_type": "INVITE_OPENED",
+      "locale": "de-AT",
+      "created_at": "2026-10-04T20:23:18.732Z"
+    },
+    {
+      "id": "evt-1791145359462-vnt4e",
+      "invitation_id": "017e1e05-a2fa-4423-8135-ca098b61c22e",
+      "session_id": "3EB0D306C69C65248CD110",
+      "event_type": "WHATSAPP_DISPATCHED",
+      "locale": null,
+      "created_at": "2026-10-04T20:22:39.462Z"
+    },
+    {
+      "id": "evt-1791145350917-funbx",
+      "invitation_id": "5cfe1a7e-c8ad-4caf-844e-b1a0805c6633",
+      "session_id": "3EB07B1131C073B16D143A",
+      "event_type": "WHATSAPP_DISPATCHED",
+      "locale": null,
+      "created_at": "2026-10-04T20:22:30.917Z"
+    },
+    {
+      "id": "evt-1791145266806-3q2v5",
+      "invitation_id": "53825735-b183-4776-90ca-beee0db980af",
+      "session_id": "3EB0910D47A420AC97D5E1",
+      "event_type": "WHATSAPP_DISPATCHED",
+      "locale": null,
+      "created_at": "2026-10-04T20:21:06.806Z"
+    },
+    {
+      "id": "evt-1791145258242-l6agq",
+      "invitation_id": "3f1d7866-48be-4559-a6f8-fdfdaf859f35",
+      "session_id": "3EB09F155C7C6A23495CE3",
+      "event_type": "WHATSAPP_DISPATCHED",
+      "locale": null,
+      "created_at": "2026-10-04T20:20:58.242Z"
+    }
+  ],
   "settings": {
-    "showGiftDetails": false,
+    "showGiftDetails": true,
     "showPrivateAddress": false,
     "bankName": "Erste Bank Österreich",
     "accountHolder": "Ruben & Andrea",
@@ -50,7 +130,17 @@
     "privateCity": "1120 Vienna, Austria",
     "privateAccessNotes": "Ring bell for 'Ruben & Andrea' on 2nd floor.",
     "whatsappDelaySeconds": 10,
-    "whatsappTemplate": "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}"
+    "whatsappTemplate": "Dear {name},\r\n\r\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\r\n\r\nPlease open your personalized digital invitation here:\r\n{url}",
+    "smtpHost": "",
+    "smtpPort": "587",
+    "smtpSecure": false,
+    "smtpUser": "",
+    "smtpPass": "",
+    "smtpSenderEmail": "",
+    "smtpSenderName": "Ruben & Andrea",
+    "spotifyPlaylistUrl": "https://open.spotify.com/playlist/4zpgM8knTb7CzrjMUQOS3E?si=fCg5_dv8ROSykKaaXqJxtw&utm_source=whatsapp&pi=TjLohFF3SQOMi",
+    "contactPhone": "",
+    "contactEmail": ""
   },
   "whatsappSession": {
     "status": "disconnected",
