@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { hasAuthenticatedAdmin } from "@/lib/admin/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { updateSiteSettings } from "@/app/actions/admin-settings";
+import { SmtpTester } from "@/components/admin/smtp-tester";
 
 export const dynamic = "force-dynamic";
 
@@ -206,6 +207,8 @@ export default async function AdminSettingsPage() {
             <input type="checkbox" name="smtpSecure" defaultChecked={smtpSecure} style={{ width: "16px", height: "16px" }} />
             <span>Use SSL/TLS (Enable for port 465)</span>
           </label>
+
+          <SmtpTester defaultRecipient={contactEmail || "ruben.andrea.wedding@gmail.com"} />
         </div>
 
         {/* Section 4: WhatsApp Automated Distribution Integration */}

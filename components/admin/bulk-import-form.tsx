@@ -85,6 +85,41 @@ export function BulkImportForm() {
     }
   }
 
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = (event.target?.result as string) || "";
+      handleParse(content);
+    };
+    reader.readAsText(file);
+  }
+
+  function handleDownloadTemplate(e: React.MouseEvent) {
+    e.preventDefault();
+    const csvContent =
+      "display_name,language,max_guests,plus_one_allowed,group_name\n" +
+      "Familia Quijada Sanchez,es,4,false,Family Ruben\n" +
+      "Christian & Guest,de-AT,2,true,Friends Vienna\n" +
+      "Mate Kovacs,hu,1,false,Friends Hungary\n" +
+      "Sarah Jenkins,en,2,true,International Friends\n" +
+      "Diego & Valentina Morales,es,2,false,Family\n" +
+      "Dr. Thomas Weber,de-AT,1,true,Colleagues\n" +
+      "Anna Varga,hu,2,true,University Friends\n" +
+      "David & Elena Miller,en,2,false,London Friends\n";
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "wedding_guests_template.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div style={{ maxWidth: "800px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
@@ -96,9 +131,9 @@ export function BulkImportForm() {
             Import multiple guests at once, auto-generating secure 256-bit token invitation URLs.
           </p>
         </div>
-        <a
-          href="/wedding_guests_template.csv"
-          download="wedding_guests_template.csv"
+        <button
+          type="button"
+          onClick={handleDownloadTemplate}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -112,16 +147,42 @@ export function BulkImportForm() {
             textDecoration: "none",
             fontWeight: 600,
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+            cursor: "pointer",
           }}
         >
           ⬇ Download CSV Template
-        </a>
+        </button>
       </div>
 
       <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem", marginBottom: "2rem" }}>
-        <label htmlFor="csv-input" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.5rem" }}>
-          Paste CSV Content (with headers: <code>display_name,language,max_guests,plus_one_allowed,group_name</code>)
-        </label>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+          <label htmlFor="csv-input" style={{ fontSize: "0.85rem", fontWeight: 600, color: "#2B2425" }}>
+            Paste CSV Content (or upload file below):
+          </label>
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              background: "#F5EFEB",
+              color: "#8C2836",
+              padding: "0.35rem 0.75rem",
+              borderRadius: "4px",
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              border: "1px solid #E2D7CF",
+            }}
+          >
+            📁 Choose .csv File
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+          </label>
+        </div>
         <textarea
           id="csv-input"
           rows={7}

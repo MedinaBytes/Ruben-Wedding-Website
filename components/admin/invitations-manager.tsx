@@ -70,7 +70,7 @@ export function InvitationsManager({
     setItems((prev) =>
       prev.map((i) => (i.id === inv.id ? { ...i, status: newStatus } : i)),
     );
-    await revokeInvitationAction(inv.id);
+    await revokeInvitationAction(inv.id, newStatus);
   }
 
   async function openQrModal(inv: InvitationRow) {

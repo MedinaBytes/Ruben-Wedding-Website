@@ -295,6 +295,19 @@ export const resilientStore = {
     return db.settings;
   },
 
+  purgeWeddingData(keepDemo = true) {
+    const db = loadDb();
+    if (keepDemo) {
+      db.invitations = getDefaultDb().invitations;
+    } else {
+      db.invitations = [];
+    }
+    db.rsvps = [];
+    db.songRequests = [];
+    db.events = [];
+    saveDb(db);
+  },
+
   // WHATSAPP
   getWhatsAppSession() {
     return loadDb().whatsappSession;

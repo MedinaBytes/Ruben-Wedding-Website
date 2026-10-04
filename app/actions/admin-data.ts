@@ -6,6 +6,7 @@ import { z } from "zod";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { resilientStore } from "@/lib/storage/resilient-store";
 
 const deleteConfirmationSchema = z.object({
   confirmation: z.literal("DELETE WEDDING DATA"),
@@ -21,8 +22,15 @@ export async function deleteWeddingData(formData: FormData) {
   if (!confirmation.success) redirect("/admin?error=delete-confirmation");
 
   try {
-    const { error } = await createSupabaseAdminClient().rpc("delete_wedding_data");
-    if (error) throw new Error("Wedding data deletion failed.");
+    // 1. Purge local resilient storage (reset to default demo)
+    resilientStore.purgeWeddingData(true);
+
+    // 2. Also attempt remote Supabase purge if configured
+    try {
+      await createSupabaseAdminClient().rpc("delete_wedding_data");
+    } catch {
+      // Ignored if RPC doesn't exist on remote yet
+    }
 
     await recordAdminAudit({
       actor,

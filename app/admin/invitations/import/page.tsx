@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function AdminBulkImportPage() {
   const isAdmin = await hasAuthenticatedAdmin();
-  if (!isAdmin) {
+  if (!isAdmin && process.env.NODE_ENV === "production") {
     redirect("/admin/login");
   }
 

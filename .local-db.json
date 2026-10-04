@@ -15,106 +15,12 @@
       "phone": "+43 664 1234567",
       "whatsapp": "+436641234567",
       "status": "active",
-      "created_at": "2026-10-04T10:46:14.028Z"
+      "created_at": "2026-10-04T17:52:55.492Z"
     }
   ],
-  "rsvps": [
-    {
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "attendance_status": "yes",
-      "attendee_count": 2,
-      "guest_names": [
-        "MAria"
-      ],
-      "dietary_requirements": "no se",
-      "notes": "quien cono",
-      "language": "es",
-      "submitted_at": "2026-10-04T17:45:13.788Z",
-      "updated_at": "2026-10-04T17:45:13.788Z"
-    }
-  ],
-  "songRequests": [
-    {
-      "id": "song-demo-1",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "slot": 1,
-      "song_title": "Song Request #1",
-      "artist": "Guest Song",
-      "spotify_url": "https://open.spotify.com/track/SnVhbg0000000000000000",
-      "selected_for_playlist": true,
-      "submitted_at": "2026-10-04T11:21:07.856Z"
-    },
-    {
-      "id": "song-demo-2",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "slot": 2,
-      "song_title": "Song Request #2",
-      "artist": "Guest Song",
-      "spotify_url": "https://open.spotify.com/track/U2hha2lyYQ000000000000",
-      "selected_for_playlist": false,
-      "submitted_at": "2026-10-04T11:21:07.856Z"
-    },
-    {
-      "id": "song-demo-3",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "slot": 3,
-      "song_title": "Song Request #3",
-      "artist": "Guest Song",
-      "spotify_url": "https://open.spotify.com/track/cm94YW5h00000000000000",
-      "selected_for_playlist": false,
-      "submitted_at": "2026-10-04T11:21:07.856Z"
-    }
-  ],
-  "events": [
-    {
-      "id": "evt-1791135913873-9h8o7",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": null,
-      "event_type": "RSVP_CONFIRMED",
-      "locale": "es",
-      "created_at": "2026-10-04T17:45:13.873Z"
-    },
-    {
-      "id": "evt-1791135903200-825y8",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": "a71bc329-22b4-4e7d-bd25-d0fa5dc45b2b",
-      "event_type": "RSVP_STARTED",
-      "locale": "es",
-      "created_at": "2026-10-04T17:45:03.200Z"
-    },
-    {
-      "id": "evt-1791135903175-g0461",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": "a71bc329-22b4-4e7d-bd25-d0fa5dc45b2b",
-      "event_type": "PLAYLIST_OPENED",
-      "locale": "es",
-      "created_at": "2026-10-04T17:45:03.175Z"
-    },
-    {
-      "id": "evt-demo-1",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": "demo-session-1",
-      "event_type": "INVITE_OPENED",
-      "locale": "en",
-      "created_at": "2026-10-04T10:50:00.000Z"
-    },
-    {
-      "id": "evt-demo-2",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": "demo-session-1",
-      "event_type": "RSVP_CONFIRMED",
-      "locale": "en",
-      "created_at": "2026-10-04T11:36:28.985Z"
-    },
-    {
-      "id": "evt-demo-3",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "session_id": "demo-session-1",
-      "event_type": "SONG_REQUESTED",
-      "locale": "en",
-      "created_at": "2026-10-04T11:21:07.856Z"
-    }
-  ],
+  "rsvps": [],
+  "songRequests": [],
+  "events": [],
   "settings": {
     "showGiftDetails": false,
     "showPrivateAddress": false,

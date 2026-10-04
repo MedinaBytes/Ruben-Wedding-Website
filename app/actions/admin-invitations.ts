@@ -119,11 +119,12 @@ export async function createInvitationAction(formData: FormData): Promise<Create
 export async function createDemoInvitationAction(): Promise<CreateInvitationResult> {
   const tokenHash = hashInvitationToken(generateInvitationToken()); // unique hash
   const client = createSupabaseAdminClient();
-
-  // Upsert a demo invitation with id "00000000-0000-0000-0000-000000000001"
   const demoId = "00000000-0000-0000-0000-000000000001";
-  await client.from("invitations").upsert({
+
+  // Ensure demo invitation is saved to resilient store
+  resilientStore.saveInvitation({
     id: demoId,
+    token: "demo",
     token_hash: tokenHash,
     display_name: "Sarah & Guest (Demo)",
     normalized_name: "sarah guest demo",
@@ -131,9 +132,28 @@ export async function createDemoInvitationAction(): Promise<CreateInvitationResu
     max_guests: 2,
     plus_one_allowed: true,
     group_name: "Demo Reviewers",
+    normalized_group_name: "demo reviewers",
+    personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+    phone: "+43 664 1234567",
+    whatsapp: "+436641234567",
     status: "active",
-    personal_message: "We are thrilled to celebrate our special day with you in Vienna!",
+    created_at: new Date().toISOString(),
   });
+
+  try {
+    await client.from("invitations").upsert({
+      id: demoId,
+      token_hash: tokenHash,
+      display_name: "Sarah & Guest (Demo)",
+      normalized_name: "sarah guest demo",
+      language: "en",
+      max_guests: 2,
+      plus_one_allowed: true,
+      group_name: "Demo Reviewers",
+      status: "active",
+      personal_message: "We are thrilled to celebrate our special day with you in Vienna!",
+    });
+  } catch {}
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return {
@@ -176,7 +196,7 @@ export async function deleteInvitationAction(id: string): Promise<{ success: boo
   return { success: true };
 }
 
-export async function revokeInvitationAction(id: string): Promise<{ success: boolean; error?: string }> {
+export async function revokeInvitationAction(id: string, targetStatus?: "active" | "revoked"): Promise<{ success: boolean; error?: string }> {
   let actor = await getAuthenticatedAdminIdentity();
   if (!actor && process.env.NODE_ENV !== "production") {
     actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
@@ -185,19 +205,21 @@ export async function revokeInvitationAction(id: string): Promise<{ success: boo
     return { success: false, error: "Unauthorized." };
   }
 
+  const status = targetStatus || "revoked";
+
   // Update local store
-  resilientStore.updateInvitationStatus(id, "revoked");
+  resilientStore.updateInvitationStatus(id, status);
 
   // Attempt remote Supabase update
   try {
     const client = createSupabaseAdminClient();
-    await client.from("invitations").update({ status: "revoked" }).eq("id", id);
+    await client.from("invitations").update({ status }).eq("id", id);
   } catch {}
 
   try {
     await recordAdminAudit({
       actor: { id: actor.id, email: actor.email || "admin@medina.local" },
-      action: "INVITATION_REVOKED",
+      action: status === "revoked" ? "INVITATION_REVOKED" : "INVITATION_UPDATED",
       resourceType: "invitation",
       resourceId: id,
     });
