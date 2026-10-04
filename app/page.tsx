@@ -111,8 +111,6 @@ export default async function HomePage({
 
       <footer className="guest-gate__footer">
         <Link href="/privacy">{navigation("privacy")}</Link>
-        <span aria-hidden="true">·</span>
-        <Link href="/admin/login">Admin Portal</Link>
       </footer>
     </NextIntlClientProvider>
   );

@@ -5,7 +5,7 @@ test("neutral landing page renders couple initials and instructs personal link u
 
   await expect(page.getByRole("heading", { level: 1, name: /Ruben.*Andrea/i })).toBeVisible();
   await expect(page.getByRole("link", { name: "Privacy" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Admin Portal" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Admin Portal" })).not.toBeVisible();
   await expect(page.getByText(/Personal Invitation/i)).toBeVisible();
 });
 
