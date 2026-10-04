@@ -1,4 +1,11 @@
 {
+  "gate": {
+    "title": "Zártkörű Esküvői Meghívó",
+    "metaTitle": "Ruben & Andrea — Esküvői Ünnepség",
+    "metaDescription": "Személyre szóló digitális esküvői meghívó Ruben és Andrea esküvőjére.",
+    "instruction": "Ez egy zártkörű esküvői weboldal Ruben és Andrea 2027. október 2-i bécsi esküvőjéhez.",
+    "personalNotice": "Kérjük, nyissa meg a WhatsApp-on vagy e-mailben kapott személyes linkjét a boríték megnyitásához és a visszajelzéshez."
+  },
   "metadata": {
     "titleSuffix": "Esküvői meghívó",
     "description": "Személyes meghívó egy bécsi esküvőre."

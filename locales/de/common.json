@@ -1,4 +1,11 @@
 {
+  "gate": {
+    "title": "Private Hochzeitseinladung",
+    "metaTitle": "Ruben & Andrea — Hochzeitsfeier",
+    "metaDescription": "Eine private digitale Hochzeitseinladung für Ruben & Andrea.",
+    "instruction": "Dies ist eine private Hochzeits-Website für die Hochzeit von Ruben und Andrea am 2. Oktober 2027 in Wien.",
+    "personalNotice": "Bitte öffnen Sie Ihren persönlichen Link aus Ihrer WhatsApp- oder E-Mail-Nachricht, um Ihren Umschlag zu öffnen und zuzusagen."
+  },
   "metadata": {
     "titleSuffix": "Hochzeitseinladung",
     "description": "Eine private Einladung zu einer Hochzeit in Wien."

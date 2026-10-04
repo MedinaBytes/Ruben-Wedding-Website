@@ -1,4 +1,11 @@
 {
+  "gate": {
+    "title": "Invitación Privada de Boda",
+    "metaTitle": "Ruben & Andrea — Celebración de Boda",
+    "metaDescription": "Una invitación digital privada para la boda de Ruben y Andrea.",
+    "instruction": "Este es un sitio web privado para la boda de Ruben y Andrea el 2 de octubre de 2027 en Viena.",
+    "personalNotice": "Por favor, abre el enlace personal directo que recibiste por WhatsApp o correo para ver tu sobre y confirmar tu asistencia."
+  },
   "metadata": {
     "titleSuffix": "Invitación de boda",
     "description": "Una invitación privada para una boda en Viena."
