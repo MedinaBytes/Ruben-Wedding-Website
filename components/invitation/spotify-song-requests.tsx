@@ -150,7 +150,7 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
     const spotifyUrl = manualSong.spotifyUrl.trim();
 
     if (!title) {
-      setManualError(songFormT("titleLabel"));
+      setManualError(songFormT("titleRequired"));
       return;
     }
 
