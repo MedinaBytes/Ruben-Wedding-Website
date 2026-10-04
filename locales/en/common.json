@@ -167,7 +167,11 @@
     "title": "Where to stay",
     "quietArea": "The area around the celebration is residential and quiet.",
     "cityCenter": "The neighborhood is well connected to the U6 metro, including from the city center.",
-    "recommendations": "We are happy to share accommodation recommendations when you reach out to us."
+    "recommendations": "We are happy to share accommodation recommendations when you reach out to us.",
+    "privateAddressTitle": "Private Home / Address for Guests",
+    "accessNotesLabel": "Access instructions",
+    "privateRecommendationTitle": "Private accommodation recommendation",
+    "privateRecommendationText": "If you are planning an extended stay or want personalized lodging recommendations close to us, please reach out directly to Ruben & Andrea!"
   },
   "dress": {
     "label": "What to wear",
@@ -225,7 +229,9 @@
     "presence": "Celebrating with you is all we could ask for.",
     "contribution": "If you would also like to give a gift, a monetary contribution toward our future together would be warmly appreciated.",
     "detailsLabel": "Gift details",
-    "detailsPending": "A contribution in cash toward our next adventures together would be a thoughtful gift."
+    "detailsPending": "A contribution in cash toward our next adventures together would be a thoughtful gift.",
+    "accountHolderLabel": "Account Holder",
+    "bankLabel": "Bank"
   },
   "countdown": {
     "label": "Until we celebrate",

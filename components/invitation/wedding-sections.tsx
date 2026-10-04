@@ -365,7 +365,7 @@ export async function WeddingSections({
               }}
             >
               <p style={{ fontWeight: 600, color: "#8C2836", margin: "0 0 0.4rem 0", fontSize: "0.95rem" }}>
-                📍 Couple&apos;s Private Address in Vienna
+                📍 {stay("privateAddressTitle")}
               </p>
               <p style={{ margin: "0 0 0.25rem 0", color: "#2B2425", fontSize: "0.95rem" }}>
                 {siteSettings.privateStreet || "Private Residence, Meidling"}
@@ -375,7 +375,7 @@ export async function WeddingSections({
               </p>
               {siteSettings.privateAccessNotes && (
                 <p style={{ margin: 0, color: "#544648", fontSize: "0.85rem", fontStyle: "italic" }}>
-                  Notes: {siteSettings.privateAccessNotes}
+                  {stay("accessNotesLabel")}: {siteSettings.privateAccessNotes}
                 </p>
               )}
             </div>
@@ -391,7 +391,7 @@ export async function WeddingSections({
               }}
             >
               <p style={{ margin: 0, color: "#45533E", fontSize: "0.9rem", lineHeight: 1.55 }}>
-                ✨ <strong>Private accommodation recommendation:</strong> If you are planning an extended stay or want personalized lodging recommendations close to us, please reach out directly to Ruben &amp; Andrea!
+                ✨ <strong>{stay("privateRecommendationTitle")}:</strong> {stay("privateRecommendationText")}
               </p>
             </div>
           )}
@@ -467,12 +467,12 @@ export async function WeddingSections({
               >
                 {siteSettings.accountHolder && (
                   <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-                    <strong style={{ color: "#6E6264" }}>Account Holder:</strong> {siteSettings.accountHolder}
+                    <strong style={{ color: "#6E6264" }}>{gifts("accountHolderLabel")}:</strong> {siteSettings.accountHolder}
                   </p>
                 )}
                 {siteSettings.bankName && (
                   <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-                    <strong style={{ color: "#6E6264" }}>Bank:</strong> {siteSettings.bankName}
+                    <strong style={{ color: "#6E6264" }}>{gifts("bankLabel")}:</strong> {siteSettings.bankName}
                   </p>
                 )}
                 {siteSettings.iban && (

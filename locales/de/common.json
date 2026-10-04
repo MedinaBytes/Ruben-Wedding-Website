@@ -167,7 +167,11 @@
     "title": "Wo ihr übernachten könnt",
     "quietArea": "Die Gegend rund um die Feier ist ruhig und vorwiegend ein Wohngebiet.",
     "cityCenter": "Das Viertel ist auch vom Stadtzentrum aus gut an die U6 angebunden.",
-    "recommendations": "Wenn ihr uns fragt, teilen wir gerne Unterkunftsempfehlungen."
+    "recommendations": "Wenn ihr uns fragt, teilen wir gerne Unterkunftsempfehlungen.",
+    "privateAddressTitle": "Private Adresse für Gäste",
+    "accessNotesLabel": "Zugangshinweise",
+    "privateRecommendationTitle": "Private Unterkunftsempfehlung",
+    "privateRecommendationText": "Wenn ihr einen längeren Aufenthalt plant oder persönliche Unterkunftsempfehlungen in unserer Nähe wünscht, meldet euch gerne direkt bei Ruben & Andrea!"
   },
   "dress": {
     "label": "Kleidung",
@@ -225,7 +229,9 @@
     "presence": "Mit euch zu feiern ist alles, was wir uns wünschen.",
     "contribution": "Wenn ihr uns zusätzlich etwas schenken möchtet, freuen wir uns über einen Geldbeitrag für unsere gemeinsame Zukunft.",
     "detailsLabel": "Geschenkdetails",
-    "detailsPending": "Ein Geldgeschenk für unsere nächsten gemeinsamen Abenteuer würde uns sehr freuen."
+    "detailsPending": "Ein Geldgeschenk für unsere nächsten gemeinsamen Abenteuer würde uns sehr freuen.",
+    "accountHolderLabel": "Kontoinhaber:in",
+    "bankLabel": "Bank"
   },
   "countdown": {
     "label": "Bis zur Feier",

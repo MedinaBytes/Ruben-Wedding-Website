@@ -167,7 +167,11 @@
     "title": "Dónde alojarse",
     "quietArea": "La zona de la celebración es residencial y tranquila.",
     "cityCenter": "El barrio está bien conectado con la línea de metro U6, también desde el centro.",
-    "recommendations": "Estaremos encantados de compartir recomendaciones de alojamiento cuando nos contacten."
+    "recommendations": "Estaremos encantados de compartir recomendaciones de alojamiento cuando nos contacten.",
+    "privateAddressTitle": "Domicilio particular / Dirección para invitados",
+    "accessNotesLabel": "Indicaciones de acceso",
+    "privateRecommendationTitle": "Recomendación de alojamiento privado",
+    "privateRecommendationText": "Si estás planeando una estancia más larga o deseas recomendaciones personalizadas de alojamiento cerca de nosotros, ¡escríbenos directamente a Rubén y Andrea!"
   },
   "dress": {
     "label": "Qué ponerse",
@@ -225,7 +229,9 @@
     "presence": "Celebrar con vosotros es todo lo que podemos pedir.",
     "contribution": "Si además queréis hacernos un regalo, agradeceremos mucho una aportación económica para nuestro futuro juntos.",
     "detailsLabel": "Detalles del regalo",
-    "detailsPending": "Una aportación en efectivo para nuestras próximas aventuras juntos sería un detalle muy especial."
+    "detailsPending": "Una aportación en efectivo para nuestras próximas aventuras juntos sería un detalle muy especial.",
+    "accountHolderLabel": "Titular de la cuenta",
+    "bankLabel": "Banco"
   },
   "countdown": {
     "label": "Hasta la celebración",

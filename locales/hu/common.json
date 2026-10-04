@@ -167,7 +167,11 @@
     "title": "Hol érdemes megszállni?",
     "quietArea": "Az ünneplés környéke csendes, lakóövezet.",
     "cityCenter": "A környék a belvárosból is jól megközelíthető az U6-os metróval.",
-    "recommendations": "Szívesen adunk szállásajánlásokat, ha megkerestek minket."
+    "recommendations": "Szívesen adunk szállásajánlásokat, ha megkerestek minket.",
+    "privateAddressTitle": "Magánszállás / Cím a vendégeknek",
+    "accessNotesLabel": "Megközelítési útmutató",
+    "privateRecommendationTitle": "Egyéni szállásajánlás",
+    "privateRecommendationText": "Ha hosszabb tartózkodást terveztek, vagy személyre szabott szállásajánlást szeretnétek a közelünkben, keressétek közvetlenül Rúbent és Andreát!"
   },
   "dress": {
     "label": "Öltözet",
@@ -225,7 +229,9 @@
     "presence": "Számunkra az a legfontosabb, hogy velünk ünnepeljetek.",
     "contribution": "Ha ezen felül ajándékot is szeretnétek adni, örömmel fogadunk egy pénzbeli hozzájárulást a közös jövőnkhöz.",
     "detailsLabel": "Ajándékozási részletek",
-    "detailsPending": "A következő közös kalandjainkhoz adott pénzbeli hozzájárulás különösen kedves ajándék lenne."
+    "detailsPending": "A következő közös kalandjainkhoz adott pénzbeli hozzájárulás különösen kedves ajándék lenne.",
+    "accountHolderLabel": "Számlatulajdonos",
+    "bankLabel": "Bank"
   },
   "countdown": {
     "label": "Az ünneplésig",
