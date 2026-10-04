@@ -422,10 +422,9 @@ export async function WeddingSections({
         <div className="section-heading">
           <p className="section-label">{music("label")}</p>
           <h2 id="music-title">{music("title")}</h2>
-          <p className="music-note__intro">{music("intro")}</p>
         </div>
-
-        <div className="music-note__player-wrapper">
+        <div className="music-note__copy">
+          <p>{music("intro")}</p>
           <SpotifyPlaylist
             title={music("embedTitle")}
             loadingLabel={music("spotifyLoading")}
@@ -435,14 +434,11 @@ export async function WeddingSections({
             openUrl={spotifyPlaylist?.openUrl ?? null}
             invitation={invitation ? { id: invitation.id, token: invitation.token } : undefined}
           />
-        </div>
-
-        <div className="music-note__requests-wrapper">
-          <div className="music-note__requests-heading">
-            <h3 id="song-requests-title">{music("requestsTitle")}</h3>
+          <div className="music-requests-block">
+            <h3>{music("requestsTitle")}</h3>
             <p>{music("requestsIntro")}</p>
+            {invitation && <SpotifySongRequests token={invitation.token} playlistUrl={spotifyPlaylist?.openUrl ?? null} />}
           </div>
-          {invitation && <SpotifySongRequests token={invitation.token} playlistUrl={spotifyPlaylist?.openUrl ?? null} />}
         </div>
       </section>
 
