@@ -6,6 +6,10 @@ import { SoundToggle } from "@/components/invitation/sound-toggle";
 export function SiteHeader({
   detailsLabel,
   detailsHref = "#event-note",
+  venuesLabel = "Venues",
+  storyLabel = "Our Story",
+  musicLabel = "Music",
+  rsvpLabel = "RSVP",
   privacyLabel,
   languageLabel,
   mainNavigationLabel,
@@ -15,6 +19,10 @@ export function SiteHeader({
 }: {
   detailsLabel: string;
   detailsHref?: string;
+  venuesLabel?: string;
+  storyLabel?: string;
+  musicLabel?: string;
+  rsvpLabel?: string;
   privacyLabel: string;
   languageLabel: string;
   mainNavigationLabel: string;
@@ -29,9 +37,10 @@ export function SiteHeader({
       </Link>
       <nav aria-label={mainNavigationLabel} className="site-header__nav">
         {showDetailsLink && <a href={detailsHref}>{detailsLabel}</a>}
-        <a href="#locations">Venues</a>
-        <a href="#music">Music</a>
-        <a href="#rsvp">RSVP</a>
+        <a href="#locations">{venuesLabel}</a>
+        <a href="#story">{storyLabel}</a>
+        <a href="#music">{musicLabel}</a>
+        <a href="#rsvp">{rsvpLabel}</a>
         <Link href="/privacy">{privacyLabel}</Link>
       </nav>
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", justifySelf: "end" }}>

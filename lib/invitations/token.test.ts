@@ -7,19 +7,19 @@ import {
 } from "./token";
 
 describe("invitation tokens", () => {
-  it("generates URL-safe tokens from 32 bytes of randomness", () => {
+  it("generates URL-safe short secure tokens", () => {
     const token = generateInvitationToken();
 
-    expect(token).toHaveLength(43);
+    expect(token).toHaveLength(11);
     expect(invitationTokenSchema.safeParse(token).success).toBe(true);
   });
 
   it("hashes valid tokens and rejects malformed values", () => {
-    const token = "A".repeat(43);
+    const token = "A".repeat(11);
     const hash = hashInvitationToken(token);
 
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
     expect(hash).not.toContain(token);
-    expect(() => hashInvitationToken("guest-name")).toThrow();
+    expect(() => hashInvitationToken("!bad%token#")).toThrow();
   });
 });

@@ -56,6 +56,10 @@
   },
   "navigation": {
     "details": "Der Tag",
+    "venues": "Orte",
+    "story": "Unsere Geschichte",
+    "music": "Musik",
+    "rsvp": "Zusage",
     "lookup": "Einladung finden",
     "privacy": "Datenschutz",
     "language": "Sprache wählen",

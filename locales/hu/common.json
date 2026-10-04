@@ -56,6 +56,10 @@
   },
   "navigation": {
     "details": "A nap",
+    "venues": "Helyszínek",
+    "story": "Történetünk",
+    "music": "Zene",
+    "rsvp": "Visszajelzés",
     "lookup": "Meghívó keresése",
     "privacy": "Adatvédelem",
     "language": "Nyelv választása",

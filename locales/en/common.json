@@ -56,6 +56,10 @@
   },
   "navigation": {
     "details": "The day",
+    "venues": "Venues",
+    "story": "Our story",
+    "music": "Music",
+    "rsvp": "RSVP",
     "lookup": "Find invitation",
     "privacy": "Privacy",
     "language": "Choose language",
