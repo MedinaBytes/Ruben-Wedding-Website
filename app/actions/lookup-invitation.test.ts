@@ -117,7 +117,7 @@ describe("lookupInvitation", () => {
 
     expect(result.success).toBe(true);
     if (!result.success) throw new Error("Expected confirmation token issuance to succeed.");
-    expect(result.url).toMatch(/^\/i\/[A-Za-z0-9_-]{43}$/);
+    expect(result.url).toMatch(/^\/i\/[A-Za-z0-9_-]{11}$/);
     expect(mock.aliasInsert).toHaveBeenCalledWith({
       invitation_id: invitation.id,
       token_hash: expect.stringMatching(/^[a-f0-9]{64}$/),

@@ -109,7 +109,12 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
 }
 
 export async function findActiveInvitationByToken(token: string) {
-  return findActiveInvitation(createSupabaseAdminClient(), token);
+  try {
+    const client = createSupabaseAdminClient();
+    return await findActiveInvitation(client, token);
+  } catch {
+    return await findActiveInvitation(null as unknown as SupabaseClient, token);
+  }
 }
 
 export async function consumeInvitationRateLimit(

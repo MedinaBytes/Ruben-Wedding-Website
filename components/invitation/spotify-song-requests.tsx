@@ -229,8 +229,24 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
 
       const results = body.results as Array<{ trackId: string; status: string }>;
       const resolvedStatuses = new Set(["added", "already_in_playlist", "already_submitted"]);
+      const addedTracks = selected.filter((track) => results.some((result) => result.trackId === track.id && resolvedStatuses.has(result.status)));
+
+      setSubmitted((current) => [
+        ...current,
+        ...addedTracks.map((track) => ({
+          id: track.id,
+          title: track.title,
+          artist: track.artist,
+          artworkUrl: track.artworkUrl ?? null,
+          spotifyUrl: track.spotifyUrl,
+          status: "added" as const,
+        })),
+      ]);
       setSelected((current) => current.filter((track) => !results.some((result) => result.trackId === track.id && resolvedStatuses.has(result.status))));
-      await refreshSubmittedSongs();
+
+      try {
+        await refreshSubmittedSongs();
+      } catch {}
 
       if (results.some((result) => ["failed", "busy", "maximum_reached"].includes(result.status))) {
         setErrorMessage(results.some((result) => result.status === "maximum_reached") ? t("maximumReached") : t("partialFailure"));
@@ -238,7 +254,7 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
         setSuccessMessage(t("submissionSuccess"));
       }
     } catch {
-      setErrorMessage(t("spotifyUnavailable"));
+      setErrorMessage(t("submissionError"));
     } finally {
       setIsSubmitting(false);
     }

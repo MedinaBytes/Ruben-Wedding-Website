@@ -132,7 +132,11 @@ export async function WeddingSections({
     },
   ] as const;
 
-  const storyParagraphs = (invitation?.personalMessage ?? closing("story")).split(/\n\s*\n|\r\n\s*\r\n/).filter(Boolean);
+  const rawStoryParagraphs = closing("story").split(/\n\s*\n|\r\n\s*\r\n/).filter(Boolean);
+  const signature = rawStoryParagraphs.length > 0 && rawStoryParagraphs[rawStoryParagraphs.length - 1].includes("Ruben & Andrea")
+    ? rawStoryParagraphs[rawStoryParagraphs.length - 1]
+    : null;
+  const coupleStoryParagraphs = signature ? rawStoryParagraphs.slice(0, -1) : rawStoryParagraphs;
   const travelLinks = [
     ...(locale === "es" ? [
       { label: travel("flightMadrid"), href: "https://www.ryanair.com/flights/es/es/vuelos-desde-madrid-a-viena" },
@@ -193,13 +197,68 @@ export async function WeddingSections({
 
       <PhotoStory locale={locale} />
 
-      <section className="closing-note" aria-labelledby="closing-title">
+      <section className="closing-note" id="story" aria-labelledby="closing-title">
         <div className="closing-note__layout">
-          <h2 id="closing-title">{closing("title")}</h2>
+          <div>
+            <p className="section-label">{closing("label")}</p>
+            <h2 id="closing-title">{closing("title")}</h2>
+            {invitation?.personalMessage && (
+              <div
+                style={{
+                  marginTop: "1.75rem",
+                  padding: "1.25rem 1.5rem",
+                  background: "rgba(255, 255, 255, 0.85)",
+                  border: "1px solid var(--color-gold-cream)",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(46, 36, 38, 0.04)",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "0.78rem",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.15em",
+                    color: "var(--color-plum-light)",
+                    margin: "0 0 0.5rem",
+                    fontWeight: 600,
+                  }}
+                >
+                  {invitation.displayName}
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontStyle: "italic",
+                    fontSize: "0.95rem",
+                    lineHeight: 1.65,
+                    color: "var(--color-ink)",
+                  }}
+                >
+                  &ldquo;{invitation.personalMessage}&rdquo;
+                </p>
+              </div>
+            )}
+          </div>
           <div className="closing-note__letter">
-            {storyParagraphs.map((paragraph) => (
-              <p className="closing-note__story" key={paragraph}>{paragraph}</p>
+            {coupleStoryParagraphs.map((paragraph, idx) => (
+              <p className="closing-note__story" key={idx}>{paragraph}</p>
             ))}
+            {signature && (
+              <div style={{ marginTop: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                <span style={{ height: "1px", width: "40px", background: "var(--color-gold-cream)" }} />
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "1.35rem",
+                    fontStyle: "italic",
+                    color: "var(--color-plum-deep)",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {signature}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </section>

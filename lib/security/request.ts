@@ -16,6 +16,16 @@ function configuredSiteOrigin() {
   }
 }
 
+function normalizeOrigin(originStr: string) {
+  try {
+    const url = new URL(originStr);
+    const host = (url.hostname === "127.0.0.1" || url.hostname === "localhost") ? "localhost" : url.hostname;
+    return `${url.protocol}//${host}${url.port ? `:${url.port}` : ""}`;
+  } catch {
+    return originStr;
+  }
+}
+
 export function privateApiHeaders() {
   return privateHeaders;
 }
@@ -30,12 +40,22 @@ export function invalidOriginResponse() {
  */
 export function isSameOriginMutation(request: Request) {
   const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
   const fetchSite = request.headers.get("sec-fetch-site");
   const requestOrigin = new URL(request.url).origin;
   const allowedOrigin = configuredSiteOrigin();
 
   if (origin) {
-    return origin === requestOrigin || (allowedOrigin !== null && origin === allowedOrigin);
+    if (normalizeOrigin(origin) === normalizeOrigin(requestOrigin)) return true;
+    if (allowedOrigin !== null && normalizeOrigin(origin) === normalizeOrigin(allowedOrigin)) return true;
+  }
+
+  if (referer) {
+    try {
+      const refererOrigin = new URL(referer).origin;
+      if (normalizeOrigin(refererOrigin) === normalizeOrigin(requestOrigin)) return true;
+      if (allowedOrigin !== null && normalizeOrigin(refererOrigin) === normalizeOrigin(allowedOrigin)) return true;
+    } catch {}
   }
 
   return fetchSite === "same-origin" || fetchSite === "same-site";

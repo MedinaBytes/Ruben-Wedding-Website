@@ -24,10 +24,12 @@ export const metadata: Metadata = {
 
 export default async function MainInvitationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
-  const { token } = await params;
+  const [{ token }, sParams] = await Promise.all([params, searchParams]);
   let invitation;
 
   try {
@@ -39,10 +41,18 @@ export default async function MainInvitationPage({
   if (!invitation) notFound();
 
   const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+  const queryLocale = sParams?.lang;
   const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
-  const locale = supportedLocales.includes(manualLocale as Locale)
-    ? (manualLocale as Locale)
-    : invitation.language ?? (requestLocale as Locale);
+  const candidateLocale = (queryLocale && supportedLocales.includes(queryLocale as Locale))
+    ? queryLocale
+    : (manualLocale && supportedLocales.includes(manualLocale as Locale))
+    ? manualLocale
+    : (invitation.language && supportedLocales.includes(invitation.language as Locale))
+    ? invitation.language
+    : requestLocale;
+  const locale: Locale = supportedLocales.includes(candidateLocale as Locale)
+    ? (candidateLocale as Locale)
+    : "en";
 
   // Fetch site settings for bank disclosures & private address
   let siteSettings = undefined;
@@ -85,6 +95,10 @@ export default async function MainInvitationPage({
       <SoundProvider>
         <SiteHeader
           detailsLabel={navigation("details")}
+          venuesLabel={navigation("venues")}
+          storyLabel={navigation("story")}
+          musicLabel={navigation("music")}
+          rsvpLabel={navigation("rsvp")}
           privacyLabel={navigation("privacy")}
           languageLabel={navigation("language")}
           mainNavigationLabel={navigation("main")}

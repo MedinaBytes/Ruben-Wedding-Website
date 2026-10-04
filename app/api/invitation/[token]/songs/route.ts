@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
   consumeInvitationRateLimit,
-  findActiveInvitation,
+  findActiveInvitationByToken,
   recordInvitationEvent,
   saveSongRequests,
 } from "@/lib/invitations/store";
@@ -31,6 +32,14 @@ const reservationResultSchema = z.object({
   reservationId: z.string().uuid().nullable().optional(),
 });
 
+function getSupabaseClient(): SupabaseClient | null {
+  try {
+    return createSupabaseAdminClient();
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(
   _request: Request,
   context: { params: Promise<{ token: string }> },
@@ -38,35 +47,37 @@ export async function GET(
   const { token } = await context.params;
 
   try {
-    const client = createSupabaseAdminClient();
-    const invitation = await findActiveInvitation(client, token);
+    const invitation = await findActiveInvitationByToken(token);
     if (!invitation) {
       return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
     }
 
-    try {
-      const { data, error } = await client
-        .from("song_requests")
-        .select("song_title, artist, spotify_url, spotify_track_id, album_artwork_url, playlist_status, slot")
-        .eq("invitation_id", invitation.id)
-        .order("slot");
+    const client = getSupabaseClient();
+    if (client) {
+      try {
+        const { data, error } = await client
+          .from("song_requests")
+          .select("song_title, artist, spotify_url, spotify_track_id, album_artwork_url, playlist_status, slot")
+          .eq("invitation_id", invitation.id)
+          .order("slot");
 
-      if (!error && data && data.length > 0) {
-        return NextResponse.json(
-          {
-            requests: data.map((request) => ({
-              title: request.song_title,
-              artist: request.artist,
-              spotifyUrl: request.spotify_url,
-              trackId: request.spotify_track_id,
-              artworkUrl: request.album_artwork_url,
-              status: request.playlist_status,
-            })),
-          },
-          { headers: privateHeaders },
-        );
-      }
-    } catch {}
+        if (!error && data && data.length > 0) {
+          return NextResponse.json(
+            {
+              requests: data.map((request) => ({
+                title: request.song_title,
+                artist: request.artist,
+                spotifyUrl: request.spotify_url,
+                trackId: request.spotify_track_id,
+                artworkUrl: request.album_artwork_url,
+                status: request.playlist_status,
+              })),
+            },
+            { headers: privateHeaders },
+          );
+        }
+      } catch {}
+    }
 
     // Resilient store fallback
     const local = resilientStore.getSongRequests(invitation.id);
@@ -100,15 +111,17 @@ export async function POST(
   const { token } = await context.params;
 
   try {
-    const client = createSupabaseAdminClient();
-    const invitation = await findActiveInvitation(client, token);
+    const invitation = await findActiveInvitationByToken(token);
     if (!invitation) {
       return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
     }
 
-    const isAllowed = await consumeInvitationRateLimit(client, invitation.id, "songs", 5, 60);
-    if (!isAllowed) {
-      return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: privateHeaders });
+    const client = getSupabaseClient();
+    if (client) {
+      const isAllowed = await consumeInvitationRateLimit(client, invitation.id, "songs", 15, 60);
+      if (!isAllowed) {
+        return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: privateHeaders });
+      }
     }
 
     let body: unknown;
@@ -120,19 +133,27 @@ export async function POST(
 
     if (isManualSongRequestPayload(body)) {
       const payload = songRequestPayloadSchema.parse(body);
-      await saveSongRequests(client, invitation.id, payload);
-      await recordInvitationEvent(client, {
-        invitationId: invitation.id,
-        eventType: "SONG_REQUESTED",
-        locale: payload.language,
-      }).catch(() => undefined);
+      if (client) {
+        await saveSongRequests(client, invitation.id, payload).catch(() => undefined);
+        await recordInvitationEvent(client, {
+          invitationId: invitation.id,
+          eventType: "SONG_REQUESTED",
+          locale: payload.language,
+        }).catch(() => undefined);
+      } else {
+        resilientStore.saveSongRequests(invitation.id, payload.requests.map((r) => ({
+          title: r.title,
+          artist: r.artist ?? "",
+          spotifyUrl: r.spotifyUrl ?? undefined,
+        })));
+      }
 
       return NextResponse.json({
-        results: payload.requests.map((request) => ({
-          title: request.title,
-          artist: request.artist ?? "",
+        results: payload.requests.map((req) => ({
+          title: req.title,
+          artist: req.artist ?? "",
           status: "added",
-          spotifyUrl: request.spotifyUrl ?? null,
+          spotifyUrl: req.spotifyUrl ?? null,
         })),
       }, { headers: privateHeaders });
     }
@@ -144,8 +165,8 @@ export async function POST(
     const result = spotifySongSubmissionSchema.parse(body);
     const playlist = getSpotifyPlaylistConfig();
 
-    // If Spotify playlist is not configured or fails, gracefully save as guest song requests
-    if (!playlist) {
+    // If Spotify playlist is not configured or in local demo mode, save gracefully in resilient store
+    if (!playlist || !client) {
       resilientStore.saveSongRequests(
         invitation.id,
         result.trackIds.map((id, idx) => ({
@@ -230,8 +251,7 @@ export async function POST(
         { headers: privateHeaders },
       );
     }
-  } catch (error) {
-    console.error("SONG POST ERROR:", error);
+  } catch {
     return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
   }
 }
