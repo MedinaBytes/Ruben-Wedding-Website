@@ -186,20 +186,4 @@ export const photoCatalog: readonly PhotoStoryItem[] = [
       hu: "Friss szellő, napsütés és mosoly a fedélzeten.",
     },
   },
-  {
-    id: "turquoise-sea-smile",
-    category: "adventures",
-    title: {
-      en: "Mediterranean smiles",
-      es: "Sonrisas mediterráneas",
-      de: "Mediterranes Lächeln",
-      hu: "Mediterrán mosoly",
-    },
-    caption: {
-      en: "Golden sun and the clearest waters of our travels.",
-      es: "Esa luz dorada y el agua más pura de nuestras vacaciones.",
-      de: "Goldenes Sonnenlicht und traumhaft klares Wasser.",
-      hu: "Aranyló napfény és a legtisztább tengeri emlékek.",
-    },
-  },
 ] as const;
