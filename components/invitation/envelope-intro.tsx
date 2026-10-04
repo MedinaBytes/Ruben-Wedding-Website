@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { useSound } from "@/lib/sound";
 
+import { setManualLocale } from "@/app/actions/set-locale";
+
 interface EnvelopeIntroProps {
   token: string;
   invitationId?: string;
@@ -64,7 +66,8 @@ export function EnvelopeIntro({
       sessionStorage.setItem(storageKey, "true");
     } catch {}
     setStep("navigating");
-    router.push(`/i/${token}/invitation`);
+    const targetUrl = `/i/${token}/invitation?lang=${encodeURIComponent(currentLocale)}`;
+    window.location.href = targetUrl;
   }
 
   function handleOpen() {
@@ -87,11 +90,16 @@ export function EnvelopeIntro({
       play("card-reveal");
       setStep("revealed");
     }, 1400);
+  }
 
-    // Auto navigate after full ceremony unless user interacts
-    setTimeout(() => {
-      markSeenAndNavigate();
-    }, 7200);
+  function handleLanguageChange(code: string) {
+    const cookieName = invitationId ? `wedding_manual_locale_${invitationId}` : "wedding_manual_locale";
+    if (typeof document !== "undefined") {
+      document.cookie = `${cookieName}=${code}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `wedding_manual_locale=${code}; path=/; max-age=31536000; SameSite=Lax`;
+    }
+    void setManualLocale(code, invitationId).catch(() => {});
+    window.location.href = `/i/${token}?lang=${code}`;
   }
 
   return (
@@ -121,12 +129,7 @@ export function EnvelopeIntro({
             <button
               key={item.code}
               type="button"
-              onClick={() => {
-                if (invitationId) {
-                  document.cookie = `wedding_manual_locale_${invitationId}=${item.code}; path=/; max-age=31536000`;
-                }
-                router.push(`/i/${token}?lang=${item.code}`);
-              }}
+              onClick={() => handleLanguageChange(item.code)}
               style={{
                 background: currentLocale === item.code ? "#8C2836" : "transparent",
                 color: currentLocale === item.code ? "#FFFFFF" : "#544648",
@@ -285,13 +288,13 @@ export function EnvelopeIntro({
               type="button"
               className="envelope-seal"
               onClick={handleOpen}
-              whileHover={step === "idle" ? { scale: 1.06 } : {}}
-              whileTap={step === "idle" ? { scale: 0.95 } : {}}
-              initial={{ scale: 0.9, opacity: 0 }}
+              whileHover={step === "idle" ? { scale: 1.06, x: "-50%", y: "-50%" } : {}}
+              whileTap={step === "idle" ? { scale: 0.95, x: "-50%", y: "-50%" } : {}}
+              initial={{ scale: 0.9, opacity: 0, x: "-50%", y: "-50%" }}
               animate={
                 step === "idle"
-                  ? { scale: 1, opacity: 1 }
-                  : { scale: [1, 1.25, 0], opacity: [1, 0.7, 0], rotate: [0, -8, 12] }
+                  ? { scale: 1, opacity: 1, x: "-50%", y: "-50%" }
+                  : { scale: [1, 1.25, 0], opacity: [1, 0.7, 0], rotate: [0, -8, 12], x: "-50%", y: "-50%" }
               }
               transition={step === "opening" ? { duration: 0.45 } : { duration: 0.5, ease: "easeOut" }}
               aria-label={`${openPrompt} — Wax Seal`}
