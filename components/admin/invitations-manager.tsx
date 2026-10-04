@@ -1,0 +1,424 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
+
+export interface InvitationRow {
+  id: string;
+  displayName: string;
+  groupName: string | null;
+  language: string | null;
+  maxGuests: number;
+  plusOneAllowed: boolean;
+  status: "active" | "draft" | "revoked";
+  createdAt: string;
+  rsvpStatus: "yes" | "no" | "pending";
+  attendeeCount: number;
+}
+
+export function InvitationsManager({
+  invitations,
+  siteUrl,
+}: {
+  invitations: InvitationRow[];
+  siteUrl: string;
+}) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showCreate, setShowCreate] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // QR Modal State
+  const [activeQr, setActiveQr] = useState<{
+    displayName: string;
+    targetUrl: string;
+    svg: string;
+    dataUrl: string;
+  } | null>(null);
+  const [loadingQr, setLoadingQr] = useState(false);
+
+  const filtered = invitations.filter((inv) => {
+    const matchesSearch =
+      inv.displayName.toLowerCase().includes(search.toLowerCase()) ||
+      (inv.groupName && inv.groupName.toLowerCase().includes(search.toLowerCase()));
+    const matchesStatus = statusFilter === "all" || inv.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  async function copyLink(inv: InvitationRow) {
+    // Generate the URL with ID
+    const url = `${siteUrl}/i/${inv.id}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedId(inv.id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  async function openQrModal(inv: InvitationRow) {
+    setLoadingQr(true);
+    try {
+      const res = await fetch(`/api/admin/invitations/${inv.id}/qr`);
+      if (res.ok) {
+        const data = await res.json();
+        setActiveQr(data);
+      }
+    } catch {
+      alert("Failed to load QR code.");
+    } finally {
+      setLoadingQr(false);
+    }
+  }
+
+  function downloadSvg() {
+    if (!activeQr) return;
+    const blob = new Blob([activeQr.svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `QR-${activeQr.displayName.replace(/\s+/g, "_")}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadPng() {
+    if (!activeQr) return;
+    const a = document.createElement("a");
+    a.href = activeQr.dataUrl;
+    a.download = `QR-${activeQr.displayName.replace(/\s+/g, "_")}.png`;
+    a.click();
+  }
+
+  return (
+    <div>
+      {/* Top Header & Actions */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div>
+          <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2rem", margin: "0 0 0.25rem 0", color: "#2B2425" }}>
+            Guest Invitations
+          </h1>
+          <p style={{ margin: 0, color: "#6E6264", fontSize: "0.9rem" }}>
+            Total: {invitations.length} invitations · Showing {filtered.length}
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={() => setShowCreate(!showCreate)}
+            style={{
+              background: showCreate ? "#665759" : "#8C2836",
+              color: "#FFFFFF",
+              border: 0,
+              borderRadius: "6px",
+              padding: "0.55rem 1.1rem",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            {showCreate ? "Close Form" : "+ Create Invitation"}
+          </button>
+          <Link
+            href="/admin/invitations/import"
+            style={{
+              background: "#FFFFFF",
+              border: "1px solid #D8CFC8",
+              color: "#544648",
+              borderRadius: "6px",
+              padding: "0.55rem 1.1rem",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Bulk Import CSV
+          </Link>
+        </div>
+      </div>
+
+      {/* Create Invitation Collapsible Section */}
+      {showCreate && (
+        <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem", marginBottom: "2rem" }}>
+          <h2 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.3rem", marginTop: 0, color: "#2B2425" }}>
+            Create New Guest Invitation
+          </h2>
+          <CreateInvitationForm
+            labels={{
+              displayName: "Guest / Family Name",
+              groupName: "Group / Category (e.g. Friends, Family)",
+              lookupEmail: "Email (Optional)",
+              lookupPhone: "Phone (Optional)",
+              preferredLanguage: "Language",
+              languageDefault: "Auto (Browser)",
+              guestPlaces: "Max Allowed Guests",
+              plusOneAllowed: "Allow Plus-One (+1)",
+              creatingInvitation: "Generating...",
+              createInvitation: "Create & Generate Link",
+              createInvitationSuccess: "Invitation created successfully!",
+              createInvitationError: "Failed to create invitation.",
+              invitationUrl: "Personal Invitation URL",
+            }}
+          />
+        </div>
+      )}
+
+      {/* Search and Filters Bar */}
+      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.25rem", alignItems: "center" }}>
+        <input
+          type="search"
+          placeholder="Search by guest or group name..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: "240px",
+            padding: "0.55rem 0.85rem",
+            borderRadius: "6px",
+            border: "1px solid #D5CBC4",
+            fontSize: "0.9rem",
+            background: "#FFFFFF",
+          }}
+        />
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          style={{
+            padding: "0.55rem 0.85rem",
+            borderRadius: "6px",
+            border: "1px solid #D5CBC4",
+            fontSize: "0.85rem",
+            background: "#FFFFFF",
+            color: "#3B2E30",
+          }}
+        >
+          <option value="all">All Statuses</option>
+          <option value="active">Active Only</option>
+          <option value="revoked">Revoked Only</option>
+        </select>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.88rem" }}>
+          <thead>
+            <tr style={{ background: "#F7F3EF", borderBottom: "1px solid #E4DBD3", color: "#6A5E60", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <th style={{ padding: "0.75rem 1rem" }}>Guest Name</th>
+              <th style={{ padding: "0.75rem 1rem" }}>Group</th>
+              <th style={{ padding: "0.75rem 1rem" }}>Guests</th>
+              <th style={{ padding: "0.75rem 1rem" }}>Lang</th>
+              <th style={{ padding: "0.75rem 1rem" }}>RSVP</th>
+              <th style={{ padding: "0.75rem 1rem" }}>Status</th>
+              <th style={{ padding: "0.75rem 1rem", textAlign: "right" }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ padding: "2.5rem", textAlign: "center", color: "#8E7F81" }}>
+                  No invitations match your search.
+                </td>
+              </tr>
+            ) : (
+              filtered.map((inv) => (
+                <tr key={inv.id} style={{ borderBottom: "1px solid #EFEAE5" }}>
+                  <td style={{ padding: "0.85rem 1rem", fontWeight: 600, color: "#2B2425" }}>
+                    {inv.displayName}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", color: "#776A6C" }}>
+                    {inv.groupName || "—"}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    <span>{inv.maxGuests} {inv.maxGuests === 1 ? "seat" : "seats"}</span>
+                    {inv.plusOneAllowed && (
+                      <span style={{ marginLeft: "0.4rem", fontSize: "0.72rem", background: "#E8F0E4", color: "#3B612C", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>
+                        +1
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", textTransform: "uppercase", fontSize: "0.8rem", color: "#776A6C" }}>
+                    {inv.language || "Auto"}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "0.2rem 0.5rem",
+                        borderRadius: "999px",
+                        fontWeight: 600,
+                        background:
+                          inv.rsvpStatus === "yes"
+                            ? "#E8F2E6"
+                            : inv.rsvpStatus === "no"
+                              ? "#FBE9EB"
+                              : "#F4EFEA",
+                        color:
+                          inv.rsvpStatus === "yes"
+                            ? "#35652D"
+                            : inv.rsvpStatus === "no"
+                              ? "#9C2836"
+                              : "#8E7D6F",
+                      }}
+                    >
+                      {inv.rsvpStatus === "yes" ? `Yes (${inv.attendeeCount})` : inv.rsvpStatus === "no" ? "No" : "Pending"}
+                    </span>
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem" }}>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "0.15rem 0.45rem",
+                        borderRadius: "4px",
+                        background: inv.status === "active" ? "#EEF6EC" : "#F7EDEE",
+                        color: inv.status === "active" ? "#447838" : "#993B47",
+                      }}
+                    >
+                      {inv.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", textAlign: "right" }}>
+                    <div style={{ display: "inline-flex", gap: "0.4rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => copyLink(inv)}
+                        style={{
+                          background: "#F4EFEA",
+                          border: "1px solid #DCD3CB",
+                          borderRadius: "4px",
+                          padding: "0.25rem 0.55rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: copiedId === inv.id ? "#35652D" : "#44393B",
+                        }}
+                      >
+                        {copiedId === inv.id ? "Copied!" : "Copy Link"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openQrModal(inv)}
+                        disabled={loadingQr}
+                        style={{
+                          background: "#FFFFFF",
+                          border: "1px solid #DCD3CB",
+                          borderRadius: "4px",
+                          padding: "0.25rem 0.55rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#7A2833",
+                        }}
+                      >
+                        QR Code
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* QR Code Modal */}
+      {activeQr && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.45)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem",
+          }}
+          onClick={() => setActiveQr(null)}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "12px",
+              padding: "2rem",
+              maxWidth: "400px",
+              width: "100%",
+              textAlign: "center",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.4rem", margin: "0 0 0.25rem 0", color: "#2B2425" }}>
+              Personal QR Code
+            </h3>
+            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.9rem" }}>
+              For <strong>{activeQr.displayName}</strong>
+            </p>
+
+            {/* Rendered QR Image */}
+            <div
+              style={{
+                width: "220px",
+                height: "220px",
+                margin: "0 auto 1.5rem",
+                padding: "0.75rem",
+                border: "1px solid #E8DFD8",
+                borderRadius: "8px",
+                background: "#FFFFFF",
+              }}
+              dangerouslySetInnerHTML={{ __html: activeQr.svg }}
+            />
+
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginBottom: "1.25rem" }}>
+              <button
+                type="button"
+                onClick={downloadSvg}
+                style={{
+                  background: "#8C2836",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.45rem 0.9rem",
+                  fontSize: "0.82rem",
+                  cursor: "pointer",
+                }}
+              >
+                Download SVG
+              </button>
+              <button
+                type="button"
+                onClick={downloadPng}
+                style={{
+                  background: "#55644E",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.45rem 0.9rem",
+                  fontSize: "0.82rem",
+                  cursor: "pointer",
+                }}
+              >
+                Download PNG
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveQr(null)}
+              style={{
+                background: "transparent",
+                border: 0,
+                color: "#776A6C",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
