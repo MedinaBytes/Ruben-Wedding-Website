@@ -71,22 +71,6 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
     if (!directError && directInvitation) return directInvitation as ActiveInvitation;
   } catch {}
 
-  if (localMatch) {
-    return {
-      id: localMatch.id,
-      display_name: localMatch.display_name,
-      greeting_override: null,
-      language: localMatch.language as Locale | null,
-      max_guests: localMatch.max_guests,
-      plus_one_allowed: localMatch.plus_one_allowed,
-      personal_message: localMatch.personal_message,
-      status: "active",
-    };
-  }
-
-  return null;
-}
-
   if (tokenHash) {
     try {
       const { data: alias, error: aliasError } = await client
@@ -106,6 +90,19 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
         if (!error && data) return data as ActiveInvitation;
       }
     } catch {}
+  }
+
+  if (localMatch) {
+    return {
+      id: localMatch.id,
+      display_name: localMatch.display_name,
+      greeting_override: null,
+      language: localMatch.language as Locale | null,
+      max_guests: localMatch.max_guests,
+      plus_one_allowed: localMatch.plus_one_allowed,
+      personal_message: localMatch.personal_message,
+      status: "active",
+    };
   }
 
   return null;

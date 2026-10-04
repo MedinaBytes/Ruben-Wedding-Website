@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { consumeInvitationRateLimit, findActiveInvitation } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { privateApiHeaders } from "@/lib/security/request";
-import { getSpotifyPlaylistConfig, searchSpotifyTracks, SpotifyUnavailableError } from "@/lib/spotify/api";
+import { getSpotifyPlaylistConfig, searchSpotifyTracks } from "@/lib/spotify/api";
 
 const privateHeaders = privateApiHeaders();
 

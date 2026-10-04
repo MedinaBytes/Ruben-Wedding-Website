@@ -19,7 +19,6 @@ import {
   getSpotifyPlaylistConfig,
   getSpotifyPlaylistTrackIds,
   getSpotifyTrack,
-  SpotifyUnavailableError,
 } from "@/lib/spotify/api";
 import { z } from "zod";
 
@@ -231,7 +230,7 @@ export async function POST(
         { headers: privateHeaders },
       );
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
   }
 }

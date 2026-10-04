@@ -97,9 +97,10 @@ export function WhatsAppManager({
         setCountdown(0);
       }
 
+      const inviteLink = `${siteUrl.replace(/\/$/, "")}/i/${inv.token}`;
       setDispatchLog((prev) => [
         ...prev,
-        `✓ [${i + 1}/${targets.length}] Sent invitation to ${inv.displayName} (${inv.whatsapp || inv.phone || "Direct Link"}).`,
+        `✓ [${i + 1}/${targets.length}] Sent to ${inv.displayName} (${inv.whatsapp || inv.phone || "Direct"}) ➔ ${inviteLink}`,
       ]);
     }
 

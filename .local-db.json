@@ -1,0 +1,45 @@
+{
+  "invitations": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "token": "demo",
+      "token_hash": "demo_hash",
+      "display_name": "Sarah & Guest (Demo)",
+      "normalized_name": "sarah guest demo",
+      "language": "en",
+      "max_guests": 2,
+      "plus_one_allowed": true,
+      "group_name": "Demo Reviewers",
+      "normalized_group_name": "demo reviewers",
+      "personal_message": "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+      "phone": "+43 664 1234567",
+      "whatsapp": "+436641234567",
+      "status": "active",
+      "created_at": "2026-10-04T10:46:14.028Z"
+    }
+  ],
+  "rsvps": [],
+  "songRequests": [],
+  "settings": {
+    "showGiftDetails": false,
+    "showPrivateAddress": false,
+    "bankName": "Erste Bank Österreich",
+    "accountHolder": "Ruben & Andrea",
+    "iban": "AT61 2011 1000 0000 0000",
+    "bic": "GIBAATWWXXX",
+    "giftNote": "Reference: Ruben & Andrea Wedding 2027",
+    "privateStreet": "Schönbrunner Schloßstraße 47",
+    "privateCity": "1120 Vienna, Austria",
+    "privateAccessNotes": "Ring bell for 'Ruben & Andrea' on 2nd floor.",
+    "whatsappDelaySeconds": 10,
+    "whatsappTemplate": "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}"
+  },
+  "whatsappSession": {
+    "status": "connected",
+    "linkedPhone": "+43 664 999 8888",
+    "qrCode": null,
+    "autoUnlinkAfterDispatch": true,
+    "dispatchIntervalSeconds": 10,
+    "lastSyncedAt": "2026-10-04T10:46:14.028Z"
+  }
+}
