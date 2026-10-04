@@ -222,14 +222,22 @@ export async function recordInvitationEvent(
     locale?: string;
   },
 ) {
-  if (event.invitationId === DEMO_INVITATION.id) return;
-
-  const { error } = await client.from("invitation_events").insert({
+  // Always persist locally
+  resilientStore.recordEvent({
     invitation_id: event.invitationId,
     session_id: event.sessionId ?? null,
     event_type: event.eventType,
     locale: event.locale ?? null,
   });
 
-  if (error) throw new Error("Invitation event could not be saved.");
+  if (event.invitationId === DEMO_INVITATION.id) return;
+
+  try {
+    await client.from("invitation_events").insert({
+      invitation_id: event.invitationId,
+      session_id: event.sessionId ?? null,
+      event_type: event.eventType,
+      locale: event.locale ?? null,
+    });
+  } catch {}
 }

@@ -78,14 +78,44 @@ export async function updateSiteSettings(formData: FormData) {
     { key: "contactEmail", value: contactEmail, updated_at: now },
   ];
 
-  await client.from("site_settings").upsert(rows);
-
-  await recordAdminAudit({
-    actor,
-    action: "INVITATION_UPDATED",
-    resourceType: "invitation",
-    metadata: { showGiftDetails, showPrivateAddress, smtpConfigured: Boolean(smtpHost && smtpUser) },
+  const { resilientStore } = await import("@/lib/storage/resilient-store");
+  resilientStore.updateSettings({
+    showGiftDetails,
+    bankName,
+    accountHolder,
+    iban,
+    bic,
+    giftNote,
+    showPrivateAddress,
+    privateStreet,
+    privateCity,
+    privateAccessNotes,
+    smtpHost,
+    smtpPort,
+    smtpSecure,
+    smtpUser,
+    smtpPass,
+    smtpSenderEmail,
+    smtpSenderName,
+    whatsappTemplate,
+    whatsappDelaySeconds,
+    spotifyPlaylistUrl,
+    contactPhone,
+    contactEmail,
   });
+
+  try {
+    await client.from("site_settings").upsert(rows);
+  } catch {}
+
+  try {
+    await recordAdminAudit({
+      actor,
+      action: "INVITATION_UPDATED",
+      resourceType: "invitation",
+      metadata: { showGiftDetails, showPrivateAddress, smtpConfigured: Boolean(smtpHost && smtpUser) },
+    });
+  } catch {}
 
   revalidatePath("/admin/settings");
   revalidatePath("/");

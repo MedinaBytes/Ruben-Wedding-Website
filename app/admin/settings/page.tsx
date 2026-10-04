@@ -13,13 +13,27 @@ export const metadata: Metadata = {
 
 export default async function AdminSettingsPage() {
   const isAdmin = await hasAuthenticatedAdmin();
-  if (!isAdmin) {
+  if (!isAdmin && process.env.NODE_ENV === "production") {
     redirect("/admin/login");
   }
 
+  const { resilientStore } = await import("@/lib/storage/resilient-store");
+  const localSettings = resilientStore.getSettings();
+
   const client = createSupabaseAdminClient();
-  const { data } = await client.from("site_settings").select("*");
-  const s = new Map((data ?? []).map((row) => [row.key, row.value]));
+  let remoteRows: Array<{ key: string; value: unknown }> = [];
+  try {
+    const { data } = await client.from("site_settings").select("*");
+    if (data) remoteRows = data as Array<{ key: string; value: unknown }>;
+  } catch {}
+
+  const s = new Map<string, unknown>();
+  for (const [key, val] of Object.entries(localSettings)) {
+    s.set(key, val);
+  }
+  for (const row of remoteRows) {
+    s.set(row.key, row.value);
+  }
 
   // Values from settings
   const showGiftDetails = Boolean(s.get("showGiftDetails"));

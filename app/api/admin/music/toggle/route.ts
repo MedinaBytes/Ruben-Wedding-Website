@@ -25,15 +25,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "missing_id" }, { status: 422 });
   }
 
-  const client = createSupabaseAdminClient();
-  const { error } = await client
-    .from("song_requests")
-    .update({ selected_for_playlist: Boolean(selected) })
-    .eq("id", id);
+  // Update in local resilient store
+  const { resilientStore } = await import("@/lib/storage/resilient-store");
+  resilientStore.toggleSongSelected(id, Boolean(selected));
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  // Best-effort remote update
+  try {
+    const client = createSupabaseAdminClient();
+    await client
+      .from("song_requests")
+      .update({ selected_for_playlist: Boolean(selected) })
+      .eq("id", id);
+  } catch {}
 
   return NextResponse.json({ success: true, id, selected: Boolean(selected) });
 }

@@ -32,18 +32,30 @@ export interface StoredRsvp {
 }
 
 export interface StoredSongRequest {
+  id?: string;
   invitation_id: string;
   slot: number;
   song_title: string;
   artist: string | null;
   spotify_url: string | null;
+  selected_for_playlist?: boolean;
   submitted_at: string;
+}
+
+export interface StoredEvent {
+  id: string;
+  invitation_id: string;
+  session_id?: string | null;
+  event_type: string;
+  locale?: string | null;
+  created_at: string;
 }
 
 interface LocalDatabase {
   invitations: StoredInvitation[];
   rsvps: StoredRsvp[];
   songRequests: StoredSongRequest[];
+  events?: StoredEvent[];
   settings: Record<string, unknown>;
   whatsappSession: {
     status: "disconnected" | "connecting" | "connected";
@@ -80,6 +92,16 @@ function getDefaultDb(): LocalDatabase {
     ],
     rsvps: [],
     songRequests: [],
+    events: [
+      {
+        id: "evt-demo-1",
+        invitation_id: "00000000-0000-0000-0000-000000000001",
+        session_id: "demo-session",
+        event_type: "INVITE_OPENED",
+        locale: "en",
+        created_at: new Date().toISOString(),
+      },
+    ],
     settings: {
       showGiftDetails: false,
       showPrivateAddress: false,
@@ -114,7 +136,9 @@ function loadDb(): LocalDatabase {
       return initial;
     }
     const raw = fs.readFileSync(DB_PATH, "utf-8");
-    return JSON.parse(raw) as LocalDatabase;
+    const parsed = JSON.parse(raw) as LocalDatabase;
+    if (!Array.isArray(parsed.events)) parsed.events = [];
+    return parsed;
   } catch {
     return getDefaultDb();
   }
@@ -208,16 +232,55 @@ export const resilientStore = {
     db.songRequests = db.songRequests.filter((s) => s.invitation_id !== invitationId);
     const now = new Date().toISOString();
     requests.forEach((req, index) => {
+      const slot = index + 1;
       db.songRequests.push({
+        id: `song-${invitationId}-${slot}`,
         invitation_id: invitationId,
-        slot: index + 1,
+        slot,
         song_title: req.title,
         artist: req.artist ?? null,
         spotify_url: req.spotifyUrl ?? null,
+        selected_for_playlist: false,
         submitted_at: now,
       });
     });
     saveDb(db);
+  },
+
+  toggleSongSelected(id: string, selected: boolean): boolean {
+    const db = loadDb();
+    const song = db.songRequests.find((s) => s.id === id || s.song_title === id);
+    if (song) {
+      song.selected_for_playlist = selected;
+      saveDb(db);
+      return true;
+    }
+    return false;
+  },
+
+  // EVENTS
+  getEvents(): StoredEvent[] {
+    const db = loadDb();
+    return db.events ?? [];
+  },
+
+  recordEvent(event: Omit<StoredEvent, "id" | "created_at">): StoredEvent {
+    const db = loadDb();
+    if (!db.events) db.events = [];
+    const newEvent: StoredEvent = {
+      id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      invitation_id: event.invitation_id,
+      session_id: event.session_id ?? null,
+      event_type: event.event_type,
+      locale: event.locale ?? null,
+      created_at: new Date().toISOString(),
+    };
+    db.events.unshift(newEvent);
+    if (db.events.length > 500) {
+      db.events = db.events.slice(0, 500);
+    }
+    saveDb(db);
+    return newEvent;
   },
 
   // SETTINGS
