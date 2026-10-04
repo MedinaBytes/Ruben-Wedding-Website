@@ -9,3 +9,5 @@ test-results/
 !.env.example
 data/guests.private.csv
 public/images/wedding/
+.whatsapp-auth/
+.whatsapp-sessions/

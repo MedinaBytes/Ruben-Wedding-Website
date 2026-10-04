@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { InvitationRow } from "@/components/admin/invitations-manager";
 
@@ -33,12 +33,17 @@ export function WhatsAppManager({
   invitations: InvitationRow[];
   siteUrl: string;
 }) {
-  const [status, setStatus] = useState<"connected" | "disconnected" | "linking">("connected");
-  const [linkedPhone, setLinkedPhone] = useState("+43 664 999 8888 (Ruben's Phone)");
+  const [status, setStatus] = useState<"connected" | "disconnected" | "connecting">("disconnected");
+  const [linkedPhone, setLinkedPhone] = useState<string>("");
+  const [liveQrCode, setLiveQrCode] = useState<string | null>(null);
   const [delaySeconds, setDelaySeconds] = useState(8);
-  const [autoUnlink, setAutoUnlink] = useState(true);
+  const [autoUnlink, setAutoUnlink] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
-  const [qrScanning, setQrScanning] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  // Test send state
+  const [testPhone, setTestPhone] = useState("");
+  const [isSendingTest, setIsSendingTest] = useState(false);
 
   // Multi-Language Templates
   const [templates, setTemplates] = useState<Record<string, string>>(defaultTemplates);
@@ -59,6 +64,32 @@ export function WhatsAppManager({
   const [dispatchLog, setDispatchLog] = useState<string[]>([]);
   const [dispatchComplete, setDispatchComplete] = useState(false);
 
+  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load session state on mount
+  useEffect(() => {
+    async function loadStatus() {
+      try {
+        const res = await fetch("/api/admin/whatsapp/session");
+        if (res.ok) {
+          const data = await res.json();
+          setStatus(data.status);
+          if (data.linkedPhone) setLinkedPhone(data.linkedPhone);
+          if (data.qrCode) setLiveQrCode(data.qrCode);
+        }
+      } catch {
+        setStatus("disconnected");
+      } finally {
+        setIsCheckingSession(false);
+      }
+    }
+    void loadStatus();
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
+  }, []);
+
   function toggleSelectAll() {
     if (selectedIds.length === invitations.length) {
       setSelectedIds([]);
@@ -73,22 +104,73 @@ export function WhatsAppManager({
     );
   }
 
-  function handleUnlink() {
-    setStatus("disconnected");
-    setLinkedPhone("");
-    setDispatchLog((prev) => [...prev, "WhatsApp session unlinked for security."]);
+  async function handleLinkClick() {
+    setShowQrModal(true);
+    setStatus("connecting");
+    setLiveQrCode(null);
+    setDispatchLog((prev) => [...prev, "Initializing free WhatsApp Web bot session and generating QR code..."]);
+
+    try {
+      const res = await fetch("/api/admin/whatsapp/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "start" }),
+      });
+      const data = await res.json();
+      if (data.qrCode) setLiveQrCode(data.qrCode);
+      if (data.status === "connected") {
+        setStatus("connected");
+        setLinkedPhone(data.linkedPhone || "Connected");
+        setShowQrModal(false);
+      }
+    } catch (err: unknown) {
+      setDispatchLog((prev) => [...prev, `Error starting session: ${err instanceof Error ? err.message : "Network error"}`]);
+    }
+
+    // Start polling every 2.5s while modal is active
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    pollTimerRef.current = setInterval(async () => {
+      try {
+        const pollRes = await fetch("/api/admin/whatsapp/session");
+        if (pollRes.ok) {
+          const pollData = await pollRes.json();
+          if (pollData.qrCode) setLiveQrCode(pollData.qrCode);
+          if (pollData.status === "connected") {
+            setStatus("connected");
+            setLinkedPhone(pollData.linkedPhone || "Connected Device");
+            setShowQrModal(false);
+            setLiveQrCode(null);
+            setDispatchLog((prev) => [
+              ...prev,
+              `✓ Real WhatsApp session successfully linked: ${pollData.linkedPhone || "Phone linked"}!`,
+            ]);
+            if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+          }
+        }
+      } catch {}
+    }, 2500);
   }
 
-  function handleLinkClick() {
-    setShowQrModal(true);
-    setQrScanning(true);
-    setTimeout(() => {
-      setQrScanning(false);
-      setStatus("connected");
-      setLinkedPhone("+43 664 999 8888 (Linked via QR)");
-      setShowQrModal(false);
-      setDispatchLog((prev) => [...prev, "WhatsApp session successfully linked via QR code."]);
-    }, 2800);
+  function handleCloseModal() {
+    setShowQrModal(false);
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+  }
+
+  async function handleUnlink() {
+    try {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+      await fetch("/api/admin/whatsapp/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "unlink" }),
+      });
+      setStatus("disconnected");
+      setLinkedPhone("");
+      setLiveQrCode(null);
+      setDispatchLog((prev) => [...prev, "WhatsApp session unlinked and destroyed."]);
+    } catch {
+      alert("Failed to unlink session.");
+    }
   }
 
   function getMessageForGuest(inv: InvitationRow) {
@@ -101,12 +183,52 @@ export function WhatsAppManager({
       .replace(/{url}/g, inviteLink);
   }
 
-  async function handleStartDispatch() {
-    if (status !== "connected") {
-      alert("Please link your WhatsApp account before starting dispatch.");
+  async function handleSendTest() {
+    if (!testPhone) {
+      alert("Please enter a phone number with country code (e.g. +436641234567 or 436641234567).");
       return;
     }
 
+    setIsSendingTest(true);
+    const guest = invitations[0];
+    const message = guest
+      ? getMessageForGuest(guest)
+      : "Dear Ruben & Andrea,\n\nTest invitation message successfully delivered via WhatsApp!";
+
+    try {
+      const res = await fetch("/api/admin/whatsapp/dispatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: testPhone,
+          message,
+          guestName: "Test Recipient",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDispatchLog((prev) => [
+          ...prev,
+          `✓ Test message successfully sent to ${testPhone} (ID: ${data.messageId || "delivered"})`,
+        ]);
+        alert(`Test invitation sent successfully to ${testPhone}!`);
+      } else if (data.directUrl) {
+        setDispatchLog((prev) => [
+          ...prev,
+          `ℹ Bot not connected: Opening direct WhatsApp Web link for ${testPhone}...`,
+        ]);
+        window.open(data.directUrl, "_blank", "noopener,noreferrer");
+      } else {
+        alert(data.error || "Failed to send test message");
+      }
+    } catch {
+      alert("Network error sending test message");
+    } finally {
+      setIsSendingTest(false);
+    }
+  }
+
+  async function handleStartDispatch() {
     if (selectedIds.length === 0) {
       alert("Please select at least one guest invitation.");
       return;
@@ -123,7 +245,7 @@ export function WhatsAppManager({
       setCurrentIndex(i + 1);
 
       // Countdown delay between messages to prevent anti-spam bans
-      if (i > 0) {
+      if (i > 0 && delaySeconds > 0) {
         for (let cd = delaySeconds; cd > 0; cd--) {
           setCountdown(cd);
           await new Promise((r) => setTimeout(r, 1000));
@@ -133,23 +255,62 @@ export function WhatsAppManager({
 
       const lang = resolveGuestLanguage(inv.language);
       const personalizedMsg = getMessageForGuest(inv);
-      const firstLine = personalizedMsg.split("\n")[0];
-      const targetToken = inv.token || inv.id;
-      const inviteLink = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}?lang=${lang}`;
+      const phone = inv.whatsapp || inv.phone || "";
 
-      setDispatchLog((prev) => [
-        ...prev,
-        `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] ${inv.displayName} (${inv.whatsapp || inv.phone || "Direct"}) ➔ "${firstLine}" (${inviteLink})`,
-      ]);
+      if (!phone) {
+        setDispatchLog((prev) => [
+          ...prev,
+          `⚠️ [${i + 1}/${targets.length}] Skipped ${inv.displayName}: No phone number saved.`,
+        ]);
+        continue;
+      }
+
+      try {
+        const res = await fetch("/api/admin/whatsapp/dispatch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone,
+            message: personalizedMsg,
+            invitationId: inv.id,
+            guestName: inv.displayName,
+          }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          setDispatchLog((prev) => [
+            ...prev,
+            `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Delivered to ${inv.displayName} (${phone}) via WhatsApp Bot (Msg ID: ${data.messageId || "ok"})`,
+          ]);
+        } else if (data.directUrl) {
+          // If socket not connected, open direct WhatsApp chat
+          window.open(data.directUrl, "_blank", "noopener,noreferrer");
+          setDispatchLog((prev) => [
+            ...prev,
+            `ℹ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Opened direct WhatsApp chat for ${inv.displayName} (${phone}).`,
+          ]);
+        } else {
+          setDispatchLog((prev) => [
+            ...prev,
+            `❌ [${i + 1}/${targets.length}] Failed for ${inv.displayName}: ${data.error || "Unknown error"}`,
+          ]);
+        }
+      } catch (err: unknown) {
+        setDispatchLog((prev) => [
+          ...prev,
+          `❌ [${i + 1}/${targets.length}] Network error for ${inv.displayName}: ${err instanceof Error ? err.message : "Error"}`,
+        ]);
+      }
     }
 
     setDispatchComplete(true);
     setIsDispatching(false);
 
     // Auto-unlink for security if enabled
-    if (autoUnlink) {
-      setTimeout(() => {
-        handleUnlink();
+    if (autoUnlink && status === "connected") {
+      setTimeout(async () => {
+        await handleUnlink();
         setDispatchLog((prev) => [
           ...prev,
           "🔒 Security: WhatsApp session automatically unlinked and destroyed after dispatch.",
@@ -169,8 +330,8 @@ export function WhatsAppManager({
           WhatsApp Automated Distribution
         </h1>
         <p style={{ margin: 0, color: "#6E6264", fontSize: "0.95rem" }}>
-          Safe automated dispatch: Generates personalized invitations with guest names and individual secure links.
-          Automatically detects each guest&apos;s default language and enforces anti-spam stagger delays.
+          Free open-source WhatsApp Web bot integration: Scan the QR code once with your personal WhatsApp to pair your device.
+          Dispatches personalized invitations with guest names and unique links in their language with anti-spam stagger delays.
         </p>
       </div>
 
@@ -179,22 +340,51 @@ export function WhatsAppManager({
         {/* Left: Connection Card & Settings */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {/* Connection Status Card */}
-          <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem" }}>
+          <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
             <h2 style={{ fontSize: "1.1rem", margin: "0 0 1rem 0", color: "#2B2425" }}>
               Account Connection &amp; Session Sync
             </h2>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", padding: "0.75rem 1rem", background: status === "connected" ? "#F0F9EE" : "#FBF4F5", borderRadius: "8px", border: `1px solid ${status === "connected" ? "#C6E8BD" : "#F2D0D5"}` }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "1.25rem",
+                padding: "0.85rem 1.1rem",
+                background: status === "connected" ? "#F0F9EE" : status === "connecting" ? "#FFF8E6" : "#FBF4F5",
+                borderRadius: "8px",
+                border: `1px solid ${status === "connected" ? "#C6E8BD" : status === "connecting" ? "#F5DEB3" : "#F2D0D5"}`,
+              }}
+            >
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: status === "connected" ? "#34A853" : "#D93025" }} />
-                  <strong style={{ fontSize: "0.95rem", color: status === "connected" ? "#2B6628" : "#8A2A35" }}>
-                    {status === "connected" ? "Connected & Synced" : "Disconnected (Unlinked)"}
+                  <span
+                    style={{
+                      width: "10px",
+                      height: "10px",
+                      borderRadius: "50%",
+                      background: status === "connected" ? "#34A853" : status === "connecting" ? "#FFA000" : "#D93025",
+                    }}
+                  />
+                  <strong style={{ fontSize: "0.95rem", color: status === "connected" ? "#2B6628" : status === "connecting" ? "#8A5A00" : "#8A2A35" }}>
+                    {isCheckingSession
+                      ? "Checking connection..."
+                      : status === "connected"
+                        ? "Connected & Synced (WhatsApp Bot)"
+                        : status === "connecting"
+                          ? "Connecting (Awaiting QR Scan)..."
+                          : "Disconnected (Unlinked)"}
                   </strong>
                 </div>
                 {status === "connected" && (
                   <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.85rem", color: "#544648" }}>
-                    Linked device: {linkedPhone}
+                    Linked device: <strong>{linkedPhone || "WhatsApp Phone"}</strong>
+                  </p>
+                )}
+                {status !== "connected" && (
+                  <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.8rem", color: "#776A6C" }}>
+                    Pure WebSockets — no Meta API account or paid plan required.
                   </p>
                 )}
               </div>
@@ -204,7 +394,16 @@ export function WhatsAppManager({
                   <button
                     type="button"
                     onClick={handleUnlink}
-                    style={{ background: "#FFFFFF", border: "1px solid #D5CBC4", borderRadius: "6px", padding: "0.4rem 0.8rem", fontSize: "0.8rem", color: "#8E2B38", cursor: "pointer", fontWeight: 500 }}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D5CBC4",
+                      borderRadius: "6px",
+                      padding: "0.45rem 0.9rem",
+                      fontSize: "0.82rem",
+                      color: "#8E2B38",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
                   >
                     Unlink Now
                   </button>
@@ -212,12 +411,70 @@ export function WhatsAppManager({
                   <button
                     type="button"
                     onClick={handleLinkClick}
-                    style={{ background: "#25D366", color: "#FFFFFF", border: 0, borderRadius: "6px", padding: "0.45rem 0.9rem", fontSize: "0.82rem", fontWeight: 600, cursor: "pointer" }}
+                    style={{
+                      background: "#25D366",
+                      color: "#FFFFFF",
+                      border: 0,
+                      borderRadius: "6px",
+                      padding: "0.5rem 1rem",
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                    }}
                   >
-                    + Link Account (QR)
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.187-2.59-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.299.144.35.491 1.199.534 1.286.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.182-.077.357.102.174.454.749.974 1.212.67.596 1.235.78 1.409.867.174.087.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z" />
+                    </svg>
+                    Link WhatsApp (QR Scan)
                   </button>
                 )}
               </div>
+            </div>
+
+            {/* Test Send Input */}
+            <div style={{ background: "#FBF9F7", border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1rem", marginBottom: "1.25rem" }}>
+              <label htmlFor="test-phone" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
+                Send Real Test Invitation to Your Phone:
+              </label>
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input
+                  id="test-phone"
+                  type="text"
+                  placeholder="e.g. +436641234567"
+                  value={testPhone}
+                  onChange={(e) => setTestPhone(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: "0.5rem 0.75rem",
+                    borderRadius: "6px",
+                    border: "1px solid #D5CBC4",
+                    fontSize: "0.85rem",
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={isSendingTest}
+                  onClick={handleSendTest}
+                  style={{
+                    background: "#8C2836",
+                    color: "#FFFFFF",
+                    border: 0,
+                    borderRadius: "6px",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: isSendingTest ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isSendingTest ? "Sending..." : "Send Test"}
+                </button>
+              </div>
+              <p style={{ margin: "0.35rem 0 0 0", fontSize: "0.75rem", color: "#776A6C" }}>
+                Verify delivery instantly on your own phone before queue dispatch.
+              </p>
             </div>
 
             {/* Anti-Ban & Security Options */}
@@ -234,14 +491,14 @@ export function WhatsAppManager({
                 <input
                   id="wa-delay"
                   type="range"
-                  min={5}
+                  min={4}
                   max={20}
                   value={delaySeconds}
                   onChange={(e) => setDelaySeconds(Number(e.target.value))}
                   style={{ width: "100%", accentColor: "#8C2836" }}
                 />
                 <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                  Recommended: 6–10s to avoid spam flags. Enforces a pause between outgoing messages.
+                  Recommended: 6–10s to prevent spam flags. Enforces a human-like pause between outgoing messages.
                 </p>
               </div>
 
@@ -254,10 +511,10 @@ export function WhatsAppManager({
                 />
                 <div>
                   <strong style={{ fontSize: "0.85rem", color: "#2B2425" }}>
-                    Auto-Unlink Account After Dispatch (Strict Security)
+                    Auto-Unlink Account After Dispatch (Strict Privacy)
                   </strong>
                   <p style={{ margin: "0.15rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                    Automatically unlinks and destroys the WhatsApp session immediately after sending is finished.
+                    Automatically closes and clears the WhatsApp Web session keys immediately after queue dispatch finishes.
                   </p>
                 </div>
               </label>
@@ -355,6 +612,10 @@ export function WhatsAppManager({
                 const langInfo = languageLabels[lang] || { name: lang, flag: "" };
                 const isSelected = selectedIds.includes(inv.id);
                 const isPreview = previewGuestId === inv.id;
+                const phone = inv.whatsapp || inv.phone || "";
+                const directUrl = phone
+                  ? `https://api.whatsapp.com/send?phone=${phone.replace(/[^\d]/g, "")}&text=${encodeURIComponent(getMessageForGuest(inv))}`
+                  : null;
 
                 return (
                   <div
@@ -398,9 +659,30 @@ export function WhatsAppManager({
                         </span>
                       </div>
                       <div style={{ fontSize: "0.75rem", color: "#776A6C", marginTop: "0.1rem" }}>
-                        {inv.whatsapp || inv.phone || "No phone saved"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
+                        {phone || "No phone saved"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
                       </div>
                     </div>
+
+                    {directUrl && (
+                      <a
+                        href={directUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          fontSize: "0.72rem",
+                          color: "#1E7E34",
+                          textDecoration: "none",
+                          border: "1px solid #C6E8BD",
+                          borderRadius: "4px",
+                          padding: "0.2rem 0.5rem",
+                          background: "#F0F9EE",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Open ↗
+                      </a>
+                    )}
                   </div>
                 );
               })}
@@ -472,7 +754,7 @@ export function WhatsAppManager({
         </div>
       </div>
 
-      {/* QR Pairing Modal */}
+      {/* Real QR Pairing Modal */}
       {showQrModal && (
         <div
           role="dialog"
@@ -480,8 +762,8 @@ export function WhatsAppManager({
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(4px)",
+            background: "rgba(0,0,0,0.65)",
+            backdropFilter: "blur(5px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -492,38 +774,84 @@ export function WhatsAppManager({
           <div
             style={{
               background: "#FFFFFF",
-              borderRadius: "12px",
+              borderRadius: "14px",
               padding: "2rem",
-              maxWidth: "420px",
+              maxWidth: "440px",
               width: "100%",
               textAlign: "center",
-              boxShadow: "0 20px 50px rgba(0,0,0,0.2)",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
             }}
           >
-            <h3 style={{ margin: "0 0 0.5rem 0", fontFamily: "var(--font-display, serif)", fontSize: "1.4rem", color: "#2B2425" }}>
+            <h3 style={{ margin: "0 0 0.5rem 0", fontFamily: "var(--font-display, serif)", fontSize: "1.45rem", color: "#2B2425" }}>
               Scan QR Code with WhatsApp
             </h3>
-            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem" }}>
-              Open WhatsApp on your phone &gt; Settings &gt; Linked Devices &gt; Link a Device.
+            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem", lineHeight: 1.5 }}>
+              1. Open WhatsApp on your phone.<br />
+              2. Go to <strong>Settings</strong> (iOS) or <strong>⋮ More options</strong> (Android) &gt; <strong>Linked Devices</strong>.<br />
+              3. Tap <strong>Link a Device</strong> and point your camera here:
             </p>
 
-            <div style={{ width: "220px", height: "220px", margin: "0 auto 1.25rem", padding: "1rem", border: "1px solid #E8DFD8", borderRadius: "8px", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {qrScanning ? (
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ width: "40px", height: "40px", border: "3px solid #25D366", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 0.75rem" }} />
-                  <span style={{ fontSize: "0.85rem", color: "#544648" }}>Syncing session...</span>
-                </div>
+            <div
+              style={{
+                width: "240px",
+                height: "240px",
+                margin: "0 auto 1.25rem",
+                padding: "0.5rem",
+                border: "2px solid #E8DFD8",
+                borderRadius: "10px",
+                background: "#FFFFFF",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {liveQrCode ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={liveQrCode}
+                  alt="Real WhatsApp Multi-Device QR Code"
+                  width={220}
+                  height={220}
+                  style={{ display: "block", borderRadius: "6px" }}
+                />
               ) : (
-                <Image src="/orchids/seal-monogram.svg" alt="QR Seal" width={180} height={180} />
+                <div style={{ textAlign: "center", padding: "1rem" }}>
+                  <div
+                    style={{
+                      width: "44px",
+                      height: "44px",
+                      border: "3px solid #25D366",
+                      borderTopColor: "transparent",
+                      borderRadius: "50%",
+                      animation: "spin 1s linear infinite",
+                      margin: "0 auto 0.75rem",
+                    }}
+                  />
+                  <span style={{ fontSize: "0.85rem", color: "#544648", fontWeight: 500 }}>
+                    Generating live WhatsApp Web pairing QR...
+                  </span>
+                </div>
               )}
             </div>
 
+            <p style={{ margin: "0 0 1rem 0", fontSize: "0.78rem", color: "#776A6C" }}>
+              The QR code refreshes automatically. As soon as you scan, this dialog will close and your phone will be connected.
+            </p>
+
             <button
               type="button"
-              onClick={() => setShowQrModal(false)}
-              style={{ background: "transparent", border: 0, color: "#8E2B38", fontSize: "0.85rem", cursor: "pointer", textDecoration: "underline" }}
+              onClick={handleCloseModal}
+              style={{
+                background: "transparent",
+                border: 0,
+                color: "#8E2B38",
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                textDecoration: "underline",
+                fontWeight: 600,
+              }}
             >
-              Cancel
+              Close
             </button>
           </div>
         </div>
