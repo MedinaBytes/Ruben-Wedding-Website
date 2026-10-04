@@ -1416,8 +1416,6 @@ a {
   color: var(--color-ink-muted, #5A4E51);
   margin: 0;
 }
-  margin-bottom: 0;
-}
 
 .music-note__copy h3 {
   font-family: var(--font-display);
