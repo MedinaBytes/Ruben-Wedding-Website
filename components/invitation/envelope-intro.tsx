@@ -169,16 +169,17 @@ export function EnvelopeIntro({
             initial={false}
             animate={
               shouldReduceMotion
-                ? { opacity: step === "revealed" || step === "navigating" ? 1 : 0.95 }
+                ? { opacity: step === "revealed" || step === "navigating" ? 1 : 0 }
                 : step === "idle"
-                  ? { y: 0, scale: 0.92, zIndex: 2 }
+                  ? { y: 15, opacity: 0, scale: 0.92, zIndex: 2 }
                   : step === "opening"
-                    ? { y: -45, scale: 0.96, zIndex: 10, transition: { duration: 0.9, delay: 0.5, ease: [0.2, 0.7, 0.2, 1] } }
+                    ? { y: -60, opacity: 1, scale: 0.98, zIndex: 15, transition: { duration: 0.85, delay: 0.45, ease: [0.2, 0.7, 0.2, 1] } }
                     : {
-                        y: -110,
-                        scale: 1.02,
-                        zIndex: 20,
-                        boxShadow: "0 20px 50px rgba(50, 30, 35, 0.18)",
+                        y: -195,
+                        opacity: 1,
+                        scale: 1.03,
+                        zIndex: 30,
+                        boxShadow: "0 25px 60px rgba(50, 30, 35, 0.22)",
                         transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
                       }
             }
@@ -271,7 +272,7 @@ export function EnvelopeIntro({
               shouldReduceMotion
                 ? { opacity: step === "idle" ? 1 : 0 }
                 : step === "idle"
-                  ? { rotateX: 0, zIndex: 5 }
+                  ? { rotateX: 0, zIndex: 12 }
                   : { rotateX: -180, zIndex: 1, transition: { duration: 0.85, ease: [0.25, 1, 0.5, 1] } }
             }
           >
@@ -284,7 +285,7 @@ export function EnvelopeIntro({
               type="button"
               className="envelope-seal"
               onClick={handleOpen}
-              whileHover={step === "idle" ? { scale: 1.05 } : {}}
+              whileHover={step === "idle" ? { scale: 1.06 } : {}}
               whileTap={step === "idle" ? { scale: 0.95 } : {}}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={
@@ -305,16 +306,23 @@ export function EnvelopeIntro({
                 />
               </div>
               {step === "idle" && <span className="envelope-seal__pulse" aria-hidden="true" />}
-              {step === "idle" && <span className="envelope-seal__label">{openPrompt}</span>}
+              {step === "idle" && <span className="envelope-seal__hint">{openPrompt}</span>}
             </motion.button>
           )}
         </div>
 
         {/* Guest Address Calligraphy on Envelope when closed */}
         {step === "idle" && (
-          <div className="envelope-calligraphy" aria-hidden="true">
+          <motion.div
+            className="envelope-calligraphy"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            aria-hidden="true"
+          >
             <p className="envelope-calligraphy__name">{displayName}</p>
-          </div>
+          </motion.div>
         )}
       </div>
 

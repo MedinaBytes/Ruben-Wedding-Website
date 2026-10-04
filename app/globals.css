@@ -3921,14 +3921,14 @@ a {
 
 .envelope-3d {
   position: relative;
-  width: min(92vw, 480px);
-  height: min(60vw, 310px);
+  width: min(94vw, 500px);
+  height: min(64vw, 330px);
   transform-style: preserve-3d;
   transition: transform 0.8s var(--ease-editorial);
 }
 
 .envelope-3d--open {
-  transform: translateY(35px);
+  transform: translateY(40px);
 }
 
 .envelope-3d__back {
@@ -3943,23 +3943,23 @@ a {
   z-index: 1;
 }
 
-/* Inside Card */
+/* Inside Card - Properly sized and centered */
 .envelope-card {
   position: absolute;
-  inset: 12px 18px;
-  min-height: min(85vw, 440px);
-  bottom: 12px;
+  top: 12px;
+  left: 18px;
+  right: 18px;
+  height: 340px;
   background: #FFFEFC;
   border: 1px solid #E4DBD3;
   border-radius: 4px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 2.25rem 1.5rem;
-  transform-origin: center bottom;
+  padding: 1.5rem 1.25rem;
   overflow: hidden;
 }
 
@@ -3973,7 +3973,7 @@ a {
   align-items: center;
   border: 1px solid rgba(200, 165, 105, 0.28);
   border-radius: 2px;
-  padding: 1.5rem 1.25rem;
+  padding: 1.25rem 1rem;
 }
 
 .envelope-card__orchid-art {
@@ -3982,95 +3982,102 @@ a {
   width: 120%;
   height: 120%;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 0.45;
 }
 
 .envelope-card__content {
   position: relative;
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 .envelope-card__monogram {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 500;
   letter-spacing: 0.15em;
   color: #8C2836;
-  margin-bottom: 0.75rem;
+  margin: 0;
   display: block;
 }
 
 .envelope-card__monogram i {
   font-family: var(--font-script);
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-style: italic;
   color: #CCA468;
 }
 
 .envelope-card__greeting-to {
   font-family: var(--font-script);
-  font-size: 2.2rem;
+  font-size: clamp(1.6rem, 3.5vw, 2.1rem);
   color: #382A2C;
-  line-height: 1.1;
-  margin: 0;
+  line-height: 1.15;
+  margin: 0.15rem 0 0 0;
 }
 
 .envelope-card__divider {
-  width: 3rem;
+  width: 2.75rem;
   height: 1px;
   background: linear-gradient(90deg, transparent, #CCA468, transparent);
-  margin: 0.75rem auto;
+  margin: 0.35rem auto;
 }
 
 .envelope-card__title {
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 4vw, 1.85rem);
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
   font-weight: 600;
   color: #2D2224;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   letter-spacing: 0.02em;
 }
 
 .envelope-card__title i {
   font-family: var(--font-script);
   font-style: italic;
-  font-size: 1.3em;
+  font-size: 1.2em;
   color: #8C2836;
   padding-inline: 0.15em;
 }
 
 .envelope-card__celebrate {
   font-family: var(--font-body);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: #7D6F72;
-  margin: 0 0 0.75rem 0;
+  margin: 0.15rem 0 0 0;
 }
 
 .envelope-card__date {
   font-family: var(--font-body);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
   color: #55644E;
-  margin: 0;
+  margin: 0.15rem 0 0 0;
   font-weight: 600;
 }
 
 .envelope-card__date .bullet {
-  padding-inline: 0.4rem;
+  padding-inline: 0.35rem;
   color: #CCA468;
 }
 
 .envelope-card__enter-btn {
-  margin-top: 1.25rem;
+  margin-top: 0.75rem;
   background: #8C2836;
   color: #FFFFFF;
   border: 0;
   border-radius: 999px;
-  padding: 0.65rem 1.6rem;
+  padding: 0.55rem 1.4rem;
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -4089,7 +4096,7 @@ a {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 10;
 }
 
 .envelope-3d__flap-left {
@@ -4126,7 +4133,7 @@ a {
   transform-origin: top center;
   transform-style: preserve-3d;
   pointer-events: none;
-  z-index: 5;
+  z-index: 12;
 }
 
 .envelope-3d__top-flap-triangle {
@@ -4143,7 +4150,7 @@ a {
   top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
+  z-index: 20;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -4183,13 +4190,13 @@ a {
   100% { transform: translate(-50%, -50%) scale(1.35); opacity: 0; }
 }
 
-.envelope-seal__label {
+.envelope-seal__hint {
   margin-top: 0.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(4px);
-  border: 1px solid rgba(180, 130, 90, 0.25);
+  border: 1px solid rgba(180, 130, 90, 0.3);
   border-radius: 999px;
-  padding: 0.3rem 0.85rem;
+  padding: 0.25rem 0.75rem;
   font-family: var(--font-body);
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -4197,23 +4204,25 @@ a {
   font-weight: 600;
   color: #7A2833;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
 }
 
 .envelope-calligraphy {
   position: absolute;
-  bottom: 12%;
+  bottom: 8%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 4;
+  z-index: 15;
   pointer-events: none;
   text-align: center;
+  width: 85%;
 }
 
 .envelope-calligraphy__name {
   font-family: var(--font-script);
-  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
   color: #382A2C;
-  line-height: 1;
+  line-height: 1.1;
   margin: 0;
 }
 
