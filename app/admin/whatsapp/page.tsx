@@ -49,6 +49,7 @@ export default async function AdminWhatsAppPage() {
       attendeeCount: 0,
       phone: inv.phone || null,
       whatsapp: inv.whatsapp || null,
+      token: inv.id === "00000000-0000-0000-0000-000000000001" ? "demo" : (inv.token || inv.id),
     });
   }
 
@@ -69,6 +70,7 @@ export default async function AdminWhatsAppPage() {
         attendeeCount: 0,
         phone: (inv.phone as string) || null,
         whatsapp: (inv.whatsapp as string) || null,
+        token: id === "00000000-0000-0000-0000-000000000001" ? "demo" : id,
       });
     }
   }
