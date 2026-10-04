@@ -21,7 +21,7 @@ export default async function AdminInvitationsPage() {
   const [invitationsRes, rsvpsRes] = await Promise.all([
     client
       .from("invitations")
-      .select("id, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at")
+      .select("id, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, phone, whatsapp")
       .order("created_at", { ascending: false }),
     client.from("rsvps").select("invitation_id, attendance_status, attendee_count"),
   ]);
@@ -43,6 +43,8 @@ export default async function AdminInvitationsPage() {
       createdAt: inv.created_at,
       rsvpStatus: (rsvp?.status as "yes" | "no") || "pending",
       attendeeCount: rsvp?.count || 0,
+      phone: inv.phone || null,
+      whatsapp: inv.whatsapp || null,
     };
   });
 

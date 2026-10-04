@@ -15,6 +15,8 @@ export interface InvitationRow {
   createdAt: string;
   rsvpStatus: "yes" | "no" | "pending";
   attendeeCount: number;
+  phone?: string | null;
+  whatsapp?: string | null;
 }
 
 export function InvitationsManager({
@@ -86,6 +88,19 @@ export function InvitationsManager({
     a.href = activeQr.dataUrl;
     a.download = `QR-${activeQr.displayName.replace(/\s+/g, "_")}.png`;
     a.click();
+  }
+
+  function sendWhatsApp(inv: InvitationRow) {
+    const inviteUrl = `${siteUrl}/i/${inv.id}`;
+    const text = encodeURIComponent(
+      `Dear ${inv.displayName},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n${inviteUrl}`,
+    );
+    const targetPhone = inv.whatsapp || inv.phone;
+    const cleanPhone = targetPhone ? targetPhone.replace(/[^0-9+]/g, "") : "";
+    const waUrl = cleanPhone
+      ? `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${text}`
+      : `https://api.whatsapp.com/send?text=${text}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -308,6 +323,23 @@ export function InvitationsManager({
                         }}
                       >
                         QR Code
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => sendWhatsApp(inv)}
+                        title="Send invitation via WhatsApp"
+                        style={{
+                          background: "#E8F5E9",
+                          border: "1px solid #C8E6C9",
+                          borderRadius: "4px",
+                          padding: "0.25rem 0.55rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#1B5E20",
+                          fontWeight: 500,
+                        }}
+                      >
+                        WhatsApp
                       </button>
                     </div>
                   </td>

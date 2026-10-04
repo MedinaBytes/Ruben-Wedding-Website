@@ -76,12 +76,29 @@ export type GuestInvitationDetails = {
   personalMessage?: string | null;
 };
 
+export type SiteSettingsData = {
+  showGiftDetails?: boolean;
+  bankName?: string;
+  accountHolder?: string;
+  iban?: string;
+  bic?: string;
+  giftNote?: string;
+  showPrivateAddress?: boolean;
+  privateStreet?: string;
+  privateCity?: string;
+  privateAccessNotes?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+};
+
 export async function WeddingSections({
   invitation,
   locale,
+  siteSettings,
 }: {
   invitation?: GuestInvitationDetails;
   locale?: Locale;
+  siteSettings?: SiteSettingsData;
 } = {}) {
   const [day, venue, travel, stay, dress, music, gifts, closing] = await Promise.all([
     getSectionTranslations(locale, "event"),
@@ -276,6 +293,49 @@ export async function WeddingSections({
               <li key={link.label}><a href={link.href} rel="noreferrer" target="_blank">{link.label}</a></li>
             ))}
           </ul>
+
+          {siteSettings?.showPrivateAddress ? (
+            <div
+              className="private-address-card"
+              style={{
+                marginTop: "1.75rem",
+                padding: "1.25rem 1.5rem",
+                background: "rgba(140, 40, 54, 0.04)",
+                border: "1px solid rgba(140, 40, 54, 0.18)",
+                borderRadius: "8px",
+              }}
+            >
+              <p style={{ fontWeight: 600, color: "#8C2836", margin: "0 0 0.4rem 0", fontSize: "0.95rem" }}>
+                📍 Couple&apos;s Private Address in Vienna
+              </p>
+              <p style={{ margin: "0 0 0.25rem 0", color: "#2B2425", fontSize: "0.95rem" }}>
+                {siteSettings.privateStreet || "Private Residence, Meidling"}
+              </p>
+              <p style={{ margin: "0 0 0.5rem 0", color: "#6E6264", fontSize: "0.9rem" }}>
+                {siteSettings.privateCity || "1120 Vienna, Austria"}
+              </p>
+              {siteSettings.privateAccessNotes && (
+                <p style={{ margin: 0, color: "#544648", fontSize: "0.85rem", fontStyle: "italic" }}>
+                  Notes: {siteSettings.privateAccessNotes}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div
+              className="stay-contact-cta"
+              style={{
+                marginTop: "1.75rem",
+                padding: "1.1rem 1.35rem",
+                background: "rgba(85, 100, 78, 0.05)",
+                border: "1px dashed rgba(85, 100, 78, 0.28)",
+                borderRadius: "8px",
+              }}
+            >
+              <p style={{ margin: 0, color: "#45533E", fontSize: "0.9rem", lineHeight: 1.55 }}>
+                ✨ <strong>Private accommodation recommendation:</strong> If you are planning an extended stay or want personalized lodging recommendations close to us, please reach out directly to Ruben &amp; Andrea!
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -316,10 +376,53 @@ export async function WeddingSections({
         <div className="gift-note__copy">
           <p>{gifts("presence")}</p>
           <p>{gifts("contribution")}</p>
-          <details className="gift-details">
-            <summary>{gifts("detailsLabel")}</summary>
-            <p>{gifts("detailsPending")}</p>
-          </details>
+          {siteSettings?.showGiftDetails && (
+            <details className="gift-details" style={{ marginTop: "1.25rem" }}>
+              <summary style={{ cursor: "pointer", fontWeight: 500, color: "#8C2836" }}>
+                {gifts("detailsLabel")}
+              </summary>
+              <div
+                style={{
+                  marginTop: "1rem",
+                  padding: "1.25rem",
+                  background: "rgba(247, 245, 242, 0.9)",
+                  border: "1px solid #E8DFD8",
+                  borderRadius: "8px",
+                  fontSize: "0.9rem",
+                  lineHeight: 1.6,
+                }}
+              >
+                {siteSettings.accountHolder && (
+                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
+                    <strong style={{ color: "#6E6264" }}>Account Holder:</strong> {siteSettings.accountHolder}
+                  </p>
+                )}
+                {siteSettings.bankName && (
+                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
+                    <strong style={{ color: "#6E6264" }}>Bank:</strong> {siteSettings.bankName}
+                  </p>
+                )}
+                {siteSettings.iban && (
+                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425", fontFamily: "monospace" }}>
+                    <strong style={{ color: "#6E6264", fontFamily: "var(--font-body, sans-serif)" }}>IBAN:</strong> {siteSettings.iban}
+                  </p>
+                )}
+                {siteSettings.bic && (
+                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425", fontFamily: "monospace" }}>
+                    <strong style={{ color: "#6E6264", fontFamily: "var(--font-body, sans-serif)" }}>BIC/SWIFT:</strong> {siteSettings.bic}
+                  </p>
+                )}
+                {siteSettings.giftNote && (
+                  <p style={{ margin: "0.5rem 0 0 0", color: "#6E6264", fontStyle: "italic", fontSize: "0.85rem" }}>
+                    {siteSettings.giftNote}
+                  </p>
+                )}
+                {!siteSettings.iban && (
+                  <p style={{ margin: 0, color: "#6E6264" }}>{gifts("detailsPending")}</p>
+                )}
+              </div>
+            </details>
+          )}
         </div>
       </section>
 

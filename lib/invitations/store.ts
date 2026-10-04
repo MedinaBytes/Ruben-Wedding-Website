@@ -18,12 +18,27 @@ export type ActiveInvitation = {
   status: "active";
 };
 
+export const DEMO_INVITATION: ActiveInvitation = {
+  id: "00000000-0000-0000-0000-000000000001",
+  display_name: "Sarah & Guest (Demo)",
+  greeting_override: "Dear Sarah & Guest,",
+  language: "en",
+  max_guests: 2,
+  plus_one_allowed: true,
+  personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+  status: "active",
+};
+
 export function getInvitationTokenHash(token: string) {
   if (!invitationTokenSchema.safeParse(token).success) return null;
   return hashInvitationToken(token);
 }
 
 export async function findActiveInvitation(client: SupabaseClient, token: string) {
+  if (token === "demo" || token === DEMO_INVITATION.id) {
+    return DEMO_INVITATION;
+  }
+
   const tokenHash = getInvitationTokenHash(token);
   if (!tokenHash) return null;
 
@@ -68,6 +83,8 @@ export async function consumeInvitationRateLimit(
   limit: number,
   windowSeconds: number,
 ) {
+  if (invitationId === DEMO_INVITATION.id) return true;
+
   const { data, error } = await client.rpc("consume_invitation_rate_limit", {
     p_invitation_id: invitationId,
     p_action: action,
@@ -96,7 +113,10 @@ export async function saveRsvp(client: SupabaseClient, invitationId: string, rsv
     { onConflict: "invitation_id" },
   );
 
-  if (error) throw new Error("RSVP could not be saved.");
+  if (error) {
+    if (invitationId === DEMO_INVITATION.id) return;
+    throw new Error("RSVP could not be saved.");
+  }
 }
 
 export async function saveSongRequests(
@@ -104,6 +124,8 @@ export async function saveSongRequests(
   invitationId: string,
   payload: SongRequestPayload,
 ) {
+  if (invitationId === DEMO_INVITATION.id) return;
+
   const rows = payload.requests.map((request, index) => ({
     invitation_id: invitationId,
     slot: index + 1,
@@ -139,6 +161,8 @@ export async function recordInvitationEvent(
     locale?: string;
   },
 ) {
+  if (event.invitationId === DEMO_INVITATION.id) return;
+
   const { error } = await client.from("invitation_events").insert({
     invitation_id: event.invitationId,
     session_id: event.sessionId ?? null,

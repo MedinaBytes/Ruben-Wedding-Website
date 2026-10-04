@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
 import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
@@ -42,6 +43,32 @@ export default async function MainInvitationPage({
   const locale = supportedLocales.includes(manualLocale as Locale)
     ? (manualLocale as Locale)
     : invitation.language ?? (requestLocale as Locale);
+
+  // Fetch site settings for bank disclosures & private address
+  let siteSettings = undefined;
+  try {
+    const supabase = createSupabaseAdminClient();
+    const { data: settingsRows } = await supabase.from("site_settings").select("key, value");
+    if (settingsRows) {
+      const s = new Map(settingsRows.map((r) => [r.key, r.value]));
+      siteSettings = {
+        showGiftDetails: Boolean(s.get("showGiftDetails")),
+        bankName: s.get("bankName") ? String(s.get("bankName")) : undefined,
+        accountHolder: s.get("accountHolder") ? String(s.get("accountHolder")) : undefined,
+        iban: s.get("iban") ? String(s.get("iban")) : undefined,
+        bic: s.get("bic") ? String(s.get("bic")) : undefined,
+        giftNote: s.get("giftNote") ? String(s.get("giftNote")) : undefined,
+        showPrivateAddress: Boolean(s.get("showPrivateAddress")),
+        privateStreet: s.get("privateStreet") ? String(s.get("privateStreet")) : undefined,
+        privateCity: s.get("privateCity") ? String(s.get("privateCity")) : undefined,
+        privateAccessNotes: s.get("privateAccessNotes") ? String(s.get("privateAccessNotes")) : undefined,
+        contactPhone: s.get("contactPhone") ? String(s.get("contactPhone")) : undefined,
+        contactEmail: s.get("contactEmail") ? String(s.get("contactEmail")) : undefined,
+      };
+    }
+  } catch {
+    siteSettings = undefined;
+  }
 
   const [messages, navigation, hero, intro, wedding] = await Promise.all([
     getMessages({ locale }),
@@ -101,6 +128,7 @@ export default async function MainInvitationPage({
           {/* Full Wedding Sections Suite */}
           <WeddingSections
             locale={locale}
+            siteSettings={siteSettings}
             invitation={{
               id: invitation.id,
               token,

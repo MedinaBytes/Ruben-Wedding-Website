@@ -87,7 +87,6 @@ export async function createInvitationAction(formData: FormData): Promise<Create
 }
 
 export async function createDemoInvitationAction(): Promise<CreateInvitationResult> {
-  const token = "demo";
   const tokenHash = hashInvitationToken(generateInvitationToken()); // unique hash
   const client = createSupabaseAdminClient();
 
