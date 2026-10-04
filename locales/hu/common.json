@@ -292,7 +292,7 @@
   },
   "intro": {
     "greeting": "Kedves {name}!",
-    "open": "Meghívó megnyitása",
+    "open": "Pecsét feltörése és megnyitás",
     "skip": "Bevezető kihagyása",
     "soundOn": "Hang bekapcsolása",
     "soundOff": "Hang kikapcsolása",
