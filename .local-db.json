@@ -18,7 +18,19 @@
       "created_at": "2026-10-04T10:46:14.028Z"
     }
   ],
-  "rsvps": [],
+  "rsvps": [
+    {
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "attendance_status": "yes",
+      "attendee_count": 1,
+      "guest_names": [],
+      "dietary_requirements": "none",
+      "notes": "love u guys",
+      "language": "en",
+      "submitted_at": "2026-10-04T11:36:28.985Z",
+      "updated_at": "2026-10-04T11:36:28.985Z"
+    }
+  ],
   "songRequests": [
     {
       "invitation_id": "00000000-0000-0000-0000-000000000001",
