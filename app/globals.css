@@ -2221,44 +2221,18 @@ a {
   max-width: 55ch;
 }
 
-@media (max-width: 760px) {
-  .site-header {
-    grid-template-columns: auto 1fr auto;
-    min-height: 4.5rem;
-    padding-inline: 1rem;
-  }
-
-  .site-header__nav {
-    justify-content: flex-end;
-  }
-
-  .site-header__nav a {
-    font-size: 0.72rem;
-  }
-
-  .language-switcher__option {
-    min-width: 2.2rem;
-  }
-
+@media (max-width: 880px) {
   .hero {
-    padding: 1rem 1rem 2rem;
+    padding: 1.5rem 1.25rem 2.5rem;
   }
 
   .hero__inner {
-    display: grid;
-    gap: 1.5rem;
     grid-template-columns: minmax(0, 1fr);
-    min-height: auto;
-    position: relative;
+    gap: 2.25rem;
   }
 
   .hero__copy {
-    left: auto;
-    max-width: none;
-    padding-block: 1rem 0;
-    position: relative;
-    top: auto;
-    transform: none;
+    gap: 1rem;
   }
 
   .hero__eyebrow {
