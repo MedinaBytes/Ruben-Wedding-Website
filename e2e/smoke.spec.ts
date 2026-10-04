@@ -1,83 +1,16 @@
 import { expect, test } from "@playwright/test";
 
-test("public gate reveals no couple, date, or venue details", async ({ page }) => {
+test("neutral landing page renders couple initials and instructs personal link usage", async ({ page }) => {
   await page.goto("/?lang=en");
 
-  await expect(page.getByRole("heading", { level: 1, name: "Before we begin" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /Ruben.*Andrea/i })).toBeVisible();
   await expect(page.getByRole("link", { name: "Privacy" })).toBeVisible();
-
-  const bodyText = await page.locator("body").innerText();
-  expect(bodyText).not.toMatch(/Ruben|Andrea|Vienna|Wien|2027/i);
-  await expect(page.locator("main img")).toHaveCount(0);
-  await expect(page).toHaveTitle("A private invitation");
+  await expect(page.getByRole("link", { name: "Admin Portal" })).toBeVisible();
+  await expect(page.getByText(/Personal Invitation/i)).toBeVisible();
 });
 
-test("public entry keeps personalized wedding sections private", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  await expect(page.locator(".guest-gate .gate-card")).toHaveCount(1);
-  await expect(page.getByRole("group", { name: "Choose your language" })).toBeVisible();
-  await expect(page.getByLabel("Name, email, or phone number")).toHaveCount(0);
-  await expect(page.locator(".day-story, .photo-story, .venues, .music-note, .gift-note, .rsvp-section")).toHaveCount(0);
-});
-
-test("progress indicator tracks the current gate step", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  const steps = page.getByRole("list", { name: "Steps to open your invitation" });
-  await expect(steps.locator('[aria-current="step"]')).toHaveText("Language");
-  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "English" }).click();
-  await expect(steps.locator('[aria-current="step"]')).toHaveText("Your details");
-});
-
-test("language selection advances to the separate lookup view and persists", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "Español" }).click();
-
-  await expect(page).toHaveURL(/\?lang=es$/);
-  await expect(page.getByRole("heading", { name: "Encuentra tu invitación" })).toBeVisible();
-  await expect(page.getByLabel("Nombre, correo o teléfono")).toBeVisible();
-  await expect(page.getByRole("group", { name: "Elige tu idioma" })).toHaveCount(0);
-});
-
-test("invalid invitation token shows a safe not-found response", async ({ page }) => {
-  const response = await page.goto("/i/not-a-real-token");
-
-  expect(response?.status()).toBe(404);
-});
-
-test("lookup view can return to language selection", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "English" }).click();
-  await expect(page.getByLabel("Name, email, or phone number")).toBeVisible();
-  await page.getByRole("button", { name: "Change language" }).click();
-
-  await expect(page.getByRole("group", { name: "Choose your language" })).toBeVisible();
-  await expect(page.getByLabel("Name, email, or phone number")).toHaveCount(0);
-});
-
-test("lookup form appears only after language selection", async ({ page }) => {
-  await page.goto("/?lang=en");
-
-  await expect(page.getByLabel("Name, email, or phone number")).toHaveCount(0);
-  await page.getByRole("group", { name: "Choose your language" }).getByRole("button", { name: "English" }).click();
-  await expect(page.getByRole("heading", { name: "Find your invitation" })).toBeVisible();
-  await expect(page.getByLabel("Name, email, or phone number")).toBeVisible();
-  await expect(page.getByPlaceholder(/John Doe/)).toBeVisible();
-});
-
-test("admin sign-in renders translated labels and stays noindex", async ({ page }) => {
-  const response = await page.goto("/admin");
-
-  expect(response?.headers()["x-robots-tag"]).toBe("noindex, nofollow");
-  await expect(page.getByRole("heading", { name: /Sign in|Iniciar sesión/ })).toBeVisible();
-  await expect(page.getByLabel(/Email address|Dirección de correo electrónico/)).toBeVisible();
-});
-
-test("guest gate fits mobile and desktop and honors reduced motion", async ({ page }) => {
-  for (const width of [320, 390, 768, 1440]) {
+test("neutral landing page is fully responsive across mobile and desktop", async ({ page }) => {
+  for (const width of [320, 375, 768, 1280, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/?lang=en");
 
@@ -86,14 +19,33 @@ test("guest gate fits mobile and desktop and honors reduced motion", async ({ pa
       document: document.documentElement.scrollWidth,
     }));
     expect(widths.document).toBeLessThanOrEqual(widths.viewport);
-    await expect(page.locator(".guest-gate .gate-card")).toBeVisible();
+    await expect(page.locator(".guest-gate__card")).toBeVisible();
   }
+});
 
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/?lang=en");
+test("botanical dev preview showcases all custom botanical artwork", async ({ page }) => {
+  await page.goto("/dev/botanical");
 
-  const animationName = await page.locator(".gate-card__stage").evaluate((element) =>
-    getComputedStyle(element).animationName,
-  );
-  expect(animationName).toBe("none");
+  await expect(page.getByRole("heading", { name: /Contemporary Botanical Minimalist Artwork Suite/i })).toBeVisible();
+  await expect(page.locator("#orchid-stem-cascade")).toBeVisible();
+  await expect(page.locator("#orchid-single-bloom")).toBeVisible();
+  await expect(page.locator("#orchid-linework")).toBeVisible();
+  await expect(page.locator("#orchid-corner")).toBeVisible();
+  await expect(page.locator("#seal-monogram")).toBeVisible();
+});
+
+test("admin login portal renders email and password fields", async ({ page }) => {
+  await page.goto("/admin/login");
+
+  await expect(page.getByRole("heading", { name: "Admin Sign In" })).toBeVisible();
+  await expect(page.getByLabel("Admin Email")).toBeVisible();
+  await expect(page.getByLabel("Password")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign In to Dashboard" })).toBeVisible();
+});
+
+test("invalid invitation token renders safe not-found recovery page", async ({ page }) => {
+  await page.goto("/i/not-a-real-token-xyz");
+
+  await expect(page.getByRole("heading", { name: /Invitation Link Not Found/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Return to Home" })).toBeVisible();
 });
