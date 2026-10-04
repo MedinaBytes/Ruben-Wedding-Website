@@ -52,6 +52,11 @@ function mockLookupClient(results: Record<string, unknown[]>) {
         return query;
       },
       limit: () => query,
+      maybeSingle: () => {
+        const lookupValue = Object.entries(filters).find(([column]) => column !== "status")?.[1];
+        const result = lookupValue ? results[lookupValue] ?? [] : [];
+        return Promise.resolve({ data: result[0] ?? null, error: null });
+      },
       then: (resolve: (value: unknown) => unknown, reject: (reason?: unknown) => unknown) => {
         const lookupValue = Object.entries(filters).find(([column]) => column !== "status")?.[1];
         const result = lookupValue ? results[lookupValue] ?? [] : [];
