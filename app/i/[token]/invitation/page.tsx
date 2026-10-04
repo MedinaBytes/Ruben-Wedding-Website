@@ -54,6 +54,21 @@ export default async function MainInvitationPage({
     ? (candidateLocale as Locale)
     : "en";
 
+  if (queryLocale && queryLocale !== manualLocale) {
+    try {
+      cookieStore.set(`wedding_manual_locale_${invitation.id}`, locale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 183,
+        sameSite: "lax",
+      });
+      cookieStore.set("wedding_manual_locale", locale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 183,
+        sameSite: "lax",
+      });
+    } catch {}
+  }
+
   // Fetch site settings for bank disclosures & private address
   let siteSettings = undefined;
   try {

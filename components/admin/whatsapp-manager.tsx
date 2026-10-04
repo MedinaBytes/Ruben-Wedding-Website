@@ -4,6 +4,28 @@ import { useState } from "react";
 import Image from "next/image";
 import type { InvitationRow } from "@/components/admin/invitations-manager";
 
+const defaultTemplates: Record<string, string> = {
+  en: "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}",
+  es: "¡Hola {name}!\n\nRuben y Andrea te invitan cordialmente a celebrar su boda el 2 de octubre de 2027 en Viena.\n\nPor favor abre tu invitación digital personalizada aquí:\n{url}",
+  "de-AT": "Liebe/r {name},\n\nRuben & Andrea laden dich herzlich ein, ihre Hochzeit am 2. Oktober 2027 in Wien zu feiern!\n\nBitte öffne deine persönliche digitale Einladung hier:\n{url}",
+  hu: "Kedves {name}!\n\nRuben és Andrea szeretettel meghívnak, hogy ünnepeld velük az esküvőjüket 2027. október 2-án Bécsben!\n\nKérjük, nyisd meg a személyre szóló digitális meghívódat itt:\n{url}",
+};
+
+const languageLabels: Record<string, { name: string; flag: string }> = {
+  en: { name: "English", flag: "🇬🇧" },
+  es: { name: "Español", flag: "🇪🇸" },
+  "de-AT": { name: "Deutsch", flag: "🇦🇹" },
+  hu: { name: "Magyar", flag: "🇭🇺" },
+};
+
+function resolveGuestLanguage(lang?: string | null): string {
+  if (!lang) return "en";
+  if (lang === "es" || lang.startsWith("es-")) return "es";
+  if (lang === "de" || lang === "de-AT" || lang.startsWith("de-")) return "de-AT";
+  if (lang === "hu" || lang.startsWith("hu-")) return "hu";
+  return "en";
+}
+
 export function WhatsAppManager({
   invitations,
   siteUrl,
@@ -13,19 +35,21 @@ export function WhatsAppManager({
 }) {
   const [status, setStatus] = useState<"connected" | "disconnected" | "linking">("connected");
   const [linkedPhone, setLinkedPhone] = useState("+43 664 999 8888 (Ruben's Phone)");
-  const [delaySeconds, setDelaySeconds] = useState(10);
+  const [delaySeconds, setDelaySeconds] = useState(8);
   const [autoUnlink, setAutoUnlink] = useState(true);
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrScanning, setQrScanning] = useState(false);
 
-  // Template
-  const [template, setTemplate] = useState(
-    "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}",
-  );
+  // Multi-Language Templates
+  const [templates, setTemplates] = useState<Record<string, string>>(defaultTemplates);
+  const [activeTab, setActiveTab] = useState<string>("en");
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<string[]>(
     invitations.slice(0, 5).map((i) => i.id),
+  );
+  const [previewGuestId, setPreviewGuestId] = useState<string>(
+    invitations[0]?.id || "",
   );
 
   // Dispatch progress
@@ -67,6 +91,16 @@ export function WhatsAppManager({
     }, 2800);
   }
 
+  function getMessageForGuest(inv: InvitationRow) {
+    const lang = resolveGuestLanguage(inv.language);
+    const tmpl = templates[lang] || templates.en;
+    const targetToken = inv.token || inv.id;
+    const inviteLink = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}?lang=${lang}`;
+    return tmpl
+      .replace(/{name}/g, inv.displayName)
+      .replace(/{url}/g, inviteLink);
+  }
+
   async function handleStartDispatch() {
     if (status !== "connected") {
       alert("Please link your WhatsApp account before starting dispatch.");
@@ -80,7 +114,7 @@ export function WhatsAppManager({
 
     setIsDispatching(true);
     setDispatchComplete(false);
-    setDispatchLog([`Starting automated dispatch for ${selectedIds.length} guest(s)...`]);
+    setDispatchLog([`Starting automated multi-language dispatch for ${selectedIds.length} guest(s)...`]);
 
     const targets = invitations.filter((inv) => selectedIds.includes(inv.id));
 
@@ -88,7 +122,7 @@ export function WhatsAppManager({
       const inv = targets[i];
       setCurrentIndex(i + 1);
 
-      // Countdown delay between messages to prevent bans
+      // Countdown delay between messages to prevent anti-spam bans
       if (i > 0) {
         for (let cd = delaySeconds; cd > 0; cd--) {
           setCountdown(cd);
@@ -97,10 +131,15 @@ export function WhatsAppManager({
         setCountdown(0);
       }
 
-      const inviteLink = `${siteUrl.replace(/\/$/, "")}/i/${inv.token}`;
+      const lang = resolveGuestLanguage(inv.language);
+      const personalizedMsg = getMessageForGuest(inv);
+      const firstLine = personalizedMsg.split("\n")[0];
+      const targetToken = inv.token || inv.id;
+      const inviteLink = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}?lang=${lang}`;
+
       setDispatchLog((prev) => [
         ...prev,
-        `✓ [${i + 1}/${targets.length}] Sent to ${inv.displayName} (${inv.whatsapp || inv.phone || "Direct"}) ➔ ${inviteLink}`,
+        `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] ${inv.displayName} (${inv.whatsapp || inv.phone || "Direct"}) ➔ "${firstLine}" (${inviteLink})`,
       ]);
     }
 
@@ -113,26 +152,30 @@ export function WhatsAppManager({
         handleUnlink();
         setDispatchLog((prev) => [
           ...prev,
-          "🔒 Security: WhatsApp session was automatically unlinked after dispatch completion.",
+          "🔒 Security: WhatsApp session automatically unlinked and destroyed after dispatch.",
         ]);
       }, 1500);
     }
   }
 
+  const selectedPreviewGuest = invitations.find((i) => i.id === previewGuestId) || invitations[0];
+  const previewMessage = selectedPreviewGuest ? getMessageForGuest(selectedPreviewGuest) : "";
+
   return (
-    <div style={{ maxWidth: "1000px" }}>
+    <div style={{ maxWidth: "1080px" }}>
       {/* Header */}
       <div style={{ marginBottom: "2rem" }}>
         <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2.2rem", margin: "0 0 0.4rem 0", color: "#2B2425" }}>
           WhatsApp Automated Distribution
         </h1>
         <p style={{ margin: 0, color: "#6E6264", fontSize: "0.95rem" }}>
-          Automate personalized invitation dispatch with session synchronization, anti-spam delay intervals, and automatic post-dispatch unlinking.
+          Safe automated dispatch: Generates personalized invitations with guest names and individual secure links.
+          Automatically detects each guest&apos;s default language and enforces anti-spam stagger delays.
         </p>
       </div>
 
-      {/* Grid: Left Connection & Settings, Right Queue */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
+      {/* Grid: Left Connection & Templates, Right Queue & Preview */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: "1.5rem", marginBottom: "2rem" }}>
         {/* Left: Connection Card & Settings */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {/* Connection Status Card */}
@@ -180,20 +223,25 @@ export function WhatsAppManager({
             {/* Anti-Ban & Security Options */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", borderTop: "1px solid #F0E8E2", paddingTop: "1rem" }}>
               <div>
-                <label htmlFor="wa-delay" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.25rem" }}>
-                  Anti-Ban Delay Between Messages: {delaySeconds} seconds
-                </label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
+                  <label htmlFor="wa-delay" style={{ fontSize: "0.85rem", fontWeight: 600, color: "#2B2425" }}>
+                    Stagger Interval Delay Between Messages (Anti-Ban Protection)
+                  </label>
+                  <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#8C2836" }}>
+                    {delaySeconds} seconds
+                  </span>
+                </div>
                 <input
                   id="wa-delay"
                   type="range"
                   min={5}
-                  max={25}
+                  max={20}
                   value={delaySeconds}
                   onChange={(e) => setDelaySeconds(Number(e.target.value))}
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", accentColor: "#8C2836" }}
                 />
                 <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                  Staggers outgoing requests to avoid automated WhatsApp spam detection blocks.
+                  Recommended: 6–10s to avoid spam flags. Enforces a pause between outgoing messages.
                 </p>
               </div>
 
@@ -209,32 +257,83 @@ export function WhatsAppManager({
                     Auto-Unlink Account After Dispatch (Strict Security)
                   </strong>
                   <p style={{ margin: "0.15rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                    Automatically revokes and destroys the WhatsApp session token immediately after the batch is sent.
+                    Automatically unlinks and destroys the WhatsApp session immediately after sending is finished.
                   </p>
                 </div>
               </label>
             </div>
           </div>
 
-          {/* Template Card */}
+          {/* Multi-Language Template Card */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem" }}>
-            <h2 style={{ fontSize: "1.1rem", margin: "0 0 0.5rem 0", color: "#2B2425" }}>
-              Message Template
-            </h2>
-            <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.8rem", color: "#6A5D60" }}>
-              Use <code>{"{name}"}</code> for guest name and <code>{"{url}"}</code> for personal invitation URL.
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div>
+                <h2 style={{ fontSize: "1.1rem", margin: 0, color: "#2B2425" }}>
+                  Message Templates by Language
+                </h2>
+                <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.8rem", color: "#6A5D60" }}>
+                  Each guest automatically receives their invitation in their default language.
+                </p>
+              </div>
+            </div>
+
+            {/* Language Tabs */}
+            <div style={{ display: "flex", gap: "0.35rem", marginBottom: "1rem", borderBottom: "1px solid #EAE3DC", paddingBottom: "0.5rem" }}>
+              {Object.keys(defaultTemplates).map((code) => {
+                const info = languageLabels[code] || { name: code, flag: "" };
+                const isActive = activeTab === code;
+                return (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => setActiveTab(code)}
+                    style={{
+                      background: isActive ? "#8C2836" : "#F7F3EF",
+                      color: isActive ? "#FFFFFF" : "#544648",
+                      border: "1px solid",
+                      borderColor: isActive ? "#8C2836" : "#E2D8CE",
+                      borderRadius: "6px",
+                      padding: "0.35rem 0.75rem",
+                      fontSize: "0.8rem",
+                      fontWeight: isActive ? 600 : 500,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                    }}
+                  >
+                    <span>{info.flag}</span>
+                    <span>{info.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.78rem", color: "#6A5D60" }}>
+              Use <code>{"{name}"}</code> for guest name and <code>{"{url}"}</code> for personal secure link.
             </p>
             <textarea
-              rows={4}
-              value={template}
-              onChange={(e) => setTemplate(e.target.value)}
-              style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem", fontFamily: "inherit" }}
+              rows={5}
+              value={templates[activeTab] || ""}
+              onChange={(e) =>
+                setTemplates((prev) => ({ ...prev, [activeTab]: e.target.value }))
+              }
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                borderRadius: "6px",
+                border: "1px solid #D5CBC4",
+                fontSize: "0.85rem",
+                fontFamily: "inherit",
+                lineHeight: 1.5,
+              }}
             />
           </div>
         </div>
 
         {/* Right: Dispatch Queue & Execution */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          {/* Queue Card */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h2 style={{ fontSize: "1.1rem", margin: 0, color: "#2B2425" }}>
@@ -250,37 +349,79 @@ export function WhatsAppManager({
             </div>
 
             {/* List */}
-            <div style={{ maxHeight: "240px", overflowY: "auto", border: "1px solid #E8DFD8", borderRadius: "6px", marginBottom: "1.25rem" }}>
-              {invitations.map((inv) => (
-                <label
-                  key={inv.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.75rem",
-                    padding: "0.55rem 0.85rem",
-                    borderBottom: "1px solid #F2EBE5",
-                    cursor: "pointer",
-                    background: selectedIds.includes(inv.id) ? "rgba(140, 40, 54, 0.03)" : "#FFFFFF",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(inv.id)}
-                    onChange={() => toggleSelect(inv.id)}
-                    disabled={isDispatching}
-                  />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 500, color: "#2B2425" }}>
-                      {inv.displayName}
-                    </div>
-                    <div style={{ fontSize: "0.75rem", color: "#776A6C" }}>
-                      {inv.whatsapp || inv.phone || "No phone saved"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
+            <div style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #E8DFD8", borderRadius: "6px", marginBottom: "1rem" }}>
+              {invitations.map((inv) => {
+                const lang = resolveGuestLanguage(inv.language);
+                const langInfo = languageLabels[lang] || { name: lang, flag: "" };
+                const isSelected = selectedIds.includes(inv.id);
+                const isPreview = previewGuestId === inv.id;
+
+                return (
+                  <div
+                    key={inv.id}
+                    onClick={() => setPreviewGuestId(inv.id)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.6rem 0.85rem",
+                      borderBottom: "1px solid #F2EBE5",
+                      cursor: "pointer",
+                      background: isPreview ? "rgba(140, 40, 54, 0.06)" : isSelected ? "rgba(140, 40, 54, 0.02)" : "#FFFFFF",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        toggleSelect(inv.id);
+                      }}
+                      disabled={isDispatching}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2B2425" }}>
+                          {inv.displayName}
+                        </span>
+                        <span
+                          style={{
+                            background: "#F2EBE5",
+                            color: "#8C2836",
+                            fontSize: "0.7rem",
+                            fontWeight: 700,
+                            padding: "0.1rem 0.35rem",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          {langInfo.flag} {lang.toUpperCase()}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#776A6C", marginTop: "0.1rem" }}>
+                        {inv.whatsapp || inv.phone || "No phone saved"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
+                      </div>
                     </div>
                   </div>
-                </label>
-              ))}
+                );
+              })}
             </div>
+
+            {/* Personalized Message Preview */}
+            {selectedPreviewGuest && (
+              <div style={{ background: "#FDFBF7", border: "1px solid #EAE1D8", borderRadius: "8px", padding: "0.85rem 1rem", marginBottom: "1.25rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                  <strong style={{ fontSize: "0.8rem", color: "#8C2836", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    Live Preview ({resolveGuestLanguage(selectedPreviewGuest.language).toUpperCase()})
+                  </strong>
+                  <span style={{ fontSize: "0.75rem", color: "#6A5D60" }}>
+                    for {selectedPreviewGuest.displayName}
+                  </span>
+                </div>
+                <div style={{ whiteSpace: "pre-wrap", fontSize: "0.8rem", color: "#382D2F", lineHeight: 1.45, background: "#FFFFFF", padding: "0.75rem", borderRadius: "6px", border: "1px solid #E4DBD3" }}>
+                  {previewMessage}
+                </div>
+              </div>
+            )}
 
             {/* Dispatch Action Button */}
             <button
@@ -306,10 +447,10 @@ export function WhatsAppManager({
               {isDispatching ? (
                 <>
                   <span>Sending ({currentIndex}/{selectedIds.length})...</span>
-                  {countdown > 0 && <span style={{ opacity: 0.85 }}>[Next in {countdown}s]</span>}
+                  {countdown > 0 && <span style={{ opacity: 0.85 }}>[Anti-ban pause: {countdown}s]</span>}
                 </>
               ) : (
-                `Dispatch ${selectedIds.length} Invitations via WhatsApp`
+                `Dispatch ${selectedIds.length} Invitations in Guest Languages`
               )}
             </button>
           </div>

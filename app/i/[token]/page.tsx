@@ -76,6 +76,21 @@ export default async function InvitationIntroPage({
       ? (manualLocale as Locale)
       : invitation.language ?? (requestLocale as Locale));
 
+  if (queryLocale && queryLocale !== manualLocale) {
+    try {
+      cookieStore.set(`wedding_manual_locale_${invitation.id}`, queryLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 183,
+        sameSite: "lax",
+      });
+      cookieStore.set("wedding_manual_locale", queryLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 183,
+        sameSite: "lax",
+      });
+    } catch {}
+  }
+
   const [messages, intro] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: "intro" }),
