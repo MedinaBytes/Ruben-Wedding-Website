@@ -15,6 +15,15 @@ export interface RsvpRow {
   submittedAt: string | null;
 }
 
+function getPrimaryGuestName(displayName: string): string {
+  return (
+    displayName
+      .replace(/\s*&\s*guest(\s*\(demo\))?/i, "")
+      .replace(/\s*\(demo\)/i, "")
+      .trim() || displayName
+  );
+}
+
 export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "yes" | "no" | "pending">("all");
@@ -23,7 +32,8 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
     const matchesSearch =
       r.displayName.toLowerCase().includes(search.toLowerCase()) ||
       r.guestNames.some((name) => name.toLowerCase().includes(search.toLowerCase())) ||
-      (r.dietaryRequirements && r.dietaryRequirements.toLowerCase().includes(search.toLowerCase()));
+      (r.dietaryRequirements && r.dietaryRequirements.toLowerCase().includes(search.toLowerCase())) ||
+      (r.notes && r.notes.toLowerCase().includes(search.toLowerCase()));
 
     const matchesFilter = filter === "all" || r.status === filter;
     return matchesSearch && matchesFilter;
@@ -35,22 +45,26 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
       "Group",
       "Attendance",
       "Guest Count",
-      "Additional Guest Names",
+      "All Attending Guest Names",
       "Dietary Requirements",
       "Notes",
       "Submitted At",
     ];
 
-    const rows = filtered.map((r) => [
-      `"${r.displayName.replace(/"/g, '""')}"`,
-      `"${(r.groupName || "").replace(/"/g, '""')}"`,
-      r.status.toUpperCase(),
-      r.attendeeCount,
-      `"${r.guestNames.join("; ").replace(/"/g, '""')}"`,
-      `"${(r.dietaryRequirements || "").replace(/"/g, '""')}"`,
-      `"${(r.notes || "").replace(/"/g, '""')}"`,
-      r.submittedAt || "",
-    ]);
+    const rows = filtered.map((r) => {
+      const primary = getPrimaryGuestName(r.displayName);
+      const allNames = r.status === "yes" ? [primary, ...r.guestNames] : [];
+      return [
+        `"${r.displayName.replace(/"/g, '""')}"`,
+        `"${(r.groupName || "").replace(/"/g, '""')}"`,
+        r.status.toUpperCase(),
+        r.attendeeCount,
+        `"${allNames.join("; ").replace(/"/g, '""')}"`,
+        `"${(r.dietaryRequirements || "").replace(/"/g, '""')}"`,
+        `"${(r.notes || "").replace(/"/g, '""')}"`,
+        r.submittedAt || "",
+      ];
+    });
 
     const csvString = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
@@ -101,7 +115,7 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.25rem", alignItems: "center" }}>
         <input
           type="search"
-          placeholder="Filter by guest name or dietary requirement..."
+          placeholder="Filter by guest name, dietary requirement, or note..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -147,7 +161,7 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
               <th style={{ padding: "0.75rem 1rem" }}>Invitation</th>
               <th style={{ padding: "0.75rem 1rem" }}>Status</th>
               <th style={{ padding: "0.75rem 1rem" }}>Count</th>
-              <th style={{ padding: "0.75rem 1rem" }}>Names</th>
+              <th style={{ padding: "0.75rem 1rem" }}>Attending Guests</th>
               <th style={{ padding: "0.75rem 1rem" }}>Dietary Requirements</th>
               <th style={{ padding: "0.75rem 1rem" }}>Notes</th>
             </tr>
@@ -191,16 +205,81 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
                     </span>
                   </td>
                   <td style={{ padding: "0.85rem 1rem", fontWeight: 600 }}>
-                    {r.status === "yes" ? `${r.attendeeCount} / ${r.maxGuests}` : "0"}
+                    {r.status === "yes" ? (
+                      <span style={{ color: "#2B2425" }}>
+                        {r.attendeeCount} / {r.maxGuests}
+                      </span>
+                    ) : r.status === "no" ? (
+                      <span style={{ color: "#9C2836" }}>0</span>
+                    ) : (
+                      <span style={{ color: "#A89C9E" }}>—</span>
+                    )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", color: "#44393B" }}>
-                    {r.guestNames.length > 0 ? r.guestNames.join(", ") : "—"}
+                  <td style={{ padding: "0.85rem 1rem", minWidth: "160px" }}>
+                    {r.status === "yes" ? (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        <div style={{ fontWeight: 600, color: "#2B2425", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                          <span>1.</span> {getPrimaryGuestName(r.displayName)}
+                          {r.attendeeCount === 1 && r.maxGuests > 1 && (
+                            <span style={{ fontSize: "0.72rem", background: "#F4EFEA", color: "#776A6C", padding: "0.1rem 0.4rem", borderRadius: "3px" }}>
+                              Solo
+                            </span>
+                          )}
+                        </div>
+                        {r.guestNames.map((name, i) => (
+                          <div key={i} style={{ color: "#544648", fontSize: "0.84rem", paddingLeft: "0.4rem", borderLeft: "2px solid #D5CBC4" }}>
+                            <span>{i + 2}.</span> {name}{" "}
+                            {i === 0 && r.maxGuests === 2 ? (
+                              <span style={{ color: "#8C2836", fontWeight: 600, fontSize: "0.74rem" }}>(+1)</span>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    ) : r.status === "no" ? (
+                      <span style={{ color: "#9C2836", fontSize: "0.82rem", fontStyle: "italic" }}>Declined</span>
+                    ) : (
+                      <span style={{ color: "#A89C9E", fontSize: "0.82rem" }}>Awaiting reply</span>
+                    )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", color: r.dietaryRequirements ? "#8C2836" : "#776A6C", maxWidth: "220px" }}>
-                    {r.dietaryRequirements || "—"}
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "220px" }}>
+                    {r.dietaryRequirements ? (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          background: "#FEF7EE",
+                          color: "#874D00",
+                          border: "1px solid #F8DDB7",
+                          padding: "0.25rem 0.5rem",
+                          borderRadius: "4px",
+                          fontSize: "0.82rem",
+                          fontWeight: 500,
+                          lineHeight: 1.35,
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {r.dietaryRequirements}
+                      </span>
+                    ) : (
+                      <span style={{ color: "#B5A8AA" }}>None</span>
+                    )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", color: "#544648", maxWidth: "220px" }}>
-                    {r.notes || "—"}
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "240px" }}>
+                    {r.notes ? (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          fontStyle: "italic",
+                          color: "#44393B",
+                          fontSize: "0.84rem",
+                          lineHeight: 1.4,
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        “{r.notes}”
+                      </span>
+                    ) : (
+                      <span style={{ color: "#B5A8AA" }}>—</span>
+                    )}
                   </td>
                 </tr>
               ))

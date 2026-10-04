@@ -31,6 +31,12 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
   const t = useTranslations("rsvp");
   const { play } = useSound();
   const hasTrackedStart = useRef(false);
+  const isSingleGuestOnly = !invitation.plusOneAllowed && invitation.maxGuests <= 1;
+  const isPlusOneInvitation = invitation.plusOneAllowed && invitation.maxGuests === 2;
+  const isMultiGuestParty = invitation.maxGuests > 2;
+
+  const [plusOneSelected, setPlusOneSelected] = useState<"yes" | "no">("yes");
+  const [plusOneName, setPlusOneName] = useState("");
   const [attendance, setAttendance] = useState<RsvpState>("");
   const [attendeeCount, setAttendeeCount] = useState(1);
   const [guestNames, setGuestNames] = useState("");
@@ -61,8 +67,21 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
           notes: string | null;
         };
         setAttendance(saved.attendanceStatus);
-        setAttendeeCount(Math.max(1, saved.attendeeCount));
-        setGuestNames(saved.guestNames.join("\n"));
+        if (isPlusOneInvitation) {
+          if (saved.attendeeCount === 2) {
+            setPlusOneSelected("yes");
+            setPlusOneName(saved.guestNames[0] || "");
+          } else {
+            setPlusOneSelected("no");
+            setPlusOneName("");
+          }
+        } else if (isMultiGuestParty) {
+          setAttendeeCount(Math.max(1, Math.min(invitation.maxGuests, saved.attendeeCount)));
+          setGuestNames(saved.guestNames.join("\n"));
+        } else {
+          setAttendeeCount(1);
+          setGuestNames("");
+        }
         setDietaryRequirements(saved.dietaryRequirements ?? "");
         setNotes(saved.notes ?? "");
       } catch {
@@ -74,7 +93,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
 
     void loadExistingRsvp();
     return () => controller.abort();
-  }, [endpoint, t]);
+  }, [endpoint, t, isPlusOneInvitation, isMultiGuestParty, invitation.maxGuests]);
 
   async function submitRsvp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,6 +105,41 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
       return;
     }
 
+    let finalCount = 1;
+    let finalGuestNames: string[] = [];
+
+    if (attendance === "no") {
+      finalCount = 0;
+      finalGuestNames = [];
+    } else if (isSingleGuestOnly) {
+      finalCount = 1;
+      finalGuestNames = [];
+    } else if (isPlusOneInvitation) {
+      if (plusOneSelected === "yes") {
+        const trimmed = plusOneName.trim();
+        if (!trimmed) {
+          setErrorMessage(t("plusOneNameRequired"));
+          return;
+        }
+        finalCount = 2;
+        finalGuestNames = [trimmed];
+      } else {
+        finalCount = 1;
+        finalGuestNames = [];
+      }
+    } else if (isMultiGuestParty) {
+      finalCount = attendeeCount;
+      const names = guestNames
+        .split("\n")
+        .map((name) => name.trim())
+        .filter(Boolean);
+      if (finalCount > 1 && names.length < finalCount - 1) {
+        setErrorMessage(t("additionalNamesRequired"));
+        return;
+      }
+      finalGuestNames = names.slice(0, finalCount - 1);
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch(endpoint, {
@@ -93,11 +147,8 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           attendanceStatus: attendance,
-          attendeeCount: attendance === "yes" ? attendeeCount : 0,
-          guestNames:
-            attendance === "yes"
-              ? guestNames.split("\n").map((name) => name.trim()).filter(Boolean)
-              : [],
+          attendeeCount: finalCount,
+          guestNames: finalGuestNames,
           dietaryRequirements: attendance === "yes" ? dietaryRequirements.trim() : undefined,
           notes: notes.trim() || undefined,
           language: typedLocale,
@@ -199,32 +250,95 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
 
           {attendance === "yes" && (
             <div className="guest-form__fields">
-              <div className="field-group">
-                <label htmlFor="attendee-count">{t("attendeeCount")}</label>
-                <input
-                  autoComplete="off"
-                  id="attendee-count"
-                  max={invitation.maxGuests}
-                  min={1}
-                  name="attendeeCount"
-                  onChange={(event) => setAttendeeCount(Number(event.target.value))}
-                  type="number"
-                  value={attendeeCount}
-                />
-              </div>
-              {invitation.plusOneAllowed && invitation.maxGuests > 1 && attendeeCount > 1 && (
-                <div className="field-group">
-                  <label htmlFor="guest-names">{t("additionalNames")}</label>
-                  <textarea
-                    autoComplete="off"
-                    id="guest-names"
-                    name="guestNames"
-                    onChange={(event) => setGuestNames(event.target.value)}
-                    rows={Math.min(attendeeCount - 1, 3)}
-                    value={guestNames}
-                  />
+              {/* Case 1: Standard Plus-One (+1) Invitation */}
+              {isPlusOneInvitation && (
+                <div style={{ marginBottom: "1.25rem" }}>
+                  <fieldset className="guest-form__fieldset" style={{ border: 0, padding: 0, margin: "0 0 1rem 0" }}>
+                    <legend style={{ fontWeight: 600, color: "#2B2425", marginBottom: "0.6rem", fontSize: "0.95rem" }}>
+                      {t("plusOneQuestion")}
+                    </legend>
+                    <label className="choice-row" style={{ marginBottom: "0.5rem" }}>
+                      <input
+                        type="radio"
+                        name="plusOneChoice"
+                        value="yes"
+                        checked={plusOneSelected === "yes"}
+                        onChange={() => setPlusOneSelected("yes")}
+                      />
+                      <span>{t("plusOneWithGuest")}</span>
+                    </label>
+                    <label className="choice-row">
+                      <input
+                        type="radio"
+                        name="plusOneChoice"
+                        value="no"
+                        checked={plusOneSelected === "no"}
+                        onChange={() => setPlusOneSelected("no")}
+                      />
+                      <span>{t("plusOneSolo")}</span>
+                    </label>
+                  </fieldset>
+
+                  {plusOneSelected === "yes" && (
+                    <div className="field-group" style={{ marginTop: "0.75rem" }}>
+                      <label htmlFor="plus-one-name">
+                        {t("plusOneNameLabel")} <span style={{ color: "#8C2836" }}>*</span>
+                      </label>
+                      <input
+                        autoComplete="off"
+                        id="plus-one-name"
+                        name="plusOneName"
+                        onChange={(event) => setPlusOneName(event.target.value)}
+                        placeholder={t("plusOneNamePlaceholder")}
+                        required
+                        type="text"
+                        value={plusOneName}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* Case 2: Multi-Guest Group or Family (3+ guests) */}
+              {isMultiGuestParty && (
+                <>
+                  <div className="field-group">
+                    <label htmlFor="attendee-count">
+                      {t("attendeeCount")} (Max: {invitation.maxGuests})
+                    </label>
+                    <input
+                      autoComplete="off"
+                      id="attendee-count"
+                      max={invitation.maxGuests}
+                      min={1}
+                      name="attendeeCount"
+                      onChange={(event) => setAttendeeCount(Math.min(invitation.maxGuests, Math.max(1, Number(event.target.value))))}
+                      type="number"
+                      value={attendeeCount}
+                    />
+                  </div>
+                  {attendeeCount > 1 && (
+                    <div className="field-group">
+                      <label htmlFor="guest-names">
+                        {t("additionalNames")} <span style={{ color: "#8C2836" }}>*</span>
+                      </label>
+                      <textarea
+                        autoComplete="off"
+                        id="guest-names"
+                        name="guestNames"
+                        onChange={(event) => setGuestNames(event.target.value)}
+                        placeholder="Please enter each guest's name on a new line"
+                        rows={Math.min(attendeeCount - 1, 4)}
+                        value={guestNames}
+                        required
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Case 3: Single Guest Only - No questions about how many people! */}
+
               <div className="field-group">
                 <label htmlFor="dietary-requirements">{t("dietaryLabel")}</label>
                 <textarea
