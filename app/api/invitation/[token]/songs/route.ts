@@ -230,7 +230,8 @@ export async function POST(
         { headers: privateHeaders },
       );
     }
-  } catch {
+  } catch (error) {
+    console.error("SONG POST ERROR:", error);
     return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
   }
 }
