@@ -25,8 +25,8 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang={locale}>
-      <body>
+    <html lang={locale} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <a className="skip-link" href="#main">
           {t("skipToContent")}
         </a>

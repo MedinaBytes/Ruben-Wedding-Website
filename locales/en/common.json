@@ -295,7 +295,9 @@
     "open": "Open invitation",
     "skip": "Skip intro",
     "soundOn": "Turn sound on",
-    "soundOff": "Turn sound off"
+    "soundOff": "Turn sound off",
+    "celebrate": "Request the pleasure of your company at their wedding",
+    "enter": "Open Invitation"
   },
   "admin": {
     "label": "Wedding administration",

@@ -8,6 +8,8 @@ import { useSound } from "@/lib/sound";
 
 interface EnvelopeIntroProps {
   token: string;
+  invitationId?: string;
+  currentLocale?: string;
   displayName: string;
   greeting: string;
   dateLabel: string;
@@ -15,12 +17,15 @@ interface EnvelopeIntroProps {
   openPrompt: string;
   skipPrompt: string;
   enterPrompt: string;
+  celebratePrompt?: string;
   soundPrompt: string;
   replayPrompt?: string;
 }
 
 export function EnvelopeIntro({
   token,
+  invitationId,
+  currentLocale = "en",
   displayName,
   greeting,
   dateLabel,
@@ -28,6 +33,7 @@ export function EnvelopeIntro({
   openPrompt,
   skipPrompt,
   enterPrompt,
+  celebratePrompt,
   soundPrompt,
 }: EnvelopeIntroProps) {
   const router = useRouter();
@@ -90,7 +96,7 @@ export function EnvelopeIntro({
 
   return (
     <div className="envelope-screen" role="region" aria-label="Wedding Invitation Envelope">
-      {/* Top Controls: Sound Toggle and Skip */}
+      {/* Top Controls: Sound Toggle, Language Selector, and Skip */}
       <nav className="envelope-screen__controls" aria-label="Intro Controls">
         <button
           type="button"
@@ -103,6 +109,40 @@ export function EnvelopeIntro({
           </span>
           <span>{soundEnabled ? soundPrompt : "Sound Off"}</span>
         </button>
+
+        {/* Multi-language Selector */}
+        <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255,255,255,0.85)", padding: "0.2rem 0.35rem", borderRadius: "999px", border: "1px solid rgba(180, 150, 155, 0.35)", backdropFilter: "blur(8px)" }}>
+          {[
+            { code: "en", label: "EN" },
+            { code: "es", label: "ES" },
+            { code: "de-AT", label: "DE" },
+            { code: "hu", label: "HU" },
+          ].map((item) => (
+            <button
+              key={item.code}
+              type="button"
+              onClick={() => {
+                if (invitationId) {
+                  document.cookie = `wedding_manual_locale_${invitationId}=${item.code}; path=/; max-age=31536000`;
+                }
+                router.push(`/i/${token}?lang=${item.code}`);
+              }}
+              style={{
+                background: currentLocale === item.code ? "#8C2836" : "transparent",
+                color: currentLocale === item.code ? "#FFFFFF" : "#544648",
+                border: 0,
+                borderRadius: "999px",
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.75rem",
+                fontWeight: currentLocale === item.code ? 600 : 500,
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
 
         <button
           type="button"
@@ -133,13 +173,13 @@ export function EnvelopeIntro({
                 : step === "idle"
                   ? { y: 0, scale: 0.92, zIndex: 2 }
                   : step === "opening"
-                    ? { y: -80, scale: 0.96, zIndex: 10, transition: { duration: 0.9, delay: 0.6, ease: [0.2, 0.7, 0.2, 1] } }
+                    ? { y: -45, scale: 0.96, zIndex: 10, transition: { duration: 0.9, delay: 0.5, ease: [0.2, 0.7, 0.2, 1] } }
                     : {
-                        y: -180,
-                        scale: 1.05,
+                        y: -110,
+                        scale: 1.02,
                         zIndex: 20,
-                        boxShadow: "0 25px 60px rgba(50, 30, 35, 0.16)",
-                        transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] },
+                        boxShadow: "0 20px 50px rgba(50, 30, 35, 0.18)",
+                        transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
                       }
             }
           >
@@ -192,7 +232,7 @@ export function EnvelopeIntro({
                   Ruben <i>&</i> Andrea
                 </h1>
                 <p className="envelope-card__celebrate">
-                  Request the pleasure of your company at their wedding
+                  {celebratePrompt || "Request the pleasure of your company at their wedding"}
                 </p>
                 <p className="envelope-card__date">
                   <span>{dateLabel}</span>
@@ -239,16 +279,20 @@ export function EnvelopeIntro({
           </motion.div>
 
           {/* Handcrafted Wax Seal (Monogram) */}
-          {step === "idle" && (
+          {(step === "idle" || step === "opening") && (
             <motion.button
               type="button"
               className="envelope-seal"
               onClick={handleOpen}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={step === "idle" ? { scale: 1.05 } : {}}
+              whileTap={step === "idle" ? { scale: 0.95 } : {}}
               initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              animate={
+                step === "idle"
+                  ? { scale: 1, opacity: 1 }
+                  : { scale: [1, 1.25, 0], opacity: [1, 0.7, 0], rotate: [0, -8, 12] }
+              }
+              transition={step === "opening" ? { duration: 0.45 } : { duration: 0.5, ease: "easeOut" }}
               aria-label={`${openPrompt} — Wax Seal`}
             >
               <div className="envelope-seal__image-wrap">
@@ -260,8 +304,8 @@ export function EnvelopeIntro({
                   priority
                 />
               </div>
-              <span className="envelope-seal__pulse" aria-hidden="true" />
-              <span className="envelope-seal__label">{openPrompt}</span>
+              {step === "idle" && <span className="envelope-seal__pulse" aria-hidden="true" />}
+              {step === "idle" && <span className="envelope-seal__label">{openPrompt}</span>}
             </motion.button>
           )}
         </div>

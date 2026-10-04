@@ -295,7 +295,9 @@
     "open": "Abrir invitación",
     "skip": "Saltar introducción",
     "soundOn": "Activar sonido",
-    "soundOff": "Desactivar sonido"
+    "soundOff": "Desactivar sonido",
+    "celebrate": "Tienen el placer de invitarte a celebrar su boda",
+    "enter": "Ver Invitación"
   },
   "admin": {
     "label": "Administración de la boda",

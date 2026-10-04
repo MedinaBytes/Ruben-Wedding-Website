@@ -55,7 +55,7 @@ export default async function AdminLayout({
                 { label: "Bulk Import", href: "/admin/invitations/import" },
                 { label: "RSVPs", href: "/admin/rsvps" },
                 { label: "Music", href: "/admin/music" },
-                { label: "Analytics", href: "/admin/analytics" },
+                { label: "WhatsApp", href: "/admin/whatsapp" },
                 { label: "Settings", href: "/admin/settings" },
                 { label: "Danger Zone", href: "/admin/danger" },
               ].map((item) => (

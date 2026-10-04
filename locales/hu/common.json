@@ -295,7 +295,9 @@
     "open": "Meghívó megnyitása",
     "skip": "Bevezető kihagyása",
     "soundOn": "Hang bekapcsolása",
-    "soundOff": "Hang kikapcsolása"
+    "soundOff": "Hang kikapcsolása",
+    "celebrate": "Szeretettel meghívják Önt esküvőjük megünneplésére",
+    "enter": "Meghívó megtekintése"
   },
   "admin": {
     "label": "Esküvői adminisztráció",

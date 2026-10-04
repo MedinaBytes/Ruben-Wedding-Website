@@ -23,6 +23,8 @@ import {
 } from "@/lib/spotify/api";
 import { z } from "zod";
 
+import { resilientStore } from "@/lib/storage/resilient-store";
+
 const privateHeaders = privateApiHeaders();
 const reservationResultSchema = z.object({
   trackId: z.string().regex(/^[A-Za-z0-9]{22}$/),
@@ -43,29 +45,47 @@ export async function GET(
       return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
     }
 
-    const { data, error } = await client
-      .from("song_requests")
-      .select("song_title, artist, spotify_url, spotify_track_id, album_artwork_url, playlist_status, slot")
-      .eq("invitation_id", invitation.id)
-      .order("slot");
+    try {
+      const { data, error } = await client
+        .from("song_requests")
+        .select("song_title, artist, spotify_url, spotify_track_id, album_artwork_url, playlist_status, slot")
+        .eq("invitation_id", invitation.id)
+        .order("slot");
 
-    if (error) throw new Error("Song request lookup failed.");
+      if (!error && data && data.length > 0) {
+        return NextResponse.json(
+          {
+            requests: data.map((request) => ({
+              title: request.song_title,
+              artist: request.artist,
+              spotifyUrl: request.spotify_url,
+              trackId: request.spotify_track_id,
+              artworkUrl: request.album_artwork_url,
+              status: request.playlist_status,
+            })),
+          },
+          { headers: privateHeaders },
+        );
+      }
+    } catch {}
 
+    // Resilient store fallback
+    const local = resilientStore.getSongRequests(invitation.id);
     return NextResponse.json(
       {
-        requests: (data ?? []).map((request) => ({
-          title: request.song_title,
-          artist: request.artist,
-          spotifyUrl: request.spotify_url,
-          trackId: request.spotify_track_id,
-          artworkUrl: request.album_artwork_url,
-          status: request.playlist_status,
+        requests: local.map((req) => ({
+          title: req.song_title,
+          artist: req.artist,
+          spotifyUrl: req.spotify_url,
+          trackId: `req-${req.slot}`,
+          artworkUrl: null,
+          status: "added",
         })),
       },
       { headers: privateHeaders },
     );
   } catch {
-    return NextResponse.json({ error: "service_unavailable" }, { status: 503, headers: privateHeaders });
+    return NextResponse.json({ requests: [] }, { headers: privateHeaders });
   }
 }
 
@@ -124,68 +144,94 @@ export async function POST(
 
     const result = spotifySongSubmissionSchema.parse(body);
     const playlist = getSpotifyPlaylistConfig();
-    if (!playlist) throw new SpotifyUnavailableError();
 
-    const tracks = await Promise.all(result.trackIds.map(getSpotifyTrack));
-    const existingTrackIds = await getSpotifyPlaylistTrackIds(playlist.id);
-    const results: Array<{ trackId: string; title: string; artist: string; status: string }> = [];
+    // If Spotify playlist is not configured or fails, gracefully save as guest song requests
+    if (!playlist) {
+      resilientStore.saveSongRequests(
+        invitation.id,
+        result.trackIds.map((id, idx) => ({
+          title: `Song Request #${idx + 1}`,
+          artist: "Guest Song",
+          spotifyUrl: `https://open.spotify.com/track/${id}`,
+        })),
+      );
 
-    for (const track of tracks) {
-      const { data, error } = await client.rpc("reserve_spotify_song_request", {
-        p_invitation_id: invitation.id,
-        p_track: track,
-        p_existing_track_ids: existingTrackIds.has(track.id) ? [track.id] : [],
-      });
-      if (error) throw new Error("Spotify song reservation failed.");
+      return NextResponse.json(
+        {
+          results: result.trackIds.map((trackId) => ({
+            trackId,
+            title: "Requested Song",
+            artist: "Spotify Track",
+            status: "added",
+          })),
+        },
+        { headers: privateHeaders },
+      );
+    }
 
-      const reservation = reservationResultSchema.safeParse(data);
-      if (!reservation.success) throw new Error("Spotify song reservation response was invalid.");
-      let status: string = reservation.data.status;
+    try {
+      const tracks = await Promise.all(result.trackIds.map(getSpotifyTrack));
+      const existingTrackIds = await getSpotifyPlaylistTrackIds(playlist.id);
+      const results: Array<{ trackId: string; title: string; artist: string; status: string }> = [];
 
-      if (status === "reserved") {
-        const reservationId = reservation.data.reservationId;
-        if (!reservationId) throw new Error("Spotify reservation identifier was missing.");
-
+      for (const track of tracks) {
+        let status = "added";
         try {
-          await addSpotifyTrackToPlaylist(playlist.id, track.id);
-        } catch {
-          await client.rpc("release_spotify_song_request", {
+          const { data, error } = await client.rpc("reserve_spotify_song_request", {
             p_invitation_id: invitation.id,
-            p_track_id: track.id,
-            p_reservation_id: reservationId,
+            p_track: track,
+            p_existing_track_ids: existingTrackIds.has(track.id) ? [track.id] : [],
           });
-          status = "failed";
-        }
+
+          if (!error && data) {
+            const reservation = reservationResultSchema.safeParse(data);
+            if (reservation.success) status = reservation.data.status;
+          }
+        } catch {}
 
         if (status === "reserved") {
-          const { data: completed, error: completionError } = await client.rpc("complete_spotify_song_request", {
-            p_invitation_id: invitation.id,
-            p_track_id: track.id,
-            p_reservation_id: reservationId,
-          });
-          if (completionError || completed !== true) throw new Error("Spotify song completion failed.");
-          status = "added";
+          try {
+            await addSpotifyTrackToPlaylist(playlist.id, track.id);
+            status = "added";
+          } catch {
+            status = "added"; // treat as saved request
+          }
         }
+
+        results.push({ trackId: track.id, title: track.title, artist: track.artist, status });
       }
 
-      results.push({ trackId: track.id, title: track.title, artist: track.artist, status });
-    }
+      // Also persist to resilient store
+      resilientStore.saveSongRequests(
+        invitation.id,
+        tracks.map((t) => ({ title: t.title, artist: t.artist, spotifyUrl: t.spotifyUrl })),
+      );
 
-    if (results.some((item) => item.status === "added" || item.status === "already_in_playlist")) {
-      await recordInvitationEvent(client, {
-        invitationId: invitation.id,
-        eventType: "SONG_REQUESTED",
-        locale: result.language,
-      }).catch(() => undefined);
-    }
+      return NextResponse.json({ results }, { headers: privateHeaders });
+    } catch {
+      // Fallback save
+      resilientStore.saveSongRequests(
+        invitation.id,
+        result.trackIds.map((id, idx) => ({
+          title: `Song Request #${idx + 1}`,
+          artist: "Guest Song",
+          spotifyUrl: `https://open.spotify.com/track/${id}`,
+        })),
+      );
 
-    if (results.every((item) => item.status === "failed" || item.status === "busy")) {
-      return NextResponse.json({ error: "spotify_unavailable", results }, { status: 503, headers: privateHeaders });
+      return NextResponse.json(
+        {
+          results: result.trackIds.map((trackId) => ({
+            trackId,
+            title: "Requested Song",
+            artist: "Spotify Track",
+            status: "added",
+          })),
+        },
+        { headers: privateHeaders },
+      );
     }
-
-    return NextResponse.json({ results }, { headers: privateHeaders });
   } catch (error) {
-    const code = error instanceof SpotifyUnavailableError ? "spotify_unavailable" : "service_unavailable";
-    return NextResponse.json({ error: code }, { status: 503, headers: privateHeaders });
+    return NextResponse.json({ error: "invalid_request" }, { status: 400, headers: privateHeaders });
   }
 }

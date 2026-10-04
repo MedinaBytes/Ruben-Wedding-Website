@@ -121,6 +121,32 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
           </div>
         </div>
 
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div>
+            <label htmlFor="invitation-phone" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
+              Mobile Phone (Optional)
+            </label>
+            <input
+              id="invitation-phone"
+              name="phone"
+              placeholder="e.g. +43 664 1234567"
+              style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.9rem" }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="invitation-whatsapp" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
+              WhatsApp Number (Optional)
+            </label>
+            <input
+              id="invitation-whatsapp"
+              name="whatsapp"
+              placeholder="e.g. +436641234567"
+              style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.9rem" }}
+            />
+          </div>
+        </div>
+
         <div>
           <label htmlFor="invitation-personal-message" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
             Personal Greeting Note (Optional)

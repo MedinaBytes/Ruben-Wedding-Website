@@ -295,7 +295,9 @@
     "open": "Einladung öffnen",
     "skip": "Einführung überspringen",
     "soundOn": "Ton einschalten",
-    "soundOff": "Ton ausschalten"
+    "soundOff": "Ton ausschalten",
+    "celebrate": "Geben sich die Ehre, Sie zu ihrer Hochzeit einzuladen",
+    "enter": "Zur Einladung"
   },
   "admin": {
     "label": "Hochzeitsverwaltung",

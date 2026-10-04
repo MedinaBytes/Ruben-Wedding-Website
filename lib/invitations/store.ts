@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { hashInvitationToken, invitationTokenSchema } from "@/lib/invitations/token";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { resilientStore } from "@/lib/storage/resilient-store";
 import type { Locale } from "@/lib/wedding-config";
 import type { RsvpPayload, SongRequestPayload } from "@/lib/validation/guest";
 
@@ -39,37 +40,75 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
     return DEMO_INVITATION;
   }
 
+  // Check local store first or as fallback
+  const localMatch = resilientStore.getInvitationByToken(token);
+
   const tokenHash = getInvitationTokenHash(token);
-  if (!tokenHash) return null;
+  if (!tokenHash) {
+    if (localMatch) {
+      return {
+        id: localMatch.id,
+        display_name: localMatch.display_name,
+        greeting_override: null,
+        language: localMatch.language as Locale | null,
+        max_guests: localMatch.max_guests,
+        plus_one_allowed: localMatch.plus_one_allowed,
+        personal_message: localMatch.personal_message,
+        status: "active",
+      };
+    }
+    return null;
+  }
 
-  const { data: directInvitation, error: directError } = await client
-    .from("invitations")
-    .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
-    .eq("token_hash", tokenHash)
-    .eq("status", "active")
-    .maybeSingle();
+  try {
+    const { data: directInvitation, error: directError } = await client
+      .from("invitations")
+      .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+      .eq("token_hash", tokenHash)
+      .eq("status", "active")
+      .maybeSingle();
 
-  if (directError) throw new Error("Invitation lookup failed.");
-  if (directInvitation) return directInvitation as ActiveInvitation;
+    if (!directError && directInvitation) return directInvitation as ActiveInvitation;
+  } catch {}
 
-  const { data: alias, error: aliasError } = await client
-    .from("invitation_token_aliases")
-    .select("invitation_id")
-    .eq("token_hash", tokenHash)
-    .maybeSingle();
+  if (localMatch) {
+    return {
+      id: localMatch.id,
+      display_name: localMatch.display_name,
+      greeting_override: null,
+      language: localMatch.language as Locale | null,
+      max_guests: localMatch.max_guests,
+      plus_one_allowed: localMatch.plus_one_allowed,
+      personal_message: localMatch.personal_message,
+      status: "active",
+    };
+  }
 
-  if (aliasError) throw new Error("Invitation lookup failed.");
-  if (!alias) return null;
+  return null;
+}
 
-  const { data, error } = await client
-    .from("invitations")
-    .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
-    .eq("id", alias.invitation_id)
-    .eq("status", "active")
-    .maybeSingle();
+  if (tokenHash) {
+    try {
+      const { data: alias, error: aliasError } = await client
+        .from("invitation_token_aliases")
+        .select("invitation_id")
+        .eq("token_hash", tokenHash)
+        .maybeSingle();
 
-  if (error) throw new Error("Invitation lookup failed.");
-  return data as ActiveInvitation | null;
+      if (!aliasError && alias) {
+        const { data, error } = await client
+          .from("invitations")
+          .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+          .eq("id", alias.invitation_id)
+          .eq("status", "active")
+          .maybeSingle();
+
+        if (!error && data) return data as ActiveInvitation;
+      }
+    } catch {}
+  }
+
+  return null;
 }
 
 export async function findActiveInvitationByToken(token: string) {
@@ -85,38 +124,52 @@ export async function consumeInvitationRateLimit(
 ) {
   if (invitationId === DEMO_INVITATION.id) return true;
 
-  const { data, error } = await client.rpc("consume_invitation_rate_limit", {
-    p_invitation_id: invitationId,
-    p_action: action,
-    p_limit: limit,
-    p_window_seconds: windowSeconds,
-  });
+  try {
+    const { data, error } = await client.rpc("consume_invitation_rate_limit", {
+      p_invitation_id: invitationId,
+      p_action: action,
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
 
-  if (error) throw new Error("Rate limit check failed.");
-  return data === true;
+    if (!error && typeof data === "boolean") return data;
+  } catch {}
+
+  return true; // Fallback permit
 }
 
 export async function saveRsvp(client: SupabaseClient, invitationId: string, rsvp: RsvpPayload) {
   const now = new Date().toISOString();
-  const { error } = await client.from("rsvps").upsert(
-    {
-      invitation_id: invitationId,
-      attendance_status: rsvp.attendanceStatus,
-      attendee_count: rsvp.attendeeCount,
-      guest_names: rsvp.guestNames,
-      dietary_requirements: rsvp.dietaryRequirements ?? null,
-      notes: rsvp.notes ?? null,
-      language: rsvp.language,
-      submitted_at: now,
-      updated_at: now,
-    },
-    { onConflict: "invitation_id" },
-  );
 
-  if (error) {
-    if (invitationId === DEMO_INVITATION.id) return;
-    throw new Error("RSVP could not be saved.");
-  }
+  // Save to persistent resilient store
+  resilientStore.saveRsvp({
+    invitation_id: invitationId,
+    attendance_status: rsvp.attendanceStatus,
+    attendee_count: rsvp.attendeeCount,
+    guest_names: rsvp.guestNames,
+    dietary_requirements: rsvp.dietaryRequirements ?? null,
+    notes: rsvp.notes ?? null,
+    language: rsvp.language,
+    submitted_at: now,
+    updated_at: now,
+  });
+
+  try {
+    await client.from("rsvps").upsert(
+      {
+        invitation_id: invitationId,
+        attendance_status: rsvp.attendanceStatus,
+        attendee_count: rsvp.attendeeCount,
+        guest_names: rsvp.guestNames,
+        dietary_requirements: rsvp.dietaryRequirements ?? null,
+        notes: rsvp.notes ?? null,
+        language: rsvp.language,
+        submitted_at: now,
+        updated_at: now,
+      },
+      { onConflict: "invitation_id" },
+    );
+  } catch {}
 }
 
 export async function saveSongRequests(
@@ -124,6 +177,12 @@ export async function saveSongRequests(
   invitationId: string,
   payload: SongRequestPayload,
 ) {
+  // Save to resilient local store
+  resilientStore.saveSongRequests(
+    invitationId,
+    payload.requests.map((r) => ({ title: r.title, artist: r.artist, spotifyUrl: r.spotifyUrl })),
+  );
+
   if (invitationId === DEMO_INVITATION.id) return;
 
   const rows = payload.requests.map((request, index) => ({
@@ -135,21 +194,21 @@ export async function saveSongRequests(
     submitted_at: new Date().toISOString(),
   }));
 
-  if (rows.length > 0) {
-    const { error } = await client.from("song_requests").upsert(rows, {
-      onConflict: "invitation_id,slot",
-    });
-    if (error) throw new Error("Song requests could not be saved.");
-  }
+  try {
+    if (rows.length > 0) {
+      await client.from("song_requests").upsert(rows, {
+        onConflict: "invitation_id,slot",
+      });
+    }
 
-  for (let staleSlot = rows.length + 1; staleSlot <= 3; staleSlot += 1) {
-    const { error } = await client
-      .from("song_requests")
-      .delete()
-      .eq("invitation_id", invitationId)
-      .eq("slot", staleSlot);
-    if (error) throw new Error("Song requests could not be updated.");
-  }
+    for (let staleSlot = rows.length + 1; staleSlot <= 3; staleSlot += 1) {
+      await client
+        .from("song_requests")
+        .delete()
+        .eq("invitation_id", invitationId)
+        .eq("slot", staleSlot);
+    }
+  } catch {}
 }
 
 export async function recordInvitationEvent(

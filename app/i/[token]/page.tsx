@@ -19,10 +19,13 @@ export const metadata: Metadata = {
 
 export default async function InvitationIntroPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams?: Promise<{ lang?: string }>;
 }) {
   const { token } = await params;
+  const sp = searchParams ? await searchParams : undefined;
   let invitation;
 
   try {
@@ -66,10 +69,12 @@ export default async function InvitationIntroPage({
   }
 
   const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
+  const queryLocale = sp?.lang && supportedLocales.includes(sp.lang as Locale) ? (sp.lang as Locale) : undefined;
   const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
-  const locale = supportedLocales.includes(manualLocale as Locale)
-    ? (manualLocale as Locale)
-    : invitation.language ?? (requestLocale as Locale);
+  const locale = queryLocale
+    ?? (supportedLocales.includes(manualLocale as Locale)
+      ? (manualLocale as Locale)
+      : invitation.language ?? (requestLocale as Locale));
 
   const [messages, intro] = await Promise.all([
     getMessages({ locale }),
@@ -84,13 +89,16 @@ export default async function InvitationIntroPage({
         <main id="main">
           <EnvelopeIntro
             token={token}
+            invitationId={invitation.id}
+            currentLocale={locale}
             displayName={invitation.display_name}
             greeting={greeting}
             dateLabel={getWeddingDateLabel(locale, true)}
             cityLabel={weddingConfig.event.city}
             openPrompt={intro("open")}
             skipPrompt={intro("skip")}
-            enterPrompt="Enter Invitation"
+            enterPrompt={intro("enter")}
+            celebratePrompt={intro("celebrate")}
             soundPrompt={intro("soundOn")}
           />
         </main>
