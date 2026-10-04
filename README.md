@@ -127,7 +127,9 @@ Follow this structured checklist to evaluate the entire project manually:
 3. Zero raster artifacts; perfectly sharp at any zoom level.
 
 ### Step 5: Admin Portal Walkthrough (`/admin`)
-1. Navigate to: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+> **Note:** The Admin Portal link is deliberately omitted from public navigation and footers to ensure privacy and prevent unauthorized access. Administrators access the portal strictly via the direct URL.
+
+1. Navigate directly to: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 2. **Log In:** Enter the password defined in your `ADMIN_PASSWORD` environment variable (e.g. `wedding2027admin`).
 3. **Explore Admin Features:**
    - **Dashboard (`/admin`):** High-level metrics displaying total invitations, RSVP response rate, confirmed attendees, and guest dietary requirements.
