@@ -402,111 +402,18 @@ export async function WeddingSections({
         <div className="section-heading">
           <p className="section-label">{dress("label")}</p>
           <h2 id="dress-title">{dress("title")}</h2>
-          <p className="dress-note__lead">{dress("subtitle")}</p>
         </div>
 
-        <div className="dress-note__body">
-          <div className="dress-note__hero-badge">
-            <span className="dress-note__code-tag">{weddingConfig.dressCode}</span>
-            <span className="dress-note__rule-text">{dress("formality")}</span>
+        <div className="dress-note__content">
+          <div className="dress-note__main">
+            <p className="dress-note__code">{weddingConfig.dressCode}</p>
+            <p className="dress-note__copy">{dress("formality")}</p>
+            <p className="dress-note__subtitle">{dress("subtitle")}</p>
           </div>
 
-          <div className="dress-cards-grid">
-            <article className="dress-card dress-card--ladies">
-              <div className="dress-card__header">
-                <span className="dress-card__badge-icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2a3 3 0 0 0-3 3c0 .8.3 1.5.8 2.1L6 10v11a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10l-3.8-2.9A3 3 0 0 0 15 5a3 3 0 0 0-3-3z"/>
-                    <path d="M9 14h6"/>
-                  </svg>
-                </span>
-                <h3>{dress("ladiesTitle")}</h3>
-              </div>
-              <p className="dress-card__description">{dress("ladiesDescription")}</p>
-              <div className="dress-card__tip">
-                <span className="dress-card__tip-indicator" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 16v-4"/>
-                    <path d="M12 8h.01"/>
-                  </svg>
-                </span>
-                <p>{dress("ladiesTip")}</p>
-              </div>
-            </article>
-
-            <article className="dress-card dress-card--gentlemen">
-              <div className="dress-card__header">
-                <span className="dress-card__badge-icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
-                    <path d="M12 2v8"/>
-                    <path d="m9 6 3 4 3-4"/>
-                  </svg>
-                </span>
-                <h3>{dress("gentlemenTitle")}</h3>
-              </div>
-              <p className="dress-card__description">{dress("gentlemenDescription")}</p>
-              <div className="dress-card__tip">
-                <span className="dress-card__tip-indicator" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 16v-4"/>
-                    <path d="M12 8h.01"/>
-                  </svg>
-                </span>
-                <p>{dress("gentlemenTip")}</p>
-              </div>
-            </article>
-          </div>
-
-          <div className="dress-palette">
-            <div className="dress-palette__header">
-              <span className="dress-palette__eyebrow">{dress("paletteTitle")}</span>
-              <p className="dress-palette__note">{dress("paletteNote")}</p>
-            </div>
-            <div className="dress-palette__swatches" role="list" aria-label={dress("paletteTitle")}>
-              <div className="swatch-card" role="listitem">
-                <span className="swatch-preview" style={{ backgroundColor: "#581c25" }} aria-hidden="true" />
-                <span className="swatch-title">{dress("colorBurgundy")}</span>
-              </div>
-              <div className="swatch-card" role="listitem">
-                <span className="swatch-preview" style={{ backgroundColor: "#1e3d2f" }} aria-hidden="true" />
-                <span className="swatch-title">{dress("colorEmerald")}</span>
-              </div>
-              <div className="swatch-card" role="listitem">
-                <span className="swatch-preview" style={{ backgroundColor: "#c99a5e" }} aria-hidden="true" />
-                <span className="swatch-title">{dress("colorGold")}</span>
-              </div>
-              <div className="swatch-card" role="listitem">
-                <span className="swatch-preview" style={{ backgroundColor: "#1d2a44" }} aria-hidden="true" />
-                <span className="swatch-title">{dress("colorNavy")}</span>
-              </div>
-              <div className="swatch-card" role="listitem">
-                <span className="swatch-preview" style={{ backgroundColor: "#a66874" }} aria-hidden="true" />
-                <span className="swatch-title">{dress("colorRose")}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="dress-weather">
-            <span className="dress-weather__icon" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v2"/>
-                <path d="M12 20v2"/>
-                <path d="m4.93 4.93 1.41 1.41"/>
-                <path d="m17.66 17.66 1.41 1.41"/>
-                <path d="M2 12h2"/>
-                <path d="M20 12h2"/>
-                <path d="m6.34 17.66-1.41 1.41"/>
-                <path d="m19.07 4.93-1.41 1.41"/>
-                <circle cx="12" cy="12" r="4"/>
-              </svg>
-            </span>
-            <div className="dress-weather__text">
-              <h4>{dress("weatherTitle")}</h4>
-              <p>{dress("weatherDescription")}</p>
-            </div>
+          <div className="dress-note__weather">
+            <h3 className="dress-note__weather-title">{dress("weatherTitle")}</h3>
+            <p className="dress-note__weather-desc">{dress("weatherDescription")}</p>
           </div>
         </div>
       </section>
