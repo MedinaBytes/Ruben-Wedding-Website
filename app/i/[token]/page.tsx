@@ -1,26 +1,23 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
-import { HeroPhotoMotion } from "@/components/invitation/hero-photo-motion";
-import { InvitationIntro } from "@/components/invitation/invitation-intro";
-import { InviteOpenTracker } from "@/components/invitation/invite-open-tracker";
-import { SiteHeader } from "@/components/invitation/site-header";
-import { WeddingPhoto } from "@/components/invitation/wedding-photo";
-import { WeddingSections } from "@/components/invitation/wedding-sections";
+import { EnvelopeIntro } from "@/components/invitation/envelope-intro";
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { getWeddingDateLabel } from "@/lib/event-time";
+import { SoundProvider } from "@/lib/sound";
 import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  title: "Ruben & Andrea — Wedding Invitation",
   robots: { index: false, follow: false },
 };
 
-export default async function InvitationPage({
+export default async function InvitationIntroPage({
   params,
 }: {
   params: Promise<{ token: string }>;
@@ -31,92 +28,73 @@ export default async function InvitationPage({
   try {
     invitation = await findActiveInvitationByToken(token);
   } catch {
-    notFound();
+    invitation = null;
   }
 
-  if (!invitation) notFound();
+  // Elegant, generic error page if token is invalid, revoked, or non-existent
+  if (!invitation) {
+    return (
+      <main className="guest-gate" id="main" style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center", maxWidth: "460px", padding: "2.5rem 1.5rem" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "1.75rem", color: "#8C2836", display: "block", marginBottom: "1rem" }}>
+            R <i>&</i> A
+          </span>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "1.8rem", color: "#2B2425", margin: "0 0 1rem 0" }}>
+            Invitation Link Not Found
+          </h1>
+          <p style={{ color: "#6B5E60", fontSize: "0.95rem", lineHeight: 1.6, marginBottom: "1.75rem" }}>
+            This invitation link is inactive, incomplete, or has expired. Please check your personal invitation message or reach out directly to Ruben &amp; Andrea.
+          </p>
+          <Link
+            href="/"
+            style={{
+              display: "inline-block",
+              background: "#8C2836",
+              color: "#FFFFFF",
+              borderRadius: "999px",
+              padding: "0.65rem 1.5rem",
+              textDecoration: "none",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+            }}
+          >
+            Return to Home
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
   const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
   const locale = supportedLocales.includes(manualLocale as Locale)
     ? (manualLocale as Locale)
     : invitation.language ?? (requestLocale as Locale);
-  const [messages, navigation, hero, intro, wedding] = await Promise.all([
+
+  const [messages, intro] = await Promise.all([
     getMessages({ locale }),
-    getTranslations({ locale, namespace: "navigation" }),
-    getTranslations({ locale, namespace: "hero" }),
     getTranslations({ locale, namespace: "intro" }),
-    getTranslations({ locale, namespace: "wedding" }),
   ]);
+
   const greeting = invitation.greeting_override ?? intro("greeting", { name: invitation.display_name });
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <SiteHeader
-        detailsLabel={navigation("details")}
-        privacyLabel={navigation("privacy")}
-        languageLabel={navigation("language")}
-        mainNavigationLabel={navigation("main")}
-        invitation={{ id: invitation.id, token }}
-      />
-      <InvitationIntro
-        invitationId={invitation.id}
-        greeting={greeting}
-        date={getWeddingDateLabel(locale, true)}
-        openLabel={intro("open")}
-        skipLabel={intro("skip")}
-        soundOnLabel={intro("soundOn")}
-        soundOffLabel={intro("soundOff")}
-      />
-      <main id="main">
-        <InviteOpenTracker invitationId={invitation.id} token={token} />
-        <section className="hero" aria-labelledby="hero-title">
-          <div className="hero__inner">
-            <div className="hero__copy">
-              <p className="hero__eyebrow">{hero("eyebrow")}</p>
-              <h1 className="hero__names" id="hero-title">
-                {weddingConfig.couple.displayNames}
-              </h1>
-              <p className="hero__statement">{hero("statement")}</p>
-              <p className="hero__guest-greeting">{greeting}</p>
-              <p className="hero__place">{hero("place")}</p>
-            </div>
-            <figure className="hero__portrait">
-              <HeroPhotoMotion>
-                <WeddingPhoto
-                  id="formal-staircase-hero"
-                  alt={wedding("photos.formalStaircasePortrait")}
-                  sizes="(max-width: 760px) 100vw, 53vw"
-                  preload
-                  className="hero__image"
-                />
-              </HeroPhotoMotion>
-              <figcaption>{hero("portraitCaption")}</figcaption>
-            </figure>
-          </div>
-          <p className="hero__date">
-            <span>{getWeddingDateLabel(locale, true)}</span>
-            <span aria-hidden="true">·</span>
-            <span>{weddingConfig.event.city}</span>
-          </p>
-        </section>
-        <WeddingSections
-          locale={locale}
-          invitation={{
-            id: invitation.id,
-            token,
-            displayName: invitation.display_name,
-            maxGuests: invitation.max_guests,
-            plusOneAllowed: invitation.plus_one_allowed,
-            locale,
-            personalMessage: invitation.personal_message,
-          }}
-        />
-      </main>
-      <footer className="site-footer">
-        <span>{weddingConfig.couple.displayNames}</span>
-        <a href="/privacy">{navigation("privacy")}</a>
-      </footer>
+      <SoundProvider>
+        <main id="main">
+          <EnvelopeIntro
+            token={token}
+            displayName={invitation.display_name}
+            greeting={greeting}
+            dateLabel={getWeddingDateLabel(locale, true)}
+            cityLabel={weddingConfig.event.city}
+            openPrompt={intro("open")}
+            skipPrompt={intro("skip")}
+            enterPrompt="Enter Invitation"
+            soundPrompt={intro("soundOn")}
+          />
+        </main>
+      </SoundProvider>
     </NextIntlClientProvider>
   );
 }
