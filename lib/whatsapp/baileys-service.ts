@@ -219,7 +219,7 @@ export async function sendWhatsAppMessage(
     const result = await bot.socket.sendMessage(jid, { text });
     return {
       success: true,
-      messageId: result?.key?.id,
+      messageId: result?.key?.id ?? undefined,
     };
   } catch (err: unknown) {
     return {

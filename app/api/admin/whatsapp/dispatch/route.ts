@@ -54,8 +54,8 @@ export async function POST(request: Request) {
         metadata: {
           channel: "whatsapp_bot",
           phone,
-          guestName,
-          messageId: result.messageId,
+          guestName: guestName ?? null,
+          messageId: result.messageId ?? null,
         },
       });
     } catch {}
