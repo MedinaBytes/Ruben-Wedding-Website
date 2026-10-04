@@ -26,7 +26,7 @@ export const weddingConfig = {
     approximateStart: "17:00",
     coordinates: { latitude: 48.161243, longitude: 16.319662 },
   },
-  dressCode: "Cocktail",
+  dressCode: "Formal",
   locales: supportedLocales,
 } as const;
 

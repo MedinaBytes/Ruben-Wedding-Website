@@ -176,10 +176,11 @@
   "dress": {
     "label": "What to wear",
     "title": "Dress code",
-    "formality": "Cocktail attire. Formal is very welcome.",
-    "subtitle": "We invite you to dress up with us in refined cocktail or festive formal attire for an unforgettable Viennese celebration.",
-    "weatherTitle": "Vienna Autumn Weather",
-    "weatherDescription": "Early October in Vienna is delightfully crisp. Daytime temperatures average 16–18°C (61–64°F) and dip to around 10–12°C (50–54°F) after dusk. An elegant shawl, jacket, or evening coat is recommended for outdoor transitions."
+    "code": "Formal / Imperial Palace Elegance",
+    "formality": "Formal attire · Austrian imperial court style with a modern twist.",
+    "subtitle": "We are celebrating in an authentic Viennese baroque palace! Dress to impress the Habsburg royalty: elegant tuxedos, sharp dark suits, and glamorous floor-length gowns or chic formal cocktail dresses. Tiaras, royal flair, and velvet are highly encouraged — sneakers are strictly subject to imperial pardon from Empress Andrea! 🏰 Cobblestone survival tip: Historic Viennese palace courtyards love high heels, but cobblestones don't; block heels, dressy wedges, or chic flats will keep you reigning on the dance floor all night.",
+    "weatherTitle": "Imperial Vienna Autumn Weather",
+    "weatherDescription": "Early October in Vienna brings crisp, romantic imperial autumn air (around 16–18°C by day, cooling to 10–12°C after dusk). An elegant shawl, royal cape, tailored blazer, or evening jacket is strongly recommended for palace garden strolls and outdoor transitions."
   },
   "music": {
     "label": "For the dance floor",

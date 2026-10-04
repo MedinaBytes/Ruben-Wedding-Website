@@ -406,7 +406,7 @@ export async function WeddingSections({
 
         <div className="dress-note__content">
           <div className="dress-note__main">
-            <p className="dress-note__code">{weddingConfig.dressCode}</p>
+            <p className="dress-note__code">{dress("code") || weddingConfig.dressCode}</p>
             <p className="dress-note__copy">{dress("formality")}</p>
             <p className="dress-note__subtitle">{dress("subtitle")}</p>
           </div>

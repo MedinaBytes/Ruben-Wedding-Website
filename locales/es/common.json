@@ -174,12 +174,13 @@
     "privateRecommendationText": "Si estás planeando una estancia más larga o deseas recomendaciones personalizadas de alojamiento cerca de nosotros, ¡escríbenos directamente a Rubén y Andrea!"
   },
   "dress": {
-    "label": "Qué ponerse",
+    "label": "Cómo vestir",
     "title": "Código de vestimenta",
-    "formality": "Cóctel. La vestimenta formal también es muy bienvenida.",
-    "subtitle": "Les invitamos a celebrar con nosotros vistiendo un estilo cóctel refinado o formal festivo para una velada vienesa inolvidable.",
-    "weatherTitle": "Clima de otoño en Viena",
-    "weatherDescription": "Principios de octubre en Viena ofrece un clima otoñal fresco. Durante el día ronda los 16–18 °C y desciende a 10–12 °C al anochecer. Recomendamos llevar un chal elegante, chaqueta o abrigo ligero para traslados al aire libre."
+    "code": "Formal / Elegancia de Palacio Real",
+    "formality": "Etiqueta formal · Realeza austríaca contemporánea.",
+    "subtitle": "¡Vamos a celebrar en un auténtico palacio barroco de Viena! Saca tus mejores galas: trajes oscuros, esmóquines elegantes y vestidos largos o de cóctel deslumbrantes. Las tiaras, joyas y toques reales son más que bienvenidos (las zapatillas deportivas, salvo con indulto real de la emperatriz Andrea, mejor déjalas en el hotel). 🏰 Consejo de supervivencia palaciega: Los adoquines históricos vieneses tienen un amor secreto por los tacones de aguja finos; recomendamos tacón ancho, cuñas elegantes o calzado cómodo para bailar como la realeza toda la noche.",
+    "weatherTitle": "Otoño imperial en Viena",
+    "weatherDescription": "A principios de octubre, Viena regala un aire otoñal fresco y romántico propio de la corte imperial (16–18 °C de día, bajando a unos 10–12 °C al anochecer). Un chal elegante, capa, chaqueta o abrigo ligero será tu mejor aliado para las fotos y paseos por los jardines y terrazas del palacio."
   },
   "music": {
     "label": "Para bailar",
