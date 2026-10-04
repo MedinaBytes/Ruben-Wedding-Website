@@ -2240,42 +2240,18 @@ a {
   }
 
   .hero__names {
-    font-size: clamp(3.3rem, 14vw, 5rem);
-    margin-bottom: 0.75rem;
+    font-size: clamp(3.2rem, 13vw, 4.6rem);
   }
 
   .hero__statement {
-    font-size: clamp(1.5rem, 7vw, 2rem);
-  }
-
-  .hero__place {
-    margin: 0.5rem 0 0.75rem;
-  }
-
-  .hero__link {
-    display: none;
+    font-size: clamp(1.35rem, 6vw, 1.75rem);
   }
 
   .hero__portrait {
-    aspect-ratio: 0.94;
-    height: auto;
-    margin-right: 1.25rem;
-    position: relative;
-    right: auto;
-    top: auto;
-    transform: none;
-    width: auto;
-  }
-
-  .hero__orchid {
-    height: 45vw;
-    right: -10%;
-    top: 7%;
-  }
-
-  .hero__date {
-    justify-content: flex-start;
-    margin-top: 1rem;
+    max-width: 440px;
+    aspect-ratio: 0.85;
+    margin: 0 auto;
+    width: 100%;
   }
 
   .arrival-note {
@@ -2402,23 +2378,28 @@ a {
   }
 }
 
-@media (max-width: 390px) {
-  .site-header {
+@media (max-width: 440px) {
+  .site-header__container {
+    padding: 0.5rem 0.75rem;
     gap: 0.5rem;
   }
 
-  .site-header__nav {
-    gap: 0.6rem;
+  .site-header__mark {
+    font-size: 1.15rem;
   }
 
-  .site-header__mark {
-    font-size: 1.05rem;
+  .site-header__actions {
+    gap: 0.4rem;
+  }
+
+  .site-header__rsvp-btn {
+    padding: 0.32rem 0.7rem;
+    font-size: 0.74rem;
   }
 
   .language-switcher__option {
-    font-size: 0.65rem;
-    min-width: 1.85rem;
-    padding-inline: 0.3rem;
+    padding: 0.2rem 0.38rem;
+    font-size: 0.68rem;
   }
 }
 
