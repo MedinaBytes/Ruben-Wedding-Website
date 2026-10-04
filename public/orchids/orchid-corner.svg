@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="100%" height="100%" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="cornerPetal" cx="45%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="50%" stop-color="#FBF0F1" stop-opacity="0.9" />
+      <stop offset="85%" stop-color="#ECC0C5" stop-opacity="0.82" />
+      <stop offset="100%" stop-color="#DA98A0" stop-opacity="0.9" />
+    </radialGradient>
+    <linearGradient id="cornerStem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#55644E" />
+      <stop offset="100%" stop-color="#809077" />
+    </linearGradient>
+    <linearGradient id="cornerLip" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9C3240" />
+      <stop offset="100%" stop-color="#691621" />
+    </linearGradient>
+    <radialGradient id="cornerGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FCEAB8" />
+      <stop offset="100%" stop-color="#CBA062" />
+    </radialGradient>
+  </defs>
+
+  <g id="orchid-corner">
+    <!-- Gentle framing hairlines -->
+    <path d="M10 240 C10 120 120 10 240 10" stroke="#CBA062" stroke-width="0.8" opacity="0.45" stroke-dasharray="2 4" />
+    <path d="M25 210 C25 110 110 25 210 25" stroke="#CBA062" stroke-width="0.6" opacity="0.3" />
+
+    <!-- Organic Stem curving along the corner -->
+    <path d="M5 280 Q40 160 120 95 T270 30" stroke="url(#cornerStem)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Petite orchid bud along the stem -->
+    <g transform="translate(240, 42) rotate(35)">
+      <path d="M0 0 C6 -8 18 -6 22 2 C24 10 12 16 0 10 Z" fill="#9FB395" />
+      <circle cx="14" cy="4" r="2" fill="#E8B4BA" opacity="0.8" />
+    </g>
+
+    <!-- Corner Bloom (Anchored in upper-left quadrant) -->
+    <g id="corner-flower" transform="translate(105, 115) scale(0.68) rotate(-15)">
+      <!-- Dorsal Sepal -->
+      <path d="M0 -90 C-32 -80 -40 -30 -22 0 C-6 18 16 18 22 0 C40 -30 32 -80 0 -90 Z" fill="url(#cornerPetal)" opacity="0.95" />
+      <!-- Lateral Sepals -->
+      <path d="M-18 0 C-75 18 -95 60 -72 90 C-45 100 -12 75 0 24 Z" fill="url(#cornerPetal)" opacity="0.9" />
+      <path d="M18 0 C75 18 95 60 72 90 C45 100 12 75 0 24 Z" fill="url(#cornerPetal)" opacity="0.9" />
+      <!-- Broad Petals -->
+      <path d="M-10 -15 C-80 -50 -130 -12 -110 42 C-90 85 -28 50 -5 10 Z" fill="url(#cornerPetal)" />
+      <path d="M10 -15 C80 -50 130 -12 110 42 C90 85 28 50 5 10 Z" fill="url(#cornerPetal)" />
+      <!-- Lip -->
+      <path d="M-18 18 C-28 48 -20 74 0 80 C20 74 28 48 18 18 Z" fill="url(#cornerLip)" />
+      <ellipse cx="0" cy="30" rx="6" ry="4" fill="url(#cornerGold)" />
+      <circle cx="0" cy="14" r="4" fill="#FFFDF8" stroke="#CBA062" stroke-width="0.8" />
+    </g>
+
+    <!-- Delicate corner leaf -->
+    <path d="M50 210 C70 170 110 180 135 220 C105 235 70 230 50 210 Z" fill="#7C8F73" opacity="0.85" />
+    <path d="M50 210 C80 195 105 200 130 218" stroke="#A7BCA0" stroke-width="1" opacity="0.6" stroke-linecap="round" />
+  </g>
+</svg>

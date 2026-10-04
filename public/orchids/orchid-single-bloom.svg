@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%" fill="none" aria-hidden="true">
+  <defs>
+    <!-- Soft Watercolor Gradients -->
+    <radialGradient id="singleDorsal" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.96" />
+      <stop offset="40%" stop-color="#FCF3F4" stop-opacity="0.92" />
+      <stop offset="75%" stop-color="#F3CBD0" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#DB939C" stop-opacity="0.92" />
+    </radialGradient>
+
+    <radialGradient id="singlePetalLeft" cx="40%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.96" />
+      <stop offset="45%" stop-color="#FDF4F5" stop-opacity="0.92" />
+      <stop offset="80%" stop-color="#EBBBC0" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#D78E97" stop-opacity="0.92" />
+    </radialGradient>
+
+    <radialGradient id="singlePetalRight" cx="60%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.96" />
+      <stop offset="45%" stop-color="#FDF4F5" stop-opacity="0.92" />
+      <stop offset="80%" stop-color="#EBBBC0" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#D78E97" stop-opacity="0.92" />
+    </radialGradient>
+
+    <radialGradient id="singleSepal" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#FAEDEE" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#EAB6BD" stop-opacity="0.88" />
+      <stop offset="100%" stop-color="#D0828C" stop-opacity="0.94" />
+    </radialGradient>
+
+    <linearGradient id="singleLip" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#B84A59" />
+      <stop offset="55%" stop-color="#8E2D3B" />
+      <stop offset="100%" stop-color="#641620" />
+    </linearGradient>
+
+    <radialGradient id="singleCallus" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF3C4" />
+      <stop offset="50%" stop-color="#E5BB65" />
+      <stop offset="100%" stop-color="#B27825" />
+    </radialGradient>
+
+    <filter id="bloomSoft" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <g id="orchid-single-bloom" transform="translate(250, 250)">
+    <!-- 1. Dorsal Sepal (Top) -->
+    <g id="dorsal-sepal">
+      <path d="M0 -210 C-50 -195 -68 -105 -38 -30 C-15 15 15 15 38 -30 C68 -105 50 -195 0 -210 Z" fill="url(#singleDorsal)" opacity="0.95" />
+      <path d="M0 -195 C0 -130 0 -40 0 0" stroke="#DB939C" stroke-width="1" opacity="0.4" stroke-linecap="round" />
+    </g>
+
+    <!-- 2. Lateral Sepals (Lower Left and Lower Right) -->
+    <g id="lateral-sepals">
+      <!-- Lower Left Sepal -->
+      <path d="M-28 -20 C-115 15 -145 90 -115 155 C-75 180 -18 135 2 40 Z" fill="url(#singleSepal)" opacity="0.9" />
+      <path d="M-110 145 C-75 110 -40 70 -10 20" stroke="#CF8790" stroke-width="0.9" opacity="0.35" stroke-linecap="round" />
+
+      <!-- Lower Right Sepal -->
+      <path d="M28 -20 C115 15 145 90 115 155 C75 180 18 135 -2 40 Z" fill="url(#singleSepal)" opacity="0.9" />
+      <path d="M110 145 C75 110 40 70 10 20" stroke="#CF8790" stroke-width="0.9" opacity="0.35" stroke-linecap="round" />
+    </g>
+
+    <!-- 3. Broad Lateral Petals (Center Left and Center Right) -->
+    <g id="lateral-petals" filter="url(#bloomSoft)">
+      <!-- Left Petal -->
+      <path d="M-15 -35 C-125 -95 -215 -30 -185 65 C-150 145 -45 85 -8 18 Z" fill="url(#singlePetalLeft)" />
+      <!-- Left Petal Veins -->
+      <g stroke="#C67D87" stroke-width="0.8" opacity="0.4" fill="none">
+        <path d="M-170 55 C-115 35 -60 25 -15 8" />
+        <path d="M-155 25 C-105 10 -55 5 -15 -2" />
+        <path d="M-140 85 C-95 60 -50 40 -12 18" />
+      </g>
+
+      <!-- Right Petal -->
+      <path d="M15 -35 C125 -95 215 -30 185 65 C150 145 45 85 8 18 Z" fill="url(#singlePetalRight)" />
+      <!-- Right Petal Veins -->
+      <g stroke="#C67D87" stroke-width="0.8" opacity="0.4" fill="none">
+        <path d="M170 55 C115 35 60 25 15 8" />
+        <path d="M155 25 C105 10 55 5 15 -2" />
+        <path d="M140 85 C95 60 50 40 12 18" />
+      </g>
+    </g>
+
+    <!-- 4. Labellum / Lip (Centerpiece) -->
+    <g id="labellum">
+      <!-- Side Lobes -->
+      <path d="M-36 22 C-56 32 -54 62 -34 68 C-24 68 -15 54 -18 32 Z" fill="#992D3B" />
+      <path d="M36 22 C56 32 54 62 34 68 C24 68 15 54 18 32 Z" fill="#992D3B" />
+
+      <!-- Central Mid-Lobe with delicate curl -->
+      <path d="M-30 42 C-45 82 -35 125 0 136 C35 125 45 82 30 42 C16 48 -16 48 -30 42 Z" fill="url(#singleLip)" />
+      
+      <!-- Whiskers / Tendrils at the tip of the lip -->
+      <path d="M-2 135 C-8 150 -18 158 -28 155 M2 135 C8 150 18 158 28 155" stroke="#7A1823" stroke-width="1.2" stroke-linecap="round" fill="none" />
+
+      <!-- Callus / Golden Crest with speckled dots -->
+      <ellipse cx="0" cy="52" rx="11" ry="8" fill="url(#singleCallus)" />
+      <circle cx="-4" cy="51" r="1.5" fill="#69141D" />
+      <circle cx="4" cy="51" r="1.5" fill="#69141D" />
+      <circle cx="0" cy="56" r="1.8" fill="#69141D" />
+      <circle cx="-5" cy="57" r="1.2" fill="#69141D" />
+      <circle cx="5" cy="57" r="1.2" fill="#69141D" />
+
+      <!-- Column / Anther Cap -->
+      <path d="M-8 22 C-10 10 10 10 8 22 C7 30 -7 30 -8 22 Z" fill="#FFFDF8" stroke="#E0B563" stroke-width="1" />
+    </g>
+
+    <!-- 5. Fine Metallic Rose-Gold Hairline Accents -->
+    <g id="gold-hairlines" stroke="#CCA468" stroke-width="0.8" opacity="0.4" fill="none">
+      <path d="M-2 42 Q-1 100 0 134" />
+      <path d="M-28 65 Q-20 68 -12 60" />
+      <path d="M28 65 Q20 68 12 60" />
+    </g>
+  </g>
+</svg>

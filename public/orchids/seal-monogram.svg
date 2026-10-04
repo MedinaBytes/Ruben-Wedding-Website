@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%" fill="none" aria-hidden="true">
+  <defs>
+    <!-- Wax Color Gradients -->
+    <radialGradient id="waxBase" cx="42%" cy="38%" r="62%">
+      <stop offset="0%" stop-color="#C24552" />
+      <stop offset="50%" stop-color="#9E2E3A" />
+      <stop offset="85%" stop-color="#781C26" />
+      <stop offset="100%" stop-color="#541017" />
+    </radialGradient>
+
+    <radialGradient id="waxInner" cx="46%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#9C2C38" />
+      <stop offset="70%" stop-color="#7B1E28" />
+      <stop offset="100%" stop-color="#5A121A" />
+    </radialGradient>
+
+    <linearGradient id="monogramGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF2CE" />
+      <stop offset="40%" stop-color="#E2B765" />
+      <stop offset="75%" stop-color="#BD8834" />
+      <stop offset="100%" stop-color="#8C5C18" />
+    </linearGradient>
+
+    <!-- Bevel & Shadow Filter -->
+    <filter id="waxShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#280407" flood-opacity="0.45" />
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#FFE8EC" flood-opacity="0.25" result="highlight" />
+    </filter>
+  </defs>
+
+  <g id="wax-seal" filter="url(#waxShadow)">
+    <!-- Organic melted wax outer puddle with authentic irregular rim -->
+    <path d="M100 12 
+             C124 10 148 18 165 35 
+             C182 52 192 76 189 101 
+             C186 128 174 154 153 171 
+             C132 188 102 192 77 186 
+             C52 180 30 162 18 139 
+             C6 116 8 88 19 65 
+             C30 42 56 16 82 13 
+             C88 12 94 12 100 12 Z" 
+          fill="url(#waxBase)" />
+
+    <!-- Rim highlight / edge definition -->
+    <path d="M98 16 C121 14 144 22 160 38 C176 54 186 77 183 100 C180 125 168 149 148 165 C129 181 101 185 77 179 C54 173 34 157 23 135 C12 113 14 87 24 65 C34 43 58 19 82 17 Z" 
+          stroke="#D45D6A" stroke-width="1.8" opacity="0.45" fill="none" />
+
+    <!-- Recessed / Debossed Central Stamp Matrix -->
+    <circle cx="100" cy="102" r="58" fill="url(#waxInner)" />
+    <!-- Fine inner beaded / double ring -->
+    <circle cx="100" cy="102" r="54" stroke="#63141C" stroke-width="1.5" fill="none" />
+    <circle cx="100" cy="102" r="51" stroke="#BD8834" stroke-width="0.75" stroke-dasharray="1.5 2.5" opacity="0.65" fill="none" />
+
+    <!-- R & A Monogram Typography with Serif Ligature -->
+    <g id="monogram-lettering" transform="translate(100, 102)">
+      <!-- Drop shadow for debossed stamp effect -->
+      <g transform="translate(0, 1.2)" opacity="0.6">
+        <text x="-24" y="14" font-family="'Bodoni Moda Variable', 'Bodoni Moda', Georgia, serif" font-size="42" font-style="italic" font-weight="600" fill="#3D0B10" text-anchor="middle">R</text>
+        <text x="0" y="6" font-family="'Italianno', cursive" font-size="34" fill="#3D0B10" text-anchor="middle">&amp;</text>
+        <text x="24" y="14" font-family="'Bodoni Moda Variable', 'Bodoni Moda', Georgia, serif" font-size="42" font-style="italic" font-weight="600" fill="#3D0B10" text-anchor="middle">A</text>
+      </g>
+      <!-- Top Gold Engraved Letters -->
+      <text x="-24" y="13" font-family="'Bodoni Moda Variable', 'Bodoni Moda', Georgia, serif" font-size="42" font-style="italic" font-weight="600" fill="url(#monogramGold)" text-anchor="middle">R</text>
+      <text x="0" y="5" font-family="'Italianno', cursive" font-size="34" fill="url(#monogramGold)" text-anchor="middle">&amp;</text>
+      <text x="24" y="13" font-family="'Bodoni Moda Variable', 'Bodoni Moda', Georgia, serif" font-size="42" font-style="italic" font-weight="600" fill="url(#monogramGold)" text-anchor="middle">A</text>
+
+      <!-- Tiny star/dot floral accent under monogram -->
+      <circle cx="0" cy="24" r="1.5" fill="url(#monogramGold)" opacity="0.8" />
+      <circle cx="-8" cy="24" r="1" fill="url(#monogramGold)" opacity="0.6" />
+      <circle cx="8" cy="24" r="1" fill="url(#monogramGold)" opacity="0.6" />
+    </g>
+  </g>
+</svg>

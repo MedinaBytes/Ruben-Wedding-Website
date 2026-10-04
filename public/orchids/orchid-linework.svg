@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%" fill="none" aria-hidden="true">
+  <!-- Continuous Single / Multi-line botanical drawing optimized for stroke-dasharray and Motion React pathLength -->
+  <g id="orchid-linework" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main stem contour -->
+    <path id="stem-line" d="M120 380 C135 320 150 260 170 200 C185 155 215 110 260 70 C280 50 305 35 330 25" opacity="0.85" />
+    
+    <!-- Delicate bud at tip -->
+    <path id="bud-line" d="M330 25 C345 18 360 22 365 35 C370 48 355 58 340 52 C330 48 325 38 330 25 Z" opacity="0.8" />
+    
+    <!-- Flower Dorsal Sepal -->
+    <path id="dorsal-line" d="M190 170 C165 140 160 85 185 45 C205 15 225 30 235 60 C245 95 230 145 205 170" />
+    
+    <!-- Left Broad Petal -->
+    <path id="left-petal-line" d="M185 175 C120 135 60 160 55 210 C50 255 105 270 160 225 C175 212 185 195 190 180" />
+    
+    <!-- Right Broad Petal -->
+    <path id="right-petal-line" d="M210 175 C275 135 335 160 340 210 C345 255 290 270 235 225 C220 212 210 195 205 180" />
+    
+    <!-- Lower Left Sepal -->
+    <path id="lower-left-sepal" d="M175 200 C120 230 95 285 115 325 C135 345 170 320 185 260" opacity="0.75" />
+    
+    <!-- Lower Right Sepal -->
+    <path id="lower-right-sepal" d="M220 200 C275 230 300 285 280 325 C260 345 225 320 210 260" opacity="0.75" />
+    
+    <!-- Labellum / Lip -->
+    <path id="lip-line" d="M188 190 C170 205 165 225 180 230 C190 232 195 222 195 210 C195 225 190 260 200 275 C210 260 205 225 205 210 C205 222 210 232 220 230 C235 225 230 205 212 190 Z" />
+    
+    <!-- Labellum tendril curl -->
+    <path id="tendril-left" d="M198 275 C192 290 182 298 172 295" opacity="0.7" />
+    <path id="tendril-right" d="M202 275 C208 290 218 298 228 295" opacity="0.7" />
+    
+    <!-- Central anther column -->
+    <path id="column-line" d="M194 182 C194 175 206 175 206 182 C206 188 194 188 194 182 Z" />
+  </g>
+</svg>
