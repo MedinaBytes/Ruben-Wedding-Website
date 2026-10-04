@@ -81,7 +81,7 @@ export default async function HomePage({
 
           <div style={{ background: "rgba(247, 243, 239, 0.8)", border: "1px solid #E4DBD3", borderRadius: "8px", padding: "1.25rem 1rem", marginBottom: "2rem" }}>
             <p style={{ margin: 0, fontSize: "0.88rem", color: "#6A5D60", lineHeight: 1.5 }}>
-              💌 <strong>Personal Invitation:</strong> Please open the direct personal link you received on WhatsApp or email to access your envelope and RSVP.
+              💌 {gate("personalNotice")}
             </p>
           </div>
 
