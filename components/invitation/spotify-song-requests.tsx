@@ -260,171 +260,350 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
     }
   }
 
+  const [entryMode, setEntryMode] = useState<"search" | "manual">("search");
+  const totalCount = submitted.length + selected.length;
+
   return (
     <div className="song-request" aria-busy={isSubmitting || isLoadingSubmitted}>
-      <form
-        className="song-request__manual-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void submitManualSong();
-        }}
-      >
-        <label htmlFor="song-title-input">{songFormT("titleLabel")}</label>
-        <input
-          id="song-title-input"
-          onChange={(event) => setManualSong((current) => ({ ...current, title: event.target.value }))}
-          placeholder={songFormT("titleLabel")}
-          type="text"
-          value={manualSong.title}
-        />
+      <div className="song-request__dashboard">
+        {/* Left Column: Interactive Song Finder & Input */}
+        <div className="song-request__finder">
+          <div className="song-request__nav" role="tablist" aria-label={t("requestsTitle")}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={entryMode === "search"}
+              className={`song-request__tab ${entryMode === "search" ? "is-active" : ""}`}
+              onClick={() => setEntryMode("search")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <span>{t("tabSearch")}</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={entryMode === "manual"}
+              className={`song-request__tab ${entryMode === "manual" ? "is-active" : ""}`}
+              onClick={() => setEntryMode("manual")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              <span>{t("tabManual")}</span>
+            </button>
+          </div>
 
-        <label htmlFor="song-artist-input">{songFormT("artistLabel")}</label>
-        <input
-          id="song-artist-input"
-          onChange={(event) => setManualSong((current) => ({ ...current, artist: event.target.value }))}
-          placeholder={songFormT("artistLabel")}
-          type="text"
-          value={manualSong.artist}
-        />
+          {entryMode === "search" ? (
+            <div className="song-request__search-panel" role="tabpanel">
+              <div className="song-request__input-group">
+                <label className="visually-hidden" htmlFor="spotify-track-search">{t("searchLabel")}</label>
+                <div className="song-request__search-bar">
+                  <span className="song-request__search-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                  </span>
+                  <input
+                    autoComplete="off"
+                    disabled={hasReachedMaximum || isLoadingSubmitted}
+                    id="spotify-track-search"
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setSearchQuery(value);
+                      setSearchError("");
+                      if (value.trim().length < 2) {
+                        setSearchResults([]);
+                        setIsSearching(false);
+                      } else {
+                        setIsSearching(true);
+                      }
+                    }}
+                    placeholder={hasReachedMaximum ? t("maximumReached") : t("searchPlaceholder")}
+                    type="search"
+                    value={searchQuery}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="song-request__clear-btn"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSearchResults([]);
+                        setIsSearching(false);
+                      }}
+                      aria-label="Clear search"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
 
-        <label htmlFor="song-link-input">{songFormT("spotifyLabel")}</label>
-        <input
-          id="song-link-input"
-          onChange={(event) => setManualSong((current) => ({ ...current, spotifyUrl: event.target.value }))}
-          placeholder="https://"
-          type="url"
-          value={manualSong.spotifyUrl}
-        />
+              {searchError && <p className="form-message form-message--error" role="alert">{searchError}</p>}
+              {isSearching && <p className="song-request__hint" role="status">{t("searching")}</p>}
+              {!isSearching && searchQuery.trim().length > 0 && searchQuery.trim().length < 2 && (
+                <p className="song-request__hint">{t("searchMinimum")}</p>
+              )}
+              {!isSearching && searchQuery.trim().length >= 2 && searchResults.length === 0 && !searchError && (
+                <p className="song-request__hint" role="status">{t("noResults")}</p>
+              )}
 
-        <button disabled={isSubmitting || hasReachedMaximum || !manualSong.title.trim()} type="submit">
-          {songFormT("addSong")}
-        </button>
-        {manualError && <p className="form-message form-message--error" role="alert">{manualError}</p>}
-      </form>
+              {searchResults.length > 0 && (
+                <ul className="song-request__results" aria-label={t("searchResultsLabel")}>
+                  {searchResults.map((track) => {
+                    const alreadyAdded = selected.some((item) => item.id === track.id) || submitted.some((item) => item.id === track.id);
+                    return (
+                      <li key={track.id} className="song-request__result-item">
+                        {track.artworkUrl ? (
+                          <Image alt="" className="song-request__artwork" height={48} src={track.artworkUrl} unoptimized width={48} />
+                        ) : (
+                          <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <circle cx="12" cy="12" r="10"/>
+                              <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                          </span>
+                        )}
+                        <div className="song-request__track-copy">
+                          <strong>{track.title}</strong>
+                          <span>{track.artist}</span>
+                        </div>
+                        <button
+                          className={`song-request__action-btn ${alreadyAdded ? "is-added" : ""}`}
+                          disabled={hasReachedMaximum || alreadyAdded || isSubmitting}
+                          onClick={() => addTrack(track)}
+                          type="button"
+                        >
+                          {alreadyAdded ? (
+                            <>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                              <span>{t("alreadyAdded")}</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                              </svg>
+                              <span>{t("addTrack")}</span>
+                            </>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <form
+              className="song-request__manual-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void submitManualSong();
+              }}
+            >
+              <p className="song-request__manual-note">{t("manualNote")}</p>
+              <div className="song-request__field">
+                <label htmlFor="song-title-input">{songFormT("titleLabel")} *</label>
+                <input
+                  id="song-title-input"
+                  onChange={(event) => setManualSong((current) => ({ ...current, title: event.target.value }))}
+                  placeholder="e.g. Can't Take My Eyes Off You"
+                  type="text"
+                  value={manualSong.title}
+                  required
+                />
+              </div>
 
-      <div className="song-request__search">
-        <label htmlFor="spotify-track-search">{t("searchLabel")}</label>
-        <input
-          autoComplete="off"
-          disabled={hasReachedMaximum || isLoadingSubmitted}
-          id="spotify-track-search"
-          onChange={(event) => {
-            const value = event.target.value;
-            setSearchQuery(value);
-            setSearchError("");
-            if (value.trim().length < 2) {
-              setSearchResults([]);
-              setIsSearching(false);
-            } else {
-              setIsSearching(true);
-            }
-          }}
-          placeholder={t("searchPlaceholder")}
-          type="search"
-          value={searchQuery}
-        />
-        <p className="song-request__count" aria-live="polite">
-          {t("selectedCount", { count: submitted.length + selected.length })}
-        </p>
-        {hasReachedMaximum && <p className="song-request__limit" role="status">{t("maximumReached")}</p>}
-        {searchError && <p className="form-message form-message--error" role="alert">{searchError}</p>}
-        {isSearching && <p className="song-request__hint" role="status">{t("searching")}</p>}
-        {!isSearching && searchQuery.trim().length > 0 && searchQuery.trim().length < 2 && (
-          <p className="song-request__hint">{t("searchMinimum")}</p>
-        )}
-        {!isSearching && searchQuery.trim().length >= 2 && searchResults.length === 0 && !searchError && (
-          <p className="song-request__hint" role="status">{t("noResults")}</p>
-        )}
-        {searchResults.length > 0 && (
-          <ul className="song-request__results" aria-label={t("searchResultsLabel")}>
-            {searchResults.map((track) => {
-              const alreadyAdded = selected.some((item) => item.id === track.id) || submitted.some((item) => item.id === track.id);
-              return (
-                <li key={track.id}>
-                  <button
-                    className="song-request__result"
-                    disabled={hasReachedMaximum || alreadyAdded || isSubmitting}
-                    onClick={() => addTrack(track)}
-                    type="button"
-                  >
-                    {track.artworkUrl ? (
-                      <Image alt="" className="song-request__artwork" height={52} src={track.artworkUrl} unoptimized width={52} />
-                    ) : <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty" />}
-                    <span className="song-request__track-copy">
-                      <strong>{track.title}</strong>
-                      <span>{track.artist}</span>
-                    </span>
-                    <span className="song-request__add-label">{alreadyAdded ? t("alreadyAdded") : t("addTrack")}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+              <div className="song-request__field">
+                <label htmlFor="song-artist-input">{songFormT("artistLabel")}</label>
+                <input
+                  id="song-artist-input"
+                  onChange={(event) => setManualSong((current) => ({ ...current, artist: event.target.value }))}
+                  placeholder="e.g. Frankie Valli"
+                  type="text"
+                  value={manualSong.artist}
+                />
+              </div>
 
-      <section className="song-request__selection" aria-labelledby="selected-songs-title">
-        <h4 id="selected-songs-title">{t("selectedTitle")}</h4>
-        {selected.length === 0 && !isLoadingSubmitted && <p className="song-request__hint">{t("emptySelection")}</p>}
-        <ul className="song-request__selected">
-          {selected.map((track) => (
-            <li className="song-request__selected-item" key={track.id}>
-              {track.artworkUrl ? (
-                <Image alt="" className="song-request__artwork" height={52} src={track.artworkUrl} unoptimized width={52} />
-              ) : <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty" />}
-              <span className="song-request__track-copy">
-                <strong>{track.title}</strong>
-                <span>{track.artist}</span>
-              </span>
+              <div className="song-request__field">
+                <label htmlFor="song-link-input">{songFormT("spotifyLabel")}</label>
+                <input
+                  id="song-link-input"
+                  onChange={(event) => setManualSong((current) => ({ ...current, spotifyUrl: event.target.value }))}
+                  placeholder="https://open.spotify.com/track/..."
+                  type="url"
+                  value={manualSong.spotifyUrl}
+                />
+              </div>
+
               <button
-                aria-label={t("removeTrack", { title: track.title })}
-                className="song-request__remove"
-                disabled={isSubmitting}
-                onClick={() => setSelected((current) => current.filter((item) => item.id !== track.id))}
+                className="song-request__manual-submit"
+                disabled={isSubmitting || hasReachedMaximum || !manualSong.title.trim()}
+                type="submit"
+              >
+                {isSubmitting ? t("addingSongs") : songFormT("addSong")}
+              </button>
+              {manualError && <p className="form-message form-message--error" role="alert">{manualError}</p>}
+            </form>
+          )}
+        </div>
+
+        {/* Right Column: Staged Queue & Confirmed Tracks */}
+        <div className="song-request__curation">
+          <div className="song-request__curation-header">
+            <div className="song-request__counter-block">
+              <span className="song-request__counter-label">{t("selectedCount", { count: totalCount })}</span>
+              <div className="song-request__dots" aria-hidden="true">
+                <span className={`song-dot ${totalCount >= 1 ? "is-filled" : ""}`} />
+                <span className={`song-dot ${totalCount >= 2 ? "is-filled" : ""}`} />
+                <span className={`song-dot ${totalCount >= 3 ? "is-filled" : ""}`} />
+              </div>
+            </div>
+            {hasReachedMaximum && (
+              <span className="song-request__limit-badge" role="status">
+                {t("maximumReached")}
+              </span>
+            )}
+          </div>
+
+          {/* Staged Tracks waiting to be saved */}
+          {selected.length > 0 && (
+            <section className="song-request__staged-card" aria-labelledby="selected-songs-title">
+              <div className="song-request__card-top">
+                <h4 id="selected-songs-title">{t("queueTitle")}</h4>
+                <span className="song-request__badge-count">{selected.length}</span>
+              </div>
+              <ul className="song-request__track-list">
+                {selected.map((track) => (
+                  <li className="song-request__track-row is-staged" key={track.id}>
+                    {track.artworkUrl ? (
+                      <Image alt="" className="song-request__artwork" height={44} src={track.artworkUrl} unoptimized width={44} />
+                    ) : (
+                      <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <circle cx="12" cy="12" r="10"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </span>
+                    )}
+                    <div className="song-request__track-copy">
+                      <strong>{track.title}</strong>
+                      <span>{track.artist || "—"}</span>
+                    </div>
+                    <button
+                      aria-label={t("removeTrack", { title: track.title })}
+                      className="song-request__delete-btn"
+                      disabled={isSubmitting}
+                      onClick={() => setSelected((current) => current.filter((item) => item.id !== track.id))}
+                      type="button"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button
+                className="song-request__confirm-btn"
+                disabled={selected.length === 0 || isSubmitting || isLoadingSubmitted}
+                onClick={() => void submitSongs()}
                 type="button"
               >
-                <span aria-hidden="true">×</span>
+                {isSubmitting ? t("addingSongs") : t("addMySongs")}
               </button>
-            </li>
-          ))}
-        </ul>
-        <button
-          className="text-button song-request__submit"
-          disabled={selected.length === 0 || isSubmitting || isLoadingSubmitted}
-          onClick={() => void submitSongs()}
-          type="button"
-        >
-          {isSubmitting ? t("addingSongs") : t("addMySongs")}
-        </button>
-        {errorMessage && <p className="form-message form-message--error" role="alert">{errorMessage}</p>}
-        {successMessage && (
-          <div className="song-request__success" role="status">
-            <p>{successMessage}</p>
-            {playlistUrl && <a href={playlistUrl} rel="noreferrer" target="_blank">{t("viewPlaylist")}</a>}
-          </div>
-        )}
-      </section>
+            </section>
+          )}
 
-      {submitted.length > 0 && (
-        <section className="song-request__submitted" aria-labelledby="submitted-songs-title">
-          <h4 id="submitted-songs-title">{t("submittedTitle")}</h4>
-          <ul className="song-request__selected">
-            {submitted.map((track) => (
-              <li className="song-request__selected-item" key={track.id}>
-                {track.artworkUrl ? (
-                  <Image alt="" className="song-request__artwork" height={52} src={track.artworkUrl} unoptimized width={52} />
-                ) : <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty" />}
-                <span className="song-request__track-copy">
-                  <strong>{track.title}</strong>
-                  <span>{track.artist}</span>
-                </span>
-                <span aria-hidden="true" className="song-request__submitted-mark">✓</span>
-                <span className="visually-hidden">{track.status === "already_in_playlist" ? t("alreadyInPlaylist") : t("submitted")}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+          {/* Confirmed / Submitted Tracks */}
+          {submitted.length > 0 && (
+            <section className="song-request__confirmed-card" aria-labelledby="submitted-songs-title">
+              <div className="song-request__card-top">
+                <h4 id="submitted-songs-title">{t("submittedTitle")}</h4>
+                <span className="song-request__badge-count">{submitted.length}</span>
+              </div>
+              <ul className="song-request__track-list">
+                {submitted.map((track) => (
+                  <li className="song-request__track-row is-confirmed" key={track.id}>
+                    {track.artworkUrl ? (
+                      <Image alt="" className="song-request__artwork" height={44} src={track.artworkUrl} unoptimized width={44} />
+                    ) : (
+                      <span aria-hidden="true" className="song-request__artwork song-request__artwork--empty">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <circle cx="12" cy="12" r="10"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </span>
+                    )}
+                    <div className="song-request__track-copy">
+                      <strong>{track.title}</strong>
+                      <span>{track.artist || "—"}</span>
+                    </div>
+                    <div className="song-request__confirmed-status">
+                      <span className="song-request__check-pill" title={track.status === "already_in_playlist" ? t("alreadyInPlaylist") : t("submitted")}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>{t("submitted")}</span>
+                      </span>
+                      {track.spotifyUrl && (
+                        <a
+                          aria-label="Open track on Spotify"
+                          className="song-request__spotify-link"
+                          href={track.spotifyUrl}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* Empty State when no songs selected and none submitted */}
+          {selected.length === 0 && submitted.length === 0 && !isLoadingSubmitted && (
+            <div className="song-request__empty-state">
+              <span className="song-request__empty-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 18V5l12-2v13"/>
+                  <circle cx="6" cy="18" r="3"/>
+                  <circle cx="18" cy="16" r="3"/>
+                </svg>
+              </span>
+              <p>{t("emptySelection")}</p>
+            </div>
+          )}
+
+          {/* Feedback messages */}
+          {errorMessage && <p className="form-message form-message--error" role="alert">{errorMessage}</p>}
+          {successMessage && (
+            <div className="song-request__success" role="status">
+              <p>{successMessage}</p>
+              {playlistUrl && (
+                <a href={playlistUrl} rel="noreferrer" target="_blank" className="song-request__playlist-btn">
+                  {t("viewPlaylist")} ↗
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
