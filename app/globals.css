@@ -4719,14 +4719,22 @@ a {
 
 .polaroid-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2.25rem 2rem;
-  padding: 1.5rem 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem 1rem;
+  padding: 1rem 0;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 640px) {
   .polaroid-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 1.5rem 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .polaroid-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem 1.25rem;
   }
 }
 
@@ -4735,14 +4743,14 @@ a {
   display: flex;
   flex-direction: column;
   background: #FFFFFF;
-  padding: 12px 12px 34px 12px;
+  padding: 8px 8px 18px 8px;
   border-radius: 2px;
   border: 1px solid #ECE4DD;
   box-shadow: 
-    0 10px 25px rgba(50, 30, 35, 0.08),
-    0 2px 6px rgba(0, 0, 0, 0.04);
+    0 4px 14px rgba(50, 30, 35, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
   transform: rotate(var(--polaroid-rot, 0deg));
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
@@ -4750,17 +4758,17 @@ a {
 }
 
 .polaroid-card:hover {
-  transform: translateY(-8px) rotate(0deg) scale(1.02);
+  transform: translateY(-4px) rotate(0deg) scale(1.02);
   box-shadow: 
-    0 22px 45px rgba(50, 30, 35, 0.16),
-    0 4px 12px rgba(0, 0, 0, 0.06);
+    0 12px 28px rgba(50, 30, 35, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.05);
   z-index: 10;
 }
 
 .polaroid-card__photo-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #251E20;
   border-radius: 1px;
@@ -4770,7 +4778,7 @@ a {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  transition: transform 0.5s ease;
+  transition: transform 0.4s ease;
 }
 
 .polaroid-card:hover .polaroid-card__photo {
@@ -4778,9 +4786,9 @@ a {
 }
 
 .polaroid-card__caption {
-  margin-top: 14px;
+  margin-top: 8px;
   padding: 0 4px;
-  min-height: 28px;
+  min-height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4788,9 +4796,9 @@ a {
 
 .polaroid-card__title {
   font-family: var(--font-script, cursive);
-  font-size: 1.45rem;
+  font-size: 1.15rem;
   color: #352528;
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: 0.01em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -4832,13 +4840,13 @@ a {
 }
 
 .polaroid-lightbox__frame {
-  max-width: 900px;
+  max-width: 680px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: #FFFFFF;
-  padding: 16px 16px 28px 16px;
+  padding: 16px 16px 24px 16px;
   border-radius: 4px;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
   color: #2D2224;
@@ -5466,6 +5474,96 @@ a {
   font-weight: 600;
   color: #2E6930;
   text-decoration: underline;
+}
+
+/* Completed / Maximum Reached Summary Card (Full Width) */
+.song-request__completed-card {
+  background: #FFFFFF;
+  border: 1px solid #E6DED8;
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.song-request__completed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #EFE8E2;
+}
+
+.song-request__completed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #2E6930;
+  background: #EDF7EC;
+  border: 1px solid #C4E8C2;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.song-request__completed-count {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #8C2836;
+  margin: 0;
+}
+
+.song-request__completed-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.song-request__playlist-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  background: #1DB954;
+  color: #FFFFFF !important;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none !important;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.song-request__playlist-link-btn:hover {
+  background: #1aa34a;
+  transform: translateY(-1px);
+}
+
+.song-request__search-more-btn {
+  padding: 0.65rem 1.15rem;
+  background: transparent;
+  color: #5C4E52;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 600;
+  border: 1px solid #D8CFC8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.song-request__search-more-btn:hover {
+  background: #FAF7F5;
+  color: #2D2224;
+  border-color: #B5A8A0;
 }
 
 
