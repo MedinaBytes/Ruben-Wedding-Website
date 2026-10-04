@@ -62,7 +62,7 @@ export default async function HomePage({
           </div>
 
           <p className="section-label" style={{ letterSpacing: "0.2em", textTransform: "uppercase", fontSize: "0.8rem", color: "#8E696E" }}>
-            {gate("title")}
+            Personal Invitation · {gate.has("eyebrow") ? gate("eyebrow") : "A Private Invitation"}
           </p>
 
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 5vw, 2.6rem)", margin: "0.5rem 0 1rem", color: "#2E2426" }}>
@@ -76,12 +76,12 @@ export default async function HomePage({
           <div style={{ height: "1px", width: "4rem", background: "linear-gradient(90deg, transparent, #CCA468, transparent)", margin: "0 auto 1.5rem" }} />
 
           <p style={{ color: "#5C5052", fontSize: "0.95rem", lineHeight: 1.65, marginBottom: "1.75rem" }}>
-            {gate("instruction")}
+            {gate.has("instruction") ? gate("instruction") : "This celebration is strictly by personal invitation. Each guest receives a unique, private link directly from Ruben and Andrea to open their interactive invitation."}
           </p>
 
           <div style={{ background: "rgba(247, 243, 239, 0.8)", border: "1px solid #E4DBD3", borderRadius: "8px", padding: "1.25rem 1rem", marginBottom: "2rem" }}>
             <p style={{ margin: 0, fontSize: "0.88rem", color: "#6A5D60", lineHeight: 1.5 }}>
-              💌 {gate("personalNotice")}
+              💌 {gate.has("personalNotice") ? gate("personalNotice") : "Please use the personal invitation link provided to you in WhatsApp, email, or your printed card to access your RSVP and wedding details."}
             </p>
           </div>
 

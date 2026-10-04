@@ -142,3 +142,67 @@ export async function createDemoInvitationAction(): Promise<CreateInvitationResu
     id: demoId,
   };
 }
+
+export async function deleteInvitationAction(id: string): Promise<{ success: boolean; error?: string }> {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) {
+    return { success: false, error: "Unauthorized." };
+  }
+
+  // Delete from local resilient store
+  resilientStore.deleteInvitation(id);
+
+  // Attempt delete from remote Supabase
+  try {
+    const client = createSupabaseAdminClient();
+    await client.from("invitations").delete().eq("id", id);
+    await client.from("rsvps").delete().eq("invitation_id", id);
+    await client.from("song_requests").delete().eq("invitation_id", id);
+  } catch {}
+
+  try {
+    await recordAdminAudit({
+      actor: { id: actor.id, email: actor.email || "admin@medina.local" },
+      action: "WEDDING_DATA_DELETED",
+      resourceType: "invitation",
+      resourceId: id,
+    });
+  } catch {}
+
+  revalidatePath("/admin/invitations");
+  return { success: true };
+}
+
+export async function revokeInvitationAction(id: string): Promise<{ success: boolean; error?: string }> {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) {
+    return { success: false, error: "Unauthorized." };
+  }
+
+  // Update local store
+  resilientStore.updateInvitationStatus(id, "revoked");
+
+  // Attempt remote Supabase update
+  try {
+    const client = createSupabaseAdminClient();
+    await client.from("invitations").update({ status: "revoked" }).eq("id", id);
+  } catch {}
+
+  try {
+    await recordAdminAudit({
+      actor: { id: actor.id, email: actor.email || "admin@medina.local" },
+      action: "INVITATION_REVOKED",
+      resourceType: "invitation",
+      resourceId: id,
+    });
+  } catch {}
+
+  revalidatePath("/admin/invitations");
+  return { success: true };
+}

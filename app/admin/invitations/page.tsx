@@ -69,6 +69,7 @@ export default async function AdminInvitationsPage() {
       attendeeCount: rsvp?.count || 0,
       phone: inv.phone || null,
       whatsapp: inv.whatsapp || null,
+      token: inv.token || inv.id,
     });
   }
 

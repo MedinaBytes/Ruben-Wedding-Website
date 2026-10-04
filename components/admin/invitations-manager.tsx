@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
+import { deleteInvitationAction, revokeInvitationAction } from "@/app/actions/admin-invitations";
 
 export interface InvitationRow {
   id: string;
@@ -17,6 +18,7 @@ export interface InvitationRow {
   attendeeCount: number;
   phone?: string | null;
   whatsapp?: string | null;
+  token?: string;
 }
 
 export function InvitationsManager({
@@ -26,6 +28,7 @@ export function InvitationsManager({
   invitations: InvitationRow[];
   siteUrl: string;
 }) {
+  const [items, setItems] = useState<InvitationRow[]>(invitations);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showCreate, setShowCreate] = useState(false);
@@ -40,7 +43,7 @@ export function InvitationsManager({
   } | null>(null);
   const [loadingQr, setLoadingQr] = useState(false);
 
-  const filtered = invitations.filter((inv) => {
+  const filtered = items.filter((inv) => {
     const matchesSearch =
       inv.displayName.toLowerCase().includes(search.toLowerCase()) ||
       (inv.groupName && inv.groupName.toLowerCase().includes(search.toLowerCase()));
@@ -49,11 +52,25 @@ export function InvitationsManager({
   });
 
   async function copyLink(inv: InvitationRow) {
-    // Generate the URL with ID
-    const url = `${siteUrl}/i/${inv.id}`;
+    const targetToken = inv.token || inv.id;
+    const url = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}`;
     await navigator.clipboard.writeText(url);
     setCopiedId(inv.id);
     setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  async function handleDelete(inv: InvitationRow) {
+    if (!confirm(`Are you sure you want to delete the invitation for "${inv.displayName}"?`)) return;
+    setItems((prev) => prev.filter((i) => i.id !== inv.id));
+    await deleteInvitationAction(inv.id);
+  }
+
+  async function handleRevoke(inv: InvitationRow) {
+    const newStatus = inv.status === "active" ? "revoked" : "active";
+    setItems((prev) =>
+      prev.map((i) => (i.id === inv.id ? { ...i, status: newStatus } : i)),
+    );
+    await revokeInvitationAction(inv.id);
   }
 
   async function openQrModal(inv: InvitationRow) {
@@ -91,7 +108,8 @@ export function InvitationsManager({
   }
 
   function sendWhatsApp(inv: InvitationRow) {
-    const inviteUrl = `${siteUrl}/i/${inv.id}`;
+    const targetToken = inv.token || inv.id;
+    const inviteUrl = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}`;
     const text = encodeURIComponent(
       `Dear ${inv.displayName},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n${inviteUrl}`,
     );
@@ -292,7 +310,24 @@ export function InvitationsManager({
                     </span>
                   </td>
                   <td style={{ padding: "0.85rem 1rem", textAlign: "right" }}>
-                    <div style={{ display: "inline-flex", gap: "0.4rem" }}>
+                    <div style={{ display: "inline-flex", gap: "0.4rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      <a
+                        href={`/i/${inv.token || inv.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          background: "#EEF6EC",
+                          border: "1px solid #C8E6C9",
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.65rem",
+                          fontSize: "0.78rem",
+                          textDecoration: "none",
+                          color: "#2B6628",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Open ↗
+                      </a>
                       <button
                         type="button"
                         onClick={() => copyLink(inv)}
@@ -300,13 +335,14 @@ export function InvitationsManager({
                           background: "#F4EFEA",
                           border: "1px solid #DCD3CB",
                           borderRadius: "4px",
-                          padding: "0.25rem 0.55rem",
+                          padding: "0.3rem 0.6rem",
                           fontSize: "0.78rem",
                           cursor: "pointer",
                           color: copiedId === inv.id ? "#35652D" : "#44393B",
+                          fontWeight: 500,
                         }}
                       >
-                        {copiedId === inv.id ? "Copied!" : "Copy Link"}
+                        {copiedId === inv.id ? "✓ Copied" : "Copy"}
                       </button>
                       <button
                         type="button"
@@ -316,13 +352,13 @@ export function InvitationsManager({
                           background: "#FFFFFF",
                           border: "1px solid #DCD3CB",
                           borderRadius: "4px",
-                          padding: "0.25rem 0.55rem",
+                          padding: "0.3rem 0.6rem",
                           fontSize: "0.78rem",
                           cursor: "pointer",
                           color: "#7A2833",
                         }}
                       >
-                        QR Code
+                        QR
                       </button>
                       <button
                         type="button"
@@ -332,14 +368,46 @@ export function InvitationsManager({
                           background: "#E8F5E9",
                           border: "1px solid #C8E6C9",
                           borderRadius: "4px",
-                          padding: "0.25rem 0.55rem",
+                          padding: "0.3rem 0.6rem",
                           fontSize: "0.78rem",
                           cursor: "pointer",
                           color: "#1B5E20",
                           fontWeight: 500,
                         }}
                       >
-                        WhatsApp
+                        WA
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRevoke(inv)}
+                        title={inv.status === "active" ? "Revoke invitation" : "Activate invitation"}
+                        style={{
+                          background: "#FFF8F0",
+                          border: "1px solid #EEDAC5",
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.6rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#8C5820",
+                        }}
+                      >
+                        {inv.status === "active" ? "Revoke" : "Activate"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(inv)}
+                        title="Delete invitation"
+                        style={{
+                          background: "#FDF2F3",
+                          border: "1px solid #F5C6CB",
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.6rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#8E2B38",
+                        }}
+                      >
+                        Delete
                       </button>
                     </div>
                   </td>

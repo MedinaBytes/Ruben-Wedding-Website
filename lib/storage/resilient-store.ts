@@ -157,6 +157,23 @@ export const resilientStore = {
     return inv;
   },
 
+  deleteInvitation(id: string) {
+    const db = loadDb();
+    db.invitations = db.invitations.filter((i) => i.id !== id);
+    db.rsvps = db.rsvps.filter((r) => r.invitation_id !== id);
+    db.songRequests = db.songRequests.filter((s) => s.invitation_id !== id);
+    saveDb(db);
+  },
+
+  updateInvitationStatus(id: string, status: "active" | "draft" | "revoked") {
+    const db = loadDb();
+    const inv = db.invitations.find((i) => i.id === id);
+    if (inv) {
+      inv.status = status;
+      saveDb(db);
+    }
+  },
+
   // RSVPS
   getRsvps(): StoredRsvp[] {
     return loadDb().rsvps;

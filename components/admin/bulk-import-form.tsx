@@ -23,23 +23,6 @@ export function BulkImportForm() {
     errors: Array<{ row: number; displayName: string; message: string }>;
   } | null>(null);
 
-  function downloadTemplate() {
-    const template =
-      "display_name,language,max_guests,plus_one_allowed,group_name\n" +
-      "Familia Quijada Sanchez,es,4,false,Family Ruben\n" +
-      "Andrea & Guest,de-AT,2,true,Friends Vienna\n" +
-      "Mate Kovacs,hu,1,false,Friends Hungary\n" +
-      "Sarah Jenkins,en,2,true,International Friends\n";
-
-    const blob = new Blob([template], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "wedding_guests_template.csv";
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
   function handleParse(text: string) {
     setCsvContent(text);
     setResult(null);
@@ -113,22 +96,26 @@ export function BulkImportForm() {
             Import multiple guests at once, auto-generating secure 256-bit token invitation URLs.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={downloadTemplate}
+        <a
+          href="/wedding_guests_template.csv"
+          download="wedding_guests_template.csv"
           style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
             background: "#FFFFFF",
             border: "1px solid #D5CBC4",
             borderRadius: "6px",
-            padding: "0.45rem 0.9rem",
-            fontSize: "0.82rem",
+            padding: "0.5rem 1rem",
+            fontSize: "0.85rem",
             color: "#544648",
-            cursor: "pointer",
-            fontWeight: 500,
+            textDecoration: "none",
+            fontWeight: 600,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}
         >
           ⬇ Download CSV Template
-        </button>
+        </a>
       </div>
 
       <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem", marginBottom: "2rem" }}>
