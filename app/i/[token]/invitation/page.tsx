@@ -118,6 +118,8 @@ export default async function MainInvitationPage({
           languageLabel={navigation("language")}
           mainNavigationLabel={navigation("main")}
           invitation={{ id: invitation.id, token }}
+          soundOnLabel={intro("soundOn")}
+          soundOffLabel={intro("soundOff")}
         />
         <main id="main">
           <InviteOpenTracker invitationId={invitation.id} token={token} />
@@ -131,27 +133,59 @@ export default async function MainInvitationPage({
                   {weddingConfig.couple.displayNames}
                 </h1>
                 <p className="hero__statement">{hero("statement")}</p>
-                <p className="hero__guest-greeting">{greeting}</p>
-                <p className="hero__place">{hero("place")}</p>
+
+                {/* Personalized Luxury Invitation Card */}
+                <div className="hero__invitation-card">
+                  <p className="hero__guest-greeting">{greeting}</p>
+                  <p className="hero__invitation-celebrate">{intro("celebrate")}</p>
+                </div>
+
+                {/* Unified Date & City Meta Lockup (Single instance, fully localized) */}
+                <div className="hero__event-meta">
+                  <span className="hero__meta-date">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <time dateTime="2027-10-02">{getWeddingDateLabel(locale, true)}</time>
+                  </span>
+                  <span className="hero__meta-sep" aria-hidden="true">·</span>
+                  <span className="hero__meta-city">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>{hero("place")}</span>
+                  </span>
+                </div>
+
+                {/* Quick Navigation Action Buttons */}
+                <div className="hero__quick-actions">
+                  <a href="#event-note" className="hero__action-btn hero__action-btn--primary">
+                    <span>{navigation("details")}</span>
+                    <span aria-hidden="true" style={{ fontSize: "0.9em" }}>↓</span>
+                  </a>
+                  <a href="#rsvp" className="hero__action-btn hero__action-btn--secondary">
+                    <span>{navigation("rsvp")}</span>
+                  </a>
+                </div>
               </div>
+
+              {/* Portrait Figure without redundant caption name stamping */}
               <figure className="hero__portrait">
                 <HeroPhotoMotion>
                   <WeddingPhoto
                     id="formal-staircase-hero"
                     alt={wedding("photos.formalStaircasePortrait")}
-                    sizes="(max-width: 760px) 100vw, 53vw"
+                    sizes="(max-width: 760px) 100vw, 50vw"
                     preload
                     className="hero__image"
                   />
                 </HeroPhotoMotion>
-                <figcaption>{hero("portraitCaption")}</figcaption>
               </figure>
             </div>
-            <p className="hero__date">
-              <span>{getWeddingDateLabel(locale, true)}</span>
-              <span aria-hidden="true">·</span>
-              <span>{weddingConfig.event.city}</span>
-            </p>
           </section>
 
           {/* Full Wedding Sections Suite */}
