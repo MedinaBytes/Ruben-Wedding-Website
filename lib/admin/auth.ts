@@ -4,12 +4,16 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export function isAdminAllowlisted(email: string | undefined) {
   if (!email) return false;
+  const normalized = email.toLowerCase().trim();
+  const directAdmin = process.env.ADMIN_EMAIL?.toLowerCase().trim();
+  if (directAdmin && directAdmin === normalized) return true;
+
   const allowlist = process.env.ADMIN_EMAIL_ALLOWLIST
     ?.split(",")
     .map((entry) => entry.trim().toLowerCase())
     .filter(Boolean);
 
-  return Boolean(allowlist?.includes(email.toLowerCase()));
+  return Boolean(allowlist?.includes(normalized));
 }
 
 export async function getAuthenticatedAdminIdentity() {

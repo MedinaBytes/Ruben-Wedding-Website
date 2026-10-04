@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { recordInvitationInteraction } from "@/lib/client/invitation-events";
+import { useSound } from "@/lib/sound";
 import type { Locale } from "@/lib/wedding-config";
 
 type RsvpState = "yes" | "no" | "";
@@ -27,6 +29,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
   const locale = useLocale();
   const typedLocale = locale as Locale;
   const t = useTranslations("rsvp");
+  const { play } = useSound();
   const hasTrackedStart = useRef(false);
   const [attendance, setAttendance] = useState<RsvpState>("");
   const [attendeeCount, setAttendeeCount] = useState(1);
@@ -107,6 +110,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
         return;
       }
 
+      play("rsvp-success");
       setConfirmation(attendance);
     } catch {
       setErrorMessage(t("saveError"));
@@ -125,12 +129,33 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
         <motion.div
           animate={{ opacity: 1, scale: 1 }}
           className="rsvp-confirmation"
-          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.95 }}
           role="status"
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.42, ease: [0.2, 0.7, 0.2, 1] }}
+          style={{ textAlign: "center", padding: "3rem 1.5rem" }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, ease: [0.34, 1.3, 0.64, 1] }}
         >
-          <h3>{confirmation === "yes" ? t("confirmedTitle") : t("declinedTitle")}</h3>
-          <p>{t(confirmation === "yes" ? "confirmedMessage" : "declinedMessage", { name: invitation.displayName })}</p>
+          <motion.div
+            initial={shouldReduceMotion ? false : { scale: 0.4, rotate: -15, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{ duration: 0.6, ease: [0.34, 1.4, 0.64, 1] }}
+            style={{ width: "96px", height: "96px", margin: "0 auto 1.5rem" }}
+          >
+            <Image
+              src="/orchids/orchid-single-bloom.svg"
+              alt="Celebration Orchid Bloom"
+              width={96}
+              height={96}
+            />
+          </motion.div>
+          <span style={{ fontSize: "1.4rem", color: "#8C2836", display: "inline-block", marginBottom: "0.5rem" }} aria-hidden="true">
+            ♥
+          </span>
+          <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.85rem", color: "#2B2425", margin: "0 0 0.75rem 0" }}>
+            {confirmation === "yes" ? t("confirmedTitle") : t("declinedTitle")}
+          </h3>
+          <p style={{ color: "#5F5456", maxWidth: "480px", margin: "0 auto", fontSize: "0.95rem", lineHeight: 1.6 }}>
+            {t(confirmation === "yes" ? "confirmedMessage" : "declinedMessage", { name: invitation.displayName })}
+          </p>
         </motion.div>
       ) : (
         <form
