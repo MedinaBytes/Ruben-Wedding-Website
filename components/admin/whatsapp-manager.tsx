@@ -70,7 +70,7 @@ export function WhatsAppManager({
   useEffect(() => {
     async function loadStatus() {
       try {
-        const res = await fetch("/api/admin/whatsapp/session");
+        const res = await fetch(`/api/admin/whatsapp/session?_t=${Date.now()}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setStatus(data.status);
@@ -111,27 +111,31 @@ export function WhatsAppManager({
     setDispatchLog((prev) => [...prev, "Initializing free WhatsApp Web bot session and generating QR code..."]);
 
     try {
-      const res = await fetch("/api/admin/whatsapp/session", {
+      const res = await fetch(`/api/admin/whatsapp/session?_t=${Date.now()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "start" }),
+        cache: "no-store",
       });
-      const data = await res.json();
-      if (data.qrCode) setLiveQrCode(data.qrCode);
-      if (data.status === "connected") {
-        setStatus("connected");
-        setLinkedPhone(data.linkedPhone || "Connected");
-        setShowQrModal(false);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.qrCode) setLiveQrCode(data.qrCode);
+        if (data.status === "connected") {
+          setStatus("connected");
+          setLinkedPhone(data.linkedPhone || "Connected");
+          setShowQrModal(false);
+          setLiveQrCode(null);
+        }
       }
     } catch (err: unknown) {
       setDispatchLog((prev) => [...prev, `Error starting session: ${err instanceof Error ? err.message : "Network error"}`]);
     }
 
-    // Start polling every 2.5s while modal is active
+    // Start polling every 1.5s while modal is active
     if (pollTimerRef.current) clearInterval(pollTimerRef.current);
     pollTimerRef.current = setInterval(async () => {
       try {
-        const pollRes = await fetch("/api/admin/whatsapp/session");
+        const pollRes = await fetch(`/api/admin/whatsapp/session?_t=${Date.now()}`, { cache: "no-store" });
         if (pollRes.ok) {
           const pollData = await pollRes.json();
           if (pollData.qrCode) setLiveQrCode(pollData.qrCode);
@@ -148,7 +152,7 @@ export function WhatsAppManager({
           }
         }
       } catch {}
-    }, 2500);
+    }, 1500);
   }
 
   function handleCloseModal() {
@@ -827,12 +831,51 @@ export function WhatsAppManager({
                       margin: "0 auto 0.75rem",
                     }}
                   />
-                  <span style={{ fontSize: "0.85rem", color: "#544648", fontWeight: 500 }}>
+                  <span style={{ fontSize: "0.85rem", color: "#544648", fontWeight: 500, display: "block" }}>
                     Generating live WhatsApp Web pairing QR...
                   </span>
+                  <button
+                    type="button"
+                    onClick={handleLinkClick}
+                    style={{
+                      marginTop: "0.75rem",
+                      background: "#F4EFEA",
+                      border: "1px solid #DCD3CB",
+                      borderRadius: "6px",
+                      padding: "0.35rem 0.75rem",
+                      fontSize: "0.78rem",
+                      cursor: "pointer",
+                      color: "#6E5B5D",
+                    }}
+                  >
+                    Tap to retry
+                  </button>
                 </div>
               )}
             </div>
+
+            {liveQrCode && (
+              <div style={{ marginBottom: "0.85rem" }}>
+                <button
+                  type="button"
+                  onClick={handleLinkClick}
+                  style={{
+                    background: "transparent",
+                    border: "1px solid #DCD3CB",
+                    borderRadius: "6px",
+                    padding: "0.3rem 0.75rem",
+                    fontSize: "0.78rem",
+                    color: "#544648",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                  }}
+                >
+                  🔄 Refresh QR Code
+                </button>
+              </div>
+            )}
 
             <p style={{ margin: "0 0 1rem 0", fontSize: "0.78rem", color: "#776A6C" }}>
               The QR code refreshes automatically. As soon as you scan, this dialog will close and your phone will be connected.

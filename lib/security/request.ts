@@ -6,8 +6,9 @@ const privateHeaders = {
 };
 
 function configuredSiteOrigin() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (!siteUrl) return null;
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!raw) return null;
+  const siteUrl = raw.startsWith("http://") || raw.startsWith("https://") ? raw : `http://${raw}`;
 
   try {
     return new URL(siteUrl).origin;

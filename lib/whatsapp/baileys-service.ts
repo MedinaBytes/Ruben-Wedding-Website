@@ -73,6 +73,19 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
     return { ...bot.state };
   }
 
+  // If already connecting and we have a valid qrCode, return it immediately
+  if (bot.socket && bot.state.status === "connecting" && bot.state.qrCode) {
+    return { ...bot.state };
+  }
+
+  // Close previous non-connected socket before opening a new one
+  if (bot.socket) {
+    try {
+      bot.socket.end(undefined);
+    } catch {}
+    bot.socket = null;
+  }
+
   bot.isInitializing = true;
   bot.state.status = "connecting";
   bot.state.error = null;
@@ -98,6 +111,18 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
 
     sock.ev.on("creds.update", saveCreds);
 
+    let initialHandled = false;
+    let resolveInitial: () => void = () => {};
+    const initialQrPromise = new Promise<void>((resolve) => {
+      resolveInitial = resolve;
+      setTimeout(() => {
+        if (!initialHandled) {
+          initialHandled = true;
+          resolve();
+        }
+      }, 3500);
+    });
+
     sock.ev.on("connection.update", async (update) => {
       const { qr, connection, lastDisconnect } = update;
 
@@ -110,6 +135,10 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
           });
           bot.state.status = "connecting";
           bot.state.error = null;
+          if (!initialHandled) {
+            initialHandled = true;
+            resolveInitial();
+          }
         } catch (err: unknown) {
           bot.state.error = err instanceof Error ? err.message : "Failed to generate QR code";
         }
@@ -132,6 +161,11 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
           qrCode: null,
           lastSyncedAt: bot.state.lastSyncedAt,
         });
+
+        if (!initialHandled) {
+          initialHandled = true;
+          resolveInitial();
+        }
       }
 
       if (connection === "close") {
@@ -145,9 +179,14 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
           bot.socket = null;
           bot.state.status = "disconnected";
         }
+        if (!initialHandled) {
+          initialHandled = true;
+          resolveInitial();
+        }
       }
     });
 
+    await initialQrPromise;
     bot.isInitializing = false;
     return { ...bot.state };
   } catch (err: unknown) {
