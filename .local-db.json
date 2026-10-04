@@ -22,13 +22,15 @@
     {
       "invitation_id": "00000000-0000-0000-0000-000000000001",
       "attendance_status": "yes",
-      "attendee_count": 1,
-      "guest_names": [],
-      "dietary_requirements": "none",
-      "notes": "love u guys",
-      "language": "en",
-      "submitted_at": "2026-10-04T11:36:28.985Z",
-      "updated_at": "2026-10-04T11:36:28.985Z"
+      "attendee_count": 2,
+      "guest_names": [
+        "MAria"
+      ],
+      "dietary_requirements": "no se",
+      "notes": "quien cono",
+      "language": "es",
+      "submitted_at": "2026-10-04T17:45:13.788Z",
+      "updated_at": "2026-10-04T17:45:13.788Z"
     }
   ],
   "songRequests": [
@@ -64,6 +66,30 @@
     }
   ],
   "events": [
+    {
+      "id": "evt-1791135913873-9h8o7",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": null,
+      "event_type": "RSVP_CONFIRMED",
+      "locale": "es",
+      "created_at": "2026-10-04T17:45:13.873Z"
+    },
+    {
+      "id": "evt-1791135903200-825y8",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a71bc329-22b4-4e7d-bd25-d0fa5dc45b2b",
+      "event_type": "RSVP_STARTED",
+      "locale": "es",
+      "created_at": "2026-10-04T17:45:03.200Z"
+    },
+    {
+      "id": "evt-1791135903175-g0461",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a71bc329-22b4-4e7d-bd25-d0fa5dc45b2b",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-04T17:45:03.175Z"
+    },
     {
       "id": "evt-demo-1",
       "invitation_id": "00000000-0000-0000-0000-000000000001",
@@ -104,11 +130,11 @@
     "whatsappTemplate": "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}"
   },
   "whatsappSession": {
-    "status": "connected",
-    "linkedPhone": "+43 664 999 8888",
+    "status": "disconnected",
+    "linkedPhone": null,
     "qrCode": null,
     "autoUnlinkAfterDispatch": true,
     "dispatchIntervalSeconds": 10,
-    "lastSyncedAt": "2026-10-04T10:46:14.028Z"
+    "lastSyncedAt": null
   }
 }

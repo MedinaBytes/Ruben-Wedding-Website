@@ -32,7 +32,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   distDir: process.env.CODEX_NEXT_DIST_DIR ?? ".next",
-  allowedDevOrigins: ["127.0.0.1"],
+  allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.1.104"],
+  serverExternalPackages: ["@whiskeysockets/baileys", "jimp", "sharp"],
   turbopack: {
     root: process.cwd(),
   },
