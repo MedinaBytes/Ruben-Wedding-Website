@@ -34,6 +34,30 @@
   ],
   "events": [
     {
+      "id": "evt-1791232567328-jpwvd",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "166973be-f068-454c-90b3-b4ae1d8ebe5c",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-05T20:36:07.328Z"
+    },
+    {
+      "id": "evt-1791232562625-ayugm",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "166973be-f068-454c-90b3-b4ae1d8ebe5c",
+      "event_type": "INVITE_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-05T20:36:02.625Z"
+    },
+    {
+      "id": "evt-1791232503620-4xr15",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "en",
+      "created_at": "2026-10-05T20:35:03.620Z"
+    },
+    {
       "id": "evt-1791227805492-vxjaq",
       "invitation_id": "00000000-0000-0000-0000-000000000001",
       "session_id": "57e3153d-fe6d-427c-8498-4241cd9e07ce",
