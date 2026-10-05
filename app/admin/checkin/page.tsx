@@ -41,7 +41,7 @@ export default async function AdminCheckInPage() {
         guestNames: rsvp?.guest_names || [],
         dietary: rsvp?.dietary_requirements || null,
         notes: rsvp?.notes || null,
-        tableNumber: table?.table_number || null,
+        tableNumber: table?.table_number ? Number(table.table_number) : null,
         tableName: table?.table_name || null,
       };
     });

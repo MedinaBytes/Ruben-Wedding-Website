@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { sendBatchRsvpReminders, type ReminderResult } from "@/app/actions/admin-reminders";
 
 export interface RsvpRow {
   invitationId: string;
@@ -24,9 +25,25 @@ function getPrimaryGuestName(displayName: string): string {
   );
 }
 
-export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
+export function RsvpsManager({
+  rsvps,
+  cateringSummary,
+  enableMealSelection = true,
+  enableRsvpReminders = true,
+}: {
+  rsvps: RsvpRow[];
+  cateringSummary?: {
+    totalConfirmed: number;
+    meals: Record<string, number>;
+    allergies: Array<{ guestName: string; allergies: string; meal: string }>;
+  };
+  enableMealSelection?: boolean;
+  enableRsvpReminders?: boolean;
+}) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "yes" | "no" | "pending">("all");
+  const [reminderResult, setReminderResult] = useState<ReminderResult | null>(null);
+  const [isReminding, startReminding] = useTransition();
 
   const filtered = rsvps.filter((r) => {
     const matchesSearch =
@@ -76,6 +93,33 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
     URL.revokeObjectURL(url);
   }
 
+  function exportCatererCsv() {
+    if (!cateringSummary) return;
+    const headers = ["Guest Name", "Meal Choice", "Allergies / Intolerances"];
+    const rows = cateringSummary.allergies.map((a) => [
+      `"${a.guestName.replace(/"/g, '""')}"`,
+      `"${a.meal.replace(/"/g, '""')}"`,
+      `"${a.allergies.replace(/"/g, '""')}"`,
+    ]);
+
+    const csvString = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `caterer_dietary_sheet_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleBatchReminders() {
+    if (!confirm("Send follow-up reminders to all pending guest invitations via Email & WhatsApp queue?")) return;
+    startReminding(async () => {
+      const res = await sendBatchRsvpReminders();
+      setReminderResult(res);
+    });
+  }
+
   const yesCount = rsvps.filter((r) => r.status === "yes").length;
   const noCount = rsvps.filter((r) => r.status === "no").length;
   const pendingCount = rsvps.filter((r) => r.status === "pending").length;
@@ -93,23 +137,155 @@ export function RsvpsManager({ rsvps }: { rsvps: RsvpRow[] }) {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={exportCsv}
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          {enableRsvpReminders && (
+            <button
+              type="button"
+              onClick={handleBatchReminders}
+              disabled={isReminding}
+              style={{
+                background: "#8C2836",
+                color: "#FFFFFF",
+                border: 0,
+                borderRadius: "6px",
+                padding: "0.55rem 1.1rem",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(140, 40, 54, 0.2)",
+              }}
+            >
+              {isReminding ? "Preparing Reminders..." : "🔔 Send Batch RSVP Reminders"}
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={exportCsv}
+            style={{
+              background: "#55644E",
+              color: "#FFFFFF",
+              border: 0,
+              borderRadius: "6px",
+              padding: "0.55rem 1.1rem",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            ⬇ Export RSVPs (CSV)
+          </button>
+        </div>
+      </div>
+
+      {reminderResult && (
+        <div
           style={{
-            background: "#55644E",
-            color: "#FFFFFF",
-            border: 0,
-            borderRadius: "6px",
-            padding: "0.55rem 1.1rem",
-            fontSize: "0.85rem",
-            fontWeight: 500,
-            cursor: "pointer",
+            marginBottom: "1.5rem",
+            padding: "1rem 1.25rem",
+            background: "#ECFDF5",
+            border: "1px solid #A7F3D0",
+            borderRadius: "8px",
+            color: "#065F46",
+            fontSize: "0.88rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          ⬇ Export RSVPs to CSV
-        </button>
-      </div>
+          <div>
+            <strong>✓ Batch Reminders Queued:</strong> {reminderResult.remindersPrepared} pending invitations prepared ({reminderResult.emailsSent} via Email, {reminderResult.whatsAppPrepared} with WhatsApp numbers).
+          </div>
+          <button
+            type="button"
+            onClick={() => setReminderResult(null)}
+            style={{ background: "transparent", border: 0, cursor: "pointer", color: "#065F46" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Caterer Dietary & Menu Breakdown Card */}
+      {enableMealSelection && cateringSummary && (
+        <div
+          style={{
+            marginBottom: "1.75rem",
+            background: "#FFFFFF",
+            border: "1px solid #E4DBD3",
+            borderRadius: "10px",
+            padding: "1.5rem",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <span style={{ fontSize: "1.4rem" }}>🍽️</span>
+              <div>
+                <h3 style={{ margin: 0, fontSize: "1.1rem", fontFamily: "var(--font-display, serif)", color: "#2B2425" }}>
+                  Schloss Hetzendorf Caterer Summary
+                </h3>
+                <p style={{ margin: 0, fontSize: "0.82rem", color: "#6A5D60" }}>
+                  Live course breakdown for kitchen head chef &amp; banquet service
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={exportCatererCsv}
+              style={{
+                background: "transparent",
+                border: "1px solid #D5CBC4",
+                borderRadius: "6px",
+                padding: "0.4rem 0.85rem",
+                fontSize: "0.82rem",
+                color: "#4A3E3D",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
+            >
+              📄 Export Caterer Diet Sheet (CSV)
+            </button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem", marginBottom: "1rem" }}>
+            <div style={{ background: "#FAF7F5", padding: "0.85rem", borderRadius: "8px", border: "1px solid #EBE4DD", textAlign: "center" }}>
+              <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "#8C2836" }}>{cateringSummary.meals.classic || 0}</div>
+              <div style={{ fontSize: "0.78rem", color: "#544648", marginTop: "2px" }}>🥩 Beef Classic</div>
+            </div>
+            <div style={{ background: "#FAF7F5", padding: "0.85rem", borderRadius: "8px", border: "1px solid #EBE4DD", textAlign: "center" }}>
+              <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "#2563EB" }}>{cateringSummary.meals.fish || 0}</div>
+              <div style={{ fontSize: "0.78rem", color: "#544648", marginTop: "2px" }}>🐟 Fish / Trout</div>
+            </div>
+            <div style={{ background: "#FAF7F5", padding: "0.85rem", borderRadius: "8px", border: "1px solid #EBE4DD", textAlign: "center" }}>
+              <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "#059669" }}>{cateringSummary.meals.vegetarian || 0}</div>
+              <div style={{ fontSize: "0.78rem", color: "#544648", marginTop: "2px" }}>🥗 Vegetarian</div>
+            </div>
+            <div style={{ background: "#FAF7F5", padding: "0.85rem", borderRadius: "8px", border: "1px solid #EBE4DD", textAlign: "center" }}>
+              <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "#16A34A" }}>{cateringSummary.meals.vegan || 0}</div>
+              <div style={{ fontSize: "0.78rem", color: "#544648", marginTop: "2px" }}>🌿 Vegan</div>
+            </div>
+            <div style={{ background: "#FAF7F5", padding: "0.85rem", borderRadius: "8px", border: "1px solid #EBE4DD", textAlign: "center" }}>
+              <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "#D97706" }}>{cateringSummary.meals.kids || 0}</div>
+              <div style={{ fontSize: "0.78rem", color: "#544648", marginTop: "2px" }}>🧒 Kids Menu</div>
+            </div>
+          </div>
+
+          {cateringSummary.allergies.length > 0 && (
+            <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "6px", padding: "0.75rem 1rem", fontSize: "0.82rem", color: "#991B1B" }}>
+              <strong>⚠️ Allergies &amp; Intolerances ({cateringSummary.allergies.length}):</strong>
+              <div style={{ marginTop: "0.35rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                {cateringSummary.allergies.map((a, idx) => (
+                  <span key={idx} style={{ background: "#FFF", padding: "0.2rem 0.5rem", borderRadius: "4px", border: "1px solid #FCA5A5" }}>
+                    <strong>{a.guestName}:</strong> {a.allergies} ({a.meal})
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Filter and Search Bar */}
       <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.25rem", alignItems: "center" }}>

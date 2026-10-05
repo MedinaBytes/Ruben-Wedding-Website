@@ -83,7 +83,7 @@ export function SeatingManager({
   function exportSeatingChart() {
     const headers = ["Table #", "Table Name", "Guest Name", "Notes"];
     const rows = assignments
-      .sort((a, b) => a.table_number - b.table_number)
+      .sort((a, b) => Number(a.table_number) - Number(b.table_number))
       .map((a) => [
         a.table_number,
         `"${a.table_name.replace(/"/g, '""')}"`,

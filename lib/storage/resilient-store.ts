@@ -53,20 +53,26 @@ export interface StoredWish {
 }
 
 export interface StoredTableAssignment {
+  id: string;
   invitation_id: string;
   guest_name: string;
-  table_number: string | number;
+  table_number: number;
   table_name: string;
-  seat?: number;
-  updated_at: string;
+  seat_number?: number;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface StoredCheckIn {
+  id: string;
   invitation_id: string;
-  guest_name: string;
-  attendee_count: number;
+  guest_name?: string;
+  guest_count?: number;
+  attendee_count?: number;
   checked_in_at: string;
-  checked_in_by: string;
+  checked_in_by?: string;
+  notes?: string;
 }
 
 export interface StoredSongRequest {
@@ -573,11 +579,11 @@ export const resilientStore = {
     return loadDb().tableAssignments ?? [];
   },
 
-  saveTableAssignment(assignment: StoredTableAssignment) {
+  saveTableAssignment(assignment: StoredTableAssignment): StoredTableAssignment {
     const db = loadDb();
     if (!Array.isArray(db.tableAssignments)) db.tableAssignments = [];
     const index = db.tableAssignments.findIndex(
-      (t) => t.invitation_id === assignment.invitation_id && t.guest_name === assignment.guest_name,
+      (t) => (t.id && t.id === assignment.id) || (t.invitation_id === assignment.invitation_id && t.guest_name === assignment.guest_name),
     );
     if (index >= 0) {
       db.tableAssignments[index] = assignment;
@@ -585,13 +591,14 @@ export const resilientStore = {
       db.tableAssignments.push(assignment);
     }
     saveDb(db);
+    return assignment;
   },
 
-  deleteTableAssignment(invitationId: string, guestName?: string) {
+  deleteTableAssignment(idOrInvitationId: string) {
     const db = loadDb();
     if (!Array.isArray(db.tableAssignments)) return;
     db.tableAssignments = db.tableAssignments.filter(
-      (t) => t.invitation_id !== invitationId || (guestName && t.guest_name !== guestName),
+      (t) => t.id !== idOrInvitationId && t.invitation_id !== idOrInvitationId,
     );
     saveDb(db);
   },
@@ -601,22 +608,27 @@ export const resilientStore = {
     return loadDb().checkIns ?? [];
   },
 
-  recordCheckIn(checkIn: StoredCheckIn) {
+  recordCheckIn(invitationId: string, guestCount = 1, notes?: string): StoredCheckIn {
     const db = loadDb();
     if (!Array.isArray(db.checkIns)) db.checkIns = [];
-    const index = db.checkIns.findIndex((c) => c.invitation_id === checkIn.invitation_id);
-    if (index >= 0) {
-      db.checkIns[index] = checkIn;
-    } else {
-      db.checkIns.unshift(checkIn);
-    }
+    const newCheckIn: StoredCheckIn = {
+      id: `ci-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      invitation_id: invitationId,
+      guest_count: guestCount,
+      attendee_count: guestCount,
+      checked_in_at: new Date().toISOString(),
+      checked_in_by: "usher",
+      notes,
+    };
+    db.checkIns.unshift(newCheckIn);
     saveDb(db);
+    return newCheckIn;
   },
 
-  removeCheckIn(invitationId: string) {
+  removeCheckIn(idOrInvitationId: string) {
     const db = loadDb();
     if (!Array.isArray(db.checkIns)) return;
-    db.checkIns = db.checkIns.filter((c) => c.invitation_id !== invitationId);
+    db.checkIns = db.checkIns.filter((c) => c.id !== idOrInvitationId && c.invitation_id !== idOrInvitationId);
     saveDb(db);
   },
 
@@ -637,7 +649,7 @@ export const resilientStore = {
     const allergies: Array<{
       guestName: string;
       allergies: string;
-      mealChoice?: string;
+      meal: string;
       invitationId: string;
     }> = [];
 
@@ -650,7 +662,7 @@ export const resilientStore = {
             allergies.push({
               guestName: pref.guestName || "Guest",
               allergies: pref.allergies.trim(),
-              mealChoice: pref.meal,
+              meal: pref.meal,
               invitationId: r.invitation_id,
             });
           }
@@ -663,13 +675,16 @@ export const resilientStore = {
         allergies.push({
           guestName: r.guest_names?.[0] || "Party",
           allergies: r.dietary_requirements.trim(),
+          meal: "standard",
           invitationId: r.invitation_id,
         });
       }
     }
 
     return {
+      totalConfirmed: totalConfirmedGuests,
       totalConfirmedGuests,
+      meals: mealBreakdown,
       mealBreakdown,
       allergies,
     };

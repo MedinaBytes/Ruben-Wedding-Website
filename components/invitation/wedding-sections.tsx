@@ -526,8 +526,8 @@ export async function WeddingSections({
       {siteSettings?.enableGuestbook !== false && (
         <GuestbookSection
           locale={locale}
-          token={invitation?.token}
-          guestDisplayName={invitation?.displayName}
+          invitationId={invitation?.id || "general"}
+          defaultGuestName={invitation?.displayName}
         />
       )}
     </>

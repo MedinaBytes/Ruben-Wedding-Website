@@ -114,5 +114,15 @@ export default async function AdminRsvpsPage() {
     };
   });
 
-  return <RsvpsManager rsvps={rsvps} />;
+  const cateringSummary = resilientStore.getCateringSummary();
+  const settings = resilientStore.getSettings();
+
+  return (
+    <RsvpsManager
+      rsvps={rsvps}
+      cateringSummary={cateringSummary}
+      enableMealSelection={settings.enableMealSelection !== false}
+      enableRsvpReminders={settings.enableRsvpReminders !== false}
+    />
+  );
 }

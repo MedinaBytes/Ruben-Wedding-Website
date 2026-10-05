@@ -30,7 +30,7 @@ export async function saveTableAssignmentAction(data: {
     table_name: data.tableName,
     guest_name: data.guestName,
     seat_number: data.seatNumber,
-    invitation_id: data.invitationId,
+    invitation_id: data.invitationId || "",
     notes: data.notes,
     created_at: new Date().toISOString(),
   };

@@ -23,7 +23,7 @@ export async function checkInGuestAction(data: {
       actor,
       action: "INVITATION_UPDATED",
       resourceType: "invitation",
-      metadata: { action: "GUEST_CHECKED_IN", invitationId: data.invitationId, guestCount: data.guestCount },
+      metadata: { action: "GUEST_CHECKED_IN", invitationId: data.invitationId, guestCount: data.guestCount ?? 1 },
     });
   } catch {}
 
