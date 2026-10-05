@@ -14,3 +14,4 @@ public/images/wedding/
 .local-db.backup.json
 .local-db.test.json
 .local-db.purge-backup.json
+.agent/
