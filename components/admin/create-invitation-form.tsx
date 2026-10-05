@@ -160,6 +160,19 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
           </div>
         </div>
 
+        <div>
+          <label htmlFor="invitation-email" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>
+            Guest Email Address (Optional)
+          </label>
+          <input
+            id="invitation-email"
+            name="email"
+            type="email"
+            placeholder="e.g. maria.gonzalez@example.com"
+            style={{ width: "100%", padding: "0.6rem 0.8rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.9rem" }}
+          />
+        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div>
             <label htmlFor="invitation-phone" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.35rem" }}>

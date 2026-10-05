@@ -1,22 +1,40 @@
 import { NextResponse } from "next/server";
+import crypto from "node:crypto";
+
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
+import { normalizeEmail, normalizeName, normalizePhone } from "@/lib/invitations/lookup-normalize";
 import { generateInvitationToken, hashInvitationToken } from "@/lib/invitations/token";
-import { normalizeName } from "@/lib/invitations/lookup-normalize";
 import { isSameOriginMutation } from "@/lib/security/request";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import type { Locale } from "@/lib/wedding-config";
-
-import crypto from "node:crypto";
 import { resilientStore } from "@/lib/storage/resilient-store";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { resolveLocale, type Locale } from "@/lib/wedding-config";
 
 interface ImportRow {
   displayName: string;
-  language?: Locale;
-  maxGuests?: number;
-  plusOneAllowed?: boolean;
+  language?: string;
+  maxGuests?: number | string;
+  plusOneAllowed?: boolean | string;
   groupName?: string;
+  email?: string;
+  phone?: string;
+  whatsapp?: string;
+  personalMessage?: string;
 }
+
+const defaultWhatsAppTemplates: Record<string, string> = {
+  en: "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}",
+  es: "¡Hola {name}!\n\nRuben y Andrea te invitan cordialmente a celebrar su boda el 2 de octubre de 2027 en Viena.\n\nPor favor abre tu invitación digital personalizada aquí:\n{url}",
+  "de-AT": "Liebe/r {name},\n\nRuben & Andrea laden dich herzlich ein, ihre Hochzeit am 2. Oktober 2027 in Wien zu feiern!\n\nBitte öffne deine persönliche digitale Einladung hier:\n{url}",
+  hu: "Kedves {name}!\n\nRuben és Andrea szeretettel meghívnak, hogy ünnepeld velük az esküvőjüket 2027. október 2-án Bécsben!\n\nKérjük, nyisd meg a személyre szóló digitális meghívódat itt:\n{url}",
+};
+
+const defaultEmailSubjects: Record<string, string> = {
+  en: "Wedding Invitation — Ruben & Andrea (Vienna, October 2, 2027)",
+  es: "Invitación de Boda — Ruben y Andrea (Viena, 2 de Octubre de 2027)",
+  "de-AT": "Hochzeitseinladung — Ruben & Andrea (Wien, 2. Oktober 2027)",
+  hu: "Esküvői Meghívó — Ruben és Andrea (Bécs, 2027. október 2.)",
+};
 
 export async function POST(request: Request) {
   let actor = await getAuthenticatedAdminIdentity();
@@ -48,10 +66,22 @@ export async function POST(request: Request) {
   }
 
   const client = createSupabaseAdminClient();
-  const created: Array<{ id: string; displayName: string; url: string }> = [];
+  const created: Array<{
+    id: string;
+    displayName: string;
+    url: string;
+    language: string;
+    email: string | null;
+    phone: string | null;
+    whatsapp: string | null;
+    whatsappMessage: string;
+    emailSubject: string;
+    emailBody: string;
+  }> = [];
   const errors: Array<{ row: number; displayName: string; message: string }> = [];
 
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+  const rawOrigin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
+  const origin = rawOrigin.replace(/\/$/, "");
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -64,15 +94,38 @@ export async function POST(request: Request) {
     const token = generateInvitationToken();
     const tokenHash = hashInvitationToken(token);
     let maxGuests = Math.min(20, Math.max(1, Number(row.maxGuests) || 1));
-    const plusOneAllowed = Boolean(row.plusOneAllowed);
+    const plusOneAllowed = typeof row.plusOneAllowed === "boolean"
+      ? row.plusOneAllowed
+      : String(row.plusOneAllowed || "").toLowerCase() === "true" || String(row.plusOneAllowed || "") === "1";
     if (plusOneAllowed && maxGuests < 2) {
       maxGuests = 2;
     }
+
     const groupName = row.groupName?.trim() || null;
-    const language = ["en", "es", "de-AT", "hu"].includes(String(row.language)) ? (row.language as Locale) : null;
+    const resolvedLang = resolveLocale(row.language);
+    const language: Locale | null = resolvedLang ?? null;
+    const templateLang = language || "en";
+
+    // Contact info & normalization
+    const rawEmail = row.email ? String(row.email).trim() : null;
+    const normalizedEmail = rawEmail ? normalizeEmail(rawEmail) : null;
+
+    const rawPhone = row.phone ? String(row.phone).trim() : null;
+    const normalizedPhone = rawPhone ? normalizePhone(rawPhone) : null;
+
+    const rawWhatsapp = (row.whatsapp || row.phone) ? String(row.whatsapp || row.phone).trim() : null;
+    const normalizedWhatsapp = rawWhatsapp ? normalizePhone(rawWhatsapp) : null;
+
+    const personalMessage = row.personalMessage ? String(row.personalMessage).trim() : null;
     const id = crypto.randomUUID();
 
-    // Persist immediately in resilient store
+    const guestUrl = `${origin}/i/${token}${language ? `?lang=${language}` : ""}`;
+    const waTemplate = defaultWhatsAppTemplates[templateLang] || defaultWhatsAppTemplates.en;
+    const whatsappMessage = waTemplate.replace(/\{name\}/g, rawName).replace(/\{url\}/g, guestUrl);
+    const emailSubject = defaultEmailSubjects[templateLang] || defaultEmailSubjects.en;
+    const emailBody = whatsappMessage;
+
+    // 1. Persist immediately in resilient store
     resilientStore.saveInvitation({
       id,
       token,
@@ -84,12 +137,18 @@ export async function POST(request: Request) {
       plus_one_allowed: plusOneAllowed,
       group_name: groupName,
       normalized_group_name: groupName ? normalizeName(groupName) : null,
-      personal_message: null,
+      personal_message: personalMessage,
+      email: rawEmail,
+      normalized_email: normalizedEmail,
+      phone: rawPhone,
+      normalized_phone: normalizedPhone,
+      whatsapp: rawWhatsapp,
+      normalized_whatsapp: normalizedWhatsapp,
       status: "active",
       created_at: new Date().toISOString(),
     });
 
-    // Best-effort remote insert
+    // 2. Best-effort remote Supabase insert
     try {
       await client.from("invitations").insert({
         id,
@@ -101,6 +160,13 @@ export async function POST(request: Request) {
         plus_one_allowed: plusOneAllowed,
         group_name: groupName,
         normalized_group_name: groupName ? normalizeName(groupName) : null,
+        personal_message: personalMessage,
+        email: rawEmail,
+        normalized_email: normalizedEmail,
+        phone: rawPhone,
+        normalized_phone: normalizedPhone,
+        whatsapp: rawWhatsapp,
+        normalized_whatsapp: normalizedWhatsapp,
         status: "active",
       });
     } catch {}
@@ -108,7 +174,14 @@ export async function POST(request: Request) {
     created.push({
       id,
       displayName: rawName,
-      url: `${origin}/i/${token}`,
+      url: guestUrl,
+      language: templateLang,
+      email: rawEmail,
+      phone: rawPhone,
+      whatsapp: rawWhatsapp,
+      whatsappMessage,
+      emailSubject,
+      emailBody,
     });
   }
 

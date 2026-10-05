@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { generateInvitationToken, hashInvitationToken } from "@/lib/invitations/token";
-import { normalizeName } from "@/lib/invitations/lookup-normalize";
+import { normalizeEmail, normalizeName, normalizePhone } from "@/lib/invitations/lookup-normalize";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Locale } from "@/lib/wedding-config";
 
@@ -45,8 +45,12 @@ export async function createInvitationAction(formData: FormData): Promise<Create
   const rawLang = String(formData.get("language") || "").trim();
   const language = ["en", "es", "de-AT", "hu"].includes(rawLang) ? (rawLang as Locale) : null;
   const personalMessage = String(formData.get("personalMessage") || "").trim() || null;
-  const phone = String(formData.get("phone") || "").trim() || null;
-  const whatsapp = String(formData.get("whatsapp") || "").trim() || phone;
+  const rawEmail = String(formData.get("email") || "").trim() || null;
+  const normalizedEmail = rawEmail ? normalizeEmail(rawEmail) : null;
+  const rawPhone = String(formData.get("phone") || "").trim() || null;
+  const normalizedPhone = rawPhone ? normalizePhone(rawPhone) : null;
+  const rawWhatsapp = String(formData.get("whatsapp") || "").trim() || rawPhone;
+  const normalizedWhatsapp = rawWhatsapp ? normalizePhone(rawWhatsapp) : null;
 
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
@@ -67,8 +71,12 @@ export async function createInvitationAction(formData: FormData): Promise<Create
     group_name: groupName,
     normalized_group_name: groupName ? normalizeName(groupName) : null,
     personal_message: personalMessage,
-    phone,
-    whatsapp,
+    email: rawEmail,
+    normalized_email: normalizedEmail,
+    phone: rawPhone,
+    normalized_phone: normalizedPhone,
+    whatsapp: rawWhatsapp,
+    normalized_whatsapp: normalizedWhatsapp,
     status: "active",
     created_at: now,
   });
@@ -86,8 +94,12 @@ export async function createInvitationAction(formData: FormData): Promise<Create
       group_name: groupName,
       normalized_group_name: groupName ? normalizeName(groupName) : null,
       personal_message: personalMessage,
-      phone,
-      whatsapp,
+      email: rawEmail,
+      normalized_email: normalizedEmail,
+      phone: rawPhone,
+      normalized_phone: normalizedPhone,
+      whatsapp: rawWhatsapp,
+      normalized_whatsapp: normalizedWhatsapp,
       status: "active",
     });
   } catch {}

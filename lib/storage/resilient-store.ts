@@ -13,6 +13,8 @@ export interface StoredInvitation {
   group_name: string | null;
   normalized_group_name: string | null;
   personal_message: string | null;
+  email?: string | null;
+  normalized_email?: string | null;
   phone?: string | null;
   whatsapp?: string | null;
   status: "active" | "draft" | "revoked";
