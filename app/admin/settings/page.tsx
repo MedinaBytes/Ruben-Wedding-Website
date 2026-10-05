@@ -67,6 +67,10 @@ export default async function AdminSettingsPage() {
   const contactPhone = String(s.get("contactPhone") || "");
   const contactEmail = String(s.get("contactEmail") || "");
 
+  const enableDemoInvitation = typeof s.get("enableDemoInvitation") === "boolean"
+    ? Boolean(s.get("enableDemoInvitation"))
+    : resilientStore.isDemoEnabled();
+
   return (
     <div style={{ maxWidth: "800px" }}>
       <div style={{ marginBottom: "2rem" }}>
@@ -284,6 +288,38 @@ export default async function AdminSettingsPage() {
               <input name="contactEmail" type="email" defaultValue={contactEmail} placeholder="wedding@rubenandrea.com" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
             </div>
           </div>
+        </div>
+
+        {/* Section 6: Demo Invitation & Production Controls */}
+        <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+            <span style={{ fontSize: "1.4rem" }}>🛡️</span>
+            <h2 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
+              Demo Invitation &amp; Production Deployment
+            </h2>
+          </div>
+          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+            Controls accessibility for sample reviewer data (<code>Sarah &amp; Guest (Demo)</code>) and the public <code>/i/demo</code> routes.
+            <strong> For production deployment:</strong> Uncheck this option so demo data is not accessible and <code>/i/demo</code> returns not found.
+          </p>
+
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem", fontSize: "0.9rem", color: "#2B2425", cursor: "pointer", background: "#FAF7F5", border: "1px solid #EBE4DE", borderRadius: "8px", padding: "1rem" }}>
+            <input
+              type="checkbox"
+              id="enableDemoInvitation"
+              name="enableDemoInvitation"
+              defaultChecked={enableDemoInvitation}
+              style={{ width: "1.25rem", height: "1.25rem", accentColor: "#8C2836", marginTop: "2px", cursor: "pointer" }}
+            />
+            <div>
+              <div style={{ fontWeight: 600, color: "#2B2425" }}>
+                Enable Demo User Invitation (<code>/i/demo</code>)
+              </div>
+              <div style={{ fontSize: "0.82rem", color: "#776A6C", marginTop: "0.25rem", lineHeight: 1.4 }}>
+                When checked, <code>/i/demo</code> envelope and invitation pages are accessible for previewing and test runs. When unchecked, visitors to <code>/i/demo</code> see &ldquo;Invitation Not Found&rdquo; and the demo reviewer is hidden from the guest list.
+              </div>
+            </div>
+          </label>
         </div>
 
         <div>

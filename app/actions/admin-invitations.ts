@@ -175,6 +175,48 @@ export async function createDemoInvitationAction(): Promise<CreateInvitationResu
   };
 }
 
+export async function toggleDemoInvitationAction(enable: boolean): Promise<{ success: boolean; error?: string }> {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) {
+    return { success: false, error: "Unauthorized." };
+  }
+
+  resilientStore.setDemoEnabled(enable);
+
+  try {
+    const client = createSupabaseAdminClient();
+    await client.from("site_settings").upsert({
+      key: "enableDemoInvitation",
+      value: enable,
+      updated_at: new Date().toISOString(),
+    });
+    if (!enable) {
+      await client.from("invitations").delete().eq("id", "00000000-0000-0000-0000-000000000001");
+    }
+  } catch {}
+
+  try {
+    await recordAdminAudit({
+      actor: { id: actor.id, email: actor.email || "admin@medina.local" },
+      action: enable ? "INVITATION_CREATED" : "WEDDING_DATA_DELETED",
+      resourceType: "invitation",
+      resourceId: "00000000-0000-0000-0000-000000000001",
+      metadata: { demoEnabled: enable },
+    });
+  } catch {}
+
+  revalidatePath("/admin/invitations");
+  revalidatePath("/admin/settings");
+  revalidatePath("/admin");
+  revalidatePath("/i/demo");
+  revalidatePath("/i/demo/invitation");
+
+  return { success: true };
+}
+
 export async function deleteInvitationAction(id: string): Promise<{ success: boolean; error?: string }> {
   let actor = await getAuthenticatedAdminIdentity();
   if (!actor && process.env.NODE_ENV !== "production") {
@@ -184,8 +226,13 @@ export async function deleteInvitationAction(id: string): Promise<{ success: boo
     return { success: false, error: "Unauthorized." };
   }
 
+  const isDemo = id === "00000000-0000-0000-0000-000000000001" || id === "demo";
+
   // Delete from local resilient store
   resilientStore.deleteInvitation(id);
+  if (isDemo) {
+    resilientStore.setDemoEnabled(false);
+  }
 
   // Attempt delete from remote Supabase
   try {
@@ -193,6 +240,13 @@ export async function deleteInvitationAction(id: string): Promise<{ success: boo
     await client.from("invitations").delete().eq("id", id);
     await client.from("rsvps").delete().eq("invitation_id", id);
     await client.from("song_requests").delete().eq("invitation_id", id);
+    if (isDemo) {
+      await client.from("site_settings").upsert({
+        key: "enableDemoInvitation",
+        value: false,
+        updated_at: new Date().toISOString(),
+      });
+    }
   } catch {}
 
   try {
@@ -205,6 +259,10 @@ export async function deleteInvitationAction(id: string): Promise<{ success: boo
   } catch {}
 
   revalidatePath("/admin/invitations");
+  revalidatePath("/admin/settings");
+  revalidatePath("/admin");
+  revalidatePath("/i/demo");
+  revalidatePath("/i/demo/invitation");
   return { success: true };
 }
 

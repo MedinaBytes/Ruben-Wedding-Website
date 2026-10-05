@@ -34,7 +34,12 @@ export default async function AdminWhatsAppPage() {
   const seenIds = new Set<string>();
   const combined: InvitationRow[] = [];
 
+  const isDemoEnabled = resilientStore.isDemoEnabled();
+
   for (const inv of localInvitations) {
+    if (!isDemoEnabled && (inv.id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo")) {
+      continue;
+    }
     seenIds.add(inv.id);
     combined.push({
       id: inv.id,
@@ -55,6 +60,9 @@ export default async function AdminWhatsAppPage() {
 
   for (const inv of remoteInvitations) {
     const id = String(inv.id);
+    if (!isDemoEnabled && (id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo")) {
+      continue;
+    }
     if (!seenIds.has(id)) {
       seenIds.add(id);
       combined.push({

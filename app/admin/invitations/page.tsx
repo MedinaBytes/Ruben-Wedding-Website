@@ -52,8 +52,13 @@ export default async function AdminInvitationsPage() {
   const seenIds = new Set<string>();
   const combined: InvitationRow[] = [];
 
+  const isDemoEnabled = resilientStore.isDemoEnabled();
+
   // Local first
   for (const inv of localInvitations) {
+    if (!isDemoEnabled && (inv.id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo")) {
+      continue;
+    }
     seenIds.add(inv.id);
     const rsvp = rsvpMap.get(inv.id);
     combined.push({
@@ -77,6 +82,9 @@ export default async function AdminInvitationsPage() {
   // Remote
   for (const inv of remoteInvitations) {
     const id = String(inv.id);
+    if (!isDemoEnabled && (id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo")) {
+      continue;
+    }
     if (!seenIds.has(id)) {
       seenIds.add(id);
       const rsvp = rsvpMap.get(id);
@@ -103,5 +111,5 @@ export default async function AdminInvitationsPage() {
     siteUrl = `http://${siteUrl}`;
   }
 
-  return <InvitationsManager invitations={combined} siteUrl={siteUrl} />;
+  return <InvitationsManager invitations={combined} siteUrl={siteUrl} isDemoEnabled={isDemoEnabled} />;
 }

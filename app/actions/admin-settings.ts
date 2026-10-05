@@ -6,8 +6,14 @@ import { recordAdminAudit } from "@/lib/admin/audit";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export async function updateSiteSettings(formData: FormData) {
-  const actor = await getAuthenticatedAdminIdentity();
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
   if (!actor) throw new Error("Unauthorized");
+
+  // Demo Invitation Setting
+  const enableDemoInvitation = formData.get("enableDemoInvitation") === "on";
 
   // Gift & Bank Settings
   const showGiftDetails = formData.get("showGiftDetails") === "on";
@@ -45,6 +51,9 @@ export async function updateSiteSettings(formData: FormData) {
   const now = new Date().toISOString();
 
   const rows = [
+    // Demo
+    { key: "enableDemoInvitation", value: enableDemoInvitation, updated_at: now },
+
     // Gifts
     { key: "showGiftDetails", value: showGiftDetails, updated_at: now },
     { key: "bankName", value: bankName, updated_at: now },
@@ -79,7 +88,9 @@ export async function updateSiteSettings(formData: FormData) {
   ];
 
   const { resilientStore } = await import("@/lib/storage/resilient-store");
+  resilientStore.setDemoEnabled(enableDemoInvitation);
   resilientStore.updateSettings({
+    enableDemoInvitation,
     showGiftDetails,
     bankName,
     accountHolder,
@@ -113,10 +124,14 @@ export async function updateSiteSettings(formData: FormData) {
       actor,
       action: "INVITATION_UPDATED",
       resourceType: "invitation",
-      metadata: { showGiftDetails, showPrivateAddress, smtpConfigured: Boolean(smtpHost && smtpUser) },
+      metadata: { enableDemoInvitation, showGiftDetails, showPrivateAddress, smtpConfigured: Boolean(smtpHost && smtpUser) },
     });
   } catch {}
 
   revalidatePath("/admin/settings");
+  revalidatePath("/admin/invitations");
+  revalidatePath("/admin");
+  revalidatePath("/i/demo");
+  revalidatePath("/i/demo/invitation");
   revalidatePath("/");
 }

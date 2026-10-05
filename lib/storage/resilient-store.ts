@@ -159,6 +159,12 @@ function loadDb(): LocalDatabase {
     if (!Array.isArray(parsed.invitations)) parsed.invitations = [];
     if (!Array.isArray(parsed.rsvps)) parsed.rsvps = [];
     if (!Array.isArray(parsed.songRequests)) parsed.songRequests = [];
+    if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
+
+    const isDemoDisabled = parsed.settings.demoDeleted === true || parsed.settings.enableDemoInvitation === false;
+    if (isDemoDisabled) {
+      parsed.invitations = parsed.invitations.filter((i) => i.id !== "00000000-0000-0000-0000-000000000001" && i.token !== "demo");
+    }
 
     // Fallback recovery: If invitations was somehow emptied or lost non-demo records, check backup
     if (!isTestEnv && parsed.invitations.length <= 1 && fs.existsSync(BACKUP_PATH)) {
@@ -169,6 +175,9 @@ function loadDb(): LocalDatabase {
           // Merge backup invitations so nothing is ever dropped
           const existingIds = new Set(parsed.invitations.map((i) => i.id));
           for (const bInv of backupParsed.invitations) {
+            if (isDemoDisabled && (bInv.id === "00000000-0000-0000-0000-000000000001" || bInv.token === "demo")) {
+              continue;
+            }
             if (!existingIds.has(bInv.id)) {
               parsed.invitations.push(bInv);
             }
@@ -187,29 +196,107 @@ function loadDb(): LocalDatabase {
 function saveDb(db: LocalDatabase) {
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
-    if (!isTestEnv && Array.isArray(db.invitations) && db.invitations.length > 0) {
+    if (!isTestEnv) {
       fs.writeFileSync(BACKUP_PATH, JSON.stringify(db, null, 2), "utf-8");
     }
   } catch {}
 }
 
 export const resilientStore = {
+  // DEMO INVITATION CONTROLS
+  isDemoEnabled(): boolean {
+    const db = loadDb();
+    if (db.settings?.demoDeleted === true) return false;
+    if (typeof db.settings?.enableDemoInvitation === "boolean") {
+      return db.settings.enableDemoInvitation;
+    }
+    return process.env.NODE_ENV !== "production";
+  },
+
+  setDemoEnabled(enabled: boolean) {
+    const db = loadDb();
+    if (!db.settings) db.settings = {};
+    db.settings.enableDemoInvitation = enabled;
+    db.settings.demoDeleted = !enabled;
+
+    if (!enabled) {
+      db.invitations = db.invitations.filter(
+        (i) => i.id !== "00000000-0000-0000-0000-000000000001" && i.token !== "demo"
+      );
+      db.rsvps = db.rsvps.filter((r) => r.invitation_id !== "00000000-0000-0000-0000-000000000001");
+      db.songRequests = db.songRequests.filter((s) => s.invitation_id !== "00000000-0000-0000-0000-000000000001");
+    } else {
+      const exists = db.invitations.some(
+        (i) => i.id === "00000000-0000-0000-0000-000000000001" || i.token === "demo"
+      );
+      if (!exists) {
+        db.invitations.unshift({
+          id: "00000000-0000-0000-0000-000000000001",
+          token: "demo",
+          token_hash: "demo_hash",
+          display_name: "Sarah & Guest (Demo)",
+          normalized_name: "sarah guest demo",
+          language: "en",
+          max_guests: 2,
+          plus_one_allowed: true,
+          group_name: "Demo Reviewers",
+          normalized_group_name: "demo reviewers",
+          personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+          phone: "+43 664 1234567",
+          whatsapp: "+436641234567",
+          status: "active",
+          created_at: new Date().toISOString(),
+        });
+      }
+    }
+    saveDb(db);
+    try {
+      if (!isTestEnv && fs.existsSync(BACKUP_PATH)) {
+        const backupRaw = fs.readFileSync(BACKUP_PATH, "utf-8");
+        const backupParsed = JSON.parse(backupRaw) as LocalDatabase;
+        if (backupParsed) {
+          if (!backupParsed.settings) backupParsed.settings = {};
+          backupParsed.settings.enableDemoInvitation = enabled;
+          backupParsed.settings.demoDeleted = !enabled;
+          if (!enabled && Array.isArray(backupParsed.invitations)) {
+            backupParsed.invitations = backupParsed.invitations.filter(
+              (i) => i.id !== "00000000-0000-0000-0000-000000000001" && i.token !== "demo"
+            );
+          }
+          fs.writeFileSync(BACKUP_PATH, JSON.stringify(backupParsed, null, 2), "utf-8");
+        }
+      }
+    } catch {}
+  },
+
   // INVITATIONS
   getInvitations(): StoredInvitation[] {
-    return loadDb().invitations;
+    const list = loadDb().invitations;
+    if (!this.isDemoEnabled()) {
+      return list.filter((i) => i.id !== "00000000-0000-0000-0000-000000000001" && i.token !== "demo");
+    }
+    return list;
   },
 
   getInvitationById(id: string): StoredInvitation | null {
+    if ((id === "00000000-0000-0000-0000-000000000001" || id === "demo") && !this.isDemoEnabled()) {
+      return null;
+    }
     const db = loadDb();
     return db.invitations.find((i) => i.id === id) ?? null;
   },
 
   getInvitationByToken(token: string): StoredInvitation | null {
     if (token === "demo") {
+      if (!this.isDemoEnabled()) return null;
       return this.getInvitationById("00000000-0000-0000-0000-000000000001");
     }
     const db = loadDb();
-    return db.invitations.find((i) => i.token === token || i.id === token) ?? null;
+    const inv = db.invitations.find((i) => i.token === token || i.id === token) ?? null;
+    if (inv && (inv.id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo") && !this.isDemoEnabled()) {
+      return null;
+    }
+    return inv;
   },
 
   saveInvitation(inv: StoredInvitation) {
@@ -225,11 +312,26 @@ export const resilientStore = {
   },
 
   deleteInvitation(id: string) {
+    const isDemo = id === "00000000-0000-0000-0000-000000000001" || id === "demo";
+    if (isDemo) {
+      this.setDemoEnabled(false);
+      return;
+    }
     const db = loadDb();
     db.invitations = db.invitations.filter((i) => i.id !== id);
     db.rsvps = db.rsvps.filter((r) => r.invitation_id !== id);
     db.songRequests = db.songRequests.filter((s) => s.invitation_id !== id);
     saveDb(db);
+    try {
+      if (!isTestEnv && fs.existsSync(BACKUP_PATH)) {
+        const backupRaw = fs.readFileSync(BACKUP_PATH, "utf-8");
+        const backupParsed = JSON.parse(backupRaw) as LocalDatabase;
+        if (backupParsed && Array.isArray(backupParsed.invitations)) {
+          backupParsed.invitations = backupParsed.invitations.filter((i) => i.id !== id);
+          fs.writeFileSync(BACKUP_PATH, JSON.stringify(backupParsed, null, 2), "utf-8");
+        }
+      }
+    } catch {}
   },
 
   updateInvitationStatus(id: string, status: "active" | "draft" | "revoked") {
