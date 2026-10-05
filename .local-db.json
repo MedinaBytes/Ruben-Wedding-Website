@@ -33,6 +33,38 @@
   ],
   "events": [
     {
+      "id": "evt-1791216442948-q2k4f",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "hu",
+      "created_at": "2026-10-05T16:07:22.948Z"
+    },
+    {
+      "id": "evt-1791216442905-h21mp",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "de-AT",
+      "created_at": "2026-10-05T16:07:22.905Z"
+    },
+    {
+      "id": "evt-1791216434652-c48b5",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "de-AT",
+      "created_at": "2026-10-05T16:07:14.652Z"
+    },
+    {
+      "id": "evt-1791216430778-mbhtk",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "es",
+      "created_at": "2026-10-05T16:07:10.778Z"
+    },
+    {
       "id": "evt-1791215508464-izthz",
       "invitation_id": "00000000-0000-0000-0000-000000000001",
       "session_id": "a0de7612-1993-4078-96ca-a91742c109b5",
