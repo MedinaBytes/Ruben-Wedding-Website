@@ -28,6 +28,7 @@ interface EnvelopeIntroProps {
   envelopeRegionLabel?: string;
   introControlsLabel?: string;
   replayPrompt?: string;
+  enableCalligraphy?: boolean;
 }
 
 export function EnvelopeIntro({
@@ -49,6 +50,7 @@ export function EnvelopeIntro({
   sealMonogramAlt,
   envelopeRegionLabel,
   introControlsLabel,
+  enableCalligraphy = true,
 }: EnvelopeIntroProps) {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
@@ -327,7 +329,7 @@ export function EnvelopeIntro({
         </div>
 
         {/* Guest Address Calligraphy on Envelope when closed */}
-        {step === "idle" && (
+        {enableCalligraphy && step === "idle" && (
           <motion.div
             className="envelope-calligraphy"
             initial={{ opacity: 0, y: 6 }}

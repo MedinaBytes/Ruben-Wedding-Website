@@ -15,6 +15,17 @@ export async function updateSiteSettings(formData: FormData) {
   // Demo Invitation Setting
   const enableDemoInvitation = formData.get("enableDemoInvitation") === "on";
 
+  // Feature Controls & Experience Modules
+  const enableCalendarSync = formData.get("enableCalendarSync") === "on";
+  const enableEnvelopeCalligraphy = formData.get("enableEnvelopeCalligraphy") === "on";
+  const enableMealSelection = formData.get("enableMealSelection") === "on";
+  const enableTravelConcierge = formData.get("enableTravelConcierge") === "on";
+  const enableDayOfTimeline = formData.get("enableDayOfTimeline") === "on";
+  const enableGuestbook = formData.get("enableGuestbook") === "on";
+  const enableTablePlanner = formData.get("enableTablePlanner") === "on";
+  const enableQrCheckin = formData.get("enableQrCheckin") === "on";
+  const enableRsvpReminders = formData.get("enableRsvpReminders") === "on";
+
   // Gift & Bank Settings
   const showGiftDetails = formData.get("showGiftDetails") === "on";
   const bankName = String(formData.get("bankName") || "").trim();
@@ -54,6 +65,17 @@ export async function updateSiteSettings(formData: FormData) {
     // Demo
     { key: "enableDemoInvitation", value: enableDemoInvitation, updated_at: now },
 
+    // Features
+    { key: "enableCalendarSync", value: enableCalendarSync, updated_at: now },
+    { key: "enableEnvelopeCalligraphy", value: enableEnvelopeCalligraphy, updated_at: now },
+    { key: "enableMealSelection", value: enableMealSelection, updated_at: now },
+    { key: "enableTravelConcierge", value: enableTravelConcierge, updated_at: now },
+    { key: "enableDayOfTimeline", value: enableDayOfTimeline, updated_at: now },
+    { key: "enableGuestbook", value: enableGuestbook, updated_at: now },
+    { key: "enableTablePlanner", value: enableTablePlanner, updated_at: now },
+    { key: "enableQrCheckin", value: enableQrCheckin, updated_at: now },
+    { key: "enableRsvpReminders", value: enableRsvpReminders, updated_at: now },
+
     // Gifts
     { key: "showGiftDetails", value: showGiftDetails, updated_at: now },
     { key: "bankName", value: bankName, updated_at: now },
@@ -91,6 +113,15 @@ export async function updateSiteSettings(formData: FormData) {
   resilientStore.setDemoEnabled(enableDemoInvitation);
   resilientStore.updateSettings({
     enableDemoInvitation,
+    enableCalendarSync,
+    enableEnvelopeCalligraphy,
+    enableMealSelection,
+    enableTravelConcierge,
+    enableDayOfTimeline,
+    enableGuestbook,
+    enableTablePlanner,
+    enableQrCheckin,
+    enableRsvpReminders,
     showGiftDetails,
     bankName,
     accountHolder,
@@ -124,7 +155,15 @@ export async function updateSiteSettings(formData: FormData) {
       actor,
       action: "INVITATION_UPDATED",
       resourceType: "invitation",
-      metadata: { enableDemoInvitation, showGiftDetails, showPrivateAddress, smtpConfigured: Boolean(smtpHost && smtpUser) },
+      metadata: {
+        enableDemoInvitation,
+        enableCalendarSync,
+        enableMealSelection,
+        enableGuestbook,
+        showGiftDetails,
+        showPrivateAddress,
+        smtpConfigured: Boolean(smtpHost && smtpUser),
+      },
     });
   } catch {}
 

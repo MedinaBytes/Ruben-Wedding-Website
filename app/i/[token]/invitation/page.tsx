@@ -65,31 +65,43 @@ export default async function MainInvitationPage({
     } catch {}
   }
 
-  // Fetch site settings for bank disclosures & private address
-  let siteSettings = undefined;
+  // Fetch site settings and feature switches
+  const { resilientStore } = await import("@/lib/storage/resilient-store");
+  const localSettings = resilientStore.getSettings();
+  const s = new Map<string, unknown>(Object.entries(localSettings));
   try {
     const supabase = createSupabaseAdminClient();
     const { data: settingsRows } = await supabase.from("site_settings").select("key, value");
     if (settingsRows) {
-      const s = new Map(settingsRows.map((r) => [r.key, r.value]));
-      siteSettings = {
-        showGiftDetails: Boolean(s.get("showGiftDetails")),
-        bankName: s.get("bankName") ? String(s.get("bankName")) : undefined,
-        accountHolder: s.get("accountHolder") ? String(s.get("accountHolder")) : undefined,
-        iban: s.get("iban") ? String(s.get("iban")) : undefined,
-        bic: s.get("bic") ? String(s.get("bic")) : undefined,
-        giftNote: s.get("giftNote") ? String(s.get("giftNote")) : undefined,
-        showPrivateAddress: Boolean(s.get("showPrivateAddress")),
-        privateStreet: s.get("privateStreet") ? String(s.get("privateStreet")) : undefined,
-        privateCity: s.get("privateCity") ? String(s.get("privateCity")) : undefined,
-        privateAccessNotes: s.get("privateAccessNotes") ? String(s.get("privateAccessNotes")) : undefined,
-        contactPhone: s.get("contactPhone") ? String(s.get("contactPhone")) : undefined,
-        contactEmail: s.get("contactEmail") ? String(s.get("contactEmail")) : undefined,
-      };
+      for (const row of settingsRows) {
+        s.set(row.key, row.value);
+      }
     }
-  } catch {
-    siteSettings = undefined;
-  }
+  } catch {}
+
+  const siteSettings = {
+    showGiftDetails: Boolean(s.get("showGiftDetails")),
+    bankName: s.get("bankName") ? String(s.get("bankName")) : undefined,
+    accountHolder: s.get("accountHolder") ? String(s.get("accountHolder")) : undefined,
+    iban: s.get("iban") ? String(s.get("iban")) : undefined,
+    bic: s.get("bic") ? String(s.get("bic")) : undefined,
+    giftNote: s.get("giftNote") ? String(s.get("giftNote")) : undefined,
+    showPrivateAddress: Boolean(s.get("showPrivateAddress")),
+    privateStreet: s.get("privateStreet") ? String(s.get("privateStreet")) : undefined,
+    privateCity: s.get("privateCity") ? String(s.get("privateCity")) : undefined,
+    privateAccessNotes: s.get("privateAccessNotes") ? String(s.get("privateAccessNotes")) : undefined,
+    contactPhone: s.get("contactPhone") ? String(s.get("contactPhone")) : undefined,
+    contactEmail: s.get("contactEmail") ? String(s.get("contactEmail")) : undefined,
+    enableCalendarSync: s.has("enableCalendarSync") ? Boolean(s.get("enableCalendarSync")) : true,
+    enableEnvelopeCalligraphy: s.has("enableEnvelopeCalligraphy") ? Boolean(s.get("enableEnvelopeCalligraphy")) : true,
+    enableMealSelection: s.has("enableMealSelection") ? Boolean(s.get("enableMealSelection")) : true,
+    enableTravelConcierge: s.has("enableTravelConcierge") ? Boolean(s.get("enableTravelConcierge")) : true,
+    enableDayOfTimeline: s.has("enableDayOfTimeline") ? Boolean(s.get("enableDayOfTimeline")) : true,
+    enableGuestbook: s.has("enableGuestbook") ? Boolean(s.get("enableGuestbook")) : true,
+    enableTablePlanner: s.has("enableTablePlanner") ? Boolean(s.get("enableTablePlanner")) : true,
+    enableQrCheckin: s.has("enableQrCheckin") ? Boolean(s.get("enableQrCheckin")) : true,
+    enableRsvpReminders: s.has("enableRsvpReminders") ? Boolean(s.get("enableRsvpReminders")) : true,
+  };
 
   const [messages, navigation, hero, intro, wedding] = await Promise.all([
     getMessages({ locale }),

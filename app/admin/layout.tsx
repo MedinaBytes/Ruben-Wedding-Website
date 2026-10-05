@@ -54,6 +54,8 @@ export default async function AdminLayout({
                 { label: "Invitations", href: "/admin/invitations" },
                 { label: "Bulk Import", href: "/admin/invitations/import" },
                 { label: "RSVPs", href: "/admin/rsvps" },
+                { label: "Seating", href: "/admin/seating" },
+                { label: "Check-In", href: "/admin/checkin" },
                 { label: "Music", href: "/admin/music" },
                 { label: "WhatsApp", href: "/admin/whatsapp" },
                 { label: "Settings", href: "/admin/settings" },

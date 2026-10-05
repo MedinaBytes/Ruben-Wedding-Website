@@ -71,6 +71,16 @@ export default async function AdminSettingsPage() {
     ? Boolean(s.get("enableDemoInvitation"))
     : resilientStore.isDemoEnabled();
 
+  const enableCalendarSync = s.has("enableCalendarSync") ? Boolean(s.get("enableCalendarSync")) : true;
+  const enableEnvelopeCalligraphy = s.has("enableEnvelopeCalligraphy") ? Boolean(s.get("enableEnvelopeCalligraphy")) : true;
+  const enableMealSelection = s.has("enableMealSelection") ? Boolean(s.get("enableMealSelection")) : true;
+  const enableTravelConcierge = s.has("enableTravelConcierge") ? Boolean(s.get("enableTravelConcierge")) : true;
+  const enableDayOfTimeline = s.has("enableDayOfTimeline") ? Boolean(s.get("enableDayOfTimeline")) : true;
+  const enableGuestbook = s.has("enableGuestbook") ? Boolean(s.get("enableGuestbook")) : true;
+  const enableTablePlanner = s.has("enableTablePlanner") ? Boolean(s.get("enableTablePlanner")) : true;
+  const enableQrCheckin = s.has("enableQrCheckin") ? Boolean(s.get("enableQrCheckin")) : true;
+  const enableRsvpReminders = s.has("enableRsvpReminders") ? Boolean(s.get("enableRsvpReminders")) : true;
+
   return (
     <div style={{ maxWidth: "800px" }}>
       <div style={{ marginBottom: "2rem" }}>
@@ -78,11 +88,98 @@ export default async function AdminSettingsPage() {
           Wedding Settings &amp; Integrations
         </h1>
         <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.95rem" }}>
-          Configure bank disclosures, private home addresses, SMTP email delivery, and WhatsApp distribution.
+          Configure wedding experience modules, feature switches, bank disclosures, private home addresses, SMTP, and WhatsApp.
         </p>
       </div>
 
       <form action={updateSiteSettings} style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+        {/* Section 0: Feature Controls & Experience Modules */}
+        <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+            <span style={{ fontSize: "1.4rem" }}>⚡</span>
+            <h2 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
+              Feature Controls &amp; Experience Modules
+            </h2>
+          </div>
+          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.5rem" }}>
+            Turn individual website features and wedding tools on or off in real-time according to your ceremony needs.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableCalendarSync" defaultChecked={enableCalendarSync} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>📅 1-Click Calendar Sync</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Apple Calendar, Google Calendar &amp; .ics file download</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableEnvelopeCalligraphy" defaultChecked={enableEnvelopeCalligraphy} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🖋️ Envelope Calligraphy</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Guest name calligraphed on front flap of 3D envelope</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableMealSelection" defaultChecked={enableMealSelection} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🍽️ Per-Seat Meal &amp; Allergies</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Beef, fish, vegetarian, vegan &amp; children courses with dietary input</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableTravelConcierge" defaultChecked={enableTravelConcierge} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🏰 Vienna Travel &amp; Hotel Concierge</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Hetzendorf transit (Bim 62, S-Bahn) and Schönbrunn hotel guide</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableDayOfTimeline" defaultChecked={enableDayOfTimeline} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>⏱️ Live Day-of Timeline Mode</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Dynamic live status tracker during wedding day in Vienna</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableGuestbook" defaultChecked={enableGuestbook} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>💌 Digital Guestbook &amp; Wishes Wall</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Allows guests to leave blessings and heartfelt wishes</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableTablePlanner" defaultChecked={enableTablePlanner} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🪑 Table Seating Planner</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Organize Hetzendorf ballroom tables and assign confirmed guests</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
+              <input type="checkbox" name="enableQrCheckin" defaultChecked={enableQrCheckin} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>📲 QR Door Check-In Mode</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Fast guest arrival check-in scanning at church &amp; palace</div>
+              </div>
+            </label>
+
+            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer", gridColumn: "span 2" }}>
+              <input type="checkbox" name="enableRsvpReminders" defaultChecked={enableRsvpReminders} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🔔 Batch Pending RSVP Reminders</div>
+                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>One-click automated follow-up dispatch via WhatsApp &amp; Email for pending invitations</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
         {/* Section 1: Gifts & Bank Information */}
         <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>

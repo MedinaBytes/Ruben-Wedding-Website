@@ -98,6 +98,10 @@ export default async function InvitationIntroPage({
     getTranslations({ locale, namespace: "intro" }),
   ]);
 
+  const { resilientStore } = await import("@/lib/storage/resilient-store");
+  const siteSettings = resilientStore.getSettings();
+  const enableCalligraphy = siteSettings.enableEnvelopeCalligraphy !== false;
+
   const greeting = (token === "demo" ? null : invitation.greeting_override)
     ?? intro("greeting", { name: invitation.display_name });
 
@@ -124,6 +128,7 @@ export default async function InvitationIntroPage({
             sealMonogramAlt={intro("sealMonogram")}
             envelopeRegionLabel={intro("envelopeRegion")}
             introControlsLabel={intro("introControls")}
+            enableCalligraphy={enableCalligraphy}
           />
         </main>
       </SoundProvider>

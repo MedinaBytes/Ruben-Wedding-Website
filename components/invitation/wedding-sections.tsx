@@ -1,12 +1,16 @@
 import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
+import { AddToCalendar } from "@/components/invitation/add-to-calendar";
+import { DayOfTimeline } from "@/components/invitation/day-of-timeline";
+import { GuestbookSection } from "@/components/invitation/guestbook-section";
 import { RsvpForm } from "@/components/invitation/guest-forms";
 import { InteractiveMap } from "@/components/invitation/interactive-map";
 import { PhotoStory } from "@/components/invitation/photo-story";
 import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
 import { SpotifySongRequests } from "@/components/invitation/spotify-song-requests";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
+import { TravelConcierge } from "@/components/invitation/travel-concierge";
 import { getSpotifyPlaylistConfig } from "@/lib/spotify/api";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
 
@@ -89,6 +93,15 @@ export type SiteSettingsData = {
   privateAccessNotes?: string;
   contactPhone?: string;
   contactEmail?: string;
+  enableCalendarSync?: boolean;
+  enableEnvelopeCalligraphy?: boolean;
+  enableMealSelection?: boolean;
+  enableTravelConcierge?: boolean;
+  enableDayOfTimeline?: boolean;
+  enableGuestbook?: boolean;
+  enableTablePlanner?: boolean;
+  enableQrCheckin?: boolean;
+  enableRsvpReminders?: boolean;
 };
 
 export async function WeddingSections({
@@ -159,6 +172,7 @@ export async function WeddingSections({
   return (
     <>
       <Countdown />
+      {siteSettings?.enableCalendarSync !== false && <AddToCalendar locale={locale} />}
 
       <section className="day-story" id="event-note" aria-labelledby="day-title">
         <div className="section-heading">
@@ -193,6 +207,7 @@ export async function WeddingSections({
             </div>
           </li>
         </ol>
+        {siteSettings?.enableDayOfTimeline !== false && <DayOfTimeline locale={locale} />}
       </section>
 
       <PhotoStory locale={locale} />
@@ -398,6 +413,8 @@ export async function WeddingSections({
         </div>
       </section>
 
+      {siteSettings?.enableTravelConcierge !== false && <TravelConcierge locale={locale} />}
+
       <section className="dress-note" id="dress-code" aria-labelledby="dress-title">
         <div className="section-heading">
           <p className="section-label">{dress("label")}</p>
@@ -499,7 +516,20 @@ export async function WeddingSections({
         </div>
       </section>
 
-      {invitation && <RsvpForm invitation={invitation} />}
+      {invitation && (
+        <RsvpForm
+          invitation={invitation}
+          enableMealSelection={siteSettings?.enableMealSelection !== false}
+        />
+      )}
+
+      {siteSettings?.enableGuestbook !== false && (
+        <GuestbookSection
+          locale={locale}
+          token={invitation?.token}
+          guestDisplayName={invitation?.displayName}
+        />
+      )}
     </>
   );
 }
