@@ -146,6 +146,7 @@ export function RsvpForm({
           guestNames: string[];
           dietaryRequirements: string | null;
           notes: string | null;
+          mealPreferences?: Array<{ guestName: string; meal: string; allergies?: string }>;
         };
         setAttendance(saved.attendanceStatus);
         if (isPlusOneInvitation) {
@@ -165,6 +166,14 @@ export function RsvpForm({
         }
         setDietaryRequirements(saved.dietaryRequirements ?? "");
         setNotes(saved.notes ?? "");
+
+        if (Array.isArray(saved.mealPreferences) && saved.mealPreferences.length > 0) {
+          const mObj: Record<number, { meal: string; allergies: string }> = {};
+          saved.mealPreferences.forEach((p, idx) => {
+            mObj[idx] = { meal: p.meal || "classic", allergies: p.allergies || "" };
+          });
+          setMeals(mObj);
+        }
       } catch {
         if (!controller.signal.aborted) setErrorMessage(t("loadError"));
       } finally {
@@ -221,6 +230,13 @@ export function RsvpForm({
       finalGuestNames = names.slice(0, finalCount - 1);
     }
 
+    const guestList = [invitation.displayName, ...finalGuestNames];
+    const mealPreferences = guestList.slice(0, finalCount).map((gName, idx) => ({
+      guestName: gName,
+      meal: meals[idx]?.meal || "classic",
+      allergies: meals[idx]?.allergies || "",
+    }));
+
     setIsSaving(true);
     try {
       const response = await fetch(endpoint, {
@@ -231,6 +247,7 @@ export function RsvpForm({
           attendeeCount: finalCount,
           guestNames: finalGuestNames,
           dietaryRequirements: attendance === "yes" ? dietaryRequirements.trim() : undefined,
+          mealPreferences: attendance === "yes" && enableMealSelection ? mealPreferences : undefined,
           notes: notes.trim() || undefined,
           language: typedLocale,
         }),
@@ -431,6 +448,179 @@ export function RsvpForm({
                   value={dietaryRequirements}
                 />
               </div>
+
+              {enableMealSelection && (
+                <div
+                  className="meal-selection-container"
+                  style={{
+                    marginTop: "1.25rem",
+                    padding: "1.25rem",
+                    borderRadius: "1rem",
+                    background: "rgba(255, 255, 255, 0.75)",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(212, 175, 55, 0.35)",
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
+                  }}
+                >
+                  <div style={{ marginBottom: "1rem" }}>
+                    <h4
+                      style={{
+                        margin: "0 0 0.25rem 0",
+                        fontFamily: "'Cinzel', serif",
+                        fontSize: "1.05rem",
+                        color: "#2C1810",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <span>🍽️</span>
+                      {(mealLabels[locale] || mealLabels.en).sectionTitle}
+                    </h4>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "0.85rem",
+                        color: "#6b5b52",
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {(mealLabels[locale] || mealLabels.en).sectionSubtitle}
+                    </p>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    {(
+                      isPlusOneInvitation
+                        ? [
+                            invitation.displayName,
+                            ...(plusOneSelected === "yes"
+                              ? [plusOneName.trim() || `${(mealLabels[locale] || mealLabels.en).guestHeader} 2`]
+                              : []),
+                          ]
+                        : isMultiGuestParty
+                        ? [
+                            invitation.displayName,
+                            ...Array.from({ length: Math.max(0, attendeeCount - 1) }, (_, i) => {
+                              const lines = guestNames.split("\n").map((n) => n.trim()).filter(Boolean);
+                              return lines[i] || `${(mealLabels[locale] || mealLabels.en).guestHeader} ${i + 2}`;
+                            }),
+                          ]
+                        : [invitation.displayName]
+                    ).map((guestTitle, idx) => {
+                      const dict = mealLabels[locale] || mealLabels.en;
+                      const currentMeal = meals[idx]?.meal || "classic";
+                      const currentAllergies = meals[idx]?.allergies || "";
+
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            padding: "0.85rem 1rem",
+                            borderRadius: "0.75rem",
+                            background: "rgba(247, 244, 239, 0.8)",
+                            border: "1px solid rgba(140, 40, 54, 0.15)",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "0.92rem",
+                              color: "#8C2836",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            👤 {guestTitle}
+                          </div>
+
+                          <div style={{ marginBottom: "0.5rem" }}>
+                            <label
+                              htmlFor={`meal-select-${idx}`}
+                              style={{
+                                display: "block",
+                                fontSize: "0.8rem",
+                                fontWeight: 500,
+                                color: "#4a3e3d",
+                                marginBottom: "0.25rem",
+                              }}
+                            >
+                              {dict.mealType}
+                            </label>
+                            <select
+                              id={`meal-select-${idx}`}
+                              value={currentMeal}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMeals((prev) => ({
+                                  ...prev,
+                                  [idx]: {
+                                    meal: val,
+                                    allergies: prev[idx]?.allergies || "",
+                                  },
+                                }));
+                              }}
+                              style={{
+                                width: "100%",
+                                padding: "0.5rem 0.75rem",
+                                borderRadius: "0.5rem",
+                                border: "1px solid #d4af37",
+                                background: "#fff",
+                                fontSize: "0.875rem",
+                                color: "#2C1810",
+                              }}
+                            >
+                              {Object.entries(dict.options).map(([optKey, optText]) => (
+                                <option key={optKey} value={optKey}>
+                                  {optText}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label
+                              htmlFor={`allergy-input-${idx}`}
+                              style={{
+                                display: "block",
+                                fontSize: "0.78rem",
+                                color: "#6b5b52",
+                                marginBottom: "0.25rem",
+                              }}
+                            >
+                              {dict.allergiesLabel}
+                            </label>
+                            <input
+                              type="text"
+                              id={`allergy-input-${idx}`}
+                              placeholder={dict.allergiesPlaceholder}
+                              value={currentAllergies}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setMeals((prev) => ({
+                                  ...prev,
+                                  [idx]: {
+                                    meal: prev[idx]?.meal || "classic",
+                                    allergies: val,
+                                  },
+                                }));
+                              }}
+                              style={{
+                                width: "100%",
+                                padding: "0.4rem 0.65rem",
+                                borderRadius: "0.5rem",
+                                border: "1px solid #d5cec5",
+                                background: "#fff",
+                                fontSize: "0.82rem",
+                                color: "#2C1810",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
