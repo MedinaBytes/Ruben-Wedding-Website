@@ -24,14 +24,20 @@ export async function recordAdminAudit({
   resourceId?: string;
   metadata?: Record<string, string | number | boolean | null>;
 }) {
-  const { error } = await createSupabaseAdminClient().from("admin_audit_log").insert({
-    actor_user_id: actor.id,
-    actor_email: actor.email,
-    action,
-    resource_type: resourceType,
-    resource_id: resourceId ?? null,
-    metadata,
-  });
+  try {
+    const { error } = await createSupabaseAdminClient().from("admin_audit_log").insert({
+      actor_user_id: actor.id,
+      actor_email: actor.email,
+      action,
+      resource_type: resourceType,
+      resource_id: resourceId ?? null,
+      metadata,
+    });
 
-  if (error) throw new Error("Admin audit event could not be stored.");
+    if (error) {
+      console.warn("Admin audit log insert warning:", error.message);
+    }
+  } catch (err) {
+    console.warn("Admin audit logging failed:", err);
+  }
 }

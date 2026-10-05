@@ -16,6 +16,7 @@ export interface InvitationRow {
   createdAt: string;
   rsvpStatus: "yes" | "no" | "pending";
   attendeeCount: number;
+  email?: string | null;
   phone?: string | null;
   whatsapp?: string | null;
   token?: string;
@@ -256,7 +257,13 @@ export function InvitationsManager({
               filtered.map((inv) => (
                 <tr key={inv.id} style={{ borderBottom: "1px solid #EFEAE5" }}>
                   <td style={{ padding: "0.85rem 1rem", fontWeight: 600, color: "#2B2425" }}>
-                    {inv.displayName}
+                    <div>{inv.displayName}</div>
+                    {(inv.email || inv.whatsapp || inv.phone) && (
+                      <div style={{ fontSize: "0.72rem", color: "#776A6C", fontWeight: 400, marginTop: "0.2rem", display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+                        {inv.email && <span title="Guest Email">✉ {inv.email}</span>}
+                        {inv.whatsapp && <span title="WhatsApp Number" style={{ color: "#2E7D32" }}>📱 {inv.whatsapp}</span>}
+                      </div>
+                    )}
                   </td>
                   <td style={{ padding: "0.85rem 1rem", color: "#776A6C" }}>
                     {inv.groupName || "—"}

@@ -1,6 +1,27 @@
 {
   "invitations": [
     {
+      "id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "token": "fGBOFOEBUVo",
+      "token_hash": "1e8238d3c21405927aed6a3746f13518e90e1b48bfa042391659460302e36781",
+      "display_name": "Test",
+      "normalized_name": "test",
+      "language": null,
+      "max_guests": 1,
+      "plus_one_allowed": false,
+      "group_name": null,
+      "normalized_group_name": null,
+      "personal_message": null,
+      "email": null,
+      "normalized_email": null,
+      "phone": null,
+      "normalized_phone": null,
+      "whatsapp": null,
+      "normalized_whatsapp": null,
+      "status": "active",
+      "created_at": "2026-10-05T20:46:54.898Z"
+    },
+    {
       "id": "00000000-0000-0000-0000-000000000001",
       "token": "demo",
       "token_hash": "demo_hash",

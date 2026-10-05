@@ -16,7 +16,9 @@ export interface StoredInvitation {
   email?: string | null;
   normalized_email?: string | null;
   phone?: string | null;
+  normalized_phone?: string | null;
   whatsapp?: string | null;
+  normalized_whatsapp?: string | null;
   status: "active" | "draft" | "revoked";
   created_at: string;
 }

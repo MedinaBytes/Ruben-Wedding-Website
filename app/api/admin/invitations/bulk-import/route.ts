@@ -191,7 +191,7 @@ export async function POST(request: Request) {
       action: "INVITATION_CREATED",
       resourceType: "invitation",
       metadata: { importedCount: created.length, failedCount: errors.length },
-    });
+    }).catch(() => undefined);
   }
 
   return NextResponse.json({
