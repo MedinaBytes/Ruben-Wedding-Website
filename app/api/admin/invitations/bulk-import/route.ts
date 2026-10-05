@@ -56,11 +56,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  if (typeof body !== "object" || body === null || !("rows" in body) || !Array.isArray((body as { rows: unknown }).rows)) {
+  const payload = body as { rows?: unknown; invitations?: unknown };
+  const rawRows = Array.isArray(payload.rows) ? payload.rows : Array.isArray(payload.invitations) ? payload.invitations : null;
+
+  if (!rawRows) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 422 });
   }
 
-  const rows = (body as { rows: ImportRow[] }).rows;
+  const rows = rawRows as ImportRow[];
   if (rows.length === 0) {
     return NextResponse.json({ error: "empty_rows" }, { status: 422 });
   }
