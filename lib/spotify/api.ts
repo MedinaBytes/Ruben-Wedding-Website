@@ -223,21 +223,57 @@ function normalizeTrack(value: unknown): SpotifyTrack | null {
   };
 }
 
+const SEARCH_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const searchCache = new Map<string, { data: SpotifyTrack[]; expiresAt: number }>();
+
+const TRACK_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const trackCache = new Map<string, { data: SpotifyTrack; expiresAt: number }>();
+
+function pruneMapCache<T>(cache: Map<string, { data: T; expiresAt: number }>, maxSize = 200) {
+  const now = Date.now();
+  for (const [key, val] of cache.entries()) {
+    if (val.expiresAt < now) cache.delete(key);
+  }
+  if (cache.size > maxSize) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey) cache.delete(oldestKey);
+  }
+}
+
 export async function searchSpotifyTracks(query: string) {
+  const cacheKey = query.trim().toLowerCase();
+  const cached = searchCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data;
+  }
+
   const search = new URLSearchParams({ q: query, type: "track", limit: "8", market: "AT" });
   const response = await spotifyApiFetch(`/search?${search}`);
   const body = await response.json() as { tracks?: { items?: unknown[] } };
-  return (body.tracks?.items ?? []).flatMap((item) => {
+  const tracks = (body.tracks?.items ?? []).flatMap((item) => {
     const track = normalizeTrack(item);
     return track ? [track] : [];
   });
+
+  pruneMapCache(searchCache, 200);
+  searchCache.set(cacheKey, { data: tracks, expiresAt: Date.now() + SEARCH_CACHE_TTL_MS });
+  return tracks;
 }
 
 export async function getSpotifyTrack(id: string) {
   if (!trackIdPattern.test(id)) throw new SpotifyUnavailableError();
+
+  const cached = trackCache.get(id);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data;
+  }
+
   const response = await spotifyApiFetch(`/tracks/${encodeURIComponent(id)}?market=AT`);
   const track = normalizeTrack(await response.json());
   if (!track) throw new SpotifyUnavailableError();
+
+  pruneMapCache(trackCache, 500);
+  trackCache.set(id, { data: track, expiresAt: Date.now() + TRACK_CACHE_TTL_MS });
   return track;
 }
 
