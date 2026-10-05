@@ -362,17 +362,19 @@ export async function sendInvitationEmailAction({
       session_id: info.messageId || "email-smtp",
     });
 
-    await recordAdminAudit({
-      actor,
-      action: "INVITATION_UPDATED",
-      resourceType: "invitation",
-      resourceId: invitation.id,
-      metadata: {
-        channel: "smtp_email",
-        recipient: targetEmail,
-        messageId: info.messageId,
-      },
-    }).catch(() => undefined);
+    try {
+      await recordAdminAudit({
+        actor,
+        action: "INVITATION_UPDATED",
+        resourceType: "invitation",
+        resourceId: invitation.id,
+        metadata: {
+          channel: "smtp_email",
+          recipient: targetEmail,
+          messageId: info.messageId,
+        },
+      });
+    } catch {}
 
     return {
       success: true,

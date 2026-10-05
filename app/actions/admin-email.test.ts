@@ -75,7 +75,6 @@ describe("admin email actions", () => {
       invitationId: "test-inv-1",
     });
 
-    console.log("SEND INVITATION EMAIL RESULT:", result);
     expect(result.success).toBe(true);
     expect(result.messageId).toBe("msg-12345");
     expect(sendMailMock).toHaveBeenCalledWith(
