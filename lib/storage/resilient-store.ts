@@ -23,6 +23,12 @@ export interface StoredInvitation {
   created_at: string;
 }
 
+export interface MealPreference {
+  guestName: string;
+  meal: "classic" | "fish" | "vegetarian" | "vegan" | "kids" | "standard";
+  allergies?: string;
+}
+
 export interface StoredRsvp {
   invitation_id: string;
   attendance_status: "yes" | "no";
@@ -33,6 +39,34 @@ export interface StoredRsvp {
   language: string;
   submitted_at: string;
   updated_at: string;
+  meal_preferences?: MealPreference[];
+}
+
+export interface StoredWish {
+  id: string;
+  invitation_id: string;
+  guest_name: string;
+  message: string;
+  locale?: string | null;
+  status: "approved" | "pending";
+  created_at: string;
+}
+
+export interface StoredTableAssignment {
+  invitation_id: string;
+  guest_name: string;
+  table_number: string | number;
+  table_name: string;
+  seat?: number;
+  updated_at: string;
+}
+
+export interface StoredCheckIn {
+  invitation_id: string;
+  guest_name: string;
+  attendee_count: number;
+  checked_in_at: string;
+  checked_in_by: string;
 }
 
 export interface StoredSongRequest {
@@ -60,6 +94,9 @@ interface LocalDatabase {
   rsvps: StoredRsvp[];
   songRequests: StoredSongRequest[];
   events?: StoredEvent[];
+  wishes?: StoredWish[];
+  tableAssignments?: StoredTableAssignment[];
+  checkIns?: StoredCheckIn[];
   settings: Record<string, unknown>;
   whatsappSession: {
     status: "disconnected" | "connecting" | "connected";
@@ -110,7 +147,31 @@ function getDefaultDb(): LocalDatabase {
         created_at: new Date().toISOString(),
       },
     ],
+    wishes: [
+      {
+        id: "wish-demo-1",
+        invitation_id: "00000000-0000-0000-0000-000000000001",
+        guest_name: "Sarah & Marcus",
+        message: "Wishing Ruben & Andrea a lifetime of radiant love and laughter in Vienna! Cannot wait to celebrate with you at Hetzendorf.",
+        locale: "en",
+        status: "approved",
+        created_at: new Date().toISOString(),
+      },
+    ],
+    tableAssignments: [],
+    checkIns: [],
     settings: {
+      enableDemoInvitation: true,
+      demoDeleted: false,
+      enableCalendarSync: true,
+      enableEnvelopeCalligraphy: true,
+      enableMealSelection: true,
+      enableTravelConcierge: true,
+      enableDayOfTimeline: true,
+      enableGuestbook: true,
+      enableTablePlanner: true,
+      enableQrCheckin: true,
+      enableRsvpReminders: true,
       showGiftDetails: false,
       showPrivateAddress: false,
       bankName: "Erste Bank Österreich",
@@ -159,6 +220,9 @@ function loadDb(): LocalDatabase {
     if (!Array.isArray(parsed.invitations)) parsed.invitations = [];
     if (!Array.isArray(parsed.rsvps)) parsed.rsvps = [];
     if (!Array.isArray(parsed.songRequests)) parsed.songRequests = [];
+    if (!Array.isArray(parsed.wishes)) parsed.wishes = [];
+    if (!Array.isArray(parsed.tableAssignments)) parsed.tableAssignments = [];
+    if (!Array.isArray(parsed.checkIns)) parsed.checkIns = [];
     if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
 
     const isDemoDisabled = parsed.settings.demoDeleted === true || parsed.settings.enableDemoInvitation === false;
@@ -472,5 +536,142 @@ export const resilientStore = {
     db.whatsappSession = { ...db.whatsappSession, ...partial };
     saveDb(db);
     return db.whatsappSession;
+  },
+
+  // DIGITAL GUESTBOOK WISHES
+  getWishes(): StoredWish[] {
+    const db = loadDb();
+    return (db.wishes ?? []).filter((w) => w.status === "approved");
+  },
+
+  getAllWishes(): StoredWish[] {
+    return loadDb().wishes ?? [];
+  },
+
+  saveWish(wish: StoredWish): StoredWish {
+    const db = loadDb();
+    if (!Array.isArray(db.wishes)) db.wishes = [];
+    const index = db.wishes.findIndex((w) => w.id === wish.id);
+    if (index >= 0) {
+      db.wishes[index] = wish;
+    } else {
+      db.wishes.unshift(wish);
+    }
+    saveDb(db);
+    return wish;
+  },
+
+  deleteWish(id: string) {
+    const db = loadDb();
+    if (!Array.isArray(db.wishes)) return;
+    db.wishes = db.wishes.filter((w) => w.id !== id);
+    saveDb(db);
+  },
+
+  // TABLE SEATING ASSIGNMENTS
+  getTableAssignments(): StoredTableAssignment[] {
+    return loadDb().tableAssignments ?? [];
+  },
+
+  saveTableAssignment(assignment: StoredTableAssignment) {
+    const db = loadDb();
+    if (!Array.isArray(db.tableAssignments)) db.tableAssignments = [];
+    const index = db.tableAssignments.findIndex(
+      (t) => t.invitation_id === assignment.invitation_id && t.guest_name === assignment.guest_name,
+    );
+    if (index >= 0) {
+      db.tableAssignments[index] = assignment;
+    } else {
+      db.tableAssignments.push(assignment);
+    }
+    saveDb(db);
+  },
+
+  deleteTableAssignment(invitationId: string, guestName?: string) {
+    const db = loadDb();
+    if (!Array.isArray(db.tableAssignments)) return;
+    db.tableAssignments = db.tableAssignments.filter(
+      (t) => t.invitation_id !== invitationId || (guestName && t.guest_name !== guestName),
+    );
+    saveDb(db);
+  },
+
+  // CHECK-IN ENGINE (ON-SITE AT SCHLOSS HETZENDORF)
+  getCheckIns(): StoredCheckIn[] {
+    return loadDb().checkIns ?? [];
+  },
+
+  recordCheckIn(checkIn: StoredCheckIn) {
+    const db = loadDb();
+    if (!Array.isArray(db.checkIns)) db.checkIns = [];
+    const index = db.checkIns.findIndex((c) => c.invitation_id === checkIn.invitation_id);
+    if (index >= 0) {
+      db.checkIns[index] = checkIn;
+    } else {
+      db.checkIns.unshift(checkIn);
+    }
+    saveDb(db);
+  },
+
+  removeCheckIn(invitationId: string) {
+    const db = loadDb();
+    if (!Array.isArray(db.checkIns)) return;
+    db.checkIns = db.checkIns.filter((c) => c.invitation_id !== invitationId);
+    saveDb(db);
+  },
+
+  // CATERING & DIETARY AGGREGATOR
+  getCateringSummary() {
+    const rsvps = this.getRsvps().filter((r) => r.attendance_status === "yes");
+    const totalConfirmedGuests = rsvps.reduce((acc, r) => acc + (r.attendee_count || 1), 0);
+
+    const mealBreakdown: Record<string, number> = {
+      classic: 0,
+      fish: 0,
+      vegetarian: 0,
+      vegan: 0,
+      kids: 0,
+      standard: 0,
+    };
+
+    const allergies: Array<{
+      guestName: string;
+      allergies: string;
+      mealChoice?: string;
+      invitationId: string;
+    }> = [];
+
+    for (const r of rsvps) {
+      if (Array.isArray(r.meal_preferences) && r.meal_preferences.length > 0) {
+        for (const pref of r.meal_preferences) {
+          const key = pref.meal in mealBreakdown ? pref.meal : "standard";
+          mealBreakdown[key] = (mealBreakdown[key] || 0) + 1;
+          if (pref.allergies && pref.allergies.trim()) {
+            allergies.push({
+              guestName: pref.guestName || "Guest",
+              allergies: pref.allergies.trim(),
+              mealChoice: pref.meal,
+              invitationId: r.invitation_id,
+            });
+          }
+        }
+      } else {
+        mealBreakdown.standard += r.attendee_count || 1;
+      }
+
+      if (r.dietary_requirements && r.dietary_requirements.trim()) {
+        allergies.push({
+          guestName: r.guest_names?.[0] || "Party",
+          allergies: r.dietary_requirements.trim(),
+          invitationId: r.invitation_id,
+        });
+      }
+    }
+
+    return {
+      totalConfirmedGuests,
+      mealBreakdown,
+      allergies,
+    };
   },
 };

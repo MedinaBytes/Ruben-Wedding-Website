@@ -31,17 +31,27 @@ export async function GET(
       .eq("invitation_id", invitation.id)
       .maybeSingle();
 
-    if (error) throw new Error("RSVP lookup failed.");
+    const { resilientStore } = await import("@/lib/storage/resilient-store");
+    const local = resilientStore.getRsvp(invitation.id);
+    const rsvpSource: any = data || (local ? {
+      attendance_status: local.attendance_status,
+      attendee_count: local.attendee_count,
+      guest_names: local.guest_names,
+      dietary_requirements: local.dietary_requirements,
+      notes: local.notes,
+      meal_preferences: local.meal_preferences,
+    } : null);
 
     return NextResponse.json(
       {
-        rsvp: data
+        rsvp: rsvpSource
           ? {
-              attendanceStatus: data.attendance_status,
-              attendeeCount: data.attendee_count,
-              guestNames: data.guest_names,
-              dietaryRequirements: data.dietary_requirements,
-              notes: data.notes,
+              attendanceStatus: rsvpSource.attendance_status,
+              attendeeCount: rsvpSource.attendee_count,
+              guestNames: rsvpSource.guest_names,
+              dietaryRequirements: rsvpSource.dietary_requirements,
+              notes: rsvpSource.notes,
+              mealPreferences: rsvpSource.meal_preferences || [],
             }
           : null,
       },

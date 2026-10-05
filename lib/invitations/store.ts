@@ -157,6 +157,7 @@ export async function saveRsvp(client: SupabaseClient, invitationId: string, rsv
     language: rsvp.language,
     submitted_at: now,
     updated_at: now,
+    meal_preferences: rsvp.mealPreferences,
   });
 
   try {

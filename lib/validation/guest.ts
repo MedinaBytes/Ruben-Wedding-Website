@@ -10,6 +10,18 @@ export const rsvpPayloadSchema = z
     attendeeCount: z.number().int().min(0).max(20),
     guestNames: z.array(z.string().trim().min(1).max(120)).max(19).default([]),
     dietaryRequirements: optionalText(1000),
+    mealPreferences: z
+      .array(
+        z
+          .object({
+            guestName: z.string().trim().max(120),
+            meal: z.enum(["classic", "fish", "vegetarian", "vegan", "kids", "standard"]).default("standard"),
+            allergies: optionalText(500),
+          })
+          .strict(),
+      )
+      .optional()
+      .default([]),
     notes: optionalText(2000),
     language: z.enum(supportedLocales),
   })

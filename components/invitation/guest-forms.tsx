@@ -25,7 +25,84 @@ async function readErrorCode(response: Response) {
   return typeof body.error === "string" ? body.error : "service_unavailable";
 }
 
-export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
+const mealLabels: Record<string, {
+  sectionTitle: string;
+  sectionSubtitle: string;
+  guestHeader: string;
+  mealType: string;
+  allergiesLabel: string;
+  allergiesPlaceholder: string;
+  options: Record<string, string>;
+}> = {
+  en: {
+    sectionTitle: "Menu & Dietary Preferences per Guest",
+    sectionSubtitle: "Please choose a course for each attending guest at Schloss Hetzendorf.",
+    guestHeader: "Guest",
+    mealType: "Meal Preference",
+    allergiesLabel: "Specific Allergies / Intolerances",
+    allergiesPlaceholder: "e.g. Celiac (gluten-free), nut allergy, lactose...",
+    options: {
+      classic: "🥩 Classic (Beef Tenderloin & Viennese Specialties)",
+      fish: "🐟 Fish (Alpine Char / Trout with Seasonal Vegetables)",
+      vegetarian: "🥗 Vegetarian (Truffle Risotto & Specialties)",
+      vegan: "🌿 Vegan Gourmet Menu",
+      kids: "🧒 Children's Menu (Wiener Schnitzerl)",
+    },
+  },
+  es: {
+    sectionTitle: "Selección de Menú por Invitado",
+    sectionSubtitle: "Por favor elige la opción de plato para cada invitado en el Palacio Hetzendorf.",
+    guestHeader: "Invitado/a",
+    mealType: "Preferencia de Menú",
+    allergiesLabel: "Alergias o Intolerancias Específicas",
+    allergiesPlaceholder: "ej. Celíaco (sin gluten), frutos secos, lactosa...",
+    options: {
+      classic: "🥩 Clásico (Solomillo de Ternera y Especialidades Vienesas)",
+      fish: "🐟 Pescado (Trucha / Salvelino Alpino con Verduras)",
+      vegetarian: "🥗 Vegetariano (Risotto de Trufa y Pastas)",
+      vegan: "🌿 Menú Gourmet Vegano",
+      kids: "🧒 Menú Infantil (Milanesa Vienesa)",
+    },
+  },
+  "de-AT": {
+    sectionTitle: "Menüauswahl & Speisen pro Gast",
+    sectionSubtitle: "Bitte wählt euren gewünschten Hauptgang für das Hochzeitsdinner im Schloss Hetzendorf.",
+    guestHeader: "Gast",
+    mealType: "Hauptgang-Wahl",
+    allergiesLabel: "Spezifische Allergien & Unverträglichkeiten",
+    allergiesPlaceholder: "z.B. Zöliakie (glutenfrei), Laktose, Nussallergie...",
+    options: {
+      classic: "🥩 Klassisch (Zartes Rindsmedaillon & Wiener Beilagen)",
+      fish: "🐟 Fisch (Alpensaibling / Zander auf Gemüse)",
+      vegetarian: "🥗 Vegetarisch (Trüffel-Risotto & Spezialitäten)",
+      vegan: "🌿 Veganes Gourmet-Menü",
+      kids: "🧒 Kindermenü (Wiener Schnitzerl)",
+    },
+  },
+  hu: {
+    sectionTitle: "Menüválasztás és Ételigények Vendégenként",
+    sectionSubtitle: "Kérjük, válaszd ki a főételt minden résztvevő vendég számára a Hetzendorf-kastélyban.",
+    guestHeader: "Vendég",
+    mealType: "Menü Választás",
+    allergiesLabel: "Allergiák és Ételérzékenységek",
+    allergiesPlaceholder: "pl. Lisztérzékenység (gluténmentes), laktóz, dióféle...",
+    options: {
+      classic: "🥩 Klasszikus (Marhabélszín és bécsi köretek)",
+      fish: "🐟 Hal (Alpesi szaibling szezonális zöldségekkel)",
+      vegetarian: "🥗 Vegetáriánus (Szarvasgombás rizottó)",
+      vegan: "🌿 Vegán Gourmet Menü",
+      kids: "🧒 Gyerekmenü (Bécsi szelet)",
+    },
+  },
+};
+
+export function RsvpForm({
+  invitation,
+  enableMealSelection = true,
+}: {
+  invitation: InvitationFormProps;
+  enableMealSelection?: boolean;
+}) {
   const locale = useLocale();
   const typedLocale = locale as Locale;
   const t = useTranslations("rsvp");
@@ -42,6 +119,10 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
   const [guestNames, setGuestNames] = useState("");
   const [dietaryRequirements, setDietaryRequirements] = useState("");
   const [notes, setNotes] = useState("");
+  const [meals, setMeals] = useState<Record<number, { meal: string; allergies: string }>>({
+    0: { meal: "classic", allergies: "" },
+    1: { meal: "classic", allergies: "" },
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
