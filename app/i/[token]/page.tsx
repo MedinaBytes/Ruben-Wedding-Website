@@ -115,6 +115,12 @@ export default async function InvitationIntroPage({
             enterPrompt={intro("enter")}
             celebratePrompt={intro("celebrate")}
             soundPrompt={intro("soundOn")}
+            soundOffPrompt={intro("soundOff")}
+            previouslyOpenedPrompt={intro("alreadySeen")}
+            continueDirectlyPrompt={intro("continueDirectly")}
+            sealMonogramAlt={intro("sealMonogram")}
+            envelopeRegionLabel={intro("envelopeRegion")}
+            introControlsLabel={intro("introControls")}
           />
         </main>
       </SoundProvider>

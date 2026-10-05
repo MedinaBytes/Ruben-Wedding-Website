@@ -222,6 +222,7 @@
     "submittedTitle": "Tus canciones enviadas",
     "alreadyInPlaylist": "Ya está en la lista",
     "submitted": "Enviada",
+    "clearSearch": "Borrar búsqueda",
     "loadRequestsError": "No hemos podido cargar tus peticiones guardadas."
   },
   "gifts": {
@@ -263,7 +264,9 @@
     "plusOneNamePlaceholder": "p. ej. María González",
     "plusOneNameRequired": "Por favor, introduce el nombre completo de tu acompañante.",
     "additionalNamesRequired": "Por favor, introduce los nombres de todos los invitados asistentes.",
+    "additionalNamesPlaceholder": "Introduce el nombre de cada invitado en una nueva línea",
     "attendeeCount": "Personas que asistirán",
+    "maxAllowed": "Máx: {max}",
     "additionalNames": "Nombres de los acompañantes",
     "dietaryLabel": "Requisitos alimentarios o alergias",
     "notesLabel": "Un mensaje para la pareja",
@@ -308,7 +311,9 @@
     "collectionDescription": "Celebraciones, lugares lejanos y días sencillos que se convirtieron en parte de nuestra historia.",
     "filterLabel": "Filtrar recuerdos",
     "viewerLabel": "Visor de fotos",
+    "memoriesLabel": "Recuerdos fotográficos",
     "openPhotoLabel": "Abrir foto: {title}",
+    "viewPhotoLabel": "Ver foto: {title}",
     "closeViewerLabel": "Cerrar el visor de fotos",
     "previousPhotoLabel": "Foto anterior",
     "nextPhotoLabel": "Foto siguiente",
@@ -327,7 +332,13 @@
     "soundOn": "Activar sonido",
     "soundOff": "Desactivar sonido",
     "celebrate": "Tienen el placer de invitarte a celebrar su boda",
-    "enter": "Ver Invitación"
+    "enter": "Ver Invitación",
+    "alreadySeen": "Ya has abierto tu invitación anteriormente.",
+    "continueDirectly": "Ir directamente a la invitación →",
+    "sealMonogram": "Monograma en sello de lacre de Ruben y Andrea",
+    "envelopeRegion": "Sobre de invitación de boda",
+    "introControls": "Controles de introducción",
+    "edition": "Una invitación para celebrar"
   },
   "admin": {
     "label": "Administración de la boda",

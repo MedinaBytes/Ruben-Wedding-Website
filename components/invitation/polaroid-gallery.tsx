@@ -27,7 +27,23 @@ const ROTATIONS = [
   "-1.4deg",
 ];
 
-export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
+export function PolaroidGallery({
+  locale = "en",
+  memoriesLabel,
+  viewerLabel,
+  openPhotoLabel,
+  closeViewerLabel,
+  previousPhotoLabel,
+  nextPhotoLabel,
+}: {
+  locale?: Locale;
+  memoriesLabel?: string;
+  viewerLabel?: string;
+  openPhotoLabel?: string;
+  closeViewerLabel?: string;
+  previousPhotoLabel?: string;
+  nextPhotoLabel?: string;
+}) {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -63,7 +79,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
   }
 
   return (
-    <div className="polaroid-gallery" aria-label="Photo Memories">
+    <div className="polaroid-gallery" aria-label={memoriesLabel || "Photo Memories"}>
       <div className="polaroid-grid">
         {photos.map((item, index) => {
           const title = photoText(item.title, locale);
@@ -77,7 +93,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
               className="polaroid-card"
               style={{ "--polaroid-rot": rotation } as React.CSSProperties}
               onClick={() => setActivePhotoIndex(index)}
-              aria-label={`View photo: ${title}`}
+              aria-label={openPhotoLabel ? openPhotoLabel.replace("{title}", title) : title}
             >
               {/* Photo Frame */}
               <div className="polaroid-card__photo-wrap">
@@ -102,7 +118,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
       <dialog
         ref={dialogRef}
         className="polaroid-lightbox"
-        aria-label="Photo Viewer"
+        aria-label={viewerLabel || "Photo Viewer"}
         onClick={(event) => {
           if (event.target === dialogRef.current) {
             setActivePhotoIndex(null);
@@ -143,7 +159,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
               onClick={() =>
                 setActivePhotoIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : photos.length - 1))
               }
-              aria-label="Previous photo"
+              aria-label={previousPhotoLabel || "Previous photo"}
             >
               ‹
             </button>
@@ -154,7 +170,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
               onClick={() =>
                 setActivePhotoIndex((prev) => (prev !== null && prev < photos.length - 1 ? prev + 1 : 0))
               }
-              aria-label="Next photo"
+              aria-label={nextPhotoLabel || "Next photo"}
             >
               ›
             </button>
@@ -164,7 +180,7 @@ export function PolaroidGallery({ locale = "en" }: { locale?: Locale }) {
               type="button"
               className="polaroid-lightbox__close"
               onClick={() => setActivePhotoIndex(null)}
-              aria-label="Close photo viewer"
+              aria-label={closeViewerLabel || "Close photo viewer"}
             >
               ✕
             </button>

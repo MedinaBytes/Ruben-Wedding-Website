@@ -23,6 +23,7 @@ export function InvitationIntro({
   skipLabel,
   soundOnLabel,
   soundOffLabel,
+  editionLabel,
   onComplete,
 }: {
   invitationId: string;
@@ -32,6 +33,7 @@ export function InvitationIntro({
   skipLabel: string;
   soundOnLabel: string;
   soundOffLabel: string;
+  editionLabel?: string;
   onComplete?: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -118,7 +120,9 @@ export function InvitationIntro({
         onAnimationComplete={finishClose}
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.72, ease: [0.2, 0.7, 0.2, 1] }}
       >
-        <span aria-hidden="true" className="invitation-intro__edition">An invitation to celebrate</span>
+        <span aria-hidden="true" className="invitation-intro__edition">
+          {editionLabel || "An invitation to celebrate"}
+        </span>
         <span aria-hidden="true" className="invitation-intro__ornament">R <span>&</span> A</span>
         <p className="invitation-intro__greeting">{greeting}</p>
         <p className="invitation-intro__date">{date}</p>

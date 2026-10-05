@@ -353,7 +353,7 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
                     </span>
                     {track.spotifyUrl && (
                       <a
-                        aria-label="Open track on Spotify"
+                        aria-label={t("openSpotify")}
                         className="song-request__spotify-link"
                         href={track.spotifyUrl}
                         rel="noreferrer"
@@ -535,7 +535,7 @@ export function SpotifySongRequests({ token, playlistUrl }: { token: string; pla
                         setSearchResults([]);
                         setIsSearching(false);
                       }}
-                      aria-label="Clear search"
+                      aria-label={t("clearSearch")}
                     >
                       ×
                     </button>

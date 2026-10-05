@@ -21,6 +21,12 @@ interface EnvelopeIntroProps {
   enterPrompt: string;
   celebratePrompt?: string;
   soundPrompt: string;
+  soundOffPrompt?: string;
+  previouslyOpenedPrompt?: string;
+  continueDirectlyPrompt?: string;
+  sealMonogramAlt?: string;
+  envelopeRegionLabel?: string;
+  introControlsLabel?: string;
   replayPrompt?: string;
 }
 
@@ -37,6 +43,12 @@ export function EnvelopeIntro({
   enterPrompt,
   celebratePrompt,
   soundPrompt,
+  soundOffPrompt,
+  previouslyOpenedPrompt,
+  continueDirectlyPrompt,
+  sealMonogramAlt,
+  envelopeRegionLabel,
+  introControlsLabel,
 }: EnvelopeIntroProps) {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
@@ -103,9 +115,9 @@ export function EnvelopeIntro({
   }
 
   return (
-    <div className="envelope-screen" role="region" aria-label="Wedding Invitation Envelope">
+    <div className="envelope-screen" role="region" aria-label={envelopeRegionLabel || "Wedding Invitation Envelope"}>
       {/* Top Controls: Sound Toggle, Language Selector, and Skip */}
-      <nav className="envelope-screen__controls" aria-label="Intro Controls">
+      <nav className="envelope-screen__controls" aria-label={introControlsLabel || "Intro Controls"}>
         <button
           type="button"
           className="envelope-control-button"
@@ -115,7 +127,7 @@ export function EnvelopeIntro({
           <span aria-hidden="true" className="envelope-control-icon">
             {soundEnabled ? "♪" : "✕"}
           </span>
-          <span>{soundEnabled ? soundPrompt : "Sound Off"}</span>
+          <span>{soundEnabled ? soundPrompt : (soundOffPrompt || "Sound Off")}</span>
         </button>
 
         {/* Multi-language Selector */}
@@ -302,7 +314,7 @@ export function EnvelopeIntro({
               <div className="envelope-seal__image-wrap">
                 <Image
                   src="/orchids/seal-monogram.svg"
-                  alt="Ruben & Andrea Wax Seal Monogram"
+                  alt={sealMonogramAlt || "Ruben & Andrea Wax Seal Monogram"}
                   width={110}
                   height={110}
                   priority
@@ -331,9 +343,9 @@ export function EnvelopeIntro({
 
       {alreadySeen && step === "idle" && (
         <div className="envelope-seen-bar">
-          <p>You have previously opened your invitation.</p>
+          <p>{previouslyOpenedPrompt || "You have previously opened your invitation."}</p>
           <button type="button" onClick={markSeenAndNavigate} className="text-button text-button--quiet">
-            Continue directly to invitation →
+            {continueDirectlyPrompt || "Continue directly to invitation →"}
           </button>
         </div>
       )}

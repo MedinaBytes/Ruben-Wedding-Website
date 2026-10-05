@@ -222,6 +222,7 @@
     "submittedTitle": "Eure gesendeten Lieder",
     "alreadyInPlaylist": "Bereits in der Playlist",
     "submitted": "Gesendet",
+    "clearSearch": "Suche löschen",
     "loadRequestsError": "Eure gespeicherten Liedwünsche konnten nicht geladen werden."
   },
   "gifts": {
@@ -263,7 +264,9 @@
     "plusOneNamePlaceholder": "z. B. Maria Gonzalez",
     "plusOneNameRequired": "Bitte gib den vollständigen Namen deiner Begleitperson ein.",
     "additionalNamesRequired": "Bitte gib die Namen aller teilnehmenden Gäste ein.",
+    "additionalNamesPlaceholder": "Bitte gib den Namen jedes Gastes in einer neuen Zeile ein",
     "attendeeCount": "Anzahl der teilnehmenden Personen",
+    "maxAllowed": "Max. {max}",
     "additionalNames": "Namen der weiteren Gäste",
     "dietaryLabel": "Allergien, Unverträglichkeiten oder Speisewünsche",
     "notesLabel": "Eine persönliche Nachricht an das Brautpaar",
@@ -308,7 +311,9 @@
     "collectionDescription": "Kleine Feiern, ferne Orte und gewöhnliche Tage, die Teil unserer gemeinsamen Geschichte wurden.",
     "filterLabel": "Erinnerungen filtern",
     "viewerLabel": "Fotogalerie",
+    "memoriesLabel": "Foto-Erinnerungen",
     "openPhotoLabel": "Foto öffnen: {title}",
+    "viewPhotoLabel": "Foto ansehen: {title}",
     "closeViewerLabel": "Fotogalerie schließen",
     "previousPhotoLabel": "Vorheriges Foto",
     "nextPhotoLabel": "Nächstes Foto",
@@ -327,7 +332,13 @@
     "soundOn": "Ton einschalten",
     "soundOff": "Ton ausschalten",
     "celebrate": "Geben sich die Ehre, Sie zu ihrer Hochzeit einzuladen",
-    "enter": "Zur Einladung"
+    "enter": "Zur Einladung",
+    "alreadySeen": "Du hast deine Einladung bereits geöffnet.",
+    "continueDirectly": "Direkt zur Einladung →",
+    "sealMonogram": "Ruben & Andrea Siegelmonogramm",
+    "envelopeRegion": "Hochzeitseinladungs-Umschlag",
+    "introControls": "Einführungs-Steuerung",
+    "edition": "Eine Einladung zum Feiern"
   },
   "admin": {
     "label": "Hochzeitsverwaltung",

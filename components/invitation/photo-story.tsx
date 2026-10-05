@@ -21,7 +21,15 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
       </Reveal>
 
       <Reveal delay={0.15}>
-        <PolaroidGallery locale={locale ?? "en"} />
+        <PolaroidGallery
+          locale={locale ?? "en"}
+          memoriesLabel={t("memoriesLabel")}
+          viewerLabel={t("viewerLabel")}
+          openPhotoLabel={t("viewPhotoLabel")}
+          closeViewerLabel={t("closeViewerLabel")}
+          previousPhotoLabel={t("previousPhotoLabel")}
+          nextPhotoLabel={t("nextPhotoLabel")}
+        />
       </Reveal>
     </section>
   );

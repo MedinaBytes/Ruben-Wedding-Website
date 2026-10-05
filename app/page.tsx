@@ -62,7 +62,7 @@ export default async function HomePage({
           </div>
 
           <p className="section-label" style={{ letterSpacing: "0.2em", textTransform: "uppercase", fontSize: "0.8rem", color: "#8E696E" }}>
-            Personal Invitation · {gate.has("eyebrow") ? gate("eyebrow") : "A Private Invitation"}
+            {gate.has("eyebrow") ? gate("eyebrow") : "A Private Invitation"}
           </p>
 
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 5vw, 2.6rem)", margin: "0.5rem 0 1rem", color: "#2E2426" }}>
@@ -88,7 +88,7 @@ export default async function HomePage({
           {/* Language Switcher Bar */}
           <div style={{ display: "flex", justifyContent: "center", gap: "0.75rem", alignItems: "center" }}>
             <span style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#8A7D80" }}>
-              Language:
+              {navigation("language")}:
             </span>
             {supportedLocales.map((loc) => (
               <a

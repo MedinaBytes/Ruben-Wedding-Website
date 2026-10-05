@@ -16,7 +16,7 @@ export function SoundToggle({
       type="button"
       onClick={toggleSound}
       aria-pressed={soundEnabled}
-      aria-label={soundEnabled ? "Mute audio" : "Enable sound"}
+      aria-label={soundEnabled ? labelOff : labelOn}
       className={`sound-toggle-btn ${soundEnabled ? "is-active" : ""}`}
       title={soundEnabled ? labelOn : labelOff}
     >

@@ -222,6 +222,7 @@
     "submittedTitle": "Your submitted songs",
     "alreadyInPlaylist": "Already on the playlist",
     "submitted": "Submitted",
+    "clearSearch": "Clear search",
     "loadRequestsError": "We couldn't load your saved requests."
   },
   "gifts": {
@@ -263,7 +264,9 @@
     "plusOneNamePlaceholder": "e.g. Maria Gonzalez",
     "plusOneNameRequired": "Please enter the full name of your plus-one.",
     "additionalNamesRequired": "Please enter the names of all attending guests.",
+    "additionalNamesPlaceholder": "Please enter each guest's name on a new line",
     "attendeeCount": "Number of people attending",
+    "maxAllowed": "Max: {max}",
     "additionalNames": "Names of additional guests",
     "dietaryLabel": "Dietary requirements or allergies",
     "notesLabel": "A note for the couple",
@@ -308,7 +311,9 @@
     "collectionDescription": "Celebrations, faraway places, and ordinary days that became part of our story.",
     "filterLabel": "Filter memories",
     "viewerLabel": "Photo viewer",
+    "memoriesLabel": "Photo Memories",
     "openPhotoLabel": "Open photo: {title}",
+    "viewPhotoLabel": "View photo: {title}",
     "closeViewerLabel": "Close photo viewer",
     "previousPhotoLabel": "Previous photo",
     "nextPhotoLabel": "Next photo",
@@ -327,7 +332,13 @@
     "soundOn": "Turn sound on",
     "soundOff": "Turn sound off",
     "celebrate": "Request the pleasure of your company at their wedding",
-    "enter": "Open Invitation"
+    "enter": "Open Invitation",
+    "alreadySeen": "You have previously opened your invitation.",
+    "continueDirectly": "Continue directly to invitation →",
+    "sealMonogram": "Ruben & Andrea Wax Seal Monogram",
+    "envelopeRegion": "Wedding Invitation Envelope",
+    "introControls": "Intro controls",
+    "edition": "An invitation to celebrate"
   },
   "admin": {
     "label": "Wedding administration",

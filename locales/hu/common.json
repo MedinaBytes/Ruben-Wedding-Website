@@ -222,6 +222,7 @@
     "submittedTitle": "Elküldött dalok",
     "alreadyInPlaylist": "Már szerepel a lejátszási listán",
     "submitted": "Elküldve",
+    "clearSearch": "Keresés törlése",
     "loadRequestsError": "A mentett dalkéréseket nem sikerült betölteni."
   },
   "gifts": {
@@ -263,7 +264,9 @@
     "plusOneNamePlaceholder": "pl. Kovács Mária",
     "plusOneNameRequired": "Kérjük, add meg a kísérőd teljes nevét.",
     "additionalNamesRequired": "Kérjük, add meg az összes résztvevő vendég nevét.",
+    "additionalNamesPlaceholder": "Kérjük, minden vendég nevét új sorba írd be",
     "attendeeCount": "Résztvevők száma",
+    "maxAllowed": "Max: {max}",
     "additionalNames": "A további vendégek nevei",
     "dietaryLabel": "Étrendi igények vagy allergiák",
     "notesLabel": "Üzenet a párnak",
@@ -308,7 +311,9 @@
     "collectionDescription": "Ünnepek, távoli helyek és hétköznapi napok, amelyek a közös történetünk részévé váltak.",
     "filterLabel": "Emlékek szűrése",
     "viewerLabel": "Fotónézegető",
+    "memoriesLabel": "Fényképes emlékek",
     "openPhotoLabel": "Fotó megnyitása: {title}",
+    "viewPhotoLabel": "Fotó megtekintése: {title}",
     "closeViewerLabel": "Fotónézegető bezárása",
     "previousPhotoLabel": "Előző fotó",
     "nextPhotoLabel": "Következő fotó",
@@ -327,7 +332,13 @@
     "soundOn": "Hang bekapcsolása",
     "soundOff": "Hang kikapcsolása",
     "celebrate": "Szeretettel meghívják Önt esküvőjük megünneplésére",
-    "enter": "Meghívó megtekintése"
+    "enter": "Meghívó megtekintése",
+    "alreadySeen": "Már korábban megnyitottad a meghívódat.",
+    "continueDirectly": "Tovább közvetlenül a meghívóhoz →",
+    "sealMonogram": "Ruben és Andrea viaszpecsét monogram",
+    "envelopeRegion": "Esküvői meghívó boríték",
+    "introControls": "Bevezető vezérlők",
+    "edition": "Meghívás az ünneplésre"
   },
   "admin": {
     "label": "Esküvői adminisztráció",

@@ -304,7 +304,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
                 <>
                   <div className="field-group">
                     <label htmlFor="attendee-count">
-                      {t("attendeeCount")} (Max: {invitation.maxGuests})
+                      {t("attendeeCount")} ({t("maxAllowed", { max: invitation.maxGuests })})
                     </label>
                     <input
                       autoComplete="off"
@@ -327,7 +327,7 @@ export function RsvpForm({ invitation }: { invitation: InvitationFormProps }) {
                         id="guest-names"
                         name="guestNames"
                         onChange={(event) => setGuestNames(event.target.value)}
-                        placeholder="Please enter each guest's name on a new line"
+                        placeholder={t("additionalNamesPlaceholder")}
                         rows={Math.min(attendeeCount - 1, 4)}
                         value={guestNames}
                         required

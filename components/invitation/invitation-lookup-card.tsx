@@ -289,6 +289,7 @@ export function InvitationLookupCard({
           skipLabel={introText("skip")}
           soundOffLabel={introText("soundOff")}
           soundOnLabel={introText("soundOn")}
+          editionLabel={introText("edition")}
         />
       )}
     </section>
