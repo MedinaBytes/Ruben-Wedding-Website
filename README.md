@@ -1,227 +1,284 @@
-# Ruben & Andrea — Wedding Invitation & Guest Experience System
+# Ruben & Andrea — Luxury Wedding Invitation & Guest Management Platform
 
 > **Date:** October 2, 2027  
-> **Location:** Vienna, Austria (Ceremony: St. Elisabeth · Reception: Schloss Neugebäude)  
-> **Languages Supported:** English (`en`), Spanish (`es`), German (`de`), Hungarian (`hu`)
+> **Location:** Vienna, Austria  
+> - **Ceremony (15:00, Arrival 14:30):** Catholic Church of Altmannsdorf (*Pfarrkirche St. Oswald*), Khleslplatz 10, 1120 Wien  
+> - **Reception & Agape (From 17:00):** Hetzendorf Palace (*Schloss Hetzendorf*), Hetzendorfer Straße 79, 1120 Wien  
+> **Languages Supported:** English (`en`), Español (`es`), Austrian German (`de-AT` · Badge **AT**), Magyar (`hu`)
 
 ---
 
 ## 1. Project Overview
 
-This repository houses the custom, luxury digital wedding invitation and administrative management platform for Ruben & Andrea's wedding in Vienna. Designed to capture the tactility and prestige of bespoke wedding stationery, the application blends modern web engineering with refined editorial aesthetics:
+This repository contains the bespoke digital wedding invitation, guest experience, and administration platform created for the wedding of Ruben David Quijada Sanchez & Andrea Müllauer.
 
-- **Bespoke 3D Envelope Experience:** Interactive physical wax seal break, envelope flap lift, letter extraction, and smooth transition into the full wedding website.
-- **Procedural Web Audio Synthesis:** Zero-licensing sound effects (paper rustles, wax seal snap, delicate chime) generated entirely via the browser's Web Audio API with strict user gesture requirements and persistent mute toggles.
-- **Curated Botanical Linework & Vector Art:** High-fidelity botanical vector assets modeled after real orchid species (*Phalaenopsis*, *Cattleya*, *Paphiopedilum*), completely eliminating generic clip art.
-- **Multi-Tenant Guest Privacy:** Zero public photo exposure on the neutral gate; personalized tokens with cryptographically hashed lookups, alias support, and rate-limited API routes.
-- **Comprehensive Admin Portal:** Real-time guest RSVP tracking, song request moderation, automated QR code generation (SVG & PNG), bulk CSV import, site settings management (bank details & home address disclosures), SMTP server configuration, and WhatsApp integration with anti-ban rate limiting.
-
----
-
-## 2. Architecture & Tech Stack
-
-| Domain | Technology |
-|---|---|
-| **Framework** | Next.js 16.3 (Turbopack, App Router, React 19) |
-| **Database & Auth** | Supabase Postgres with Row Level Security (RLS) & Server-Side HMAC Sessions |
-| **Styling** | Vanilla CSS Tokens & Utility-first Layouts (Responsive, Fluid Typography) |
-| **Motion** | Framer Motion (Bespoke Bézier curves, spring physics, full `prefers-reduced-motion` compliance) |
-| **Audio** | Procedural Web Audio API Synthesizer (Zero external `.mp3` assets, no copyright risk) |
-| **Mapping** | Leaflet + OpenStreetMap (Ceremony & Reception pins, tile fallback handling) |
-| **Localization** | `next-intl` (4 synchronized locales: `en`, `es`, `de`, `hu`) |
-| **Code Quality** | ESLint 9, TypeScript strict mode, Vitest unit test suite |
+The application blends digital craftsmanship with traditional stationery aesthetics:
+- **3D Interactive Envelope Experience:** A handcrafted virtual envelope with custom wax seal break, 3D flap opening, letter emergence, and smooth transitions into the full wedding website.
+- **Procedural Web Audio Synthesizer:** Zero external audio files or licensing issues; paper rustles, wax seal cracking, and reveal chimes are synthesized in real-time via the browser's Web Audio API.
+- **Strict Multi-Tenant Guest Privacy:** Neutral public landing gate (`/`) with zero photo exposure. Guests access details and RSVP solely via cryptographically hashed private invitation tokens (or phone/email lookup).
+- **Live Real-Time Spotify Integration:** Public catalog search powered by Spotify Web API client credentials (market `AT`) with live album artwork and artist resolution.
+- **Authentic Multi-Language Localization:** Synchronized translations across 4 locales (`en`, `es`, `de-AT`, `hu`) with tailored Austrian German phrasing (*Agape*, *Bim*, *Öffis*, *Feststiege*) and royal Viennese palace dress code humor.
+- **Full Administration Portal:** Guest invitation link generator, 1-click demo guest creation, automated QR code generation (SVG & PNG), bulk CSV import, live RSVP tracking, song request moderation, site settings, and WhatsApp integration.
+- **Resilient Fallback Storage:** Automatic failover to local JSON database (`.local-db.json`) if Supabase is offline or during offline local development.
 
 ---
 
-## 3. Quick Start: Local Setup & Running the Project
+## 2. System Architecture & Tech Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Core Framework** | **Next.js 16.3** (App Router, Turbopack, React 19) | Server components, route handlers, high-performance static/dynamic rendering |
+| **Language** | **TypeScript 6.0** (Strict Mode) | Complete end-to-end type safety |
+| **Styling** | **Vanilla CSS Tokens & Utility Layouts** | Fluid typography, responsive layouts, glassmorphism, bespoke color palette |
+| **Animations** | **Motion 14 (Framer Motion)** | Spring physics, 3D envelope flap rotations, full `prefers-reduced-motion` compliance |
+| **Sound Synthesis** | **Web Audio API** | Real-time procedural audio synthesis without external media files |
+| **Internationalization** | **`next-intl` 4.14** | 4 synchronized locales with identical message structures (`en`, `es`, `de-AT`, `hu`) |
+| **Database & Auth** | **Supabase (PostgreSQL 15+)** | Row Level Security (RLS), stored procedures, Supabase Auth with admin email allowlist |
+| **Music Integration** | **Spotify Web API & Apple Music Catalog** | Real-time track search, playlist embed, and song suggestion reservations |
+| **Messaging** | **`@whiskeysockets/baileys` & `nodemailer`** | WhatsApp web session pairing with anti-ban rate limiting, SMTP email dispatch |
+| **Image Processing** | **Sharp & Jimp** | Build-time and runtime image optimization for hero portraits and photo galleries |
+| **Testing** | **Vitest 5 & Playwright** | Fast unit and integration testing suite (30 automated tests) |
+
+---
+
+## 3. Dependencies & Key Libraries
+
+### Production Dependencies (`dependencies`)
+```json
+{
+  "@fontsource-variable/bodoni-moda": "^5.3.0",  // Luxury editorial serif typography
+  "@fontsource-variable/manrope": "^5.3.0",      // Clean, modern body sans-serif
+  "@fontsource/italianno": "^5.3.0",             // Calligraphic script accents
+  "@hookform/resolvers": "^5.9.1",               // Form validation bridges
+  "@supabase/ssr": "^0.12.7",                    // Server-side Supabase authentication & cookies
+  "@supabase/supabase-js": "^2.117.2",           // PostgreSQL client & Realtime
+  "@whiskeysockets/baileys": "^6.7.24",          // WhatsApp Web multi-device socket client
+  "jimp": "^1.6.1",                              // Image manipulation fallback
+  "leaflet": "^1.9.4",                           // Interactive venue maps
+  "libphonenumber-js": "^1.13.14",               // International phone normalization
+  "motion": "^14.0.0",                           // Advanced animation & gesture engine
+  "next": "^16.3.8",                             // Next.js framework
+  "next-intl": "^4.14.9",                        // Type-safe internationalization
+  "nodemailer": "^10.0.14",                      // SMTP email dispatch
+  "pino": "^10.4.0",                             // Structured logging for WhatsApp service
+  "qrcode": "^1.5.4",                            // Vector (SVG) and raster (PNG) QR codes
+  "react": "^19.3.0",                            // React 19 core
+  "react-dom": "^19.3.0",                        // React 19 DOM bindings
+  "react-hook-form": "^7.89.0",                  // Performant client-side forms
+  "server-only": "^0.0.1",                       // Boundary isolation for secure server code
+  "sharp": "^0.35.5",                            // High-performance image transform pipeline
+  "zod": "^4.6.5"                                // Schema validation for requests & forms
+}
+```
+
+### Development Dependencies (`devDependencies`)
+- `typescript`: Type checking (`npm run typecheck`)
+- `vitest`: Unit and integration test runner (`npm test`)
+- `eslint` & `eslint-config-next`: Code quality and linting
+- `tsx`: TypeScript script executor for image optimization and Spotify OAuth
+- `@playwright/test`: End-to-end browser automation
+
+---
+
+## 4. Environment Variables Reference
+
+Create a `.env.local` file in the root directory. Below is the complete specification:
+
+| Variable | Required | Description | Example |
+|---|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | **Yes** | Fully qualified URL of the deployment | `http://localhost:3000` or `https://ruben-andrea.com` |
+| `NEXT_PUBLIC_SUPABASE_URL` | **Yes** | Your Supabase project URL | `https://xyzproject.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | **Yes** | Supabase anonymous / public key | `eyJhbGciOi...` |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Yes** | Supabase service role secret (admin operations) | `eyJhbGciOi...` |
+| `ADMIN_EMAIL_ALLOWLIST` | **Yes** | Comma-separated list of authorized admin emails | `jonathan25082@gmail.com,ruben@example.com` |
+| `ADMIN_EMAIL` | Optional | Primary admin email address | `jonathan25082@gmail.com` |
+| `SPOTIFY_CLIENT_ID` | **Yes** | Spotify Developer Application Client ID | `af6c8eb6aba24...` |
+| `SPOTIFY_CLIENT_SECRET` | **Yes** | Spotify Developer Application Client Secret | `d7b4df58a50...` |
+| `NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL` | Optional | Public URL of the wedding playlist | `https://open.spotify.com/playlist/4zpgM8...` |
+| `SPOTIFY_PLAYLIST_ID` | Optional | 22-character Spotify playlist ID | `4zpgM8knTb7CzrjMUQOS3E` |
+| `SPOTIFY_REFRESH_TOKEN` | Optional | Spotify OAuth refresh token for playlist modification | `AQB...` |
+| `SPOTIFY_REDIRECT_URI` | Optional | Local OAuth redirect URI (for `npm run spotify:authorize`) | `http://127.0.0.1:8888/callback` |
+
+### Minimal `.env.local` Example
+```env
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
+ADMIN_EMAIL_ALLOWLIST=admin@example.com
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL=https://open.spotify.com/playlist/4zpgM8knTb7CzrjMUQOS3E
+SPOTIFY_PLAYLIST_ID=4zpgM8knTb7CzrjMUQOS3E
+```
+
+---
+
+## 5. Local Setup & Quick Start
 
 ### Prerequisites
-- **Node.js**: v20.x or higher
-- **npm**: v10.x or higher
-- **Supabase Instance**: Active Supabase project (credentials are pre-configured in `.env.local` / `.env`)
+1. **Node.js**: v20.x or v22.x LTS (compatible with Node 20+)
+2. **npm**: v10.x or higher
+3. **Git**
 
-### 1. Installation
-```bash
-npm install
-```
+### Installation Steps
 
-### 2. Environment Configuration
-Ensure your `.env.local` file contains the following keys:
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-ADMIN_PASSWORD=your_secure_admin_password
-SESSION_SECRET=your_32_character_random_hex_string
-```
-
-### 3. Start the Development Server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 4. Manual Evaluation Guide (Step-by-Step)
-
-Follow this structured checklist to evaluate the entire project manually:
-
-### Step 1: The Neutral Gate (`/`)
-1. Navigate to: [http://localhost:3000](http://localhost:3000)
-2. **Observe:** The public gate displays a neutral, elegant monogram card. No private photos or sensitive wedding details are exposed.
-3. **Language Switcher:** Toggle between English, Español, Deutsch, and Magyar in the upper corner. All typography and copy adjust instantaneously.
-4. **Name Lookup:** Test the lookup input by entering a guest name or token.
-
-### Step 2: The 3D Interactive Envelope Intro (`/i/demo`)
-1. Navigate directly to the built-in demo invitation:  
-   👉 **[http://localhost:3000/i/demo](http://localhost:3000/i/demo)**
-2. **First Glance:** An envelope rendered with fine paper texture, embossed gold accents, and a custom monogram wax seal ("R & A").
-3. **Sound Control:** Notice the sound toggle icon at top right. Sound is muted by default (respecting autoplay policies). Click it to enable Web Audio synthesis.
-4. **Interact:** Click the Wax Seal:
-   - A crisp, tactile snap sound plays.
-   - The seal cracks and fades.
-   - The envelope flap folds upward in 3D perspective.
-   - The personalized letter card slides up and unfolds.
-   - A soft chime accompanies the presentation of the guest's name (*Sarah & Guest*).
-5. **Proceed:** Click **"Open Invitation"** to smoothly transition into the editorial website.
-
-### Step 3: The Editorial Wedding Invitation (`/i/demo/invitation`)
-1. **Hero Section:**
-   - Review the editorial typography and high-fashion couple portrait.
-   - Live Countdown timer ticking down to October 2, 2027.
-2. **Schedule of Events:**
-   - Step-by-step breakdown: Arrival, Ceremony (14:00 at St. Elisabeth), and Reception (~16:30 at Schloss Neugebäude).
-3. **Photo Story & Closing Note:**
-   - Editorial photo carousel showcasing moments from the couple's journey.
-   - Personal letter to guests from Ruben & Andrea.
-4. **Interactive Map:**
-   - Smooth Leaflet map centered on Vienna with custom pins for both venues.
-   - One-click links for Apple Maps, Google Maps, and public transit directions.
-5. **Travel & Where to Stay (Privacy Testing):**
-   - Direct transit and flight suggestions (OEBB, Ryanair, Vienna Airport Train).
-   - Recommended Vienna Meidling hotel/Airbnb options.
-   - **Private Home Address Check:** By default, the couple's private home address is hidden behind a discreet recommendation CTA ("Reach out directly to Ruben & Andrea"). When enabled in Admin Settings, the exact Vienna residence and access notes appear here.
-6. **Dress Code & Spotify Music Section:**
-   - Dress code guidelines (Black Tie Optional / Formal).
-   - Embedded Spotify wedding playlist player.
-   - **Interactive Song Requests:** Submit up to 3 song requests with live feedback.
-7. **Gift Details & "No Toaster" Policy (Accordion Testing):**
-   - Humorous message requesting the presence of guests rather than household appliances.
-   - **Bank Info Accordion Check:** Controlled dynamically by Admin Settings. When disabled, only the humorous note is shown. When enabled, a collapsible accordion reveals IBAN, BIC, and transfer instructions.
-8. **Live RSVP Form:**
-   - Toggle "Will Attend" / "Cannot Attend".
-   - Set guest count (up to max allowed).
-   - Enter guest names, dietary restrictions (vegetarian, vegan, allergies), and notes.
-   - Click **"Send RSVP"** — receive immediate visual confirmation.
-
-### Step 4: Botanical Linework & Vector Asset Showcase (`/dev/botanical`)
-1. Navigate to: [http://localhost:3000/dev/botanical](http://localhost:3000/dev/botanical)
-2. **Inspect:** 6 bespoke, handcrafted SVG assets:
-   - `orchid-stem-cascade.svg` (Orchid stem with delicate florets and buds)
-   - `orchid-single-bloom.svg` (Detailed Cattleya bloom with labellum detailing)
-   - `orchid-linework.svg` (Fine-art botanical line drawing)
-   - `orchid-corner.svg` (Corner flourish for stationery cards)
-   - `orchid-pattern.svg` (Subtle botanical backdrop tile)
-   - `seal-monogram.svg` (Vector wax seal with "R & A" monogram)
-3. Zero raster artifacts; perfectly sharp at any zoom level.
-
-### Step 5: Admin Portal Walkthrough (`/admin`)
-> **Note:** The Admin Portal link is deliberately omitted from public navigation and footers to ensure privacy and prevent unauthorized access. Administrators access the portal strictly via the direct URL.
-
-1. Navigate directly to: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-2. **Log In:** Enter the password defined in your `ADMIN_PASSWORD` environment variable (e.g. `wedding2027admin`).
-3. **Explore Admin Features:**
-   - **Dashboard (`/admin`):** High-level metrics displaying total invitations, RSVP response rate, confirmed attendees, and guest dietary requirements.
-   - **Manage Invitations (`/admin/invitations`):**
-     * Click **"+ Create Invitation"** to generate new guest links.
-     * Click **"★ Create Demo Guest (1-Click)"** to instantly seed a test guest.
-     * Click **"Copy Link"** for instant clipboard sharing.
-     * Click **"QR Code"** to preview and download high-resolution SVG or PNG QR codes.
-     * Click **"WhatsApp"** to initiate a direct WhatsApp invitation with pre-filled message text.
-   - **Bulk CSV Import (`/admin/invitations/import`):**
-     * Download the standard CSV template.
-     * Upload guest lists containing name, email, phone, language, and guest allowances.
-   - **RSVPs (`/admin/rsvps`):** View, filter, and export guest responses and dietary restrictions.
-   - **Song Requests (`/admin/music`):** Moderate music requests submitted by guests.
-   - **Analytics & Audit Logs (`/admin/analytics`):** Track invitation open rates and administrative actions.
-   - **Settings & Integrations (`/admin/settings`):**
-     * **Gift Details Accordion:** Toggle on/off and fill in Bank Name, IBAN, BIC, and Reference.
-     * **Private Home Address:** Toggle on/off and enter the couple's private Vienna address.
-     * **SMTP Server Settings:** Configure custom SMTP credentials (Host, Port, User, Password, Sender Name) for automated email delivery.
-     * **WhatsApp Automated Distribution:** Configure personalized message templates, anti-spam delay timers (8–15 seconds) to prevent account bans, and security unlinking policies.
-   - **Danger Zone (`/admin/danger`):** Tools for resetting demo data and performing maintenance.
-
----
-
-## 5. WhatsApp & SMTP Dispatch Setup
-
-### WhatsApp Integration & Anti-Ban Protection
-The application provides two WhatsApp dispatch methods:
-1. **Direct Guest Sharing (Zero Setup):** In `/admin/invitations`, clicking the "WhatsApp" button on any guest row automatically generates a localized message containing their personalized URL and opens WhatsApp Web / mobile app.
-2. **Automated Batch Distribution:** In `/admin/settings`, configure:
-   - **Template:** Custom message syntax supporting `{name}` and `{url}` placeholders.
-   - **Interval Delay:** A configurable timer (default: 8–12 seconds) between outgoing messages. This staggering simulates human interaction and protects your WhatsApp number from automated spam detection filters.
-   - **Session Security:** When using a linked WhatsApp Web session, the session token is automatically flushed and unlinked once the batch completes to prevent unauthorized access.
-
-### SMTP Server Configuration
-In `/admin/settings`, enter your SMTP server credentials:
-- **Host:** e.g., `smtp.mailgun.org`, `smtp.sendgrid.net`, or `smtp.gmail.com`
-- **Port:** `587` (STARTTLS) or `465` (SSL)
-- **User & Password:** Your authenticated mailer credentials
-- **Sender Name & Address:** e.g., `Ruben & Andrea <wedding@yourdomain.com>`
-
----
-
-## 6. Production Deployment Guide
-
-### Deploying to Vercel
-1. Push your repository to GitHub:
+1. **Clone the repository:**
    ```bash
-   git add .
-   git commit -m "Production release"
-   git push origin main
+   git clone https://github.com/MedinaBytes/Ruben-Wedding-Website.git
+   cd "Ruben Wedding Website"
    ```
-2. Import the project in [Vercel](https://vercel.com).
-3. Set the Framework Preset to **Next.js**.
-4. Configure the following Environment Variables in Vercel Project Settings:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `NEXT_PUBLIC_SITE_URL` (Set to your custom domain, e.g., `https://ruben-andrea.com`)
-   - `ADMIN_PASSWORD`
-   - `SESSION_SECRET`
-5. Click **Deploy**. Vercel will build the application using Turbopack with zero warnings or errors.
 
-### Supabase Database Migration
-If setting up a fresh Supabase database:
-1. Open your Supabase project dashboard.
-2. Go to the **SQL Editor**.
-3. Run the schema migrations located in:
-   - `supabase/migrations/20261003212512_secure_guest_lookup.sql`
-   - `supabase/schema_all.sql`
-4. Confirm tables (`invitations`, `rsvps`, `song_requests`, `site_settings`, `invitation_events`, `admin_audit_logs`) and RPC functions are created.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment:**
+   ```bash
+   cp .env .env.local
+   # Update variables as needed
+   ```
+
+4. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 7. Verification & Quality Gates
+## 6. Available NPM Scripts
 
-The codebase enforces strict quality checks:
+| Command | Description |
+|---|---|
+| `npm run dev` | Runs prebuild image optimization and starts Next.js dev server with Turbopack |
+| `npm run build` | Optimizes images and produces optimized production build (`next build`) |
+| `npm run start` | Starts production server on configured port |
+| `npm run typecheck` | Validates TypeScript types across the entire project (`tsc --noEmit`) |
+| `npm test` | Runs the Vitest test suite (unit and integration tests) |
+| `npm run test:e2e` | Runs Playwright browser integration tests |
+| `npm run lint` | Runs Next.js ESLint checks |
+| `npm run optimize:images` | Generates WebP/AVIF responsive images from originals in `public/photos/` |
+| `npm run spotify:authorize` | CLI OAuth server to obtain a Spotify user refresh token for playlist writes |
+
+---
+
+## 7. Supabase Database Setup & Migrations
+
+If configuring a new Supabase project:
+
+1. Create a new project in the [Supabase Dashboard](https://supabase.com).
+2. Go to **Project Settings** → **API** to copy:
+   - Project URL (`NEXT_PUBLIC_SUPABASE_URL`)
+   - `anon` `public` API key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+   - `service_role` secret (`SUPABASE_SERVICE_ROLE_KEY`)
+3. Open the **SQL Editor** in your Supabase dashboard and run:
+   - [`supabase/schema_all.sql`](supabase/schema_all.sql) — Sets up tables (`invitations`, `rsvps`, `song_requests`, `site_settings`, `invitation_events`, `admin_audit_logs`), Row Level Security policies, indexes, and stored procedures (`reserve_spotify_song_request`).
+   - [`supabase/migrations/20261003212512_secure_guest_lookup.sql`](supabase/migrations/20261003212512_secure_guest_lookup.sql) — Secure guest lookup hashing and multi-language constraint updates.
+4. **Configure Authentication:**
+   - Under **Authentication** → **Sign In / Providers**, enable **Email**.
+   - Create an admin user with the email configured in your `ADMIN_EMAIL_ALLOWLIST`.
+
+---
+
+## 8. Spotify Web API Configuration
+
+The music section provides live track searching and playlist contributions:
+
+1. Visit the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+2. Create an App (e.g., `Ruben Andrea Wedding`).
+3. Set the Redirect URI in Spotify Dashboard settings to:
+   ```
+   http://127.0.0.1:8888/callback
+   ```
+4. Copy **Client ID** and **Client Secret** into your `.env.local`:
+   ```env
+   SPOTIFY_CLIENT_ID=your_client_id
+   SPOTIFY_CLIENT_SECRET=your_client_secret
+   ```
+5. *(Optional — Playlist Write Permissions)* To allow guests' requested songs to be added directly to your Spotify playlist:
+   ```bash
+   npm run spotify:authorize
+   ```
+   Authorize in your browser; the generated `SPOTIFY_REFRESH_TOKEN` will automatically be saved.
+
+---
+
+## 9. Production Deployment Guide
+
+### Option A: Deploying to Vercel (Recommended)
+
+1. Push your code to GitHub / GitLab.
+2. In [Vercel](https://vercel.com): Click **"Add New"** → **"Project"** and select the repository.
+3. **Framework Preset:** `Next.js`
+4. **Build Command:** `npm run build`
+5. **Install Command:** `npm install`
+6. In **Settings** → **Environment Variables**, add:
+   - `NEXT_PUBLIC_SITE_URL` (e.g. `https://ruben-andrea.com`)
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `ADMIN_EMAIL_ALLOWLIST`
+   - `SPOTIFY_CLIENT_ID`
+   - `SPOTIFY_CLIENT_SECRET`
+   - `SPOTIFY_PLAYLIST_ID`
+   - `NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL`
+   - `SPOTIFY_REFRESH_TOKEN` (if authorized)
+7. Click **Deploy**. Vercel will build and launch the site.
+
+### Option B: Self-Hosted Docker or Node.js Server
+
+1. **Build the production application:**
+   ```bash
+   npm ci
+   npm run build
+   ```
+2. **Start the production server:**
+   ```bash
+   NODE_ENV=production PORT=3000 npm run start
+   ```
+3. Set up a reverse proxy (Nginx, Caddy, or Cloudflare Tunnel) pointing to `localhost:3000` with SSL/TLS termination.
+
+---
+
+## 10. Manual Testing & Feature Walkthrough
+
+Use this checklist to test the application locally or in staging:
+
+| Step | URL | Features to Verify |
+|---|---|---|
+| **1. Public Gate** | [`/`](http://localhost:3000/) | Neutral monogram card, no sensitive data exposed, language switcher (`EN`, `ES`, `AT`, `HU`), guest invitation lookup by name/email/phone. |
+| **2. Envelope Intro** | [`/i/demo`](http://localhost:3000/i/demo?lang=de-AT) | 3D envelope, audio toggle, wax seal click animation & sound, monogram reveal, card lift, "Continue directly" notice on re-visit. |
+| **3. Wedding Invitation** | [`/i/demo/invitation`](http://localhost:3000/i/demo/invitation?lang=de-AT) | Hero countdown, couple portrait, schedule (St. Oswald & Schloss Hetzendorf), symmetrical 10-photo bento grid lightbox, interactive OpenStreetMap, transit info (ÖBB, S7, CAT, Bim), royal dress code note. |
+| **4. Music Search** | Section `#music` | Live search for real artists (e.g. "Mozart", "Shakira"), live album artwork from Spotify CDN, multi-track queue submission. |
+| **5. RSVP Submission** | Section `#rsvp` | Attendance toggle, plus-one toggle, additional guest names, dietary requirements, warm Austrian German notes to the couple (*"an das Brautpaar"*). |
+| **6. Admin Portal** | [`/admin`](http://localhost:3000/admin) | Login via Supabase Auth, dashboard metrics, invitation creation, 1-click demo guest creation, SVG/PNG QR codes, CSV export/import, WhatsApp manager. |
+
+---
+
+## 11. Quality Gates & Verification
+
+Before submitting pull requests or releasing builds, run the automated verification suite:
+
 ```bash
-# Verify TypeScript typing
+# 1. Type check
 npm run typecheck
 
-# Run unit and integration tests
+# 2. Unit and integration tests (30 passing tests)
 npm test
 
-# Run ESLint compliance check
+# 3. Linter
 npm run lint
 
-# Compile production build
+# 4. Production build validation
 npm run build
 ```
 
 ---
 
-## 8. License & Botanical Asset Attribution
+## 12. License & Attribution
 
-All orchid illustrations and wax seal monograms in `public/orchids/` are handcrafted vector artworks created exclusively for this project under the MIT License. No third-party royalty fees, subscriptions, or restrictive licenses apply. For complete details, see [`docs/ASSET_LICENSES.md`](docs/ASSET_LICENSES.md).
+- **Source Code:** Private and proprietary to Ruben & Andrea.
+- **Botanical Illustrations:** Vector line art assets in `public/orchids/` are custom artworks created exclusively for this wedding platform under the MIT License.
+- **Crafted with Love:** Developed by Jonathan Medina for Ruben & Andrea.
