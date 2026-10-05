@@ -16,7 +16,7 @@ const localeLabels: Record<Locale, string> = {
 const localeCodes: Record<Locale, string> = {
   en: "EN",
   es: "ES",
-  "de-AT": "DE",
+  "de-AT": "AT",
   hu: "HU",
 };
 

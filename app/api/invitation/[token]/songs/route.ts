@@ -165,23 +165,46 @@ export async function POST(
     const result = spotifySongSubmissionSchema.parse(body);
     const playlist = getSpotifyPlaylistConfig();
 
-    // If Spotify playlist is not configured or in local demo mode, save gracefully in resilient store
-    if (!playlist || !client) {
+    // Resolve full track metadata from Spotify
+    const tracks: Array<{ id: string; title: string; artist: string; spotifyUrl: string; artworkUrl: string | null }> = [];
+    for (const trackId of result.trackIds) {
+      try {
+        const t = await getSpotifyTrack(trackId);
+        tracks.push({
+          id: t.id,
+          title: t.title,
+          artist: t.artist,
+          spotifyUrl: t.spotifyUrl,
+          artworkUrl: t.artworkUrl,
+        });
+      } catch {
+        tracks.push({
+          id: trackId,
+          title: `Song (${trackId})`,
+          artist: "Guest Request",
+          spotifyUrl: `https://open.spotify.com/track/${trackId}`,
+          artworkUrl: null,
+        });
+      }
+    }
+
+    // If Supabase is not ready, save full metadata to resilient store
+    if (!client) {
       resilientStore.saveSongRequests(
         invitation.id,
-        result.trackIds.map((id, idx) => ({
-          title: `Song Request #${idx + 1}`,
-          artist: "Guest Song",
-          spotifyUrl: `https://open.spotify.com/track/${id}`,
+        tracks.map((t) => ({
+          title: t.title,
+          artist: t.artist,
+          spotifyUrl: t.spotifyUrl,
         })),
       );
 
       return NextResponse.json(
         {
-          results: result.trackIds.map((trackId) => ({
-            trackId,
-            title: "Requested Song",
-            artist: "Spotify Track",
+          results: tracks.map((t) => ({
+            trackId: t.id,
+            title: t.title,
+            artist: t.artist,
             status: "added",
           })),
         },
@@ -191,7 +214,7 @@ export async function POST(
 
     try {
       const tracks = await Promise.all(result.trackIds.map(getSpotifyTrack));
-      const existingTrackIds = await getSpotifyPlaylistTrackIds(playlist.id);
+      const existingTrackIds = playlist ? await getSpotifyPlaylistTrackIds(playlist.id).catch(() => new Set<string>()) : new Set<string>();
       const results: Array<{ trackId: string; title: string; artist: string; status: string }> = [];
 
       for (const track of tracks) {
@@ -209,7 +232,7 @@ export async function POST(
           }
         } catch {}
 
-        if (status === "reserved") {
+        if (status === "reserved" && playlist) {
           try {
             await addSpotifyTrackToPlaylist(playlist.id, track.id);
             status = "added";
@@ -229,22 +252,22 @@ export async function POST(
 
       return NextResponse.json({ results }, { headers: privateHeaders });
     } catch {
-      // Fallback save
+      // Fallback save using real resolved track metadata
       resilientStore.saveSongRequests(
         invitation.id,
-        result.trackIds.map((id, idx) => ({
-          title: `Song Request #${idx + 1}`,
-          artist: "Guest Song",
-          spotifyUrl: `https://open.spotify.com/track/${id}`,
+        tracks.map((t) => ({
+          title: t.title,
+          artist: t.artist,
+          spotifyUrl: t.spotifyUrl,
         })),
       );
 
       return NextResponse.json(
         {
-          results: result.trackIds.map((trackId) => ({
-            trackId,
-            title: "Requested Song",
-            artist: "Spotify Track",
+          results: tracks.map((t) => ({
+            trackId: t.id,
+            title: t.title,
+            artist: t.artist,
             status: "added",
           })),
         },

@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-const spotifyApiOrigin = "https://api.spotify.com/v1";
 const trackIdPattern = /^[A-Za-z0-9]{22}$/;
 
 const tokenResponseSchema = z.object({
@@ -101,46 +100,91 @@ async function refreshAccessToken(force = false) {
   if (!clientId || !clientSecret) throw new SpotifyUnavailableError();
 
   try {
-    const refreshToken = await getRefreshToken();
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!response.ok) throw new SpotifyUnavailableError();
+    let token: string | null = null;
+    let expiresIn = 3600;
 
-    const result = tokenResponseSchema.safeParse(await response.json());
-    if (!result.success) throw new SpotifyUnavailableError();
+    // 1. Try refresh token if available (allows writing to user's playlist)
+    let refreshToken: string | null = null;
+    try {
+      refreshToken = await getRefreshToken();
+    } catch {}
 
-    if (result.data.refresh_token && result.data.refresh_token !== refreshToken) {
-      const client = createSupabaseAdminClient();
-      const { error: persistError } = await client.from("spotify_oauth_credentials").upsert({
-        id: 1,
-        refresh_token: result.data.refresh_token,
-        updated_at: new Date().toISOString(),
-      });
-      if (persistError) throw new SpotifyUnavailableError();
-      cachedRefreshToken = result.data.refresh_token;
+    if (refreshToken) {
+      try {
+        const response = await fetch("https://accounts.spotify.com/api/token", {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken }),
+          cache: "no-store",
+          signal: AbortSignal.timeout(10_000),
+        });
+
+        if (response.ok) {
+          const result = tokenResponseSchema.safeParse(await response.json());
+          if (result.success) {
+            token = result.data.access_token;
+            expiresIn = result.data.expires_in;
+            if (result.data.refresh_token && result.data.refresh_token !== refreshToken) {
+              try {
+                const client = createSupabaseAdminClient();
+                await client.from("spotify_oauth_credentials").upsert({
+                  id: 1,
+                  refresh_token: result.data.refresh_token,
+                  updated_at: new Date().toISOString(),
+                });
+              } catch {}
+              cachedRefreshToken = result.data.refresh_token;
+            }
+          }
+        }
+      } catch {}
     }
 
+    // 2. Fallback to Client Credentials Flow (works directly with CLIENT_ID & CLIENT_SECRET for public catalog search!)
+    if (!token) {
+      const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ grant_type: "client_credentials" }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.access_token) {
+          token = data.access_token;
+          expiresIn = data.expires_in || 3600;
+        }
+      }
+    }
+
+    if (!token) throw new SpotifyUnavailableError();
+
     cachedAccessToken = {
-      value: result.data.access_token,
-      expiresAt: Date.now() + result.data.expires_in * 1000,
+      value: token,
+      expiresAt: Date.now() + expiresIn * 1000,
     };
-    return result.data.access_token;
+    return token;
   } catch {
     cachedAccessToken = null;
     throw new SpotifyUnavailableError();
   }
 }
 
+const spotifyApiOrigin = "https://api.spotify.com";
+
 async function spotifyApiFetch(path: string, init?: RequestInit) {
-  const url = path.startsWith("https:") ? new URL(path) : new URL(path, spotifyApiOrigin);
+  const normalizedPath = path.startsWith("/v1/")
+    ? path
+    : `/v1${path.startsWith("/") ? "" : "/"}${path}`;
+  const url = path.startsWith("https:") ? new URL(path) : new URL(normalizedPath, spotifyApiOrigin);
   if (url.origin !== spotifyApiOrigin) throw new SpotifyUnavailableError();
 
   for (let attempt = 0; attempt < 2; attempt += 1) {

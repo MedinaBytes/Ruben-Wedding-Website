@@ -29,36 +29,42 @@ export async function GET(
       return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: privateHeaders });
     }
 
+    // 1. Primary: Search Spotify Web API directly
     try {
-      if (getSpotifyPlaylistConfig()) {
-        const tracks = await searchSpotifyTracks(query);
-        if (tracks && tracks.length > 0) {
-          return NextResponse.json({ tracks }, { headers: privateHeaders });
+      const tracks = await searchSpotifyTracks(query);
+      if (tracks && tracks.length > 0) {
+        return NextResponse.json({ tracks }, { headers: privateHeaders });
+      }
+    } catch (err) {
+      console.error("Spotify search error:", err);
+    }
+
+    // 2. Secondary fallback: Query Apple Music / iTunes public API for real tracks, artists, and artwork
+    try {
+      const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`;
+      const itunesRes = await fetch(itunesUrl, {
+        cache: "no-store",
+        signal: AbortSignal.timeout(6000),
+      });
+
+      if (itunesRes.ok) {
+        const itunesData = await itunesRes.json();
+        if (Array.isArray(itunesData.results) && itunesData.results.length > 0) {
+          const realTracks = itunesData.results.map((item: any, idx: number) => ({
+            id: `track-${item.trackId || idx}`,
+            title: item.trackName,
+            artist: item.artistName,
+            artworkUrl: item.artworkUrl100 ? item.artworkUrl100.replace("100x100bb", "300x300bb") : null,
+            spotifyUrl: `https://open.spotify.com/search/${encodeURIComponent(`${item.trackName} ${item.artistName}`)}`,
+          }));
+          return NextResponse.json({ tracks: realTracks }, { headers: privateHeaders });
         }
       }
-    } catch {}
+    } catch (err) {
+      console.error("iTunes fallback search error:", err);
+    }
 
-    // Resilient fallback suggestions matching the user's query
-    const cleanQuery = query.trim();
-    const baseId = Buffer.from(cleanQuery).toString("base64url").replace(/[^a-zA-Z0-9]/g, "a");
-    const fallbackTracks = [
-      {
-        id: (baseId + "0000000000000000000000").slice(0, 22),
-        title: cleanQuery,
-        artist: "Wedding Guest Request",
-        artworkUrl: null,
-        spotifyUrl: `https://open.spotify.com/search/${encodeURIComponent(cleanQuery)}`,
-      },
-      {
-        id: (baseId + "1111111111111111111111").slice(0, 22),
-        title: `${cleanQuery} (Fiesta Mix)`,
-        artist: "Latin & Wedding Hits",
-        artworkUrl: null,
-        spotifyUrl: `https://open.spotify.com/search/${encodeURIComponent(cleanQuery)}`,
-      },
-    ];
-
-    return NextResponse.json({ tracks: fallbackTracks }, { headers: privateHeaders });
+    return NextResponse.json({ tracks: [] }, { headers: privateHeaders });
   } catch {
     return NextResponse.json({ error: "service_unavailable" }, { status: 503, headers: privateHeaders });
   }

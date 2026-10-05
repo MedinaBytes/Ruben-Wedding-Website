@@ -14,7 +14,7 @@ const defaultTemplates: Record<string, string> = {
 const languageLabels: Record<string, { name: string; flag: string }> = {
   en: { name: "English", flag: "🇬🇧" },
   es: { name: "Español", flag: "🇪🇸" },
-  "de-AT": { name: "Deutsch", flag: "🇦🇹" },
+  "de-AT": { name: "Deutsch (AT)", flag: "🇦🇹" },
   hu: { name: "Magyar", flag: "🇭🇺" },
 };
 

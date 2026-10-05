@@ -123,7 +123,7 @@ export function EnvelopeIntro({
           {[
             { code: "en", label: "EN" },
             { code: "es", label: "ES" },
-            { code: "de-AT", label: "DE" },
+            { code: "de-AT", label: "AT" },
             { code: "hu", label: "HU" },
           ].map((item) => (
             <button

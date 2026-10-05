@@ -102,7 +102,7 @@ export default async function HomePage({
                   padding: "0.2rem 0.4rem",
                 }}
               >
-                {loc === "de-AT" ? "DE" : loc.toUpperCase()}
+                {loc === "de-AT" ? "AT" : loc.toUpperCase()}
               </a>
             ))}
           </div>

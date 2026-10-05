@@ -112,7 +112,7 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
               <option value="">{labels.languageDefault}</option>
               {supportedLocales.map((loc) => (
                 <option key={loc} value={loc}>
-                  {loc === "de-AT" ? "Deutsch (DE)" : loc.toUpperCase()}
+                  {loc === "de-AT" ? "Deutsch (AT)" : loc.toUpperCase()}
                 </option>
               ))}
             </select>

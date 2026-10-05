@@ -14,7 +14,7 @@ import type { LookupResult } from "@/app/actions/lookup-invitation";
 const languages: { code: Locale; label: string; hint: string }[] = [
   { code: "en", label: "English", hint: "EN" },
   { code: "es", label: "Español", hint: "ES" },
-  { code: "de-AT", label: "Deutsch (Österreich)", hint: "DE" },
+  { code: "de-AT", label: "Deutsch (Österreich)", hint: "AT" },
   { code: "hu", label: "Magyar", hint: "HU" },
 ];
 

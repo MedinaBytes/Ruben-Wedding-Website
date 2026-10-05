@@ -19,7 +19,18 @@
     }
   ],
   "rsvps": [],
-  "songRequests": [],
+  "songRequests": [
+    {
+      "id": "song-00000000-0000-0000-0000-000000000001-1",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "slot": 1,
+      "song_title": "Hips Don't Lie (feat. Wyclef Jean)",
+      "artist": "Shakira, Wyclef Jean",
+      "spotify_url": "https://open.spotify.com/track/3d0WouFnFmr0K3kjeza3fF",
+      "selected_for_playlist": false,
+      "submitted_at": "2026-10-05T15:34:45.076Z"
+    }
+  ],
   "events": [
     {
       "id": "evt-1791145680503-ow00t",
