@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
-import { deleteInvitationAction, revokeInvitationAction } from "@/app/actions/admin-invitations";
+import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction } from "@/app/actions/admin-invitations";
 
 export interface InvitationRow {
   id: string;
@@ -25,11 +25,15 @@ export interface InvitationRow {
 export function InvitationsManager({
   invitations,
   siteUrl,
+  isDemoEnabled = false,
 }: {
   invitations: InvitationRow[];
   siteUrl: string;
+  isDemoEnabled?: boolean;
 }) {
   const [items, setItems] = useState<InvitationRow[]>(invitations);
+  const [demoActive, setDemoActive] = useState<boolean>(isDemoEnabled);
+  const [togglingDemo, setTogglingDemo] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showCreate, setShowCreate] = useState(false);
@@ -61,9 +65,49 @@ export function InvitationsManager({
   }
 
   async function handleDelete(inv: InvitationRow) {
-    if (!confirm(`Are you sure you want to delete the invitation for "${inv.displayName}"?`)) return;
+    const isDemo = inv.id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo";
+    const confirmMsg = isDemo
+      ? 'Delete the demo user invitation ("Sarah & Guest") and disable /i/demo permanently for production?'
+      : `Are you sure you want to delete the invitation for "${inv.displayName}"?`;
+    if (!confirm(confirmMsg)) return;
     setItems((prev) => prev.filter((i) => i.id !== inv.id));
+    if (isDemo) {
+      setDemoActive(false);
+    }
     await deleteInvitationAction(inv.id);
+  }
+
+  async function handleToggleDemo() {
+    setTogglingDemo(true);
+    const target = !demoActive;
+    try {
+      const res = await toggleDemoInvitationAction(target);
+      if (res.success) {
+        setDemoActive(target);
+        if (!target) {
+          setItems((prev) => prev.filter((i) => i.id !== "00000000-0000-0000-0000-000000000001" && i.token !== "demo"));
+        } else {
+          const demoRow: InvitationRow = {
+            id: "00000000-0000-0000-0000-000000000001",
+            displayName: "Sarah & Guest (Demo)",
+            groupName: "Demo Reviewers",
+            language: "en",
+            maxGuests: 2,
+            plusOneAllowed: true,
+            status: "active",
+            createdAt: new Date().toISOString(),
+            rsvpStatus: "pending",
+            attendeeCount: 0,
+            phone: "+43 664 1234567",
+            whatsapp: "+436641234567",
+            token: "demo",
+          };
+          setItems((prev) => [demoRow, ...prev.filter((i) => i.id !== demoRow.id)]);
+        }
+      }
+    } finally {
+      setTogglingDemo(false);
+    }
   }
 
   async function handleRevoke(inv: InvitationRow) {
@@ -168,6 +212,54 @@ export function InvitationsManager({
             Bulk Import CSV
           </Link>
         </div>
+      </div>
+
+      {/* Production / Demo Deployment Status Bar */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "0.75rem",
+          padding: "0.75rem 1.15rem",
+          borderRadius: "8px",
+          marginBottom: "1.5rem",
+          background: demoActive ? "#FFFDF9" : "#F6FAF7",
+          border: `1px solid ${demoActive ? "#EADECF" : "#CFE6D7"}`,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.85rem" }}>
+          <span style={{ fontSize: "1.1rem" }}>{demoActive ? "🧪" : "🔒"}</span>
+          <div>
+            <span style={{ fontWeight: 600, color: demoActive ? "#8C2836" : "#2E6B47" }}>
+              {demoActive ? "Demo Mode Active:" : "Production Mode Active:"}
+            </span>
+            <span style={{ color: "#6A5D60", marginLeft: "0.4rem" }}>
+              {demoActive
+                ? 'Sample guest "Sarah & Guest (Demo)" and /i/demo are accessible for reviewer testing.'
+                : "Demo data is disabled and /i/demo is inaccessible. Ready for real wedding guests."}
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleToggleDemo}
+          disabled={togglingDemo}
+          style={{
+            background: demoActive ? "#8C2836" : "#2E6B47",
+            color: "#FFFFFF",
+            border: 0,
+            borderRadius: "6px",
+            padding: "0.35rem 0.8rem",
+            fontSize: "0.78rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            opacity: togglingDemo ? 0.6 : 1,
+          }}
+        >
+          {demoActive ? "Delete / Disable Demo User" : "Enable Demo Invitation"}
+        </button>
       </div>
 
       {/* Create Invitation Collapsible Section */}
