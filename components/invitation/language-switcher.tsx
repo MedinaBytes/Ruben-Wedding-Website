@@ -38,6 +38,7 @@ export function LanguageSwitcher({
   function onSelect(nextLocale: Locale) {
     const cookieName = invitation ? `wedding_manual_locale_${invitation.id}` : "wedding_manual_locale";
     persistClientLocaleCookie(cookieName, nextLocale);
+    persistClientLocaleCookie("wedding_manual_locale", nextLocale);
 
     if (invitation) {
       recordInvitationInteraction({

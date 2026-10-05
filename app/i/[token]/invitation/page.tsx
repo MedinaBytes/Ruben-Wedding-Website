@@ -13,7 +13,7 @@ import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
-import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
+import { resolveLocale, supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 
@@ -41,27 +41,23 @@ export default async function MainInvitationPage({
   if (!invitation) notFound();
 
   const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
-  const queryLocale = sParams?.lang;
-  const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
-  const candidateLocale = (queryLocale && supportedLocales.includes(queryLocale as Locale))
-    ? queryLocale
-    : (manualLocale && supportedLocales.includes(manualLocale as Locale))
-    ? manualLocale
-    : (invitation.language && supportedLocales.includes(invitation.language as Locale))
-    ? invitation.language
-    : requestLocale;
-  const locale: Locale = supportedLocales.includes(candidateLocale as Locale)
-    ? (candidateLocale as Locale)
-    : "en";
+  const queryLocale = resolveLocale(sParams?.lang);
+  const manualLocale = resolveLocale(cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value)
+    ?? resolveLocale(cookieStore.get("wedding_manual_locale")?.value);
+  const locale: Locale = queryLocale
+    ?? manualLocale
+    ?? (token === "demo" ? undefined : resolveLocale(invitation.language))
+    ?? resolveLocale(requestLocale)
+    ?? "en";
 
   if (queryLocale && queryLocale !== manualLocale) {
     try {
-      cookieStore.set(`wedding_manual_locale_${invitation.id}`, locale, {
+      cookieStore.set(`wedding_manual_locale_${invitation.id}`, queryLocale, {
         path: "/",
         maxAge: 60 * 60 * 24 * 183,
         sameSite: "lax",
       });
-      cookieStore.set("wedding_manual_locale", locale, {
+      cookieStore.set("wedding_manual_locale", queryLocale, {
         path: "/",
         maxAge: 60 * 60 * 24 * 183,
         sameSite: "lax",
@@ -103,7 +99,19 @@ export default async function MainInvitationPage({
     getTranslations({ locale, namespace: "wedding" }),
   ]);
 
-  const greeting = invitation.greeting_override ?? intro("greeting", { name: invitation.display_name });
+  const demoPersonalMessages: Record<Locale, string> = {
+    en: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+    es: "¡Nos haría una ilusión inmensa celebrar este día tan especial e inolvidable en Viena contigo!",
+    "de-AT": "Wir würden uns riesig freuen, diesen unvergesslichen Tag in Wien gemeinsam mit Dir zu feiern!",
+    hu: "Végtelenül boldogok lennénk, ha velünk ünnepelnéd ezt a felejthetetlen napot Bécsben!",
+  };
+
+  const personalMessage = token === "demo"
+    ? demoPersonalMessages[locale]
+    : invitation.personal_message;
+
+  const greeting = (token === "demo" ? null : invitation.greeting_override)
+    ?? intro("greeting", { name: invitation.display_name });
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -199,7 +207,7 @@ export default async function MainInvitationPage({
               maxGuests: invitation.max_guests,
               plusOneAllowed: invitation.plus_one_allowed,
               locale,
-              personalMessage: invitation.personal_message,
+              personalMessage,
             }}
           />
         </main>

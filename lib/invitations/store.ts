@@ -22,11 +22,11 @@ export type ActiveInvitation = {
 export const DEMO_INVITATION: ActiveInvitation = {
   id: "00000000-0000-0000-0000-000000000001",
   display_name: "Sarah & Guest (Demo)",
-  greeting_override: "Dear Sarah & Guest,",
-  language: "en",
+  greeting_override: null,
+  language: null,
   max_guests: 2,
   plus_one_allowed: true,
-  personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+  personal_message: null,
   status: "active",
 };
 

@@ -31,3 +31,22 @@ export const weddingConfig = {
 } as const;
 
 export type Locale = (typeof supportedLocales)[number];
+
+export function resolveLocale(value: string | undefined | null): Locale | undefined {
+  if (!value) return undefined;
+  const clean = value.trim().toLowerCase().replaceAll("_", "-");
+  if (clean === "de" || clean === "at" || clean === "de-at" || clean.startsWith("de-")) {
+    return "de-AT";
+  }
+  if (clean === "es" || clean.startsWith("es-")) {
+    return "es";
+  }
+  if (clean === "hu" || clean.startsWith("hu-")) {
+    return "hu";
+  }
+  if (clean === "en" || clean.startsWith("en-")) {
+    return "en";
+  }
+  const base = clean.split("-", 1)[0];
+  return supportedLocales.find((l) => l === base);
+}

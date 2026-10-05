@@ -8,7 +8,7 @@ import { EnvelopeIntro } from "@/components/invitation/envelope-intro";
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
-import { supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
+import { resolveLocale, supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 
@@ -69,12 +69,14 @@ export default async function InvitationIntroPage({
   }
 
   const [requestLocale, cookieStore] = await Promise.all([getLocale(), cookies()]);
-  const queryLocale = sp?.lang && supportedLocales.includes(sp.lang as Locale) ? (sp.lang as Locale) : undefined;
-  const manualLocale = cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value;
-  const locale = queryLocale
-    ?? (supportedLocales.includes(manualLocale as Locale)
-      ? (manualLocale as Locale)
-      : invitation.language ?? (requestLocale as Locale));
+  const queryLocale = resolveLocale(sp?.lang);
+  const manualLocale = resolveLocale(cookieStore.get(`wedding_manual_locale_${invitation.id}`)?.value)
+    ?? resolveLocale(cookieStore.get("wedding_manual_locale")?.value);
+  const locale: Locale = queryLocale
+    ?? manualLocale
+    ?? (token === "demo" ? undefined : resolveLocale(invitation.language))
+    ?? resolveLocale(requestLocale)
+    ?? "en";
 
   if (queryLocale && queryLocale !== manualLocale) {
     try {
@@ -96,7 +98,8 @@ export default async function InvitationIntroPage({
     getTranslations({ locale, namespace: "intro" }),
   ]);
 
-  const greeting = invitation.greeting_override ?? intro("greeting", { name: invitation.display_name });
+  const greeting = (token === "demo" ? null : invitation.greeting_override)
+    ?? intro("greeting", { name: invitation.display_name });
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
