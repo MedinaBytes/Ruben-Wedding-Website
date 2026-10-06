@@ -179,6 +179,46 @@ export function EnvelopeIntro({
         {/* Subtle letterpress pattern & glow background */}
         <div className="envelope-stage__ambient" aria-hidden="true" />
 
+        {/* Decorative Watercolor Orchid Sprays */}
+        <motion.div
+          className="envelope-botanical envelope-botanical--top-right"
+          aria-hidden="true"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{
+            opacity: 1,
+            scale: step === "revealed" ? 1.03 : 1,
+          }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+        >
+          <Image
+            src="/orchids/orchid-watercolor-branch.webp"
+            alt=""
+            width={240}
+            height={312}
+            priority
+            className="envelope-botanical__image"
+          />
+        </motion.div>
+
+        <motion.div
+          className="envelope-botanical envelope-botanical--bottom-left"
+          aria-hidden="true"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{
+            opacity: step === "idle" ? 0.9 : 0.75,
+            scale: 1,
+          }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
+        >
+          <Image
+            src="/orchids/orchid-leaves-cluster.webp"
+            alt=""
+            width={160}
+            height={192}
+            className="envelope-botanical__image"
+          />
+        </motion.div>
+
         {/* 3D Envelope Container */}
         <div className={`envelope-3d ${step !== "idle" ? "envelope-3d--open" : ""}`}>
           {/* Back Paper */}
@@ -205,44 +245,30 @@ export function EnvelopeIntro({
                       }
             }
           >
-            {/* Blind Emboss Texture & Floral Line-art */}
+            {/* Blind Emboss Texture & Floral Watermark */}
             <div className="envelope-card__inner">
-              <svg
-                viewBox="0 0 400 400"
-                className="envelope-card__orchid-art"
-                fill="none"
-                aria-hidden="true"
-              >
-                <motion.path
-                  d="M120 380 C135 320 150 260 170 200 C185 155 215 110 260 70 C280 50 305 35 330 25"
-                  stroke="#CCA468"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={step === "revealed" ? { pathLength: 1, opacity: 0.8 } : { pathLength: 0, opacity: 0 }}
-                  transition={{ duration: 1.6, ease: "easeInOut" }}
+              <div className="envelope-card__watermark" aria-hidden="true">
+                <Image
+                  src="/orchids/orchid-lineart-gold.webp"
+                  alt=""
+                  width={280}
+                  height={280}
+                  className="envelope-card__watermark-img"
                 />
-                <motion.path
-                  d="M185 175 C120 135 60 160 55 210 C50 255 105 270 160 225 C175 212 185 195 190 180"
-                  stroke="#CCA468"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={step === "revealed" ? { pathLength: 1, opacity: 0.7 } : { pathLength: 0, opacity: 0 }}
-                  transition={{ duration: 1.4, delay: 0.3, ease: "easeInOut" }}
-                />
-                <motion.path
-                  d="M210 175 C275 135 335 160 340 210 C345 255 290 270 235 225 C220 212 210 195 205 180"
-                  stroke="#CCA468"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={step === "revealed" ? { pathLength: 1, opacity: 0.7 } : { pathLength: 0, opacity: 0 }}
-                  transition={{ duration: 1.4, delay: 0.3, ease: "easeInOut" }}
-                />
-              </svg>
+              </div>
 
               <div className="envelope-card__content">
+                {/* Botanical Watercolor Crest */}
+                <div className="envelope-card__orchid-crest" aria-hidden="true">
+                  <Image
+                    src="/orchids/orchid-spray-horizontal.webp"
+                    alt=""
+                    width={140}
+                    height={106}
+                    className="envelope-card__orchid-crest-img"
+                  />
+                </div>
+
                 <span className="envelope-card__monogram" aria-hidden="true">
                   R <i>&</i> A
                 </span>
