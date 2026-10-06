@@ -102,35 +102,6 @@ export function CheckInManager({
 
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-      {!isEnabled && (
-        <div
-          style={{
-            marginBottom: "1.5rem",
-            padding: "1.2rem 1.5rem",
-            background: "#FBF7FF",
-            border: "1px solid #E9D5FF",
-            borderRadius: "10px",
-            color: "#581C87",
-            boxShadow: "0 2px 8px rgba(107, 33, 168, 0.05)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.2rem" }}>📌</span>
-            <strong style={{ fontSize: "1rem", color: "#581C87" }}>
-              Control de Puerta Manual Activo · Escaneo QR en Hoja de Ruta (Roadmap)
-            </strong>
-          </div>
-          <div style={{ fontSize: "0.86rem", lineHeight: 1.5, color: "#6B21A8" }}>
-            <p style={{ margin: "0 0 0.5rem 0" }}>
-              <strong>Por qué el escáner QR está desactivado:</strong> Las invitaciones enviadas actualmente por WhatsApp y Correo Electrónico proporcionan un enlace directo seguro (<code>/i/[token]</code>) sin emitir un código QR adjunto. Para mantener coherencia con los invitados, el registro de puerta se opera directamente mediante la lista de búsqueda.
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Integración futura en el Roadmap:</strong> Una vez implementada la generación de pases QR en invitaciones, se incorporará el lector en vivo para cámara de teléfono móvil, webcam y lectores ópticos externos USB/Bluetooth.
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Hero Arrival Stats */}
       <div
         style={{

@@ -28,7 +28,7 @@ const PRIMARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Invitaciones",
+    label: "Invitations",
     href: "/admin/invitations",
     icon: () => (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -49,7 +49,7 @@ const PRIMARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Mesas",
+    label: "Seating",
     href: "/admin/seating",
     icon: () => (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -62,7 +62,7 @@ const PRIMARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Música",
+    label: "Music",
     href: "/admin/music",
     icon: () => (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -73,7 +73,7 @@ const PRIMARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Ajustes",
+    label: "Settings",
     href: "/admin/settings",
     icon: () => (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -99,7 +99,7 @@ const SECONDARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Analítica",
+    label: "Analytics",
     href: "/admin/analytics",
     icon: () => (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -110,7 +110,7 @@ const SECONDARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Check-In",
+    label: "Door Check-In",
     href: "/admin/checkin",
     icon: () => (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -122,7 +122,7 @@ const SECONDARY_NAV: NavItem[] = [
     ),
   },
   {
-    label: "Exportar",
+    label: "Export & Backups",
     href: "/admin/export",
     icon: () => (
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -245,7 +245,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
                 <circle cx="19" cy="12" r="1" />
                 <circle cx="5" cy="12" r="1" />
               </svg>
-              <span>Herramientas</span>
+              <span>Tools</span>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: moreDropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} aria-hidden="true">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
@@ -281,9 +281,9 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
             target="_blank"
             rel="noopener noreferrer"
             className="admin-header-nav__preview-btn"
-            title="Abrir vista previa de la invitación web de los invitados"
+            title="Open guest web invitation preview"
           >
-            <span>Ver Invitación</span>
+            <span>View Invitation</span>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
               <polyline points="15 3 21 3 21 9" />
@@ -292,13 +292,13 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
           </a>
 
           <form action={signOutAction}>
-            <button type="submit" className="admin-header-nav__signout-btn" title="Cerrar sesión de administrador">
+            <button type="submit" className="admin-header-nav__signout-btn" title="Sign out of administrator session">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" x2="9" y1="12" y2="12" />
               </svg>
-              <span>Salir</span>
+              <span>Sign Out</span>
             </button>
           </form>
 
@@ -307,7 +307,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
             type="button"
             className="admin-header-nav__mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú de navegación"}
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
@@ -330,7 +330,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
       {mobileOpen && (
         <div className="admin-mobile-drawer">
           <div className="admin-mobile-drawer__section">
-            <span className="admin-mobile-drawer__heading">Secciones Principales</span>
+            <span className="admin-mobile-drawer__heading">Primary Navigation</span>
             <div className="admin-mobile-drawer__grid">
               {PRIMARY_NAV.map((item) => {
                 const active = isActive(item.href);
@@ -351,7 +351,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
           </div>
 
           <div className="admin-mobile-drawer__section" style={{ marginTop: "1rem" }}>
-            <span className="admin-mobile-drawer__heading">Herramientas &amp; Sistema</span>
+            <span className="admin-mobile-drawer__heading">Tools &amp; Settings</span>
             <div className="admin-mobile-drawer__grid">
               {SECONDARY_NAV.map((sub) => {
                 const subActive = isActive(sub.href);

@@ -132,13 +132,13 @@ export default async function AdminOverviewPage() {
       <div className="admin-page-header">
         <div>
           <div className="admin-page-header__eyebrow">
-            Palacio Hetzendorf · Viena 2027
+            Hetzendorf Palace · Vienna 2027
           </div>
           <h1 className="admin-page-header__title">
-            Dashboard &amp; Asistencia
+            Dashboard &amp; Attendance Overview
           </h1>
           <p className="admin-page-header__subtitle">
-            Supervisión en tiempo real de invitaciones, confirmación de invitados y música.
+            Real-time supervision of invitations, confirmed attendees, and guest music requests.
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default async function AdminOverviewPage() {
             className={`admin-status-badge ${hasResend ? "admin-status-badge--success" : "admin-status-badge--warning"}`}
           >
             <span className="admin-status-badge__dot" />
-            <span>{hasResend ? "Resend Conectado" : "Resend: Clave Pendiente"}</span>
+            <span>{hasResend ? "Resend Connected" : "Resend: Key Pending"}</span>
           </Link>
 
           <Link
@@ -157,7 +157,7 @@ export default async function AdminOverviewPage() {
             className="admin-status-badge admin-status-badge--info"
           >
             <span className="admin-status-badge__dot" />
-            <span>{isDemo ? "Modo Demo Activo" : "Modo Producción"}</span>
+            <span>{isDemo ? "Demo Mode Active" : "Production Mode"}</span>
           </Link>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default async function AdminOverviewPage() {
         <div className="admin-stat-card">
           <div>
             <div className="admin-stat-card__head">
-              <span className="admin-stat-card__label">Apertura Invitaciones</span>
+              <span className="admin-stat-card__label">Invitation Opens</span>
               <div className="admin-stat-card__icon-badge" style={{ background: "#FDF2F4", color: "#8C2836" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -179,7 +179,7 @@ export default async function AdminOverviewPage() {
 
             <div className="admin-stat-card__metric-row">
               <span className="admin-stat-card__value">{openRatePercent}%</span>
-              <span className="admin-stat-card__unit">tasa de apertura</span>
+              <span className="admin-stat-card__unit">open rate</span>
             </div>
           </div>
 
@@ -191,8 +191,8 @@ export default async function AdminOverviewPage() {
               />
             </div>
             <p className="admin-stat-card__meta">
-              <span>{openedCount} abiertas</span>
-              <span>de {activeInvitations} activas ({totalInvitations} tot.)</span>
+              <span>{openedCount} opened</span>
+              <span>of {activeInvitations} active ({totalInvitations} total)</span>
             </p>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default async function AdminOverviewPage() {
         <div className="admin-stat-card">
           <div>
             <div className="admin-stat-card__head">
-              <span className="admin-stat-card__label">Asistencia al Palacio</span>
+              <span className="admin-stat-card__label">Palace Attendance</span>
               <div className="admin-stat-card__icon-badge" style={{ background: "#F2F6F0", color: "#55644E" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -213,7 +213,7 @@ export default async function AdminOverviewPage() {
 
             <div className="admin-stat-card__metric-row">
               <span className="admin-stat-card__value">{confirmedAttendees}</span>
-              <span className="admin-stat-card__unit">/ {totalGuestCapacity} plazas</span>
+              <span className="admin-stat-card__unit">/ {totalGuestCapacity} seats</span>
             </div>
           </div>
 
@@ -225,8 +225,8 @@ export default async function AdminOverviewPage() {
               />
             </div>
             <p className="admin-stat-card__meta">
-              <span>{attendanceRatePercent}% del aforo</span>
-              <span>{confirmedRsvps.length} confirmados</span>
+              <span>{attendanceRatePercent}% of capacity</span>
+              <span>{confirmedRsvps.length} confirmed</span>
             </p>
           </div>
         </div>
@@ -235,7 +235,7 @@ export default async function AdminOverviewPage() {
         <div className="admin-stat-card">
           <div>
             <div className="admin-stat-card__head">
-              <span className="admin-stat-card__label">Estado de Respuestas</span>
+              <span className="admin-stat-card__label">RSVP Response Status</span>
               <div className="admin-stat-card__icon-badge" style={{ background: "#FFF9EC", color: "#A87A26" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
@@ -246,23 +246,23 @@ export default async function AdminOverviewPage() {
 
             <div className="admin-stat-card__metric-row">
               <span className="admin-stat-card__value">{pendingCount}</span>
-              <span className="admin-stat-card__unit">pendientes de responder</span>
+              <span className="admin-stat-card__unit">pending replies</span>
             </div>
           </div>
 
           <div>
             {/* Segmented bar: Green (Yes), Burgundy (No), Amber (Pending) */}
             <div className="admin-stat-card__segmented-bar">
-              <div style={{ width: `${yesPercent}%`, background: "#55644E" }} title={`${confirmedRsvps.length} Sí`} />
-              <div style={{ width: `${noPercent}%`, background: "#8C2836" }} title={`${declinedRsvps.length} No`} />
-              <div style={{ width: `${pendingPercent}%`, background: "#D8C6B6" }} title={`${pendingCount} Pendientes`} />
+              <div style={{ width: `${yesPercent}%`, background: "#55644E" }} title={`${confirmedRsvps.length} Attending`} />
+              <div style={{ width: `${noPercent}%`, background: "#8C2836" }} title={`${declinedRsvps.length} Declined`} />
+              <div style={{ width: `${pendingPercent}%`, background: "#D8C6B6" }} title={`${pendingCount} Pending`} />
             </div>
             <p className="admin-stat-card__meta">
-              <span>{confirmedRsvps.length} Sí</span>
+              <span>{confirmedRsvps.length} Attending</span>
               <span>·</span>
-              <span>{declinedRsvps.length} No</span>
+              <span>{declinedRsvps.length} Declined</span>
               <span>·</span>
-              <span>{pendingCount} Pendientes</span>
+              <span>{pendingCount} Pending</span>
             </p>
           </div>
         </div>
@@ -271,7 +271,7 @@ export default async function AdminOverviewPage() {
         <div className="admin-stat-card">
           <div>
             <div className="admin-stat-card__head">
-              <span className="admin-stat-card__label">Música &amp; Playlist</span>
+              <span className="admin-stat-card__label">Music &amp; Setlist</span>
               <div className="admin-stat-card__icon-badge" style={{ background: "#EFFBF2", color: "#1DB954" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M9 18V5l12-2v13" />
@@ -283,7 +283,7 @@ export default async function AdminOverviewPage() {
 
             <div className="admin-stat-card__metric-row">
               <span className="admin-stat-card__value">{totalSongs}</span>
-              <span className="admin-stat-card__unit">canciones sugeridas</span>
+              <span className="admin-stat-card__unit">suggested tracks</span>
             </div>
           </div>
 
@@ -295,8 +295,8 @@ export default async function AdminOverviewPage() {
               />
             </div>
             <p className="admin-stat-card__meta">
-              <span>{playlistSelected} en setlist</span>
-              <span>{Math.max(0, totalSongs - playlistSelected)} por evaluar</span>
+              <span>{playlistSelected} in setlist</span>
+              <span>{Math.max(0, totalSongs - playlistSelected)} to review</span>
             </p>
           </div>
         </div>
@@ -305,7 +305,7 @@ export default async function AdminOverviewPage() {
       {/* Quick Navigation Cards */}
       <div>
         <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.3rem", margin: "0 0 1rem 0", color: "#2B2425", fontWeight: 600 }}>
-          Accesos Rápidos de Gestión
+          Quick Management Actions
         </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
@@ -313,10 +313,10 @@ export default async function AdminOverviewPage() {
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#8C2836" }}>✉️</span>
-              <span>Invitaciones &amp; Enlaces Únicos</span>
+              <span>Invitations &amp; Access Tokens</span>
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.86rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-              Crea nuevas invitaciones, visualiza los enlaces personalizados y exporta códigos para WhatsApp o tarjetas impresas.
+              Create new guest invitations, view personalized links, and export QR codes for WhatsApp or physical stationery.
             </p>
             <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap" }}>
               <Link
@@ -332,7 +332,7 @@ export default async function AdminOverviewPage() {
                   boxShadow: "0 2px 6px rgba(140, 40, 54, 0.2)",
                 }}
               >
-                Ver Invitaciones →
+                View Invitations →
               </Link>
               <Link
                 href="/admin/invitations/import"
@@ -347,7 +347,7 @@ export default async function AdminOverviewPage() {
                   fontWeight: 600,
                 }}
               >
-                Importar CSV
+                Import CSV
               </Link>
             </div>
           </div>
@@ -356,10 +356,10 @@ export default async function AdminOverviewPage() {
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#55644E" }}>✓</span>
-              <span>RSVPs &amp; Menús de Invitados</span>
+              <span>RSVPs &amp; Guest Dietary</span>
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.86rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-              Revisa los nombres de asistentes, alergias alimentarias, opciones de menú y comentarios de los invitados.
+              Review confirmed attendee names, food allergies, dietary restrictions, and personal wishes to the couple.
             </p>
             <Link
               href="/admin/rsvps"
@@ -375,7 +375,7 @@ export default async function AdminOverviewPage() {
                 boxShadow: "0 2px 6px rgba(85, 100, 78, 0.2)",
               }}
             >
-              Consultar RSVPs →
+              Review RSVPs →
             </Link>
           </div>
 
@@ -383,10 +383,10 @@ export default async function AdminOverviewPage() {
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#C89D42" }}>🪑</span>
-              <span>Mesas &amp; Distribución Salón</span>
+              <span>Tables &amp; Palace Seating</span>
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.86rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-              Organiza los asientos en las mesas del Palacio Hetzendorf y gestiona los grupos de invitados.
+              Organize seating arrangements at Hetzendorf Palace tables and manage family groups.
             </p>
             <Link
               href="/admin/seating"
@@ -402,7 +402,7 @@ export default async function AdminOverviewPage() {
                 fontWeight: 600,
               }}
             >
-              Gestionar Mesas →
+              Manage Seating →
             </Link>
           </div>
 
@@ -410,10 +410,10 @@ export default async function AdminOverviewPage() {
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#8C2836" }}>⚙️</span>
-              <span>Ajustes &amp; Medios de Pago</span>
+              <span>Settings &amp; System Config</span>
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.86rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
-              Configura tus cuentas bancarias, enlaces de Revolut y Wise, buzón nupcial de efectivo y motor de email Resend.
+              Configure banking details, Revolut/Wise links, cash registry options, and Resend email settings.
             </p>
             <Link
               href="/admin/settings"
@@ -429,7 +429,7 @@ export default async function AdminOverviewPage() {
                 fontWeight: 600,
               }}
             >
-              Configurar Sistema →
+              System Settings →
             </Link>
           </div>
         </div>

@@ -38,13 +38,13 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
           const jsonStr = JSON.stringify(res, null, 2);
           const dateStr = new Date().toISOString().split("T")[0];
           triggerDownload(jsonStr, `wedding-full-backup-${dateStr}.json`, "application/json");
-          setDownloadSuccess("✓ Respaldo JSON completo descargado con éxito.");
+          setDownloadSuccess("✓ Complete JSON backup downloaded successfully.");
           setTimeout(() => setDownloadSuccess(null), 4000);
         } else {
-          alert(res.error || "Error al generar el respaldo completo.");
+          alert(res.error || "Error generating complete backup.");
         }
       } catch {
-        alert("Ocurrió un error al contactar el servidor de exportación.");
+        alert("An error occurred while contacting the export server.");
       }
     });
   }
@@ -60,23 +60,23 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
 
           if (type === "guests") {
             content = "\uFEFF" + res.csv.guests;
-            filename = `wedding-invitados-${dateStr}.csv`;
+            filename = `wedding-guests-${dateStr}.csv`;
           } else if (type === "rsvps") {
             content = "\uFEFF" + res.csv.rsvps;
-            filename = `wedding-rsvps-menus-${dateStr}.csv`;
+            filename = `wedding-rsvps-catering-${dateStr}.csv`;
           } else {
             content = "\uFEFF" + res.csv.seating;
-            filename = `wedding-distribucion-mesas-${dateStr}.csv`;
+            filename = `wedding-seating-tables-${dateStr}.csv`;
           }
 
           triggerDownload(content, filename, "text/csv;charset=utf-8;");
-          setDownloadSuccess(`✓ Archivo CSV (${type}) descargado correctamente.`);
+          setDownloadSuccess(`✓ CSV file (${type}) downloaded successfully.`);
           setTimeout(() => setDownloadSuccess(null), 4000);
         } else {
-          alert(res.error || "Error al descargar el archivo CSV.");
+          alert(res.error || "Error downloading CSV file.");
         }
       } catch {
-        alert("Ocurrió un error al procesar la descarga.");
+        alert("An error occurred while processing the download.");
       }
     });
   }
@@ -117,14 +117,14 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
               <span style={{ fontSize: "1.75rem" }}>📦</span>
               <span style={{ fontSize: "0.72rem", background: "#8C2836", color: "#FFFFFF", padding: "0.2rem 0.6rem", borderRadius: "999px", fontWeight: 700 }}>
-                Snapshot Total
+                Complete Snapshot
               </span>
             </div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-              Copia de Seguridad Completa (JSON)
+              Full System Backup (JSON)
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.84rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-              Exporta todos los registros del sistema: invitaciones ({counts.invitations}), respuestas RSVP ({counts.rsvps}), canciones ({counts.songRequests}), mesas ({counts.tableAssignments}) y configuración global.
+              Exports all platform records: invitations ({counts.invitations}), RSVP confirmations ({counts.rsvps}), song suggestions ({counts.songRequests}), table seating ({counts.tableAssignments}), and global site settings.
             </p>
           </div>
 
@@ -148,7 +148,7 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
               gap: "0.5rem",
             }}
           >
-            <span>{isExporting ? "Generando Snapshot..." : "Descargar Respaldo JSON"}</span>
+            <span>{isExporting ? "Generating Snapshot..." : "Download JSON Backup"}</span>
             <span>↓</span>
           </button>
         </div>
@@ -159,14 +159,14 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
               <span style={{ fontSize: "1.75rem" }}>👥</span>
               <span style={{ fontSize: "0.72rem", background: "#FAF7F5", color: "#544648", border: "1px solid #E5DCD4", padding: "0.2rem 0.6rem", borderRadius: "999px", fontWeight: 600 }}>
-                {counts.invitations} Registros
+                {counts.invitations} Records
               </span>
             </div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-              Lista de Invitados &amp; Enlaces (CSV)
+              Guest List &amp; Private Links (CSV)
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.84rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-              Incluye nombres oficiales, tokens de enlace único, hogares/familias (households), idioma preferido, teléfono y estado de invitación.
+              Includes guest display names, private access token URLs, household families, preferred language, contact details, and invitation status.
             </p>
           </div>
 
@@ -189,7 +189,7 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
               gap: "0.5rem",
             }}
           >
-            <span>Descargar Invitados (CSV)</span>
+            <span>Download Guests (CSV)</span>
             <span>↓</span>
           </button>
         </div>
@@ -200,14 +200,14 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
               <span style={{ fontSize: "1.75rem" }}>🍽️</span>
               <span style={{ fontSize: "0.72rem", background: "#E8F5E9", color: "#1B5E20", padding: "0.2rem 0.6rem", borderRadius: "999px", fontWeight: 700 }}>
-                Catering &amp; Dietas
+                Catering &amp; Dietary
               </span>
             </div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-              Respuestas RSVP &amp; Menús (CSV)
+              RSVP Responses &amp; Menus (CSV)
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.84rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-              Planilla lista para entregar al chef ejecutivo de Hetzendorf: asistencia confirmada, recuento de comensales, platos elegidos y alergias alimentarias.
+              Spreadsheet ready for the palace executive catering chef: attendance status, confirmed guest counts, selected dishes, and dietary restrictions.
             </p>
           </div>
 
@@ -230,7 +230,7 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
               gap: "0.5rem",
             }}
           >
-            <span>Descargar Menús &amp; Dietas (CSV)</span>
+            <span>Download Catering &amp; RSVPs (CSV)</span>
             <span>↓</span>
           </button>
         </div>
@@ -241,14 +241,14 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
               <span style={{ fontSize: "1.75rem" }}>🪑</span>
               <span style={{ fontSize: "0.72rem", background: "#FAF7F5", color: "#544648", border: "1px solid #E5DCD4", padding: "0.2rem 0.6rem", borderRadius: "999px", fontWeight: 600 }}>
-                {counts.tableAssignments} Asignados
+                {counts.tableAssignments} Assigned
               </span>
             </div>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 600, margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-              Distribución de Mesas (CSV)
+              Table Seating Allocation (CSV)
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.84rem", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-              Asignación por mesas imperiales: nombre de mesa, número, invitado asignado y notas de protocolo para los meseros y la recepción.
+              Imperial palace seating arrangement: table names, table numbers, seated guest names, and protocol notes for reception staff.
             </p>
           </div>
 
@@ -271,7 +271,7 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
               gap: "0.5rem",
             }}
           >
-            <span>Descargar Mesas (CSV)</span>
+            <span>Download Seating Plan (CSV)</span>
             <span>↓</span>
           </button>
         </div>
@@ -282,24 +282,24 @@ export function ExportManager({ initialCounts }: ExportManagerProps) {
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.5rem" }}>
           <span style={{ fontSize: "1.25rem" }}>🛡️</span>
           <h3 style={{ fontSize: "1rem", fontWeight: 600, margin: 0, color: "#2B2425" }}>
-            Guía de Respaldo Supabase Free Tier (Runbook)
+            Supabase Free Tier Backup Runbook
           </h3>
         </div>
         <p style={{ fontSize: "0.85rem", color: "#6A5D60", lineHeight: 1.5, margin: "0 0 1rem 0" }}>
-          El plan gratuito de Supabase no incluye copias de seguridad automáticas diarias y pausa proyectos inactivos tras 7 días. Nuestro cron diario automático <code>/api/cron/keepalive</code> previene la pausa, pero se recomienda guardar respaldos periódicos con estos pasos:
+          The Supabase free tier does not provide automated daily backups and pauses dormant projects after 7 days of inactivity. Our daily automated keep-alive cron (<code>/api/cron/keepalive</code>) prevents auto-pause, but periodic offline backups are strongly recommended:
         </p>
         <ol style={{ fontSize: "0.84rem", color: "#4C3F42", lineHeight: 1.6, paddingLeft: "1.25rem", margin: 0 }}>
           <li>
-            <strong>Descargar el Snapshot JSON mensual:</strong> Haz clic en el botón superior <em>&quot;Descargar Respaldo JSON&quot;</em> una vez al mes para archivar un archivo local en tu computadora.
+            <strong>Monthly JSON Snapshot:</strong> Click the <em>&quot;Download JSON Backup&quot;</em> button above once a month to archive an offline copy on your computer.
           </li>
           <li>
-            <strong>Respaldo completo de base de datos vía CLI:</strong> Si tienes acceso a la terminal con Supabase CLI configurado, puedes generar un volcado SQL nativo:
+            <strong>Direct SQL Dump via Supabase CLI:</strong> If you have access to a terminal with the Supabase CLI installed, you can generate a complete PostgreSQL dump:
             <pre style={{ background: "#2B2425", color: "#F3EFEA", padding: "0.6rem 0.85rem", borderRadius: "6px", fontSize: "0.78rem", marginTop: "0.4rem", overflowX: "auto" }}>
-              supabase db dump --db-url &quot;tu-connection-string-postgresql&quot; &gt; backup-wedding.sql
+              supabase db dump --db-url &quot;your-postgresql-connection-string&quot; &gt; backup-wedding.sql
             </pre>
           </li>
           <li>
-            <strong>Almacenamiento Seguro:</strong> Guarda el archivo JSON o SQL en tu nube personal (Google Drive, iCloud o Dropbox) para máxima tranquilidad antes de la boda.
+            <strong>Secure Cloud Archival:</strong> Store the exported JSON or SQL file in your private cloud storage (Google Drive, iCloud, or Dropbox) for complete peace of mind.
           </li>
         </ol>
       </div>
