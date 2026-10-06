@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
@@ -156,6 +157,15 @@ export default async function MainInvitationPage({
 
                 {/* Personalized Luxury Invitation Card */}
                 <div className="hero__invitation-card">
+                  <div className="hero__invitation-card-botanical" aria-hidden="true">
+                    <Image
+                      src="/orchids/orchid-spray-horizontal.webp"
+                      alt=""
+                      width={100}
+                      height={76}
+                      className="hero__invitation-card-botanical-img"
+                    />
+                  </div>
                   <p className="hero__guest-greeting">{greeting}</p>
                   <p className="hero__invitation-celebrate">{intro("celebrate")}</p>
                 </div>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
@@ -214,6 +215,17 @@ export async function WeddingSections({
         </div>
       </section>
 
+      {/* Elegant Botanical Orchid Divider */}
+      <div className="botanical-divider" aria-hidden="true">
+        <Image
+          src="/orchids/orchid-spray-horizontal.webp"
+          alt=""
+          width={150}
+          height={114}
+          className="botanical-divider__img"
+        />
+      </div>
+
       <PhotoStory locale={locale} />
 
       <section className="closing-note" id="story" aria-labelledby="closing-title">
@@ -275,6 +287,15 @@ export async function WeddingSections({
                   }}
                 >
                   {signature}
+                </span>
+                <span className="closing-signature-botanical" aria-hidden="true">
+                  <Image
+                    src="/orchids/orchid-single-bloom.webp"
+                    alt=""
+                    width={40}
+                    height={45}
+                    className="closing-signature-botanical__img"
+                  />
                 </span>
               </div>
             )}

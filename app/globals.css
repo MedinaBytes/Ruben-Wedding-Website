@@ -417,6 +417,7 @@ a {
 
 /* Personalized Invitation Card */
 .hero__invitation-card {
+  position: relative;
   background: #FFFFFF;
   border: 1px solid #E6DED8;
   border-left: 3px solid #8C2836;
@@ -427,6 +428,60 @@ a {
   flex-direction: column;
   gap: 0.35rem;
   margin-top: 0.4rem;
+  overflow: hidden;
+}
+
+.hero__invitation-card-botanical {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 95px;
+  pointer-events: none;
+  opacity: 0.3;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.04));
+  transition: opacity 0.3s ease;
+}
+
+.hero__invitation-card-botanical-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero__invitation-card:hover .hero__invitation-card-botanical {
+  opacity: 0.48;
+}
+
+/* Botanical Section Dividers */
+.botanical-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2.75rem auto 1.75rem auto;
+  opacity: 0.7;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.04));
+}
+
+.botanical-divider__img {
+  width: clamp(110px, 15vw, 150px);
+  height: auto;
+  display: block;
+}
+
+/* Closing Note Botanical Accent */
+.closing-signature-botanical {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.75rem;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.closing-signature-botanical__img {
+  width: 44px;
+  height: auto;
+  display: block;
 }
 
 .hero__guest-greeting {
