@@ -178,9 +178,12 @@
     "title": "Dresscode",
     "code": "Festlich-Formal / Kaiserliche Hofeleganz",
     "formality": "Festlich-formal · Wiener Hofeleganz mit modernem Charme.",
-    "subtitle": "Wir feiern in einem echten Wiener Barockpalais! Werft euch in Schale für den kaiserlichen Hof: elegante Smokings, dunkle Anzüge sowie glamouröse lange Abendkleider oder edle Cocktailkleider. Diademe, Samt und royalistische Akzente sind ausdrücklich erwünscht — Sneakers bedürfen einer persönlichen kaiserlichen Ausnahmegenehmigung von Kaiserin Andrea! 🏰 Pflasterstein-Überlebenstipp: Das historische Wiener Kopfsteinpflaster liebt Stiletto-Absätze etwas zu sehr; Blockabsätze, feine Keilabsätze oder edle Flats garantieren königliches Tanzvergnügen bis in die Nacht.",
+    "subtitle": "Wir feiern in einem echten Wiener Barockpalais! Werft euch in Schale für den kaiserlichen Hof: elegante Smokings, dunkle Anzüge sowie glamouröse lange Abendkleider oder edle Cocktailkleider. Satte Juwelentöne, Samt und königliche Akzente sind herzlich willkommen.",
+    "decree": "Kaiserliches Dekret von Kaiserin Andrea: Diademe und royalistische Details sind ausdrücklich erwünscht — Sneakers bedürfen einer persönlichen kaiserlichen Begnadigung!",
+    "footwearTitle": "Historisches Kopfsteinpflaster & Schuhe",
+    "footwearDescription": "Die Innenhöfe des Barockschlosses sind mit historischem Wiener Kopfsteinpflaster ausgelegt. Blockabsätze, feine Keilabsätze oder edle Flats garantieren königliches Tanzvergnügen bis tief in die Nacht.",
     "weatherTitle": "Kaiserliches Herbstwetter in Wien",
-    "weatherDescription": "Anfang Oktober weht in Wien eine herrlich frische, kaiserliche Herbstbrise (ca. 16–18 °C tagsüber, abends kühl um 10–12 °C). Eine edle Stola, ein königlicher Umhang, ein feines Jackett oder ein Abendmantel für den Schlosspark und die Terrassen werden wärmstens empfohlen."
+    "weatherDescription": "Anfang Oktober weht in Wien eine herrlich frische, kaiserliche Herbstbrise (ca. 16–18 °C tagsüber, abends kühl um 10–12 °C). Eine edle Stola, ein königlicher Umhang, ein feines Jackett oder ein Abendmantel für den Schlosspark werden wärmstens empfohlen."
   },
   "music": {
     "label": "Für die Tanzfläche",

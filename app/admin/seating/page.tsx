@@ -20,6 +20,7 @@ export default async function AdminSeatingPage() {
   const invitations = resilientStore.getInvitations();
   const rsvps = resilientStore.getRsvps();
   const assignments = resilientStore.getTableAssignments();
+  const tables = resilientStore.getTables();
   const settings = resilientStore.getSettings();
 
   const invMap = new Map(invitations.map((i) => [i.id, i]));
@@ -59,6 +60,7 @@ export default async function AdminSeatingPage() {
   return (
     <SeatingManager
       initialAssignments={assignments}
+      initialTables={tables}
       confirmedGuests={confirmedGuests}
       isEnabled={settings.enableTablePlanner !== false}
     />

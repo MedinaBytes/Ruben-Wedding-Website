@@ -2,8 +2,6 @@ import { getTranslations } from "next-intl/server";
 
 import { Countdown } from "@/components/invitation/countdown";
 import { AddToCalendar } from "@/components/invitation/add-to-calendar";
-import { DayOfTimeline } from "@/components/invitation/day-of-timeline";
-import { GuestbookSection } from "@/components/invitation/guestbook-section";
 import { RsvpForm } from "@/components/invitation/guest-forms";
 import { InteractiveMap } from "@/components/invitation/interactive-map";
 import { PhotoStory } from "@/components/invitation/photo-story";
@@ -12,6 +10,7 @@ import { SpotifySongRequests } from "@/components/invitation/spotify-song-reques
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
 import { TravelConcierge } from "@/components/invitation/travel-concierge";
 import { getSpotifyPlaylistConfig } from "@/lib/spotify/api";
+import { resilientStore } from "@/lib/storage/resilient-store";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
 
 type SectionNamespace = "event" | "venue" | "travel" | "stay" | "dress" | "music" | "gifts" | "closing";
@@ -172,42 +171,47 @@ export async function WeddingSections({
   return (
     <>
       <Countdown />
-      {siteSettings?.enableCalendarSync !== false && <AddToCalendar locale={locale} />}
 
       <section className="day-story" id="event-note" aria-labelledby="day-title">
         <div className="section-heading">
           <h2 id="day-title">{day("timelineTitle")}</h2>
         </div>
-        <ol className="day-timeline">
-          <li className="day-timeline__arrival">
-            <time dateTime={`${weddingConfig.event.date}T${weddingConfig.ceremony.guestArrival}:00`}>
-              {weddingConfig.ceremony.guestArrival}
-            </time>
-            <div>
-              <h3>{day("pleaseArrive")}</h3>
-              <p>{day("arrivalReminder")}</p>
+        <div className="day-story__schedule">
+          <ol className="day-timeline">
+            <li className="day-timeline__arrival">
+              <time dateTime={`${weddingConfig.event.date}T${weddingConfig.ceremony.guestArrival}:00`}>
+                {weddingConfig.ceremony.guestArrival}
+              </time>
+              <div>
+                <h3>{day("pleaseArrive")}</h3>
+                <p>{day("arrivalReminder")}</p>
+              </div>
+            </li>
+            <li>
+              <time dateTime={`${weddingConfig.event.date}T${weddingConfig.ceremony.time}:00`}>
+                {weddingConfig.ceremony.time}
+              </time>
+              <div>
+                <h3>{day("ceremony")}</h3>
+                <p>{day("ceremonyDescription")}</p>
+              </div>
+            </li>
+            <li>
+              <time dateTime={`${weddingConfig.event.date}T${weddingConfig.reception.approximateStart}:00`}>
+                ~{weddingConfig.reception.approximateStart}
+              </time>
+              <div>
+                <h3>{day("reception")}</h3>
+                <p>{day("receptionDescription")}</p>
+              </div>
+            </li>
+          </ol>
+          {siteSettings?.enableCalendarSync !== false && (
+            <div className="day-story__calendar-bar">
+              <AddToCalendar locale={locale} />
             </div>
-          </li>
-          <li>
-            <time dateTime={`${weddingConfig.event.date}T${weddingConfig.ceremony.time}:00`}>
-              {weddingConfig.ceremony.time}
-            </time>
-            <div>
-              <h3>{day("ceremony")}</h3>
-              <p>{day("ceremonyDescription")}</p>
-            </div>
-          </li>
-          <li>
-            <time dateTime={`${weddingConfig.event.date}T${weddingConfig.reception.approximateStart}:00`}>
-              ~{weddingConfig.reception.approximateStart}
-            </time>
-            <div>
-              <h3>{day("reception")}</h3>
-              <p>{day("receptionDescription")}</p>
-            </div>
-          </li>
-        </ol>
-        {siteSettings?.enableDayOfTimeline !== false && <DayOfTimeline locale={locale} />}
+          )}
+        </div>
       </section>
 
       <PhotoStory locale={locale} />
@@ -426,11 +430,53 @@ export async function WeddingSections({
             <p className="dress-note__code">{dress("code") || weddingConfig.dressCode}</p>
             <p className="dress-note__copy">{dress("formality")}</p>
             <p className="dress-note__subtitle">{dress("subtitle")}</p>
+
+            {dress.has("decree") && (
+              <div className="dress-note__decree">
+                <span className="dress-note__decree-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                </span>
+                <p className="dress-note__decree-text">{dress("decree")}</p>
+              </div>
+            )}
           </div>
 
-          <div className="dress-note__weather">
-            <h3 className="dress-note__weather-title">{dress("weatherTitle")}</h3>
-            <p className="dress-note__weather-desc">{dress("weatherDescription")}</p>
+          <div className="dress-note__advisories">
+            {dress.has("footwearTitle") && (
+              <div className="dress-note__card">
+                <div className="dress-note__card-header">
+                  <span className="dress-note__card-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 21h18M5 21V7l8-4v18M13 10h4v11"/>
+                    </svg>
+                  </span>
+                  <h3 className="dress-note__card-title">{dress("footwearTitle")}</h3>
+                </div>
+                <p className="dress-note__card-desc">{dress("footwearDescription")}</p>
+              </div>
+            )}
+
+            <div className="dress-note__card">
+              <div className="dress-note__card-header">
+                <span className="dress-note__card-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                </span>
+                <h3 className="dress-note__card-title">{dress("weatherTitle")}</h3>
+              </div>
+              <p className="dress-note__card-desc">{dress("weatherDescription")}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -520,16 +566,10 @@ export async function WeddingSections({
         <RsvpForm
           invitation={invitation}
           enableMealSelection={siteSettings?.enableMealSelection !== false}
+          customMenuOptions={resilientStore.getMenuOptions()}
         />
       )}
 
-      {siteSettings?.enableGuestbook !== false && (
-        <GuestbookSection
-          locale={locale}
-          invitationId={invitation?.id || "general"}
-          defaultGuestName={invitation?.displayName}
-        />
-      )}
     </>
   );
 }

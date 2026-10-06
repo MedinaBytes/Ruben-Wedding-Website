@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import type { InvitationRow } from "@/components/admin/invitations-manager";
 
 const defaultTemplates: Record<string, string> = {
@@ -36,10 +35,18 @@ export function WhatsAppManager({
   const [status, setStatus] = useState<"connected" | "disconnected" | "connecting">("disconnected");
   const [linkedPhone, setLinkedPhone] = useState<string>("");
   const [liveQrCode, setLiveQrCode] = useState<string | null>(null);
+  const [pairingError, setPairingError] = useState<string | null>(null);
+  const [isServerless, setIsServerless] = useState<boolean>(false);
   const [delaySeconds, setDelaySeconds] = useState(8);
   const [autoUnlink, setAutoUnlink] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
+
+  // Direct 1-Click Guided Assistant
+  const [showAssistantModal, setShowAssistantModal] = useState(false);
+  const [assistantIndex, setAssistantIndex] = useState(0);
+  const [dispatchedIds, setDispatchedIds] = useState<string[]>([]);
+  const [copiedNotice, setCopiedNotice] = useState<string | null>(null);
 
   // Test send state
   const [testPhone, setTestPhone] = useState("");
@@ -51,7 +58,7 @@ export function WhatsAppManager({
 
   // Selection
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    invitations.slice(0, 5).map((i) => i.id),
+    invitations.slice(0, 10).map((i) => i.id),
   );
   const [previewGuestId, setPreviewGuestId] = useState<string>(
     invitations[0]?.id || "",
@@ -74,8 +81,10 @@ export function WhatsAppManager({
         if (res.ok) {
           const data = await res.json();
           setStatus(data.status);
+          if (data.isServerless) setIsServerless(true);
           if (data.linkedPhone) setLinkedPhone(data.linkedPhone);
           if (data.qrCode) setLiveQrCode(data.qrCode);
+          if (data.error) setPairingError(data.error);
         }
       } catch {
         setStatus("disconnected");
@@ -108,7 +117,8 @@ export function WhatsAppManager({
     setShowQrModal(true);
     setStatus("connecting");
     setLiveQrCode(null);
-    setDispatchLog((prev) => [...prev, "Initializing free WhatsApp Web bot session and generating QR code..."]);
+    setPairingError(null);
+    setDispatchLog((prev) => [...prev, "Initializing WhatsApp Web bot session and generating QR code..."]);
 
     try {
       const res = await fetch(`/api/admin/whatsapp/session?_t=${Date.now()}`, {
@@ -119,16 +129,29 @@ export function WhatsAppManager({
       });
       if (res.ok) {
         const data = await res.json();
-        if (data.qrCode) setLiveQrCode(data.qrCode);
+        if (data.isServerless) setIsServerless(true);
+        if (data.qrCode) {
+          setLiveQrCode(data.qrCode);
+          setPairingError(null);
+        }
+        if (data.error) {
+          setPairingError(data.error);
+        }
         if (data.status === "connected") {
           setStatus("connected");
           setLinkedPhone(data.linkedPhone || "Connected");
           setShowQrModal(false);
           setLiveQrCode(null);
+          setPairingError(null);
         }
+      } else {
+        const errJson = await res.json().catch(() => null);
+        setPairingError(errJson?.error || `HTTP error ${res.status}`);
       }
     } catch (err: unknown) {
-      setDispatchLog((prev) => [...prev, `Error starting session: ${err instanceof Error ? err.message : "Network error"}`]);
+      const msg = err instanceof Error ? err.message : "Network error";
+      setPairingError(msg);
+      setDispatchLog((prev) => [...prev, `Error starting session: ${msg}`]);
     }
 
     // Start polling every 1.5s while modal is active
@@ -138,12 +161,20 @@ export function WhatsAppManager({
         const pollRes = await fetch(`/api/admin/whatsapp/session?_t=${Date.now()}`, { cache: "no-store" });
         if (pollRes.ok) {
           const pollData = await pollRes.json();
-          if (pollData.qrCode) setLiveQrCode(pollData.qrCode);
+          if (pollData.isServerless) setIsServerless(true);
+          if (pollData.qrCode) {
+            setLiveQrCode(pollData.qrCode);
+            setPairingError(null);
+          }
+          if (pollData.error) {
+            setPairingError(pollData.error);
+          }
           if (pollData.status === "connected") {
             setStatus("connected");
             setLinkedPhone(pollData.linkedPhone || "Connected Device");
             setShowQrModal(false);
             setLiveQrCode(null);
+            setPairingError(null);
             setDispatchLog((prev) => [
               ...prev,
               `✓ Real WhatsApp session successfully linked: ${pollData.linkedPhone || "Phone linked"}!`,
@@ -171,6 +202,7 @@ export function WhatsAppManager({
       setStatus("disconnected");
       setLinkedPhone("");
       setLiveQrCode(null);
+      setPairingError(null);
       setDispatchLog((prev) => [...prev, "WhatsApp session unlinked and destroyed."]);
     } catch {
       alert("Failed to unlink session.");
@@ -187,18 +219,95 @@ export function WhatsAppManager({
       .replace(/{url}/g, inviteLink);
   }
 
+  async function markGuestDispatched(inv: InvitationRow) {
+    if (!dispatchedIds.includes(inv.id)) {
+      setDispatchedIds((prev) => [...prev, inv.id]);
+    }
+    const phone = inv.whatsapp || inv.phone || "";
+    try {
+      await fetch("/api/admin/whatsapp/dispatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          markDispatched: true,
+          invitationId: inv.id,
+          phone,
+          guestName: inv.displayName,
+        }),
+      });
+    } catch {}
+  }
+
+  function openDirectWhatsAppForGuest(inv: InvitationRow) {
+    const phone = inv.whatsapp || inv.phone || "";
+    const cleanPhone = phone.replace(/[^\d]/g, "");
+    if (!cleanPhone) {
+      alert(`No phone number saved for ${inv.displayName}. Please add a phone number first.`);
+      return;
+    }
+    const message = getMessageForGuest(inv);
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+    try {
+      navigator.clipboard.writeText(message);
+      setCopiedNotice(`✓ Copied text & link to clipboard for ${inv.displayName}!`);
+      setTimeout(() => setCopiedNotice(null), 3500);
+    } catch {}
+
+    window.open(url, "_blank", "noopener,noreferrer");
+    void markGuestDispatched(inv);
+    setDispatchLog((prev) => [
+      ...prev,
+      `✓ Opened direct WhatsApp chat for ${inv.displayName} (${phone}) in ${resolveGuestLanguage(inv.language).toUpperCase()}`,
+    ]);
+  }
+
+  // 1-Click Guided Assistant Handlers
+  function launchAssistant() {
+    if (selectedIds.length === 0) {
+      alert("Please select at least one guest invitation.");
+      return;
+    }
+    setAssistantIndex(0);
+    setShowAssistantModal(true);
+  }
+
+  function handleAssistantSendCurrent() {
+    const targets = invitations.filter((inv) => selectedIds.includes(inv.id));
+    const current = targets[assistantIndex];
+    if (!current) return;
+
+    openDirectWhatsAppForGuest(current);
+
+    if (assistantIndex + 1 < targets.length) {
+      setAssistantIndex((prev) => prev + 1);
+    }
+  }
+
   async function handleSendTest() {
     if (!testPhone) {
       alert("Please enter a phone number with country code (e.g. +436641234567 or 436641234567).");
       return;
     }
 
-    setIsSendingTest(true);
+    const cleanPhone = testPhone.replace(/[^\d]/g, "");
     const guest = invitations[0];
     const message = guest
       ? getMessageForGuest(guest)
       : "Dear Ruben & Andrea,\n\nTest invitation message successfully delivered via WhatsApp!";
 
+    // If bot is not connected, open direct WhatsApp chat immediately
+    if (status !== "connected") {
+      const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+      setDispatchLog((prev) => [
+        ...prev,
+        `✓ Opened test WhatsApp chat for ${testPhone}.`,
+      ]);
+      return;
+    }
+
+    setIsSendingTest(true);
     try {
       const res = await fetch("/api/admin/whatsapp/dispatch", {
         method: "POST",
@@ -217,10 +326,6 @@ export function WhatsAppManager({
         ]);
         alert(`Test invitation sent successfully to ${testPhone}!`);
       } else if (data.directUrl) {
-        setDispatchLog((prev) => [
-          ...prev,
-          `ℹ Bot not connected: Opening direct WhatsApp Web link for ${testPhone}...`,
-        ]);
         window.open(data.directUrl, "_blank", "noopener,noreferrer");
       } else {
         alert(data.error || "Failed to send test message");
@@ -238,6 +343,12 @@ export function WhatsAppManager({
       return;
     }
 
+    // If bot is not connected, launch the 1-Click Guided Assistant so browser popup blocker doesn't block tabs!
+    if (status !== "connected") {
+      launchAssistant();
+      return;
+    }
+
     setIsDispatching(true);
     setDispatchComplete(false);
     setDispatchLog([`Starting automated multi-language dispatch for ${selectedIds.length} guest(s)...`]);
@@ -248,7 +359,6 @@ export function WhatsAppManager({
       const inv = targets[i];
       setCurrentIndex(i + 1);
 
-      // Countdown delay between messages to prevent anti-spam bans
       if (i > 0 && delaySeconds > 0) {
         for (let cd = delaySeconds; cd > 0; cd--) {
           setCountdown(cd);
@@ -283,13 +393,14 @@ export function WhatsAppManager({
         const data = await res.json();
 
         if (data.success) {
+          markGuestDispatched(inv);
           setDispatchLog((prev) => [
             ...prev,
-            `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Delivered to ${inv.displayName} (${phone}) via WhatsApp Bot (Msg ID: ${data.messageId || "ok"})`,
+            `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Delivered to ${inv.displayName} (${phone}) via WhatsApp Bot`,
           ]);
         } else if (data.directUrl) {
-          // If socket not connected, open direct WhatsApp chat
           window.open(data.directUrl, "_blank", "noopener,noreferrer");
+          markGuestDispatched(inv);
           setDispatchLog((prev) => [
             ...prev,
             `ℹ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Opened direct WhatsApp chat for ${inv.displayName} (${phone}).`,
@@ -311,7 +422,6 @@ export function WhatsAppManager({
     setDispatchComplete(true);
     setIsDispatching(false);
 
-    // Auto-unlink for security if enabled
     if (autoUnlink && status === "connected") {
       setTimeout(async () => {
         await handleUnlink();
@@ -326,18 +436,90 @@ export function WhatsAppManager({
   const selectedPreviewGuest = invitations.find((i) => i.id === previewGuestId) || invitations[0];
   const previewMessage = selectedPreviewGuest ? getMessageForGuest(selectedPreviewGuest) : "";
 
+  const selectedTargets = invitations.filter((i) => selectedIds.includes(i.id));
+  const currentAssistantGuest = selectedTargets[assistantIndex] || selectedTargets[0];
+
   return (
     <div style={{ maxWidth: "1080px" }}>
       {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
+      <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2.2rem", margin: "0 0 0.4rem 0", color: "#2B2425" }}>
           WhatsApp Automated Distribution
         </h1>
         <p style={{ margin: 0, color: "#6E6264", fontSize: "0.95rem" }}>
-          Free open-source WhatsApp Web bot integration: Scan the QR code once with your personal WhatsApp to pair your device.
-          Dispatches personalized invitations with guest names and unique links in their language with anti-spam stagger delays.
+          Dispatch personalized wedding invitations with guest names and unique links in English, Spanish, German, and Hungarian.
         </p>
       </div>
+
+      {/* Production & Cloud Hosting Advisory Banner */}
+      <div
+        style={{
+          background: "#F0F9EE",
+          border: "1px solid #C6E8BD",
+          borderRadius: "10px",
+          padding: "1rem 1.25rem",
+          marginBottom: "1.75rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", maxWidth: "780px" }}>
+          <span style={{ fontSize: "1.5rem", lineHeight: 1 }}>💬</span>
+          <div>
+            <strong style={{ color: "#2B6628", fontSize: "0.95rem" }}>
+              Recommended on Official Website: Direct 1-Click WhatsApp Dispatch
+            </strong>
+            <p style={{ margin: "0.25rem 0 0 0", color: "#3B5A38", fontSize: "0.85rem", lineHeight: 1.45 }}>
+              On cloud &amp; serverless hosting (Vercel), background WebSockets terminate between requests.
+              Use the <strong>Direct 1-Click Dispatch Assistant</strong> below: it opens official WhatsApp (Web or Mobile App)
+              with the guest's personalized invitation prefilled in their language — 100% reliable, zero pairing drops, and zero ban risk!
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={launchAssistant}
+          disabled={selectedIds.length === 0}
+          style={{
+            background: "#25D366",
+            color: "#FFFFFF",
+            border: 0,
+            borderRadius: "7px",
+            padding: "0.6rem 1.2rem",
+            fontSize: "0.88rem",
+            fontWeight: 700,
+            cursor: selectedIds.length === 0 ? "not-allowed" : "pointer",
+            boxShadow: "0 2px 8px rgba(37, 211, 102, 0.25)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span>🚀</span> Start 1-Click Dispatch ({selectedIds.length})
+        </button>
+      </div>
+
+      {copiedNotice && (
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            padding: "0.75rem 1rem",
+            background: "#EFF6FF",
+            border: "1px solid #BFDBFE",
+            borderRadius: "6px",
+            color: "#1E40AF",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+          }}
+        >
+          {copiedNotice}
+        </div>
+      )}
 
       {/* Grid: Left Connection & Templates, Right Queue & Preview */}
       <div style={{ display: "grid", gridTemplateColumns: "1.05fr 0.95fr", gap: "1.5rem", marginBottom: "2rem" }}>
@@ -346,7 +528,7 @@ export function WhatsAppManager({
           {/* Connection Status Card */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
             <h2 style={{ fontSize: "1.1rem", margin: "0 0 1rem 0", color: "#2B2425" }}>
-              Account Connection &amp; Session Sync
+              Account Connection &amp; Dispatch Engine
             </h2>
 
             <div
@@ -378,17 +560,18 @@ export function WhatsAppManager({
                         ? "Connected & Synced (WhatsApp Bot)"
                         : status === "connecting"
                           ? "Connecting (Awaiting QR Scan)..."
-                          : "Disconnected (Unlinked)"}
+                          : "Direct 1-Click Mode Active (Recommended)"}
                   </strong>
                 </div>
-                {status === "connected" && (
+                {status === "connected" ? (
                   <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.85rem", color: "#544648" }}>
                     Linked device: <strong>{linkedPhone || "WhatsApp Phone"}</strong>
                   </p>
-                )}
-                {status !== "connected" && (
+                ) : (
                   <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.8rem", color: "#776A6C" }}>
-                    Pure WebSockets — no Meta API account or paid plan required.
+                    {isServerless
+                      ? "Cloud serverless environment: Direct 1-Click Dispatch is ready to use!"
+                      : "Optional: Pair a phone device for background socket dispatch."}
                   </p>
                 )}
               </div>
@@ -416,12 +599,12 @@ export function WhatsAppManager({
                     type="button"
                     onClick={handleLinkClick}
                     style={{
-                      background: "#25D366",
-                      color: "#FFFFFF",
-                      border: 0,
+                      background: "#FAF7F5",
+                      color: "#4A3E3D",
+                      border: "1px solid #D5CBC4",
                       borderRadius: "6px",
-                      padding: "0.5rem 1rem",
-                      fontSize: "0.85rem",
+                      padding: "0.45rem 0.85rem",
+                      fontSize: "0.82rem",
                       fontWeight: 600,
                       cursor: "pointer",
                       display: "flex",
@@ -429,10 +612,7 @@ export function WhatsAppManager({
                       gap: "0.4rem",
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.187-2.59-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.299.144.35.491 1.199.534 1.286.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.303c-.087.087-.179.182-.077.357.102.174.454.749.974 1.212.67.596 1.235.78 1.409.867.174.087.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z" />
-                    </svg>
-                    Link WhatsApp (QR Scan)
+                    <span>📷</span> Pair Device (QR)
                   </button>
                 )}
               </div>
@@ -441,7 +621,7 @@ export function WhatsAppManager({
             {/* Test Send Input */}
             <div style={{ background: "#FBF9F7", border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1rem", marginBottom: "1.25rem" }}>
               <label htmlFor="test-phone" style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
-                Send Real Test Invitation to Your Phone:
+                Send Test Invitation to Your Phone:
               </label>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <input
@@ -456,6 +636,7 @@ export function WhatsAppManager({
                     borderRadius: "6px",
                     border: "1px solid #D5CBC4",
                     fontSize: "0.85rem",
+                    background: "#FFFFFF",
                   }}
                 />
                 <button
@@ -463,7 +644,7 @@ export function WhatsAppManager({
                   disabled={isSendingTest}
                   onClick={handleSendTest}
                   style={{
-                    background: "#8C2836",
+                    background: "#25D366",
                     color: "#FFFFFF",
                     border: 0,
                     borderRadius: "6px",
@@ -471,13 +652,14 @@ export function WhatsAppManager({
                     fontSize: "0.82rem",
                     fontWeight: 600,
                     cursor: isSendingTest ? "not-allowed" : "pointer",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {isSendingTest ? "Sending..." : "Send Test"}
+                  {isSendingTest ? "Sending..." : "💬 Open Test in WhatsApp"}
                 </button>
               </div>
               <p style={{ margin: "0.35rem 0 0 0", fontSize: "0.75rem", color: "#776A6C" }}>
-                Verify delivery instantly on your own phone before queue dispatch.
+                Opens official WhatsApp with the sample invitation message ready to send.
               </p>
             </div>
 
@@ -502,7 +684,7 @@ export function WhatsAppManager({
                   style={{ width: "100%", accentColor: "#8C2836" }}
                 />
                 <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                  Recommended: 6–10s to prevent spam flags. Enforces a human-like pause between outgoing messages.
+                  Recommended: 6–10s when using automated queues to prevent WhatsApp anti-spam flags.
                 </p>
               </div>
 
@@ -515,10 +697,10 @@ export function WhatsAppManager({
                 />
                 <div>
                   <strong style={{ fontSize: "0.85rem", color: "#2B2425" }}>
-                    Auto-Unlink Account After Dispatch (Strict Privacy)
+                    Auto-Unlink Account After Bot Dispatch (Strict Privacy)
                   </strong>
                   <p style={{ margin: "0.15rem 0 0 0", fontSize: "0.78rem", color: "#6A5D60" }}>
-                    Automatically closes and clears the WhatsApp Web session keys immediately after queue dispatch finishes.
+                    Automatically closes and clears session keys immediately after bot queue completes.
                   </p>
                 </div>
               </label>
@@ -533,7 +715,7 @@ export function WhatsAppManager({
                   Message Templates by Language
                 </h2>
                 <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.8rem", color: "#6A5D60" }}>
-                  Each guest automatically receives their invitation in their default language.
+                  Each guest automatically receives their invitation in their designated language.
                 </p>
               </div>
             </div>
@@ -587,6 +769,7 @@ export function WhatsAppManager({
                 fontSize: "0.85rem",
                 fontFamily: "inherit",
                 lineHeight: 1.5,
+                background: "#FFFFFF",
               }}
             />
           </div>
@@ -596,10 +779,15 @@ export function WhatsAppManager({
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {/* Queue Card */}
           <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.5rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h2 style={{ fontSize: "1.1rem", margin: 0, color: "#2B2425" }}>
-                Recipient Queue ({selectedIds.length}/{invitations.length})
-              </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+              <div>
+                <h2 style={{ fontSize: "1.1rem", margin: 0, color: "#2B2425" }}>
+                  Recipient Queue ({selectedIds.length}/{invitations.length})
+                </h2>
+                <span style={{ fontSize: "0.78rem", color: "#047857", fontWeight: 600 }}>
+                  {dispatchedIds.length} dispatched this session
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={toggleSelectAll}
@@ -610,16 +798,14 @@ export function WhatsAppManager({
             </div>
 
             {/* List */}
-            <div style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #E8DFD8", borderRadius: "6px", marginBottom: "1rem" }}>
+            <div style={{ maxHeight: "290px", overflowY: "auto", border: "1px solid #E8DFD8", borderRadius: "6px", marginBottom: "1rem" }}>
               {invitations.map((inv) => {
                 const lang = resolveGuestLanguage(inv.language);
                 const langInfo = languageLabels[lang] || { name: lang, flag: "" };
                 const isSelected = selectedIds.includes(inv.id);
                 const isPreview = previewGuestId === inv.id;
+                const isDispatched = dispatchedIds.includes(inv.id);
                 const phone = inv.whatsapp || inv.phone || "";
-                const directUrl = phone
-                  ? `https://api.whatsapp.com/send?phone=${phone.replace(/[^\d]/g, "")}&text=${encodeURIComponent(getMessageForGuest(inv))}`
-                  : null;
 
                 return (
                   <div
@@ -628,8 +814,8 @@ export function WhatsAppManager({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "0.75rem",
-                      padding: "0.6rem 0.85rem",
+                      gap: "0.6rem",
+                      padding: "0.55rem 0.75rem",
                       borderBottom: "1px solid #F2EBE5",
                       cursor: "pointer",
                       background: isPreview ? "rgba(140, 40, 54, 0.06)" : isSelected ? "rgba(140, 40, 54, 0.02)" : "#FFFFFF",
@@ -644,16 +830,16 @@ export function WhatsAppManager({
                       }}
                       disabled={isDispatching}
                     />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2B2425" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                        <span style={{ fontSize: "0.86rem", fontWeight: 600, color: "#2B2425", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {inv.displayName}
                         </span>
                         <span
                           style={{
                             background: "#F2EBE5",
                             color: "#8C2836",
-                            fontSize: "0.7rem",
+                            fontSize: "0.68rem",
                             fontWeight: 700,
                             padding: "0.1rem 0.35rem",
                             borderRadius: "4px",
@@ -661,31 +847,40 @@ export function WhatsAppManager({
                         >
                           {langInfo.flag} {lang.toUpperCase()}
                         </span>
+                        {isDispatched && (
+                          <span style={{ fontSize: "0.68rem", background: "#ECFDF5", color: "#065F46", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: 600 }}>
+                            ✓ Sent
+                          </span>
+                        )}
                       </div>
                       <div style={{ fontSize: "0.75rem", color: "#776A6C", marginTop: "0.1rem" }}>
-                        {phone || "No phone saved"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
+                        {phone || "No phone"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
                       </div>
                     </div>
 
-                    {directUrl && (
-                      <a
-                        href={directUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+                    {phone ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDirectWhatsAppForGuest(inv);
+                        }}
                         style={{
                           fontSize: "0.72rem",
-                          color: "#1E7E34",
-                          textDecoration: "none",
-                          border: "1px solid #C6E8BD",
+                          color: "#FFFFFF",
+                          background: "#25D366",
+                          border: 0,
                           borderRadius: "4px",
-                          padding: "0.2rem 0.5rem",
-                          background: "#F0F9EE",
+                          padding: "0.3rem 0.55rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
                           whiteSpace: "nowrap",
                         }}
                       >
-                        Open ↗
-                      </a>
+                        💬 Send
+                      </button>
+                    ) : (
+                      <span style={{ fontSize: "0.7rem", color: "#9CA3AF" }}>No #</span>
                     )}
                   </div>
                 );
@@ -709,36 +904,60 @@ export function WhatsAppManager({
               </div>
             )}
 
-            {/* Dispatch Action Button */}
-            <button
-              type="button"
-              disabled={isDispatching || selectedIds.length === 0}
-              onClick={handleStartDispatch}
-              style={{
-                width: "100%",
-                background: isDispatching ? "#665759" : "#25D366",
-                color: "#FFFFFF",
-                border: 0,
-                borderRadius: "6px",
-                padding: "0.75rem 1rem",
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                cursor: isDispatching ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.5rem",
-              }}
-            >
-              {isDispatching ? (
-                <>
-                  <span>Sending ({currentIndex}/{selectedIds.length})...</span>
-                  {countdown > 0 && <span style={{ opacity: 0.85 }}>[Anti-ban pause: {countdown}s]</span>}
-                </>
-              ) : (
-                `Dispatch ${selectedIds.length} Invitations in Guest Languages`
+            {/* Primary Action Button: 1-Click Assistant */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              <button
+                type="button"
+                disabled={selectedIds.length === 0}
+                onClick={launchAssistant}
+                style={{
+                  width: "100%",
+                  background: "#25D366",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "7px",
+                  padding: "0.75rem 1rem",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  cursor: selectedIds.length === 0 ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  boxShadow: "0 2px 8px rgba(37, 211, 102, 0.2)",
+                }}
+              >
+                <span>💬</span> Launch 1-Click Dispatch Assistant ({selectedIds.length} Selected)
+              </button>
+
+              {status === "connected" && (
+                <button
+                  type="button"
+                  disabled={isDispatching || selectedIds.length === 0}
+                  onClick={handleStartDispatch}
+                  style={{
+                    width: "100%",
+                    background: "#55644E",
+                    color: "#FFFFFF",
+                    border: 0,
+                    borderRadius: "6px",
+                    padding: "0.55rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    cursor: isDispatching ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isDispatching ? (
+                    <>
+                      <span>Sending via Bot ({currentIndex}/{selectedIds.length})...</span>
+                      {countdown > 0 && <span style={{ opacity: 0.85 }}>[{countdown}s pause]</span>}
+                    </>
+                  ) : (
+                    `Dispatch Automatically via WhatsApp Bot (${selectedIds.length})`
+                  )}
+                </button>
               )}
-            </button>
+            </div>
           </div>
 
           {/* Live Dispatch Log */}
@@ -747,7 +966,7 @@ export function WhatsAppManager({
               <span style={{ fontWeight: 600, color: "#C6E8BD" }}>Live Execution Activity</span>
               {dispatchComplete && <span style={{ color: "#8BE28A" }}>Completed!</span>}
             </div>
-            <div style={{ maxHeight: "160px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+            <div style={{ maxHeight: "150px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
               {dispatchLog.length === 0 ? (
                 <span style={{ color: "#7A6E71" }}>Ready for automated dispatch...</span>
               ) : (
@@ -758,7 +977,212 @@ export function WhatsAppManager({
         </div>
       </div>
 
-      {/* Real QR Pairing Modal */}
+      {/* 1-Click Guided Assistant Modal */}
+      {showAssistantModal && currentAssistantGuest && (() => {
+        const lang = resolveGuestLanguage(currentAssistantGuest.language);
+        const langInfo = languageLabels[lang] || { name: lang, flag: "" };
+        const phone = currentAssistantGuest.whatsapp || currentAssistantGuest.phone || "";
+        const msg = getMessageForGuest(currentAssistantGuest);
+        const isCurrentDispatched = dispatchedIds.includes(currentAssistantGuest.id);
+        const isLast = assistantIndex >= selectedTargets.length - 1;
+
+        return (
+          <div
+            role="dialog"
+            aria-modal="true"
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.65)",
+              backdropFilter: "blur(5px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "#FFFFFF",
+                borderRadius: "14px",
+                padding: "2rem",
+                maxWidth: "520px",
+                width: "100%",
+                boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+              }}
+            >
+              {/* Assistant Header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1px solid #EFEAE5", paddingBottom: "0.85rem" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span style={{ fontSize: "1.2rem" }}>💬</span>
+                    <h3 style={{ margin: 0, fontFamily: "var(--font-display, serif)", fontSize: "1.3rem", color: "#2B2425" }}>
+                      1-Click WhatsApp Assistant
+                    </h3>
+                  </div>
+                  <span style={{ fontSize: "0.82rem", color: "#8C2836", fontWeight: 700 }}>
+                    Guest {assistantIndex + 1} of {selectedTargets.length}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAssistantModal(false)}
+                  style={{
+                    background: "#F4EFEA",
+                    border: 0,
+                    borderRadius: "50%",
+                    width: "32px",
+                    height: "32px",
+                    cursor: "pointer",
+                    color: "#6A5D60",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Guest Card */}
+              <div style={{ background: "#FAF7F5", border: "1px solid #E5DDD5", borderRadius: "8px", padding: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <strong style={{ fontSize: "1.1rem", color: "#2B2425" }}>
+                    {currentAssistantGuest.displayName}
+                  </strong>
+                  <span style={{ background: "#FFFFFF", border: "1px solid #E0D6CD", padding: "0.15rem 0.5rem", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 600 }}>
+                    {langInfo.flag} {langInfo.name}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: "0.85rem", color: "#6A5D60", marginTop: "0.35rem" }}>
+                  Phone: <strong>{phone || "⚠️ No phone number saved"}</strong>
+                </div>
+
+                {isCurrentDispatched && (
+                  <div style={{ marginTop: "0.4rem", fontSize: "0.75rem", color: "#065F46", fontWeight: 600 }}>
+                    ✓ Already marked as dispatched in this session
+                  </div>
+                )}
+              </div>
+
+              {/* Message Preview */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "#6E5E60", marginBottom: "0.3rem", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                  Personalized Message to Send:
+                </label>
+                <div
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    fontSize: "0.82rem",
+                    color: "#2D2224",
+                    background: "#FDFBF7",
+                    border: "1px solid #EAE1D8",
+                    padding: "0.85rem",
+                    borderRadius: "6px",
+                    maxHeight: "140px",
+                    overflowY: "auto",
+                    lineHeight: 1.45,
+                  }}
+                >
+                  {msg}
+                </div>
+              </div>
+
+              {/* Main Action Buttons */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                <button
+                  type="button"
+                  disabled={!phone}
+                  onClick={handleAssistantSendCurrent}
+                  style={{
+                    background: "#25D366",
+                    color: "#FFFFFF",
+                    border: 0,
+                    borderRadius: "8px",
+                    padding: "0.85rem",
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    cursor: !phone ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    boxShadow: "0 3px 10px rgba(37, 211, 102, 0.3)",
+                  }}
+                >
+                  <span>💬</span> Open WhatsApp &amp; Send ({currentAssistantGuest.displayName})
+                </button>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    disabled={assistantIndex === 0}
+                    onClick={() => setAssistantIndex((prev) => Math.max(0, prev - 1))}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #D5CBC4",
+                      borderRadius: "6px",
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.82rem",
+                      cursor: assistantIndex === 0 ? "not-allowed" : "pointer",
+                      color: "#6A5D60",
+                    }}
+                  >
+                    ⏮ Previous
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try {
+                        navigator.clipboard.writeText(msg);
+                        setCopiedNotice(`✓ Copied text & link to clipboard for ${currentAssistantGuest.displayName}!`);
+                        setTimeout(() => setCopiedNotice(null), 3000);
+                      } catch {}
+                    }}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #D5CBC4",
+                      borderRadius: "6px",
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.82rem",
+                      cursor: "pointer",
+                      color: "#4A3E3D",
+                    }}
+                  >
+                    📋 Copy Text
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isLast}
+                    onClick={() => setAssistantIndex((prev) => Math.min(selectedTargets.length - 1, prev + 1))}
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #D5CBC4",
+                      borderRadius: "6px",
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.82rem",
+                      cursor: isLast ? "not-allowed" : "pointer",
+                      color: "#6A5D60",
+                    }}
+                  >
+                    Skip ⏩
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* QR Pairing Modal */}
       {showQrModal && (
         <div
           role="dialog"
@@ -780,106 +1204,115 @@ export function WhatsAppManager({
               background: "#FFFFFF",
               borderRadius: "14px",
               padding: "2rem",
-              maxWidth: "440px",
+              maxWidth: "460px",
               width: "100%",
               textAlign: "center",
               boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
             }}
           >
             <h3 style={{ margin: "0 0 0.5rem 0", fontFamily: "var(--font-display, serif)", fontSize: "1.45rem", color: "#2B2425" }}>
-              Scan QR Code with WhatsApp
+              Pair WhatsApp Multi-Device Bot
             </h3>
-            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem", lineHeight: 1.5 }}>
-              1. Open WhatsApp on your phone.<br />
-              2. Go to <strong>Settings</strong> (iOS) or <strong>⋮ More options</strong> (Android) &gt; <strong>Linked Devices</strong>.<br />
-              3. Tap <strong>Link a Device</strong> and point your camera here:
-            </p>
 
-            <div
-              style={{
-                width: "240px",
-                height: "240px",
-                margin: "0 auto 1.25rem",
-                padding: "0.5rem",
-                border: "2px solid #E8DFD8",
-                borderRadius: "10px",
-                background: "#FFFFFF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {liveQrCode ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={liveQrCode}
-                  alt="Real WhatsApp Multi-Device QR Code"
-                  width={220}
-                  height={220}
-                  style={{ display: "block", borderRadius: "6px" }}
-                />
-              ) : (
-                <div style={{ textAlign: "center", padding: "1rem" }}>
-                  <div
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      border: "3px solid #25D366",
-                      borderTopColor: "transparent",
-                      borderRadius: "50%",
-                      animation: "spin 1s linear infinite",
-                      margin: "0 auto 0.75rem",
-                    }}
-                  />
-                  <span style={{ fontSize: "0.85rem", color: "#544648", fontWeight: 500, display: "block" }}>
-                    Generating live WhatsApp Web pairing QR...
-                  </span>
+            {pairingError ? (
+              <div style={{ margin: "1rem 0", padding: "1rem", background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "8px", textAlign: "left" }}>
+                <strong style={{ color: "#991B1B", fontSize: "0.88rem", display: "block", marginBottom: "0.35rem" }}>
+                  ⚠️ Cloud Serverless Connection Notice
+                </strong>
+                <p style={{ margin: 0, color: "#B91C1C", fontSize: "0.8rem", lineHeight: 1.45 }}>
+                  {pairingError}
+                </p>
+                <div style={{ marginTop: "1rem" }}>
                   <button
                     type="button"
-                    onClick={handleLinkClick}
+                    onClick={() => {
+                      handleCloseModal();
+                      launchAssistant();
+                    }}
                     style={{
-                      marginTop: "0.75rem",
-                      background: "#F4EFEA",
-                      border: "1px solid #DCD3CB",
+                      width: "100%",
+                      background: "#25D366",
+                      color: "#FFFFFF",
+                      border: 0,
                       borderRadius: "6px",
-                      padding: "0.35rem 0.75rem",
-                      fontSize: "0.78rem",
+                      padding: "0.6rem 1rem",
+                      fontSize: "0.88rem",
+                      fontWeight: 700,
                       cursor: "pointer",
-                      color: "#6E5B5D",
                     }}
                   >
-                    Tap to retry
+                    👉 Switch to Direct 1-Click Dispatch
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                  1. Open WhatsApp on your phone.<br />
+                  2. Go to <strong>Settings</strong> &gt; <strong>Linked Devices</strong>.<br />
+                  3. Tap <strong>Link a Device</strong> and point your camera here:
+                </p>
 
-            {liveQrCode && (
-              <div style={{ marginBottom: "0.85rem" }}>
-                <button
-                  type="button"
-                  onClick={handleLinkClick}
+                <div
                   style={{
-                    background: "transparent",
-                    border: "1px solid #DCD3CB",
-                    borderRadius: "6px",
-                    padding: "0.3rem 0.75rem",
-                    fontSize: "0.78rem",
-                    color: "#544648",
-                    cursor: "pointer",
-                    display: "inline-flex",
+                    width: "240px",
+                    height: "240px",
+                    margin: "0 auto 1.25rem",
+                    padding: "0.5rem",
+                    border: "2px solid #E8DFD8",
+                    borderRadius: "10px",
+                    background: "#FFFFFF",
+                    display: "flex",
                     alignItems: "center",
-                    gap: "0.35rem",
+                    justifyContent: "center",
                   }}
                 >
-                  🔄 Refresh QR Code
-                </button>
-              </div>
+                  {liveQrCode ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={liveQrCode}
+                      alt="WhatsApp Multi-Device QR Code"
+                      width={220}
+                      height={220}
+                      style={{ display: "block", borderRadius: "6px" }}
+                    />
+                  ) : (
+                    <div style={{ textAlign: "center", padding: "1rem" }}>
+                      <div
+                        style={{
+                          width: "44px",
+                          height: "44px",
+                          border: "3px solid #25D366",
+                          borderTopColor: "transparent",
+                          borderRadius: "50%",
+                          animation: "spin 1s linear infinite",
+                          margin: "0 auto 0.75rem",
+                        }}
+                      />
+                      <span style={{ fontSize: "0.85rem", color: "#544648", fontWeight: 500, display: "block" }}>
+                        Generating pairing QR...
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleLinkClick}
+                        style={{
+                          marginTop: "0.75rem",
+                          background: "#F4EFEA",
+                          border: "1px solid #DCD3CB",
+                          borderRadius: "6px",
+                          padding: "0.35rem 0.75rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#6E5B5D",
+                        }}
+                      >
+                        Tap to retry
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
-
-            <p style={{ margin: "0 0 1rem 0", fontSize: "0.78rem", color: "#776A6C" }}>
-              The QR code refreshes automatically. As soon as you scan, this dialog will close and your phone will be connected.
-            </p>
 
             <button
               type="button"
@@ -892,6 +1325,7 @@ export function WhatsAppManager({
                 cursor: "pointer",
                 textDecoration: "underline",
                 fontWeight: 600,
+                marginTop: "0.5rem",
               }}
             >
               Close

@@ -64,6 +64,40 @@ export interface StoredTableAssignment {
   updated_at?: string;
 }
 
+export interface StoredTableDefinition {
+  number: number;
+  name: string;
+  capacity: number;
+}
+
+export const DEFAULT_IMPERIAL_TABLES: StoredTableDefinition[] = [
+  { number: 1, name: "Ehrentisch (Head Table)", capacity: 8 },
+  { number: 2, name: "Schloss Hetzendorf", capacity: 10 },
+  { number: 3, name: "Schönbrunn Salon", capacity: 10 },
+  { number: 4, name: "St. Oswald", capacity: 10 },
+  { number: 5, name: "Wiener Walzer", capacity: 10 },
+  { number: 6, name: "Belvedere", capacity: 8 },
+  { number: 7, name: "Donauzauber", capacity: 8 },
+  { number: 8, name: "Kaiserin Elisabeth", capacity: 8 },
+];
+
+export interface StoredMenuOption {
+  id: string;
+  name: string;
+  icon?: string;
+  category?: "meat" | "fish" | "vegetarian" | "vegan" | "kids" | "special";
+  enabled: boolean;
+  description?: string;
+}
+
+export const DEFAULT_MENU_OPTIONS: StoredMenuOption[] = [
+  { id: "classic", name: "Classic (Beef Tenderloin & Viennese Specialties)", icon: "🥩", category: "meat", enabled: true },
+  { id: "fish", name: "Fish (Alpine Char / Trout with Seasonal Vegetables)", icon: "🐟", category: "fish", enabled: true },
+  { id: "vegetarian", name: "Vegetarian (Truffle Risotto & Specialties)", icon: "🥗", category: "vegetarian", enabled: true },
+  { id: "vegan", name: "Vegan Gourmet Course", icon: "🌿", category: "vegan", enabled: true },
+  { id: "kids", name: "Children's Menu (Wiener Schnitzerl)", icon: "🧒", category: "kids", enabled: true },
+];
+
 export interface StoredCheckIn {
   id: string;
   invitation_id: string;
@@ -102,6 +136,8 @@ interface LocalDatabase {
   events?: StoredEvent[];
   wishes?: StoredWish[];
   tableAssignments?: StoredTableAssignment[];
+  tables?: StoredTableDefinition[];
+  menuOptions?: StoredMenuOption[];
   checkIns?: StoredCheckIn[];
   settings: Record<string, unknown>;
   whatsappSession: {
@@ -165,6 +201,8 @@ function getDefaultDb(): LocalDatabase {
       },
     ],
     tableAssignments: [],
+    tables: DEFAULT_IMPERIAL_TABLES,
+    menuOptions: DEFAULT_MENU_OPTIONS,
     checkIns: [],
     settings: {
       enableDemoInvitation: true,
@@ -173,8 +211,8 @@ function getDefaultDb(): LocalDatabase {
       enableEnvelopeCalligraphy: true,
       enableMealSelection: true,
       enableTravelConcierge: true,
-      enableDayOfTimeline: true,
-      enableGuestbook: true,
+      enableDayOfTimeline: false,
+      enableGuestbook: false,
       enableTablePlanner: true,
       enableQrCheckin: true,
       enableRsvpReminders: true,
@@ -228,6 +266,8 @@ function loadDb(): LocalDatabase {
     if (!Array.isArray(parsed.songRequests)) parsed.songRequests = [];
     if (!Array.isArray(parsed.wishes)) parsed.wishes = [];
     if (!Array.isArray(parsed.tableAssignments)) parsed.tableAssignments = [];
+    if (!Array.isArray(parsed.tables) || parsed.tables.length === 0) parsed.tables = DEFAULT_IMPERIAL_TABLES;
+    if (!Array.isArray(parsed.menuOptions) || parsed.menuOptions.length === 0) parsed.menuOptions = DEFAULT_MENU_OPTIONS;
     if (!Array.isArray(parsed.checkIns)) parsed.checkIns = [];
     if (!parsed.settings || typeof parsed.settings !== "object") parsed.settings = {};
 
@@ -603,6 +643,66 @@ export const resilientStore = {
     saveDb(db);
   },
 
+  // TABLE DEFINITIONS (SCHLOSS HETZENDORF CUSTOMIZABLE TABLES)
+  getTables(): StoredTableDefinition[] {
+    const db = loadDb();
+    if (!Array.isArray(db.tables) || db.tables.length === 0) {
+      return DEFAULT_IMPERIAL_TABLES;
+    }
+    return db.tables;
+  },
+
+  saveTables(tables: StoredTableDefinition[]): StoredTableDefinition[] {
+    const db = loadDb();
+    db.tables = tables;
+    if (Array.isArray(db.tableAssignments)) {
+      for (const a of db.tableAssignments) {
+        const match = tables.find((t) => t.number === a.table_number);
+        if (match) {
+          a.table_name = match.name;
+        }
+      }
+    }
+    saveDb(db);
+    return tables;
+  },
+
+  saveTable(table: StoredTableDefinition): StoredTableDefinition[] {
+    const db = loadDb();
+    if (!Array.isArray(db.tables) || db.tables.length === 0) {
+      db.tables = [...DEFAULT_IMPERIAL_TABLES];
+    }
+    const idx = db.tables.findIndex((t) => t.number === table.number);
+    if (idx >= 0) {
+      db.tables[idx] = table;
+    } else {
+      db.tables.push(table);
+      db.tables.sort((a, b) => a.number - b.number);
+    }
+    if (Array.isArray(db.tableAssignments)) {
+      for (const a of db.tableAssignments) {
+        if (a.table_number === table.number) {
+          a.table_name = table.name;
+        }
+      }
+    }
+    saveDb(db);
+    return db.tables;
+  },
+
+  deleteTable(tableNumber: number): StoredTableDefinition[] {
+    const db = loadDb();
+    if (!Array.isArray(db.tables)) {
+      db.tables = [...DEFAULT_IMPERIAL_TABLES];
+    }
+    db.tables = db.tables.filter((t) => t.number !== tableNumber);
+    if (Array.isArray(db.tableAssignments)) {
+      db.tableAssignments = db.tableAssignments.filter((a) => a.table_number !== tableNumber);
+    }
+    saveDb(db);
+    return db.tables;
+  },
+
   // CHECK-IN ENGINE (ON-SITE AT SCHLOSS HETZENDORF)
   getCheckIns(): StoredCheckIn[] {
     return loadDb().checkIns ?? [];
@@ -632,52 +732,126 @@ export const resilientStore = {
     saveDb(db);
   },
 
+  // MENU & COURSE OPTIONS (SCHLOSS HETZENDORF BANQUET)
+  getMenuOptions(): StoredMenuOption[] {
+    const db = loadDb();
+    if (!Array.isArray(db.menuOptions) || db.menuOptions.length === 0) {
+      return DEFAULT_MENU_OPTIONS;
+    }
+    return db.menuOptions;
+  },
+
+  saveMenuOptions(options: StoredMenuOption[]): StoredMenuOption[] {
+    const db = loadDb();
+    db.menuOptions = options;
+    saveDb(db);
+    return options;
+  },
+
+  saveMenuOption(option: StoredMenuOption): StoredMenuOption[] {
+    const db = loadDb();
+    if (!Array.isArray(db.menuOptions)) db.menuOptions = [...DEFAULT_MENU_OPTIONS];
+    const idx = db.menuOptions.findIndex((o) => o.id === option.id);
+    if (idx >= 0) {
+      db.menuOptions[idx] = option;
+    } else {
+      db.menuOptions.push(option);
+    }
+    saveDb(db);
+    return db.menuOptions;
+  },
+
+  deleteMenuOption(optionId: string): StoredMenuOption[] {
+    const db = loadDb();
+    if (!Array.isArray(db.menuOptions)) db.menuOptions = [...DEFAULT_MENU_OPTIONS];
+    db.menuOptions = db.menuOptions.filter((o) => o.id !== optionId);
+    saveDb(db);
+    return db.menuOptions;
+  },
+
   // CATERING & DIETARY AGGREGATOR
   getCateringSummary() {
     const rsvps = this.getRsvps().filter((r) => r.attendance_status === "yes");
     const totalConfirmedGuests = rsvps.reduce((acc, r) => acc + (r.attendee_count || 1), 0);
+    const menuOptions = this.getMenuOptions();
+    const tableAssignments = this.getTableAssignments();
+    const tableMap = new Map(tableAssignments.map((t) => [t.invitation_id, t]));
 
-    const mealBreakdown: Record<string, number> = {
-      classic: 0,
-      fish: 0,
-      vegetarian: 0,
-      vegan: 0,
-      kids: 0,
-      standard: 0,
-    };
+    const mealBreakdown: Record<string, number> = {};
+    for (const opt of menuOptions) {
+      mealBreakdown[opt.id] = 0;
+    }
+    mealBreakdown.standard = 0;
+
+    const guestRoster: Array<{
+      guestName: string;
+      meal: string;
+      allergies: string;
+      tableNumber?: number;
+      tableName?: string;
+      invitationId: string;
+    }> = [];
 
     const allergies: Array<{
       guestName: string;
       allergies: string;
       meal: string;
+      tableNumber?: number;
+      tableName?: string;
       invitationId: string;
     }> = [];
 
     for (const r of rsvps) {
+      const tableInfo = tableMap.get(r.invitation_id);
       if (Array.isArray(r.meal_preferences) && r.meal_preferences.length > 0) {
         for (const pref of r.meal_preferences) {
-          const key = pref.meal in mealBreakdown ? pref.meal : "standard";
-          mealBreakdown[key] = (mealBreakdown[key] || 0) + 1;
+          const mealId = pref.meal || "classic";
+          mealBreakdown[mealId] = (mealBreakdown[mealId] || 0) + 1;
+
+          guestRoster.push({
+            guestName: pref.guestName || "Guest",
+            meal: mealId,
+            allergies: pref.allergies?.trim() || "",
+            tableNumber: tableInfo?.table_number,
+            tableName: tableInfo?.table_name,
+            invitationId: r.invitation_id,
+          });
+
           if (pref.allergies && pref.allergies.trim()) {
             allergies.push({
               guestName: pref.guestName || "Guest",
               allergies: pref.allergies.trim(),
-              meal: pref.meal,
+              meal: mealId,
+              tableNumber: tableInfo?.table_number,
+              tableName: tableInfo?.table_name,
               invitationId: r.invitation_id,
             });
           }
         }
       } else {
-        mealBreakdown.standard += r.attendee_count || 1;
+        mealBreakdown.standard = (mealBreakdown.standard || 0) + (r.attendee_count || 1);
+        guestRoster.push({
+          guestName: r.guest_names?.[0] || "Guest",
+          meal: "standard",
+          allergies: r.dietary_requirements?.trim() || "",
+          tableNumber: tableInfo?.table_number,
+          tableName: tableInfo?.table_name,
+          invitationId: r.invitation_id,
+        });
       }
 
       if (r.dietary_requirements && r.dietary_requirements.trim()) {
-        allergies.push({
-          guestName: r.guest_names?.[0] || "Party",
-          allergies: r.dietary_requirements.trim(),
-          meal: "standard",
-          invitationId: r.invitation_id,
-        });
+        const alreadyIn = allergies.some((a) => a.invitationId === r.invitation_id);
+        if (!alreadyIn) {
+          allergies.push({
+            guestName: r.guest_names?.[0] || "Party",
+            allergies: r.dietary_requirements.trim(),
+            meal: "standard",
+            tableNumber: tableInfo?.table_number,
+            tableName: tableInfo?.table_name,
+            invitationId: r.invitation_id,
+          });
+        }
       }
     }
 
@@ -686,6 +860,8 @@ export const resilientStore = {
       totalConfirmedGuests,
       meals: mealBreakdown,
       mealBreakdown,
+      menuOptions,
+      guestRoster,
       allergies,
     };
   },

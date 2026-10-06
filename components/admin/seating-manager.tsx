@@ -1,18 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveTableAssignmentAction, deleteTableAssignmentAction } from "@/app/actions/admin-seating";
-import type { StoredTableAssignment } from "@/lib/storage/resilient-store";
+import {
+  saveTableAssignmentAction,
+  deleteTableAssignmentAction,
+  saveTableAction,
+  deleteTableAction,
+} from "@/app/actions/admin-seating";
+import type { StoredTableAssignment, StoredTableDefinition } from "@/lib/storage/resilient-store";
 
-export interface ConfirmedGuestItem {
-  invitationId: string;
-  guestName: string;
-  groupName?: string | null;
-  dietary?: string | null;
-  meal?: string | null;
-}
-
-const DEFAULT_TABLES = [
+export const DEFAULT_IMPERIAL_TABLES: StoredTableDefinition[] = [
   { number: 1, name: "Ehrentisch (Head Table)", capacity: 8 },
   { number: 2, name: "Schloss Hetzendorf", capacity: 10 },
   { number: 3, name: "Schönbrunn Salon", capacity: 10 },
@@ -23,19 +20,57 @@ const DEFAULT_TABLES = [
   { number: 8, name: "Kaiserin Elisabeth", capacity: 8 },
 ];
 
+export interface ConfirmedGuestItem {
+  invitationId: string;
+  guestName: string;
+  groupName?: string | null;
+  dietary?: string | null;
+  meal?: string | null;
+}
+
 export function SeatingManager({
   initialAssignments,
+  initialTables = DEFAULT_IMPERIAL_TABLES,
   confirmedGuests,
   isEnabled = true,
 }: {
   initialAssignments: StoredTableAssignment[];
+  initialTables?: StoredTableDefinition[];
   confirmedGuests: ConfirmedGuestItem[];
   isEnabled?: boolean;
 }) {
+  const [tables, setTables] = useState<StoredTableDefinition[]>(
+    initialTables && initialTables.length > 0 ? initialTables : DEFAULT_IMPERIAL_TABLES,
+  );
   const [assignments, setAssignments] = useState<StoredTableAssignment[]>(initialAssignments);
-  const [selectedTable, setSelectedTable] = useState<number>(1);
+  const [selectedTable, setSelectedTable] = useState<number>(
+    initialTables && initialTables.length > 0 ? initialTables[0].number : 1,
+  );
   const [search, setSearch] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  // Table Editing State
+  const [editingTableNumber, setEditingTableNumber] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<{ name: string; capacity: number }>({ name: "", capacity: 10 });
+
+  // Add Table Modal / Inline State
+  const [isAddingTable, setIsAddingTable] = useState(false);
+  const [newTableForm, setNewTableForm] = useState<{ number: number; name: string; capacity: number }>({
+    number: 1,
+    name: "",
+    capacity: 10,
+  });
+
+  // Table Deletion Confirmation State
+  const [deletingTableNumber, setDeletingTableNumber] = useState<number | null>(null);
+
+  // Status message notification
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  function showFeedback(msg: string) {
+    setFeedback(msg);
+    setTimeout(() => setFeedback(null), 4000);
+  }
 
   const assignedGuestNames = new Set(assignments.map((a) => a.guest_name.toLowerCase()));
   const unassignedGuests = confirmedGuests.filter(
@@ -48,12 +83,16 @@ export function SeatingManager({
       (g.groupName && g.groupName.toLowerCase().includes(search.toLowerCase())),
   );
 
+  const activeTableDef = tables.find((t) => t.number === selectedTable) || tables[0];
+
+  // 1. Assign Guest to Selected Table
   function handleAssign(guest: ConfirmedGuestItem) {
-    const tableDef = DEFAULT_TABLES.find((t) => t.number === selectedTable) || DEFAULT_TABLES[0];
+    if (!activeTableDef) return;
+
     const newAssignment: StoredTableAssignment = {
       id: `seat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      table_number: tableDef.number,
-      table_name: tableDef.name,
+      table_number: activeTableDef.number,
+      table_name: activeTableDef.name,
       guest_name: guest.guestName,
       invitation_id: guest.invitationId,
       notes: guest.dietary ? `Diet: ${guest.dietary}` : undefined,
@@ -64,8 +103,8 @@ export function SeatingManager({
 
     startTransition(async () => {
       await saveTableAssignmentAction({
-        tableNumber: tableDef.number,
-        tableName: tableDef.name,
+        tableNumber: activeTableDef.number,
+        tableName: activeTableDef.name,
         guestName: guest.guestName,
         invitationId: guest.invitationId,
         notes: guest.dietary ? `Diet: ${guest.dietary}` : undefined,
@@ -73,6 +112,7 @@ export function SeatingManager({
     });
   }
 
+  // 2. Remove Guest from Table
   function handleRemove(id: string) {
     setAssignments((prev) => prev.filter((a) => a.id !== id));
     startTransition(async () => {
@@ -80,6 +120,112 @@ export function SeatingManager({
     });
   }
 
+  // 3. Start Editing a Table (Name / Capacity)
+  function handleStartEdit(table: StoredTableDefinition) {
+    setEditingTableNumber(table.number);
+    setEditForm({ name: table.name, capacity: table.capacity });
+  }
+
+  // 4. Save Table Edit
+  function handleSaveEdit(tableNumber: number) {
+    const trimmedName = editForm.name.trim();
+    if (!trimmedName) return;
+
+    const newCap = Math.max(1, Number(editForm.capacity) || 10);
+
+    // Update tables in state
+    setTables((prev) =>
+      prev.map((t) => (t.number === tableNumber ? { ...t, name: trimmedName, capacity: newCap } : t)),
+    );
+
+    // Update assignment records so table names stay in sync
+    setAssignments((prev) =>
+      prev.map((a) => (a.table_number === tableNumber ? { ...a, table_name: trimmedName } : a)),
+    );
+
+    setEditingTableNumber(null);
+    showFeedback(`Table ${tableNumber} updated to "${trimmedName}" (${newCap} seats).`);
+
+    startTransition(async () => {
+      await saveTableAction({
+        number: tableNumber,
+        name: trimmedName,
+        capacity: newCap,
+      });
+    });
+  }
+
+  // 5. Open Add Table Form
+  function handleOpenAddTable() {
+    const maxNum = tables.length > 0 ? Math.max(...tables.map((t) => t.number)) : 0;
+    setNewTableForm({
+      number: maxNum + 1,
+      name: "",
+      capacity: 10,
+    });
+    setIsAddingTable(true);
+  }
+
+  // 6. Save New Table
+  function handleSaveNewTable() {
+    const trimmedName = newTableForm.name.trim() || `Table ${newTableForm.number}`;
+    const tableNum = Number(newTableForm.number);
+    const capacity = Math.max(1, Number(newTableForm.capacity) || 10);
+
+    // Ensure unique table number
+    if (tables.some((t) => t.number === tableNum)) {
+      alert(`Table number ${tableNum} already exists. Please choose a unique number.`);
+      return;
+    }
+
+    const newTable: StoredTableDefinition = {
+      number: tableNum,
+      name: trimmedName,
+      capacity,
+    };
+
+    const nextTables = [...tables, newTable].sort((a, b) => a.number - b.number);
+    setTables(nextTables);
+    setSelectedTable(tableNum);
+    setIsAddingTable(false);
+    showFeedback(`Added new Table ${tableNum}: "${trimmedName}" (${capacity} seats).`);
+
+    startTransition(async () => {
+      await saveTableAction(newTable);
+    });
+  }
+
+  // 7. Delete Table
+  function handleConfirmDeleteTable(tableNumber: number) {
+    const tableToDelete = tables.find((t) => t.number === tableNumber);
+    if (!tableToDelete) return;
+
+    // Filter out table
+    const remainingTables = tables.filter((t) => t.number !== tableNumber);
+    setTables(remainingTables);
+
+    // Unassign guests at this table
+    const guestsAtTable = assignments.filter((a) => a.table_number === tableNumber);
+    setAssignments((prev) => prev.filter((a) => a.table_number !== tableNumber));
+
+    // Update selected table if we just deleted it
+    if (selectedTable === tableNumber) {
+      if (remainingTables.length > 0) {
+        setSelectedTable(remainingTables[0].number);
+      }
+    }
+
+    setDeletingTableNumber(null);
+    showFeedback(
+      `Table ${tableNumber} ("${tableToDelete.name}") removed. ${guestsAtTable.length} guest(s) returned to unassigned list.`,
+    );
+
+    startTransition(async () => {
+      await deleteTableAction(tableNumber);
+    });
+  }
+
+  // 8. Export CSV Chart
   function exportSeatingChart() {
     const headers = ["Table #", "Table Name", "Guest Name", "Notes"];
     const rows = assignments
@@ -97,7 +243,9 @@ export function SeatingManager({
     const link = document.createElement("a");
     link.href = url;
     link.download = `hetzendorf_seating_${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
 
@@ -126,6 +274,27 @@ export function SeatingManager({
         </div>
       )}
 
+      {feedback && (
+        <div
+          style={{
+            marginBottom: "1.25rem",
+            padding: "0.75rem 1.25rem",
+            background: "rgba(85, 100, 78, 0.1)",
+            border: "1px solid rgba(85, 100, 78, 0.3)",
+            borderRadius: "8px",
+            color: "#45533E",
+            fontSize: "0.88rem",
+            fontWeight: 500,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
+        >
+          <span>✨</span>
+          <span>{feedback}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div
         style={{
@@ -149,28 +318,251 @@ export function SeatingManager({
             Schloss Hetzendorf Table Seating Planner
           </h1>
           <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.9rem" }}>
-            {assignments.length} assigned · {unassignedGuests.length} unassigned of {confirmedGuests.length} confirmed guests
+            {assignments.length} assigned · {unassignedGuests.length} unassigned of {confirmedGuests.length} confirmed guests · {tables.length} customizable tables
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={exportSeatingChart}
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            onClick={handleOpenAddTable}
+            style={{
+              background: "#FFFFFF",
+              color: "#8C2836",
+              border: "1.5px solid #8C2836",
+              borderRadius: "6px",
+              padding: "0.6rem 1.15rem",
+              fontSize: "0.88rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#8C2836";
+              e.currentTarget.style.color = "#FFFFFF";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#FFFFFF";
+              e.currentTarget.style.color = "#8C2836";
+            }}
+          >
+            <span>+</span>
+            <span>Add New Table</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={exportSeatingChart}
+            style={{
+              background: "#8C2836",
+              color: "#FFF",
+              border: 0,
+              borderRadius: "6px",
+              padding: "0.6rem 1.25rem",
+              fontSize: "0.88rem",
+              fontWeight: 500,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(140, 40, 54, 0.2)",
+            }}
+          >
+            📥 Export Seating Chart (CSV)
+          </button>
+        </div>
+      </div>
+
+      {/* Add New Table Modal / Inline Banner */}
+      {isAddingTable && (
+        <div
           style={{
-            background: "#8C2836",
-            color: "#FFF",
-            border: 0,
-            borderRadius: "6px",
-            padding: "0.6rem 1.25rem",
-            fontSize: "0.88rem",
-            fontWeight: 500,
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(140, 40, 54, 0.2)",
+            marginBottom: "1.5rem",
+            padding: "1.25rem 1.5rem",
+            background: "#FFFFFF",
+            border: "2px solid #CCA468",
+            borderRadius: "10px",
+            boxShadow: "0 4px 16px rgba(204, 164, 104, 0.15)",
           }}
         >
-          📥 Export Seating Chart (CSV)
-        </button>
-      </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h3 style={{ margin: 0, fontSize: "1.1rem", color: "#8C2836", fontFamily: "var(--font-display, serif)" }}>
+              Add a New Table
+            </h3>
+            <button
+              type="button"
+              onClick={() => setIsAddingTable(false)}
+              style={{ background: "transparent", border: 0, color: "#776A6C", cursor: "pointer", fontSize: "1.2rem" }}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 120px auto", gap: "1rem", alignItems: "end" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "#5A4E51", marginBottom: "0.3rem" }}>
+                Table #
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={newTableForm.number}
+                onChange={(e) => setNewTableForm({ ...newTableForm, number: parseInt(e.target.value) || 1 })}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.6rem",
+                  borderRadius: "6px",
+                  border: "1px solid #D5CBC4",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "#5A4E51", marginBottom: "0.3rem" }}>
+                Table Name / Theme
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Belvedere Salon, Royal Court, Table 9"
+                value={newTableForm.name}
+                onChange={(e) => setNewTableForm({ ...newTableForm, name: e.target.value })}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "6px",
+                  border: "1px solid #D5CBC4",
+                  fontSize: "0.88rem",
+                }}
+                autoFocus
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "#5A4E51", marginBottom: "0.3rem" }}>
+                Seat Capacity
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="50"
+                value={newTableForm.capacity}
+                onChange={(e) => setNewTableForm({ ...newTableForm, capacity: parseInt(e.target.value) || 10 })}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem 0.6rem",
+                  borderRadius: "6px",
+                  border: "1px solid #D5CBC4",
+                  fontSize: "0.88rem",
+                }}
+              />
+            </div>
+
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                type="button"
+                onClick={handleSaveNewTable}
+                style={{
+                  background: "#8C2836",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.55rem 1.25rem",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Create Table
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAddingTable(false)}
+                style={{
+                  background: "#F5EFEB",
+                  color: "#5A4E51",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.55rem 1rem",
+                  fontSize: "0.88rem",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingTableNumber !== null && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.45)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+          }}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "12px",
+              padding: "1.75rem",
+              maxWidth: "460px",
+              width: "90%",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+            }}
+          >
+            <h3 style={{ margin: "0 0 0.75rem 0", color: "#8C2836", fontSize: "1.25rem", fontFamily: "var(--font-display, serif)" }}>
+              Remove Table {deletingTableNumber}?
+            </h3>
+            <p style={{ margin: "0 0 1.25rem 0", color: "#4A3E40", fontSize: "0.9rem", lineHeight: 1.5 }}>
+              Are you sure you want to remove <strong>Table {deletingTableNumber}</strong> (
+              {tables.find((t) => t.number === deletingTableNumber)?.name})?
+              <br />
+              Any currently seated guests ({assignments.filter((a) => a.table_number === deletingTableNumber).length}) will be safely unassigned and returned to the unassigned guests drawer.
+            </p>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              <button
+                type="button"
+                onClick={() => setDeletingTableNumber(null)}
+                style={{
+                  background: "#FAF7F5",
+                  border: "1px solid #D5CBC4",
+                  borderRadius: "6px",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.88rem",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmDeleteTable(deletingTableNumber)}
+                style={{
+                  background: "#DC2626",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.5rem 1.25rem",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Yes, Remove Table
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Left = Tables, Right = Unassigned Guests Drawer */}
       <div
@@ -185,60 +577,234 @@ export function SeatingManager({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
             gap: "1rem",
           }}
         >
-          {DEFAULT_TABLES.map((table) => {
+          {tables.map((table) => {
             const tableGuests = assignments.filter((a) => a.table_number === table.number);
             const isFull = tableGuests.length >= table.capacity;
             const isSelected = selectedTable === table.number;
+            const isEditing = editingTableNumber === table.number;
 
             return (
               <div
                 key={table.number}
-                onClick={() => setSelectedTable(table.number)}
+                onClick={() => {
+                  if (!isEditing) setSelectedTable(table.number);
+                }}
                 style={{
                   background: isSelected ? "#FFFFFF" : "#FAF8F6",
                   border: isSelected ? "2px solid #8C2836" : "1px solid #E5DCD3",
                   borderRadius: "10px",
                   padding: "1.25rem",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                  boxShadow: isSelected ? "0 4px 16px rgba(140, 40, 54, 0.12)" : "none",
+                  cursor: isEditing ? "default" : "pointer",
+                  transition: "all 0.18s ease",
+                  boxShadow: isSelected
+                    ? "0 4px 18px rgba(140, 40, 54, 0.14)"
+                    : "0 2px 6px rgba(0,0,0,0.02)",
+                  position: "relative",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    marginBottom: "0.75rem",
-                  }}
-                >
-                  <h3
+                {/* Active Placement Indicator */}
+                {isSelected && (
+                  <div
                     style={{
-                      margin: 0,
-                      fontSize: "1rem",
-                      fontFamily: "var(--font-display, serif)",
-                      color: "#2B2425",
-                    }}
-                  >
-                    Table {table.number}: {table.name}
-                  </h3>
-                  <span
-                    style={{
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                      padding: "0.2rem 0.5rem",
+                      position: "absolute",
+                      top: "-10px",
+                      left: "14px",
+                      background: "#8C2836",
+                      color: "#FFFFFF",
+                      fontSize: "0.68rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      padding: "0.15rem 0.55rem",
                       borderRadius: "999px",
-                      background: isFull ? "rgba(140, 40, 54, 0.1)" : "rgba(85, 100, 78, 0.1)",
-                      color: isFull ? "#8C2836" : "#55644E",
+                      boxShadow: "0 2px 6px rgba(140, 40, 54, 0.3)",
                     }}
                   >
-                    {tableGuests.length} / {table.capacity}
-                  </span>
-                </div>
+                    Active Table
+                  </div>
+                )}
+
+                {/* Table Header / In-place Edit Form */}
+                {isEditing ? (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      background: "#FFFFFF",
+                      border: "1px solid #CCA468",
+                      borderRadius: "8px",
+                      padding: "0.75rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <div style={{ marginBottom: "0.5rem" }}>
+                      <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#6A5D60" }}>
+                        Table Name:
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        style={{
+                          width: "100%",
+                          padding: "0.35rem 0.5rem",
+                          borderRadius: "4px",
+                          border: "1px solid #CCA468",
+                          fontSize: "0.88rem",
+                          fontWeight: 600,
+                        }}
+                        autoFocus
+                      />
+                    </div>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <label style={{ fontSize: "0.75rem", fontWeight: 600, color: "#6A5D60" }}>Capacity:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="50"
+                        value={editForm.capacity}
+                        onChange={(e) => setEditForm({ ...editForm, capacity: parseInt(e.target.value) || 1 })}
+                        style={{
+                          width: "60px",
+                          padding: "0.3rem 0.4rem",
+                          borderRadius: "4px",
+                          border: "1px solid #D5CBC4",
+                          fontSize: "0.85rem",
+                        }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", gap: "0.4rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => handleSaveEdit(table.number)}
+                        style={{
+                          background: "#8C2836",
+                          color: "#FFF",
+                          border: 0,
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.75rem",
+                          fontSize: "0.78rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        ✓ Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingTableNumber(null)}
+                        style={{
+                          background: "#F5EFEB",
+                          color: "#5A4E51",
+                          border: 0,
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.55rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      marginBottom: "0.75rem",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            color: "#8C2836",
+                            letterSpacing: "0.05em",
+                            textTransform: "uppercase",
+                          }}
+                        >
+                          Table {table.number}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartEdit(table);
+                          }}
+                          style={{
+                            background: "transparent",
+                            border: 0,
+                            color: "#8C2836",
+                            cursor: "pointer",
+                            padding: "0 0.2rem",
+                            fontSize: "0.85rem",
+                            opacity: 0.75,
+                            transition: "opacity 0.15s ease",
+                          }}
+                          title="Rename Table or Change Capacity"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeletingTableNumber(table.number);
+                          }}
+                          style={{
+                            background: "transparent",
+                            border: 0,
+                            color: "#998889",
+                            cursor: "pointer",
+                            padding: "0 0.2rem",
+                            fontSize: "0.85rem",
+                            opacity: 0.75,
+                            transition: "all 0.15s ease",
+                          }}
+                          title="Delete Table"
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#DC2626")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#998889")}
+                        >
+                          🗑️
+                        </button>
+                      </div>
+
+                      <h3
+                        style={{
+                          margin: "0.2rem 0 0 0",
+                          fontSize: "1.05rem",
+                          fontFamily: "var(--font-display, serif)",
+                          color: "#2B2425",
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        {table.name}
+                      </h3>
+                    </div>
+
+                    <span
+                      style={{
+                        fontSize: "0.78rem",
+                        fontWeight: 600,
+                        padding: "0.2rem 0.55rem",
+                        borderRadius: "999px",
+                        background: isFull ? "rgba(140, 40, 54, 0.12)" : "rgba(85, 100, 78, 0.12)",
+                        color: isFull ? "#8C2836" : "#45533E",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {tableGuests.length} / {table.capacity}
+                    </span>
+                  </div>
+                )}
 
                 {/* Assigned Guests List */}
                 <div
@@ -255,11 +821,11 @@ export function SeatingManager({
                         fontSize: "0.8rem",
                         color: "#998889",
                         fontStyle: "italic",
-                        padding: "1rem 0",
+                        padding: "1.25rem 0",
                         textAlign: "center",
                       }}
                     >
-                      Click to select, then click an unassigned guest on the right to place them here.
+                      Empty table. Select and click guests on the right to seat them here.
                     </div>
                   ) : (
                     tableGuests.map((g) => (
@@ -269,14 +835,21 @@ export function SeatingManager({
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
-                          padding: "0.35rem 0.6rem",
+                          padding: "0.4rem 0.65rem",
                           background: "#FFFFFF",
                           border: "1px solid #ECE4DD",
                           borderRadius: "6px",
                           fontSize: "0.82rem",
                         }}
                       >
-                        <span style={{ fontWeight: 500, color: "#332627" }}>{g.guest_name}</span>
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                          <span style={{ fontWeight: 600, color: "#332627" }}>{g.guest_name}</span>
+                          {g.notes && (
+                            <span style={{ fontSize: "0.72rem", color: "#8C2836", fontStyle: "italic" }}>
+                              {g.notes}
+                            </span>
+                          )}
+                        </div>
                         <button
                           type="button"
                           onClick={(e) => {
@@ -288,8 +861,9 @@ export function SeatingManager({
                             border: 0,
                             color: "#8C2836",
                             cursor: "pointer",
-                            fontSize: "0.9rem",
-                            padding: "0 0.2rem",
+                            fontSize: "0.95rem",
+                            padding: "0 0.3rem",
+                            lineHeight: 1,
                           }}
                           title="Remove from table"
                         >
@@ -302,6 +876,39 @@ export function SeatingManager({
               </div>
             );
           })}
+
+          {/* Quick Add Table Card */}
+          <div
+            onClick={handleOpenAddTable}
+            style={{
+              background: "rgba(204, 164, 104, 0.05)",
+              border: "2px dashed rgba(204, 164, 104, 0.4)",
+              borderRadius: "10px",
+              padding: "1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.5rem",
+              cursor: "pointer",
+              minHeight: "180px",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#8C2836";
+              e.currentTarget.style.background = "rgba(140, 40, 54, 0.04)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(204, 164, 104, 0.4)";
+              e.currentTarget.style.background = "rgba(204, 164, 104, 0.05)";
+            }}
+          >
+            <span style={{ fontSize: "1.75rem", color: "#8C2836", lineHeight: 1 }}>+</span>
+            <span style={{ fontSize: "0.92rem", fontWeight: 600, color: "#8C2836" }}>Add Another Table</span>
+            <span style={{ fontSize: "0.75rem", color: "#8A7D80", textAlign: "center" }}>
+              Personalize table name & capacity
+            </span>
+          </div>
         </div>
 
         {/* Unassigned Guests Drawer */}
@@ -313,11 +920,12 @@ export function SeatingManager({
             padding: "1.25rem",
             position: "sticky",
             top: "5rem",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
           }}
         >
           <h3
             style={{
-              margin: "0 0 0.5rem 0",
+              margin: "0 0 0.35rem 0",
               fontSize: "1.05rem",
               fontFamily: "var(--font-display, serif)",
               color: "#2B2425",
@@ -326,12 +934,13 @@ export function SeatingManager({
             Unassigned Guests ({unassignedGuests.length})
           </h3>
           <p style={{ margin: "0 0 1rem 0", fontSize: "0.8rem", color: "#6A5D60" }}>
-            Placing into <strong>Table {selectedTable}</strong>. Click any guest to assign.
+            Placing into: <strong style={{ color: "#8C2836" }}>Table {selectedTable} ({activeTableDef?.name})</strong>.
+            Click any guest to seat them.
           </p>
 
           <input
             type="text"
-            placeholder="Search unassigned..."
+            placeholder="Search unassigned guests..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
@@ -357,12 +966,17 @@ export function SeatingManager({
               <div
                 style={{
                   fontSize: "0.82rem",
-                  color: "#55644E",
+                  color: "#45533E",
                   textAlign: "center",
-                  padding: "1.5rem 0",
+                  padding: "1.75rem 0.5rem",
+                  background: "rgba(85, 100, 78, 0.05)",
+                  borderRadius: "8px",
+                  lineHeight: 1.5,
                 }}
               >
-                🎉 All confirmed guests have been assigned to tables!
+                🎉 <strong>All confirmed guests are assigned!</strong>
+                <br />
+                Every guest has their seat at Hetzendorf Palace.
               </div>
             ) : (
               filteredUnassigned.map((guest, idx) => (
@@ -383,7 +997,7 @@ export function SeatingManager({
                     cursor: "pointer",
                     fontSize: "0.85rem",
                     color: "#2B2425",
-                    transition: "all 0.1s ease",
+                    transition: "all 0.12s ease",
                   }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = "#F2ECE7")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "#FAF7F5")}
@@ -391,10 +1005,15 @@ export function SeatingManager({
                   <div>
                     <div style={{ fontWeight: 600 }}>{guest.guestName}</div>
                     {guest.groupName && (
-                      <div style={{ fontSize: "0.75rem", color: "#776A6C" }}>{guest.groupName}</div>
+                      <div style={{ fontSize: "0.74rem", color: "#776A6C" }}>{guest.groupName}</div>
+                    )}
+                    {guest.dietary && (
+                      <div style={{ fontSize: "0.72rem", color: "#8C2836", fontStyle: "italic" }}>
+                        Diet: {guest.dietary}
+                      </div>
                     )}
                   </div>
-                  <span style={{ fontSize: "0.78rem", color: "#8C2836", fontWeight: 600 }}>
+                  <span style={{ fontSize: "0.78rem", color: "#8C2836", fontWeight: 700 }}>
                     + Table {selectedTable}
                   </span>
                 </button>

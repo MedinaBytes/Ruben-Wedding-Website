@@ -35,6 +35,15 @@ export function invalidOriginResponse() {
   return NextResponse.json({ error: "invalid_origin" }, { status: 403, headers: privateHeaders });
 }
 
+function isKnownProductionHost(hostname: string): boolean {
+  const clean = hostname.toLowerCase().split(":")[0];
+  return (
+    clean === "theandyrubenwedding.website" ||
+    clean.endsWith(".theandyrubenwedding.website") ||
+    clean.endsWith(".vercel.app")
+  );
+}
+
 /**
  * Invitation tokens are bearer credentials. Mutations must also originate from this site so a
  * third-party page cannot silently alter a guest's reply with a leaked URL.
@@ -45,10 +54,23 @@ export function isSameOriginMutation(request: Request) {
   const fetchSite = request.headers.get("sec-fetch-site");
   const requestOrigin = new URL(request.url).origin;
   const allowedOrigin = configuredSiteOrigin();
+  const forwardedHost = request.headers.get("x-forwarded-host") || request.headers.get("host");
 
   if (origin) {
     if (normalizeOrigin(origin) === normalizeOrigin(requestOrigin)) return true;
     if (allowedOrigin !== null && normalizeOrigin(origin) === normalizeOrigin(allowedOrigin)) return true;
+
+    if (forwardedHost) {
+      try {
+        const originHost = new URL(origin).host;
+        if (normalizeOrigin(`https://${originHost}`) === normalizeOrigin(`https://${forwardedHost}`)) return true;
+      } catch {}
+    }
+
+    try {
+      const originHostname = new URL(origin).hostname;
+      if (isKnownProductionHost(originHostname)) return true;
+    } catch {}
   }
 
   if (referer) {
@@ -56,6 +78,9 @@ export function isSameOriginMutation(request: Request) {
       const refererOrigin = new URL(referer).origin;
       if (normalizeOrigin(refererOrigin) === normalizeOrigin(requestOrigin)) return true;
       if (allowedOrigin !== null && normalizeOrigin(refererOrigin) === normalizeOrigin(allowedOrigin)) return true;
+
+      const refererHostname = new URL(referer).hostname;
+      if (isKnownProductionHost(refererHostname)) return true;
     } catch {}
   }
 

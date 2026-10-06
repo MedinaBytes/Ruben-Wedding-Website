@@ -25,12 +25,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const { phone, message, invitationId, guestName } = body as {
+  const { phone, message, invitationId, guestName, markDispatched } = body as {
     phone?: string;
     message?: string;
     invitationId?: string;
     guestName?: string;
+    markDispatched?: boolean;
   };
+
+  if (markDispatched && invitationId) {
+    resilientStore.recordEvent({
+      invitation_id: invitationId,
+      event_type: "WHATSAPP_DISPATCHED",
+      session_id: "wa-direct-click",
+    });
+
+    try {
+      await recordAdminAudit({
+        actor,
+        action: "INVITATION_UPDATED",
+        resourceType: "invitation",
+        resourceId: invitationId,
+        metadata: {
+          channel: "whatsapp_direct_click",
+          phone: phone ?? null,
+          guestName: guestName ?? null,
+        },
+      });
+    } catch {}
+
+    return NextResponse.json({ success: true, marked: true });
+  }
 
   if (!phone || !message) {
     return NextResponse.json({ error: "missing_fields" }, { status: 422 });

@@ -96,12 +96,21 @@ const mealLabels: Record<string, {
   },
 };
 
+export interface CustomMenuOptionItem {
+  id: string;
+  name: string;
+  icon?: string;
+  enabled: boolean;
+}
+
 export function RsvpForm({
   invitation,
   enableMealSelection = true,
+  customMenuOptions,
 }: {
   invitation: InvitationFormProps;
   enableMealSelection?: boolean;
+  customMenuOptions?: CustomMenuOptionItem[];
 }) {
   const locale = useLocale();
   const typedLocale = locale as Locale;
@@ -569,11 +578,19 @@ export function RsvpForm({
                                 color: "#2C1810",
                               }}
                             >
-                              {Object.entries(dict.options).map(([optKey, optText]) => (
-                                <option key={optKey} value={optKey}>
-                                  {optText}
-                                </option>
-                              ))}
+                              {customMenuOptions && customMenuOptions.length > 0
+                                ? customMenuOptions
+                                    .filter((opt) => opt.enabled)
+                                    .map((opt) => (
+                                      <option key={opt.id} value={opt.id}>
+                                        {opt.icon ? `${opt.icon} ` : ""}{opt.name}
+                                      </option>
+                                    ))
+                                : Object.entries(dict.options).map(([optKey, optText]) => (
+                                    <option key={optKey} value={optKey}>
+                                      {optText}
+                                    </option>
+                                  ))}
                             </select>
                           </div>
 

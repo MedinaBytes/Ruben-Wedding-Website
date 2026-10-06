@@ -83,9 +83,12 @@ export default async function AdminWhatsAppPage() {
     }
   }
 
-  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  let siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NODE_ENV === "production" ? "https://theandyrubenwedding.website" : "http://localhost:3000");
+
   if (!siteUrl.startsWith("http://") && !siteUrl.startsWith("https://")) {
-    siteUrl = `http://${siteUrl}`;
+    siteUrl = `https://${siteUrl}`;
   }
 
   return <WhatsAppManager invitations={combined} siteUrl={siteUrl} />;

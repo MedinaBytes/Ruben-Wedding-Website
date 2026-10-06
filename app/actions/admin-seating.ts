@@ -71,3 +71,60 @@ export async function deleteTableAssignmentAction(id: string) {
   revalidatePath("/admin/seating");
   return { success: true };
 }
+
+export async function getTablesAction() {
+  return resilientStore.getTables();
+}
+
+export async function saveTableAction(table: {
+  number: number;
+  name: string;
+  capacity: number;
+}) {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) throw new Error("Unauthorized");
+
+  const updatedTables = resilientStore.saveTable({
+    number: table.number,
+    name: table.name.trim(),
+    capacity: Math.max(1, table.capacity),
+  });
+
+  try {
+    await recordAdminAudit({
+      actor,
+      action: "INVITATION_UPDATED",
+      resourceType: "invitation",
+      metadata: { action: "TABLE_SAVED", tableNumber: table.number, tableName: table.name },
+    });
+  } catch {}
+
+  revalidatePath("/admin/seating");
+  return updatedTables;
+}
+
+export async function deleteTableAction(tableNumber: number) {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) throw new Error("Unauthorized");
+
+  const updatedTables = resilientStore.deleteTable(tableNumber);
+
+  try {
+    await recordAdminAudit({
+      actor,
+      action: "INVITATION_UPDATED",
+      resourceType: "invitation",
+      metadata: { action: "TABLE_DELETED", tableNumber },
+    });
+  } catch {}
+
+  revalidatePath("/admin/seating");
+  return updatedTables;
+}
+

@@ -9,12 +9,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { resilientStore } from "@/lib/storage/resilient-store";
 
+import os from "node:os";
+
 export interface WhatsAppBotState {
   status: "disconnected" | "connecting" | "connected";
   qrCode: string | null;
   linkedPhone: string | null;
   lastSyncedAt: string | null;
   error: string | null;
+  isServerless?: boolean;
 }
 
 interface GlobalWhatsApp {
@@ -28,12 +31,55 @@ declare global {
   var __whatsappBot: GlobalWhatsApp | undefined;
 }
 
-const AUTH_DIR = path.resolve(process.cwd(), ".whatsapp-auth");
+export function isServerlessEnvironment(): boolean {
+  return (
+    Boolean(process.env.VERCEL) ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
+    Boolean(process.env.LAMBDA_TASK_ROOT)
+  );
+}
+
+function getAuthDir(): string {
+  if (process.env.WHATSAPP_AUTH_DIR) {
+    return path.resolve(process.env.WHATSAPP_AUTH_DIR);
+  }
+
+  // On Vercel / AWS Lambda, process.cwd() is read-only. Use os.tmpdir()
+  if (isServerlessEnvironment()) {
+    const tmpDir = path.join(os.tmpdir(), "whatsapp-auth");
+    try {
+      if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+      }
+    } catch {}
+    return tmpDir;
+  }
+
+  try {
+    const localDir = path.resolve(process.cwd(), ".whatsapp-auth");
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    return localDir;
+  } catch {
+    const fallbackTmp = path.join(os.tmpdir(), "whatsapp-auth");
+    try {
+      if (!fs.existsSync(fallbackTmp)) {
+        fs.mkdirSync(fallbackTmp, { recursive: true });
+      }
+    } catch {}
+    return fallbackTmp;
+  }
+}
 
 function getGlobalBot(): GlobalWhatsApp {
   if (!globalThis.__whatsappBot) {
     const saved = resilientStore.getWhatsAppSession();
-    const hasAuthFiles = fs.existsSync(AUTH_DIR) && fs.readdirSync(AUTH_DIR).length > 0;
+    const authDir = getAuthDir();
+    const hasAuthFiles =
+      fs.existsSync(/*turbopackIgnore: true*/ authDir) &&
+      fs.readdirSync(/*turbopackIgnore: true*/ authDir).length > 0;
+    const isServerless = isServerlessEnvironment();
 
     globalThis.__whatsappBot = {
       socket: null,
@@ -43,6 +89,7 @@ function getGlobalBot(): GlobalWhatsApp {
         linkedPhone: hasAuthFiles ? saved?.linkedPhone ?? null : null,
         lastSyncedAt: saved?.lastSyncedAt ?? null,
         error: null,
+        isServerless,
       },
       isInitializing: false,
     };
@@ -52,7 +99,11 @@ function getGlobalBot(): GlobalWhatsApp {
 
 export async function getWhatsAppStatus(): Promise<WhatsAppBotState> {
   const bot = getGlobalBot();
-  const hasAuthFiles = fs.existsSync(AUTH_DIR) && fs.readdirSync(AUTH_DIR).length > 0;
+  bot.state.isServerless = isServerlessEnvironment();
+  const authDir = getAuthDir();
+  const hasAuthFiles =
+    fs.existsSync(/*turbopackIgnore: true*/ authDir) &&
+    fs.readdirSync(/*turbopackIgnore: true*/ authDir).length > 0;
 
   // Auto-resume existing session if auth credentials exist but socket is not active
   if (hasAuthFiles && !bot.socket && !bot.isInitializing && bot.state.status !== "connecting") {
@@ -91,11 +142,12 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
   bot.state.error = null;
 
   try {
-    if (!fs.existsSync(AUTH_DIR)) {
-      fs.mkdirSync(AUTH_DIR, { recursive: true });
+    const authDir = getAuthDir();
+    if (!fs.existsSync(/*turbopackIgnore: true*/ authDir)) {
+      fs.mkdirSync(authDir, { recursive: true });
     }
 
-    const { state: authState, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    const { state: authState, saveCreds } = await useMultiFileAuthState(authDir);
 
     const sock = makeWASocket({
       auth: authState,
@@ -192,7 +244,10 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
   } catch (err: unknown) {
     bot.isInitializing = false;
     bot.state.status = "disconnected";
-    bot.state.error = err instanceof Error ? err.message : "Failed to initialize WhatsApp connection";
+    const baseMsg = err instanceof Error ? err.message : "Failed to initialize WhatsApp connection";
+    bot.state.error = isServerlessEnvironment()
+      ? `Serverless environment detected (Vercel): WebSockets cannot remain persistent across HTTP requests. Please use the Direct 1-Click WhatsApp Dispatch option below.`
+      : baseMsg;
     return { ...bot.state };
   }
 }
@@ -211,8 +266,9 @@ export async function unlinkWhatsApp(): Promise<void> {
   }
 
   try {
-    if (fs.existsSync(AUTH_DIR)) {
-      fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+    const authDir = getAuthDir();
+    if (fs.existsSync(/*turbopackIgnore: true*/ authDir)) {
+      fs.rmSync(authDir, { recursive: true, force: true });
     }
   } catch {}
 
@@ -234,11 +290,12 @@ export async function unlinkWhatsApp(): Promise<void> {
 export async function sendWhatsAppMessage(
   phone: string,
   text: string,
-): Promise<{ success: boolean; error?: string; messageId?: string; directUrl?: string }> {
+): Promise<{ success: boolean; error?: string; messageId?: string; directUrl?: string; waMeUrl?: string }> {
   const bot = getGlobalBot();
   const cleanPhone = phone.replace(/[^\d]/g, "");
 
   const directUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
+  const waMeUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}`;
 
   if (!cleanPhone || cleanPhone.length < 6) {
     return { success: false, error: "Invalid recipient phone number format." };
@@ -249,6 +306,7 @@ export async function sendWhatsAppMessage(
       success: false,
       error: "WhatsApp bot is not connected. Open directly via WhatsApp Web link.",
       directUrl,
+      waMeUrl,
     };
   }
 
@@ -265,6 +323,7 @@ export async function sendWhatsAppMessage(
       success: false,
       error: err instanceof Error ? err.message : "Failed to send message via WhatsApp socket.",
       directUrl,
+      waMeUrl,
     };
   }
 }

@@ -1336,6 +1336,19 @@ a {
   color: oklch(0.4 0.09 18);
 }
 
+.day-story__schedule {
+  display: flex;
+  flex-direction: column;
+}
+
+.day-story__calendar-bar {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--color-border, #E4DBD3);
+  display: flex;
+  align-items: center;
+}
+
 .venue-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1580,6 +1593,84 @@ a {
   line-height: 1.65;
   color: var(--color-ink-muted, #5A4E51);
   margin: 0.25rem 0 0;
+}
+
+.dress-note__decree {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(140, 40, 54, 0.05);
+  border: 1px solid rgba(140, 40, 54, 0.18);
+  border-radius: 8px;
+  margin-top: 0.25rem;
+}
+
+.dress-note__decree-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: #8C2836;
+}
+
+.dress-note__decree-text {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--color-ink, #2E2426);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dress-note__advisories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.dress-note__card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(204, 164, 104, 0.35);
+  border-radius: 12px;
+  padding: 1.35rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 4px 16px rgba(46, 36, 38, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dress-note__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(46, 36, 38, 0.08);
+}
+
+.dress-note__card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.dress-note__card-icon {
+  color: #8C2836;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dress-note__card-title {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  color: var(--color-ink, #2D2224);
+  margin: 0;
+}
+
+.dress-note__card-desc {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--color-ink-muted, #5A4E51);
+  margin: 0;
 }
 
 .dress-note__weather {
