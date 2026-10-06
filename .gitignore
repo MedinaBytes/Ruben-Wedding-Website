@@ -11,7 +11,6 @@ data/guests.private.csv
 public/images/wedding/
 .whatsapp-auth/
 .whatsapp-sessions/
-.local-db.backup.json
-.local-db.test.json
-.local-db.purge-backup.json
+.local-db*.json
 .agent/
+

@@ -55,6 +55,46 @@
   ],
   "events": [
     {
+      "id": "evt-1791304625384-tzt7i",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "7c878ad0-7d74-4bf4-a7ec-4470ff32ac89",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-06T16:37:05.384Z"
+    },
+    {
+      "id": "evt-1791304618440-mosah",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "7c878ad0-7d74-4bf4-a7ec-4470ff32ac89",
+      "event_type": "INVITE_OPENED",
+      "locale": "en",
+      "created_at": "2026-10-06T16:36:58.440Z"
+    },
+    {
+      "id": "evt-1791298940558-8221m",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "19b57520-e4d8-453e-a9c3-a4e5f259fca8",
+      "event_type": "LANGUAGE_CHANGED",
+      "locale": "en",
+      "created_at": "2026-10-06T15:02:20.558Z"
+    },
+    {
+      "id": "evt-1791298920179-gskf0",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "19b57520-e4d8-453e-a9c3-a4e5f259fca8",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-06T15:02:00.179Z"
+    },
+    {
+      "id": "evt-1791298893421-kyql4",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "19b57520-e4d8-453e-a9c3-a4e5f259fca8",
+      "event_type": "INVITE_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-06T15:01:33.421Z"
+    },
+    {
       "id": "evt-1791242482393-xcbxm",
       "invitation_id": "00000000-0000-0000-0000-000000000001",
       "session_id": "b2b40345-bf3e-4186-9e68-d1efd7a53cea",
@@ -308,8 +348,35 @@
     "smtpSenderEmail": "",
     "smtpSenderName": "Ruben & Andrea",
     "spotifyPlaylistUrl": "https://open.spotify.com/playlist/4zpgM8knTb7CzrjMUQOS3E?si=fCg5_dv8ROSykKaaXqJxtw&utm_source=whatsapp&pi=TjLohFF3SQOMi",
-    "contactPhone": "",
-    "contactEmail": ""
+    "contactPhone": "+43 660 0000000",
+    "contactEmail": "wedding@theandyrubenwedding.website",
+    "enableDemoInvitation": true,
+    "demoDeleted": false,
+    "enableCalendarSync": true,
+    "enableEnvelopeCalligraphy": true,
+    "enableMealSelection": true,
+    "enableTravelConcierge": true,
+    "enableDayOfTimeline": false,
+    "enableGuestbook": false,
+    "enableTablePlanner": true,
+    "enableQrCheckin": false,
+    "enableRsvpReminders": true,
+    "enableBankTransfer": true,
+    "enableRevolut": true,
+    "revolutTag": "@ruben_andrea",
+    "revolutNote": "Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag",
+    "enableWise": true,
+    "wiseTag": "andrea.ruben@wise.com",
+    "wiseNote": "Ideal para transferencias internacionales multidivisa directas y seguras",
+    "enableCash": true,
+    "cashNote": "Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida para quienes deseen entregar su sobre en mano con sus mejores deseos.",
+    "resendApiKey": "",
+    "resendFromEmail": "invitation@theandyrubenwedding.website",
+    "resendFromName": "Ruben & Andrea",
+    "whatsappCloudToken": "",
+    "whatsappPhoneNumberId": "",
+    "whatsappGatewayUrl": "",
+    "whatsappGatewayKey": ""
   },
   "whatsappSession": {
     "status": "disconnected",
@@ -321,5 +388,84 @@
   },
   "wishes": [],
   "tableAssignments": [],
-  "checkIns": []
+  "checkIns": [],
+  "tables": [
+    {
+      "number": 1,
+      "name": "Ehrentisch (Head Table)",
+      "capacity": 8
+    },
+    {
+      "number": 2,
+      "name": "Schloss Hetzendorf",
+      "capacity": 10
+    },
+    {
+      "number": 3,
+      "name": "Schönbrunn Salon",
+      "capacity": 10
+    },
+    {
+      "number": 4,
+      "name": "St. Oswald",
+      "capacity": 10
+    },
+    {
+      "number": 5,
+      "name": "Wiener Walzer",
+      "capacity": 10
+    },
+    {
+      "number": 6,
+      "name": "Belvedere",
+      "capacity": 8
+    },
+    {
+      "number": 7,
+      "name": "Donauzauber",
+      "capacity": 8
+    },
+    {
+      "number": 8,
+      "name": "Kaiserin Elisabeth",
+      "capacity": 8
+    }
+  ],
+  "menuOptions": [
+    {
+      "id": "classic",
+      "name": "Classic (Beef Tenderloin & Viennese Specialties)",
+      "icon": "🥩",
+      "category": "meat",
+      "enabled": true
+    },
+    {
+      "id": "fish",
+      "name": "Fish (Alpine Char / Trout with Seasonal Vegetables)",
+      "icon": "🐟",
+      "category": "fish",
+      "enabled": true
+    },
+    {
+      "id": "vegetarian",
+      "name": "Vegetarian (Truffle Risotto & Specialties)",
+      "icon": "🥗",
+      "category": "vegetarian",
+      "enabled": true
+    },
+    {
+      "id": "vegan",
+      "name": "Vegan Gourmet Course",
+      "icon": "🌿",
+      "category": "vegan",
+      "enabled": true
+    },
+    {
+      "id": "kids",
+      "name": "Children's Menu (Wiener Schnitzerl)",
+      "icon": "🧒",
+      "category": "kids",
+      "enabled": true
+    }
+  ]
 }

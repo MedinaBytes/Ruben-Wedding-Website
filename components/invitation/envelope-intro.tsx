@@ -64,6 +64,17 @@ export function EnvelopeIntro({
   const shouldReduceMotion = useReducedMotion();
   const { play, soundEnabled, toggleSound } = useSound();
 
+  const isMobile = useSyncExternalStore(
+    (onStoreChange) => {
+      if (typeof window === "undefined") return () => {};
+      const mq = window.matchMedia("(max-width: 640px)");
+      mq.addEventListener("change", onStoreChange);
+      return () => mq.removeEventListener("change", onStoreChange);
+    },
+    () => (typeof window !== "undefined" ? window.matchMedia("(max-width: 640px)").matches : false),
+    () => false,
+  );
+
   // Intro states: "idle" -> "opening" -> "revealed" -> "navigating"
   const [step, setStep] = useState<"idle" | "opening" | "revealed" | "navigating">("idle");
 
@@ -98,11 +109,6 @@ export function EnvelopeIntro({
     play("seal-tap");
     setStep("opening");
 
-    if (shouldReduceMotion) {
-      setStep("revealed");
-      return;
-    }
-
     // Sequence timing
     setTimeout(() => {
       play("envelope-open");
@@ -111,7 +117,7 @@ export function EnvelopeIntro({
     setTimeout(() => {
       play("card-reveal");
       setStep("revealed");
-    }, 1400);
+    }, 1350);
   }
 
   function handleLanguageChange(code: string) {
@@ -179,8 +185,96 @@ export function EnvelopeIntro({
         {/* Subtle letterpress pattern & glow background */}
         <div className="envelope-stage__ambient" aria-hidden="true" />
 
+        {/* Ambient Botanical Framing Around the Envelope (Decorates perimeter, strictly behind envelope) */}
+        <div className="envelope-botanical-frame" aria-hidden="true">
+          {/* Top-Right Botanical Orchid Branch */}
+          <motion.div
+            className="envelope-botanical-flourish envelope-botanical-flourish--top-right"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{
+              opacity: step === "revealed" ? 0.72 : 0.9,
+              scale: step === "revealed" ? 1.03 : 1,
+              x: step === "revealed" ? 12 : 0,
+              y: step === "revealed" ? -8 : 0,
+            }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          >
+            <Image
+              src="/orchids/orchid-watercolor-branch.webp"
+              alt=""
+              width={240}
+              height={312}
+              priority
+              className="envelope-botanical-flourish__image"
+            />
+          </motion.div>
+
+          {/* Bottom-Left Botanical Orchid Foliage & Blossom */}
+          <motion.div
+            className="envelope-botanical-flourish envelope-botanical-flourish--bottom-left"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{
+              opacity: step === "revealed" ? 0.68 : 0.85,
+              scale: step === "revealed" ? 1.03 : 1,
+              x: step === "revealed" ? -10 : 0,
+              y: step === "revealed" ? 8 : 0,
+            }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
+          >
+            <Image
+              src="/orchids/orchid-leaves-cluster.webp"
+              alt=""
+              width={190}
+              height={228}
+              className="envelope-botanical-flourish__image"
+            />
+          </motion.div>
+
+          {/* Top-Left Delicate Bud Stem (Desktop/Tablet) */}
+          <motion.div
+            className="envelope-botanical-flourish envelope-botanical-flourish--top-left"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{
+              opacity: step === "revealed" ? 0.6 : 0.75,
+              scale: 1,
+            }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          >
+            <Image
+              src="/orchids/orchid-bud-stem.webp"
+              alt=""
+              width={110}
+              height={150}
+              className="envelope-botanical-flourish__image"
+            />
+          </motion.div>
+
+          {/* Bottom-Right Subtle Blossom Accent (Desktop/Tablet) */}
+          <motion.div
+            className="envelope-botanical-flourish envelope-botanical-flourish--bottom-right"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{
+              opacity: step === "revealed" ? 0.55 : 0.7,
+              scale: 1,
+            }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.25 }}
+          >
+            <Image
+              src="/orchids/orchid-single-bloom.webp"
+              alt=""
+              width={90}
+              height={90}
+              className="envelope-botanical-flourish__image"
+            />
+          </motion.div>
+        </div>
+
         {/* 3D Envelope Container */}
-        <div className={`envelope-3d ${step !== "idle" ? "envelope-3d--open" : ""}`}>
+        <div
+          className={`envelope-3d ${step !== "idle" ? "envelope-3d--open" : ""}`}
+          onClick={step === "idle" ? handleOpen : undefined}
+          style={{ cursor: step === "idle" ? "pointer" : "default" }}
+        >
           {/* Back Paper */}
           <div className="envelope-3d__back" aria-hidden="true" />
 
@@ -190,16 +284,31 @@ export function EnvelopeIntro({
             initial={false}
             animate={
               shouldReduceMotion
-                ? { opacity: step === "revealed" || step === "navigating" ? 1 : 0 }
+                ? {
+                    y: step === "idle" ? 15 : isMobile ? -130 : -190,
+                    opacity: step === "idle" ? 0 : 1,
+                    scale: 1,
+                    z: step === "idle" ? 2 : 35,
+                    zIndex: step === "idle" ? 2 : 35,
+                    transition: { duration: 0.4 },
+                  }
                 : step === "idle"
-                  ? { y: 15, opacity: 0, scale: 0.92, zIndex: 2 }
+                  ? { y: 15, opacity: 0, scale: 0.92, z: 2, zIndex: 2 }
                   : step === "opening"
-                    ? { y: -60, opacity: 1, scale: 0.98, zIndex: 15, transition: { duration: 0.85, delay: 0.45, ease: [0.2, 0.7, 0.2, 1] } }
-                    : {
-                        y: -195,
+                    ? {
+                        y: isMobile ? -45 : -60,
                         opacity: 1,
-                        scale: 1.03,
-                        zIndex: 30,
+                        scale: 0.98,
+                        z: 18,
+                        zIndex: 18,
+                        transition: { duration: 0.85, delay: 0.45, ease: [0.2, 0.7, 0.2, 1] },
+                      }
+                    : {
+                        y: isMobile ? -130 : -190,
+                        opacity: 1,
+                        scale: isMobile ? 1.01 : 1.03,
+                        z: 35,
+                        zIndex: 35,
                         boxShadow: "0 25px 60px rgba(50, 30, 35, 0.22)",
                         transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
                       }
@@ -264,12 +373,22 @@ export function EnvelopeIntro({
           <motion.div
             className="envelope-3d__top-flap"
             initial={false}
+            style={{
+              transformOrigin: "top center",
+              transformStyle: "preserve-3d",
+              WebkitTransformStyle: "preserve-3d",
+            }}
             animate={
               shouldReduceMotion
-                ? { opacity: step === "idle" ? 1 : 0 }
+                ? {
+                    rotateX: step === "idle" ? 0 : -180,
+                    z: step === "idle" ? 12 : -2,
+                    zIndex: step === "idle" ? 12 : 1,
+                    transition: { duration: 0.35 },
+                  }
                 : step === "idle"
-                  ? { rotateX: 0, zIndex: 12 }
-                  : { rotateX: -180, zIndex: 1, transition: { duration: 0.85, ease: [0.25, 1, 0.5, 1] } }
+                  ? { rotateX: 0, z: 12, zIndex: 12 }
+                  : { rotateX: -180, z: -2, zIndex: 1, transition: { duration: 0.85, ease: [0.25, 1, 0.5, 1] } }
             }
           >
             <div className="envelope-3d__top-flap-triangle" />
@@ -281,13 +400,17 @@ export function EnvelopeIntro({
               type="button"
               className="envelope-seal"
               onClick={handleOpen}
+              style={{
+                transformOrigin: "50% 50%",
+                touchAction: "manipulation",
+              }}
               whileHover={step === "idle" ? { scale: 1.06, x: "-50%", y: "-50%" } : {}}
               whileTap={step === "idle" ? { scale: 0.95, x: "-50%", y: "-50%" } : {}}
-              initial={{ scale: 0.9, opacity: 0, x: "-50%", y: "-50%" }}
+              initial={{ scale: 0.9, opacity: 0, x: "-50%", y: "-50%", z: 22 }}
               animate={
                 step === "idle"
-                  ? { scale: 1, opacity: 1, x: "-50%", y: "-50%" }
-                  : { scale: [1, 1.25, 0], opacity: [1, 0.7, 0], rotate: [0, -8, 12], x: "-50%", y: "-50%" }
+                  ? { scale: 1, opacity: 1, x: "-50%", y: "-50%", z: 22 }
+                  : { scale: [1, 1.25, 0], opacity: [1, 0.7, 0], rotate: [0, -8, 12], x: "-50%", y: "-50%", z: 22 }
               }
               transition={step === "opening" ? { duration: 0.45 } : { duration: 0.5, ease: "easeOut" }}
               aria-label={`${openPrompt} — Wax Seal`}

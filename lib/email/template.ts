@@ -27,6 +27,8 @@ export function buildEnvelopeInvitationHtml({
 
   const cleanSiteUrl = siteUrl.replace(/\/$/, "");
   const sealImageUrl = `${cleanSiteUrl}/orchids/seal-monogram.png`;
+  const flowerSprayUrl = `${cleanSiteUrl}/orchids/orchid-spray-horizontal.png`;
+  const flowerBloomUrl = `${cleanSiteUrl}/orchids/orchid-single-bloom.png`;
 
   // Localized texts
   const t = {
@@ -123,6 +125,19 @@ export function buildEnvelopeInvitationHtml({
         <!-- Wrapper 600px Max -->
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 620px; margin: 0 auto;">
           
+          <!-- Top Royal Botanical Crest -->
+          <tr>
+            <td align="center" style="padding-bottom: 12px;">
+              <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                <tr>
+                  <td align="center">
+                    <img src="${flowerSprayUrl}" width="138" height="105" alt="Orquídeas Vienesas" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 138px; height: auto;" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
           <!-- Top Royal Crown / Monogram Bar -->
           <tr>
             <td align="center" style="padding-bottom: 18px;">
@@ -197,7 +212,20 @@ export function buildEnvelopeInvitationHtml({
                       ${guestName}
                     </h1>
 
-                    <div style="width: 140px; height: 1px; background: linear-gradient(90deg, transparent, #CCA468, transparent); margin: 0 auto 24px auto;"></div>
+                    <!-- Bespoke Botanical Divider with Single Orchid Bloom -->
+                    <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 22px auto; width: 230px; max-width: 85%;">
+                      <tr>
+                        <td valign="middle" style="width: 85px;">
+                          <div style="height: 1px; background: linear-gradient(90deg, transparent, #CCA468);"></div>
+                        </td>
+                        <td align="center" valign="middle" style="padding: 0 10px; width: 44px;">
+                          <img src="${flowerBloomUrl}" width="36" height="40" alt="Orquídea" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 36px; height: auto;" />
+                        </td>
+                        <td valign="middle" style="width: 85px;">
+                          <div style="height: 1px; background: linear-gradient(90deg, #CCA468, transparent);"></div>
+                        </td>
+                      </tr>
+                    </table>
 
                     <!-- Personal Invitation Lead -->
                     <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.65; color: #43393B; margin: 0 0 16px 0; max-width: 480px;">
@@ -209,9 +237,13 @@ export function buildEnvelopeInvitationHtml({
                     </p>
 
                     <!-- CEREMONY & RECEPTION HIGHLIGHT BOX -->
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #FFFFFF; border: 1px solid #E6DCD2; border-radius: 12px; padding: 20px; margin-bottom: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #FFFFFF; border: 1px solid #E6DCD2; border-radius: 12px; padding: 22px 20px 20px 20px; margin-bottom: 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
                       <tr>
-                        <td align="center" style="padding-bottom: 14px;">
+                        <td align="center" style="padding-bottom: 12px;">
+                          <!-- Dainty Orchid Flourish crowning the date -->
+                          <div style="margin-bottom: 6px;">
+                            <img src="${flowerSprayUrl}" width="68" height="52" alt="Orchids" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 68px; height: auto; opacity: 0.9;" />
+                          </div>
                           <div style="font-family: Georgia, serif; font-size: 14px; font-weight: 700; color: #8C2836; letter-spacing: 1px;">
                             ${t.dateText}
                           </div>
@@ -271,7 +303,10 @@ export function buildEnvelopeInvitationHtml({
 
                 <!-- ENVELOPE FOOTER -->
                 <tr>
-                  <td style="background-color: #F2EBE1; padding: 20px 24px; text-align: center; border-top: 1px solid #DFD5C8; font-size: 11px; color: #7F736E; line-height: 1.5;">
+                  <td align="center" style="background-color: #F2EBE1; padding: 22px 24px; text-align: center; border-top: 1px solid #DFD5C8; font-size: 11px; color: #7F736E; line-height: 1.5;">
+                    <div style="margin-bottom: 10px;">
+                      <img src="${flowerBloomUrl}" width="28" height="31" alt="Orquídea" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 28px; height: auto; opacity: 0.85;" />
+                    </div>
                     <strong style="color: #4C413D;">Ruben &amp; Andrea Wedding</strong> · Schloss Hetzendorf, Wien<br />
                     ${t.privateNotice}
                   </td>

@@ -85,7 +85,7 @@ export default async function AdminOverviewPage() {
   }
   const songs = Array.from(songMap.values());
 
-  // Metrics with explicit denominators
+  // Metrics
   const totalInvitations = invitations.length;
   const activeInvitations = invitations.filter((i) => i.status === "active").length;
   const totalGuestCapacity = invitations.reduce((sum, i) => sum + (i.max_guests || 1), 0);
@@ -111,9 +111,16 @@ export default async function AdminOverviewPage() {
   const pendingCount = Math.max(0, activeInvitations - (confirmedRsvps.length + declinedRsvps.length));
   const attendanceRatePercent = totalGuestCapacity > 0 ? Math.round((confirmedAttendees / totalGuestCapacity) * 100) : 0;
 
+  // Segmented RSVP percentages
+  const rsvpTotalDenominator = Math.max(1, activeInvitations);
+  const yesPercent = Math.round((confirmedRsvps.length / rsvpTotalDenominator) * 100);
+  const noPercent = Math.round((declinedRsvps.length / rsvpTotalDenominator) * 100);
+  const pendingPercent = Math.max(0, 100 - yesPercent - noPercent);
+
   // Songs summary
   const totalSongs = songs.length;
   const playlistSelected = songs.filter((s) => s.selected_for_playlist).length;
+  const playlistPercent = totalSongs > 0 ? Math.round((playlistSelected / totalSongs) * 100) : 0;
 
   const settings = resilientStore.getSettings();
   const hasResend = Boolean(settings.resendApiKey || process.env.RESEND_API_KEY);
@@ -121,36 +128,17 @@ export default async function AdminOverviewPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      {/* Top Hero Banner */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #FFFFFF 0%, #FAF6F3 100%)",
-          border: "1px solid #EAE1D9",
-          borderRadius: "14px",
-          padding: "1.75rem 2rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "1.25rem",
-          boxShadow: "0 2px 10px rgba(45, 25, 30, 0.03)",
-        }}
-      >
+      {/* Unboxed Clean Page Header */}
+      <div className="admin-page-header">
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
-            <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, color: "#8C2836" }}>
-              Panel General de Control
-            </span>
-            <span style={{ color: "#D1C4C7" }}>·</span>
-            <span style={{ fontSize: "0.78rem", color: "#6A5D60" }}>
-              Palacio Hetzendorf · 2 de Octubre, 2027
-            </span>
+          <div className="admin-page-header__eyebrow">
+            Palacio Hetzendorf · Viena 2027
           </div>
-          <h1 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "2.1rem", margin: 0, color: "#2B2425", fontWeight: 600 }}>
-            Ruben &amp; Andrea — Boda en Viena
+          <h1 className="admin-page-header__title">
+            Dashboard &amp; Asistencia
           </h1>
-          <p style={{ margin: "0.35rem 0 0 0", color: "#6B5E60", fontSize: "0.92rem" }}>
-            Monitor en vivo de invitaciones, confirmación de asistencia, música y servicios de boda.
+          <p className="admin-page-header__subtitle">
+            Supervisión en tiempo real de invitaciones, confirmación de invitados y música.
           </p>
         </div>
 
@@ -158,183 +146,169 @@ export default async function AdminOverviewPage() {
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
           <Link
             href="/admin/settings#email"
-            style={{
-              textDecoration: "none",
-              fontSize: "0.76rem",
-              background: hasResend ? "#EBF5EA" : "#FFF8E6",
-              color: hasResend ? "#245A22" : "#8A6200",
-              border: `1px solid ${hasResend ? "#CCE5C8" : "#FFE7A3"}`,
-              padding: "0.35rem 0.75rem",
-              borderRadius: "999px",
-              fontWeight: 600,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.4rem",
-            }}
+            className={`admin-status-badge ${hasResend ? "admin-status-badge--success" : "admin-status-badge--warning"}`}
           >
-            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: hasResend ? "#2E7D32" : "#B78103" }} />
-            {hasResend ? "Resend API: Conectado" : "Resend: Requiere Clave"}
+            <span className="admin-status-badge__dot" />
+            <span>{hasResend ? "Resend Conectado" : "Resend: Clave Pendiente"}</span>
           </Link>
 
           <Link
             href="/admin/settings#demo"
-            style={{
-              textDecoration: "none",
-              fontSize: "0.76rem",
-              background: isDemo ? "#F0F4FA" : "#F7F3EF",
-              color: isDemo ? "#2A5298" : "#6E6264",
-              border: `1px solid ${isDemo ? "#D3DFEE" : "#E5DDD6"}`,
-              padding: "0.35rem 0.75rem",
-              borderRadius: "999px",
-              fontWeight: 600,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.4rem",
-            }}
+            className="admin-status-badge admin-status-badge--info"
           >
-            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: isDemo ? "#3B6FB6" : "#9E9093" }} />
-            {isDemo ? "Modo Demo Activo" : "Modo Producción"}
+            <span className="admin-status-badge__dot" />
+            <span>{isDemo ? "Modo Demo Activo" : "Modo Producción"}</span>
           </Link>
         </div>
       </div>
 
-      {/* 4 Executive KPI Cards */}
+      {/* 4 Balanced KPI Cards (Identical Height & Layout) */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.25rem" }}>
-        {/* Card 1: Invitaciones & Open Rate */}
-        <div className="admin-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8A7E80", fontWeight: 700 }}>
-              Apertura de Invitaciones
-            </span>
-            <span style={{ color: "#8C2836" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect width="20" height="16" x="2" y="4" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-            </span>
+        {/* Card 1: Invitaciones */}
+        <div className="admin-stat-card">
+          <div>
+            <div className="admin-stat-card__head">
+              <span className="admin-stat-card__label">Apertura Invitaciones</span>
+              <div className="admin-stat-card__icon-badge" style={{ background: "#FDF2F4", color: "#8C2836" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="admin-stat-card__metric-row">
+              <span className="admin-stat-card__value">{openRatePercent}%</span>
+              <span className="admin-stat-card__unit">tasa de apertura</span>
+            </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "2.4rem", fontFamily: "var(--font-display, Georgia, serif)", fontWeight: 700, color: "#8C2836", lineHeight: 1 }}>
-              {openRatePercent}%
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "#776A6C" }}>tasa de apertura</span>
+          <div>
+            <div className="admin-stat-card__bar-wrap">
+              <div
+                className="admin-stat-card__bar"
+                style={{ width: `${Math.min(100, openRatePercent)}%`, background: "#8C2836" }}
+              />
+            </div>
+            <p className="admin-stat-card__meta">
+              <span>{openedCount} abiertas</span>
+              <span>de {activeInvitations} activas ({totalInvitations} tot.)</span>
+            </p>
           </div>
-
-          {/* Progress bar */}
-          <div style={{ height: "6px", background: "#F2ECE7", borderRadius: "999px", overflow: "hidden", marginBottom: "0.6rem" }}>
-            <div style={{ width: `${Math.min(100, openRatePercent)}%`, height: "100%", background: "#8C2836", borderRadius: "999px" }} />
-          </div>
-
-          <p style={{ fontSize: "0.82rem", color: "#544648", margin: 0, lineHeight: 1.4 }}>
-            <strong>{openedCount}</strong> abiertas de <strong>{activeInvitations}</strong> invitaciones activas ({totalInvitations} registradas)
-          </p>
         </div>
 
         {/* Card 2: Asistencia Confirmada */}
-        <div className="admin-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8A7E80", fontWeight: 700 }}>
-              Asistencia al Palacio
-            </span>
-            <span style={{ color: "#55644E" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <polyline points="16 11 18 13 22 9" />
-              </svg>
-            </span>
+        <div className="admin-stat-card">
+          <div>
+            <div className="admin-stat-card__head">
+              <span className="admin-stat-card__label">Asistencia al Palacio</span>
+              <div className="admin-stat-card__icon-badge" style={{ background: "#F2F6F0", color: "#55644E" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <polyline points="16 11 18 13 22 9" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="admin-stat-card__metric-row">
+              <span className="admin-stat-card__value">{confirmedAttendees}</span>
+              <span className="admin-stat-card__unit">/ {totalGuestCapacity} plazas</span>
+            </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "baseline", gap: "0.4rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "2.4rem", fontFamily: "var(--font-display, Georgia, serif)", fontWeight: 700, color: "#55644E", lineHeight: 1 }}>
-              {confirmedAttendees}
-            </span>
-            <span style={{ fontSize: "0.95rem", color: "#776A6C" }}>/ {totalGuestCapacity} plazas</span>
+          <div>
+            <div className="admin-stat-card__bar-wrap">
+              <div
+                className="admin-stat-card__bar"
+                style={{ width: `${Math.min(100, attendanceRatePercent)}%`, background: "#55644E" }}
+              />
+            </div>
+            <p className="admin-stat-card__meta">
+              <span>{attendanceRatePercent}% del aforo</span>
+              <span>{confirmedRsvps.length} confirmados</span>
+            </p>
           </div>
-
-          <div style={{ height: "6px", background: "#F2ECE7", borderRadius: "999px", overflow: "hidden", marginBottom: "0.6rem" }}>
-            <div style={{ width: `${Math.min(100, attendanceRatePercent)}%`, height: "100%", background: "#55644E", borderRadius: "999px" }} />
-          </div>
-
-          <p style={{ fontSize: "0.82rem", color: "#544648", margin: 0, lineHeight: 1.4 }}>
-            <strong>{attendanceRatePercent}%</strong> del aforo imperial confirmado
-          </p>
         </div>
 
         {/* Card 3: Respuestas RSVP */}
-        <div className="admin-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8A7E80", fontWeight: 700 }}>
-              Estado de Respuestas RSVP
-            </span>
-            <span style={{ color: "#B88636" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </span>
-          </div>
+        <div className="admin-stat-card">
+          <div>
+            <div className="admin-stat-card__head">
+              <span className="admin-stat-card__label">Estado de Respuestas</span>
+              <div className="admin-stat-card__icon-badge" style={{ background: "#FFF9EC", color: "#A87A26" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+            </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", margin: "0.6rem 0 0.8rem" }}>
-            <div style={{ background: "#FAF8F6", padding: "0.5rem", borderRadius: "6px", textAlign: "center", border: "1px solid #ECE4DD" }}>
-              <span style={{ fontSize: "1.3rem", fontWeight: 700, color: "#55644E", display: "block" }}>{confirmedRsvps.length}</span>
-              <span style={{ fontSize: "0.72rem", color: "#6E6264", fontWeight: 600 }}>Sí asisten</span>
-            </div>
-            <div style={{ background: "#FAF8F6", padding: "0.5rem", borderRadius: "6px", textAlign: "center", border: "1px solid #ECE4DD" }}>
-              <span style={{ fontSize: "1.3rem", fontWeight: 700, color: "#8C2836", display: "block" }}>{declinedRsvps.length}</span>
-              <span style={{ fontSize: "0.72rem", color: "#6E6264", fontWeight: 600 }}>No asisten</span>
-            </div>
-            <div style={{ background: "#FAF8F6", padding: "0.5rem", borderRadius: "6px", textAlign: "center", border: "1px solid #ECE4DD" }}>
-              <span style={{ fontSize: "1.3rem", fontWeight: 700, color: "#A87A26", display: "block" }}>{pendingCount}</span>
-              <span style={{ fontSize: "0.72rem", color: "#6E6264", fontWeight: 600 }}>Pendientes</span>
+            <div className="admin-stat-card__metric-row">
+              <span className="admin-stat-card__value">{pendingCount}</span>
+              <span className="admin-stat-card__unit">pendientes de responder</span>
             </div>
           </div>
 
-          <p style={{ fontSize: "0.82rem", color: "#776A6C", margin: 0 }}>
-            {rsvps.length} respuestas de {activeInvitations} familias
-          </p>
+          <div>
+            {/* Segmented bar: Green (Yes), Burgundy (No), Amber (Pending) */}
+            <div className="admin-stat-card__segmented-bar">
+              <div style={{ width: `${yesPercent}%`, background: "#55644E" }} title={`${confirmedRsvps.length} Sí`} />
+              <div style={{ width: `${noPercent}%`, background: "#8C2836" }} title={`${declinedRsvps.length} No`} />
+              <div style={{ width: `${pendingPercent}%`, background: "#D8C6B6" }} title={`${pendingCount} Pendientes`} />
+            </div>
+            <p className="admin-stat-card__meta">
+              <span>{confirmedRsvps.length} Sí</span>
+              <span>·</span>
+              <span>{declinedRsvps.length} No</span>
+              <span>·</span>
+              <span>{pendingCount} Pendientes</span>
+            </p>
+          </div>
         </div>
 
-        {/* Card 4: Canciones de Fiesta */}
-        <div className="admin-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#8A7E80", fontWeight: 700 }}>
-              Música &amp; Playlist
-            </span>
-            <span style={{ color: "#1DB954" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M9 18V5l12-2v13" />
-                <circle cx="6" cy="18" r="3" />
-                <circle cx="18" cy="16" r="3" />
-              </svg>
-            </span>
+        {/* Card 4: Música */}
+        <div className="admin-stat-card">
+          <div>
+            <div className="admin-stat-card__head">
+              <span className="admin-stat-card__label">Música &amp; Playlist</span>
+              <div className="admin-stat-card__icon-badge" style={{ background: "#EFFBF2", color: "#1DB954" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="admin-stat-card__metric-row">
+              <span className="admin-stat-card__value">{totalSongs}</span>
+              <span className="admin-stat-card__unit">canciones sugeridas</span>
+            </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "baseline", gap: "0.4rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "2.4rem", fontFamily: "var(--font-display, Georgia, serif)", fontWeight: 700, color: "#2B2425", lineHeight: 1 }}>
-              {totalSongs}
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "#776A6C" }}>canciones sugeridas</span>
+          <div>
+            <div className="admin-stat-card__bar-wrap">
+              <div
+                className="admin-stat-card__bar"
+                style={{ width: `${Math.min(100, playlistPercent)}%`, background: "#1DB954" }}
+              />
+            </div>
+            <p className="admin-stat-card__meta">
+              <span>{playlistSelected} en setlist</span>
+              <span>{Math.max(0, totalSongs - playlistSelected)} por evaluar</span>
+            </p>
           </div>
-
-          <div style={{ height: "6px", background: "#F2ECE7", borderRadius: "999px", overflow: "hidden", marginBottom: "0.6rem" }}>
-            <div style={{ width: `${Math.min(100, totalSongs > 0 ? (playlistSelected / totalSongs) * 100 : 0)}%`, height: "100%", background: "#1DB954", borderRadius: "999px" }} />
-          </div>
-
-          <p style={{ fontSize: "0.82rem", color: "#544648", margin: 0, lineHeight: 1.4 }}>
-            <strong>{playlistSelected}</strong> aprobadas para el setlist oficial del DJ
-          </p>
         </div>
       </div>
 
-      {/* Quick Action Navigation Grid */}
+      {/* Quick Navigation Cards */}
       <div>
-        <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: "0 0 1rem 0", color: "#2B2425", fontWeight: 600 }}>
+        <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.3rem", margin: "0 0 1rem 0", color: "#2B2425", fontWeight: 600 }}>
           Accesos Rápidos de Gestión
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))", gap: "1.25rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
           {/* Action 1 */}
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -382,7 +356,7 @@ export default async function AdminOverviewPage() {
           <div className="admin-card">
             <h3 style={{ fontSize: "1.05rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ color: "#55644E" }}>✓</span>
-              <span>RSVPs &amp; Dietas Especiales</span>
+              <span>RSVPs &amp; Menús de Invitados</span>
             </h3>
             <p style={{ color: "#6A5D60", fontSize: "0.86rem", lineHeight: 1.5, margin: "0 0 1.25rem 0" }}>
               Revisa los nombres de asistentes, alergias alimentarias, opciones de menú y comentarios de los invitados.

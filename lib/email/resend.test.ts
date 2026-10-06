@@ -55,6 +55,8 @@ describe("Resend email integration & template", () => {
     expect(html).toContain("Archduke Ferdinand & Guest");
     expect(html).toContain("https://theandyrubenwedding.website/i/archduke-token");
     expect(html).toContain("seal-monogram.png");
+    expect(html).toContain("orchid-spray-horizontal.png");
+    expect(html).toContain("orchid-single-bloom.png");
     expect(html).toContain("✦ TOCA EL SELLO LACRADO PARA ABRIR TU INVITACIÓN ✦");
     expect(html).toContain("Kath. Kirche St. Oswald");
     expect(html).toContain("Schloss Hetzendorf");

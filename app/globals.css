@@ -4359,12 +4359,86 @@ a {
   perspective: 1400px;
 }
 
+/* Ambient Botanical Vignette Framing Around the Envelope */
+.envelope-botanical-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.envelope-botanical-flourish {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 12px 28px rgba(50, 30, 35, 0.07));
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+}
+
+.envelope-botanical-flourish--top-right {
+  top: clamp(0.75rem, 4vh, 2.75rem);
+  right: clamp(0.75rem, 5vw, 3.5rem);
+  width: clamp(140px, 18vw, 230px);
+  height: auto;
+}
+
+.envelope-botanical-flourish--bottom-left {
+  bottom: clamp(0.75rem, 4vh, 2.75rem);
+  left: clamp(0.75rem, 5vw, 3.5rem);
+  width: clamp(120px, 16vw, 190px);
+  height: auto;
+}
+
+.envelope-botanical-flourish--top-left {
+  top: clamp(1rem, 5vh, 3.5rem);
+  left: clamp(1rem, 5vw, 4rem);
+  width: clamp(75px, 9vw, 115px);
+  height: auto;
+}
+
+.envelope-botanical-flourish--bottom-right {
+  bottom: clamp(1rem, 5vh, 3.5rem);
+  right: clamp(1rem, 5vw, 4rem);
+  width: clamp(70px, 8vw, 105px);
+  height: auto;
+}
+
+.envelope-botanical-flourish__image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .envelope-botanical-flourish--top-right {
+    top: 0.5rem;
+    right: -10px;
+    width: clamp(90px, 25vw, 130px);
+    opacity: 0.65;
+  }
+
+  .envelope-botanical-flourish--bottom-left {
+    bottom: 0.5rem;
+    left: -10px;
+    width: clamp(80px, 22vw, 115px);
+    opacity: 0.6;
+  }
+
+  .envelope-botanical-flourish--top-left,
+  .envelope-botanical-flourish--bottom-right {
+    display: none;
+  }
+}
+
 .envelope-3d {
   position: relative;
   width: min(94vw, 500px);
   height: min(64vw, 330px);
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transition: transform 0.8s var(--ease-editorial);
+  z-index: 3;
 }
 
 .envelope-3d--open {
@@ -4381,6 +4455,8 @@ a {
     0 4px 10px rgba(0, 0, 0, 0.05);
   border: 1px solid #DCD3CB;
   z-index: 1;
+  transform: translateZ(0px);
+  -webkit-transform: translateZ(0px);
 }
 
 /* Inside Card - Properly sized and centered */
@@ -4532,6 +4608,8 @@ a {
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(140, 40, 54, 0.35);
   transition: all 0.25s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .envelope-card__enter-btn:hover {
@@ -4546,6 +4624,8 @@ a {
   inset: 0;
   pointer-events: none;
   z-index: 10;
+  transform: translateZ(8px);
+  -webkit-transform: translateZ(8px);
 }
 
 .envelope-3d__flap-left {
@@ -4580,7 +4660,11 @@ a {
   right: 0;
   height: 100%;
   transform-origin: top center;
+  -webkit-transform-origin: top center;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
   pointer-events: none;
   z-index: 12;
 }
@@ -4591,6 +4675,8 @@ a {
   clip-path: polygon(0 0, 50% 55%, 100% 0);
   background: #E5DDD7;
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.08));
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 /* Handcrafted Wax Seal button */
@@ -4607,6 +4693,8 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .envelope-seal__image-wrap {
@@ -4654,6 +4742,78 @@ a {
   color: #3D4A32;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   pointer-events: none;
+}
+
+/* Dedicated Mobile Optimizations for 3D Envelope and Card */
+@media (max-width: 640px) {
+  .envelope-3d {
+    width: min(92vw, 380px);
+    height: min(60vw, 240px);
+  }
+
+  .envelope-3d--open {
+    transform: translateY(32px);
+  }
+
+  .envelope-card {
+    top: 8px;
+    left: 10px;
+    right: 10px;
+    height: clamp(260px, 72vw, 305px);
+    padding: 0.9rem 0.75rem;
+  }
+
+  .envelope-card__inner {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .envelope-card__monogram {
+    font-size: 1.15rem;
+  }
+
+  .envelope-card__monogram i {
+    font-size: 1.3rem;
+  }
+
+  .envelope-card__greeting-to {
+    font-size: clamp(1.35rem, 4.5vw, 1.75rem);
+    margin-top: 0.1rem;
+  }
+
+  .envelope-card__divider {
+    margin: 0.25rem auto;
+    width: 2.2rem;
+  }
+
+  .envelope-card__title {
+    font-size: clamp(1.1rem, 3.8vw, 1.35rem);
+  }
+
+  .envelope-card__celebrate {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+
+  .envelope-card__date {
+    font-size: 0.72rem;
+  }
+
+  .envelope-card__enter-btn {
+    margin-top: 0.45rem;
+    padding: 0.45rem 1.15rem;
+    font-size: 0.75rem;
+  }
+
+  .envelope-seal__image-wrap {
+    width: 92px;
+    height: 92px;
+  }
+
+  .envelope-seal__pulse {
+    top: 46px;
+    width: 88px;
+    height: 88px;
+  }
 }
 
 .envelope-calligraphy {
@@ -6033,10 +6193,11 @@ a {
 }
 
 .admin-nav-item--active {
-  background: #8C2836 !important;
-  color: #FFFFFF !important;
+  background: #F4EAE6 !important;
+  color: #8C2836 !important;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(140, 40, 54, 0.22);
+  border-color: #E6D2C5 !important;
+  box-shadow: none !important;
 }
 
 .admin-nav-item__icon {
@@ -6388,6 +6549,185 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+/* Executive Dashboard Header & Cards */
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+
+.admin-page-header__eyebrow {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: #8C2836;
+  margin-bottom: 0.25rem;
+}
+
+.admin-page-header__title {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.95rem;
+  font-weight: 600;
+  color: #2B2425;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.admin-page-header__subtitle {
+  font-size: 0.88rem;
+  color: #6E6063;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.admin-status-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.admin-status-badge--success {
+  background: #EBF5EA;
+  color: #245A22;
+  border: 1px solid #CCE5C8;
+}
+
+.admin-status-badge--success .admin-status-badge__dot {
+  background: #2E7D32;
+}
+
+.admin-status-badge--warning {
+  background: #FFF8E6;
+  color: #8A6200;
+  border: 1px solid #FFE7A3;
+}
+
+.admin-status-badge--warning .admin-status-badge__dot {
+  background: #B78103;
+}
+
+.admin-status-badge--info {
+  background: #F0F4FA;
+  color: #2A5298;
+  border: 1px solid #D3DFEE;
+}
+
+.admin-status-badge--info .admin-status-badge__dot {
+  background: #3B6FB6;
+}
+
+/* Stat Cards (Exact same height and visual rhythm) */
+.admin-stat-card {
+  background: #FFFFFF;
+  border: 1px solid #EAE2DB;
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: 0 1px 3px rgba(35, 20, 25, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 168px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-stat-card:hover {
+  border-color: #DDD1C7;
+  box-shadow: 0 4px 12px rgba(35, 20, 25, 0.05);
+}
+
+.admin-stat-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.admin-stat-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8A7B7E;
+  font-weight: 700;
+}
+
+.admin-stat-card__icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-stat-card__metric-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+.admin-stat-card__value {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #2B2425;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.admin-stat-card__unit {
+  font-size: 0.84rem;
+  color: #7A6D70;
+  font-weight: 500;
+}
+
+.admin-stat-card__bar-wrap {
+  height: 5px;
+  background: #F2ECE7;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.admin-stat-card__bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.admin-stat-card__segmented-bar {
+  display: flex;
+  height: 5px;
+  background: #F2ECE7;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.admin-stat-card__meta {
+  font-size: 0.8rem;
+  color: #6E6063;
+  margin: 0;
+  line-height: 1.4;
 }
 
 
