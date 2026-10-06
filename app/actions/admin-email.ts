@@ -5,6 +5,8 @@ import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
+import { getResendConfig, sendEmailViaResend } from "@/lib/email/resend";
 
 export interface SmtpTestResult {
   success: boolean;
@@ -15,6 +17,7 @@ export interface SmtpTestResult {
 export interface SendInvitationEmailResult {
   success: boolean;
   messageId?: string;
+  provider?: "resend" | "smtp";
   error?: string;
 }
 
@@ -32,146 +35,7 @@ async function getSmtpConfig() {
   return { host, port, secure, user, pass, fromEmail, fromName };
 }
 
-function buildInvitationEmailHtml({
-  guestName,
-  invitationUrl,
-  language = "en",
-}: {
-  guestName: string;
-  invitationUrl: string;
-  language?: string;
-}) {
-  const isEs = language === "es" || language.startsWith("es");
-  const isDe = language === "de" || language === "de-AT" || language.startsWith("de");
-  const isHu = language === "hu" || language.startsWith("hu");
-
-  const eyebrow = isEs
-    ? "CELEBRACIÓN PRIVADA DE BODA"
-    : isDe
-      ? "HOCHZEITSEINLADUNG"
-      : isHu
-        ? "ESKÜVŐI MEGHÍVÓ"
-        : "A PRIVATE WEDDING CELEBRATION";
-
-  const greeting = isEs
-    ? `Estimado/a ${guestName},`
-    : isDe
-      ? `Liebe/r ${guestName},`
-      : isHu
-        ? `Kedves ${guestName}!`
-        : `Dear ${guestName},`;
-
-  const leadText = isEs
-    ? "Ruben y Andrea tienen el honor y la inmensa alegría de invitarte a celebrar su boda en Viena."
-    : isDe
-      ? "Ruben & Andrea geben sich die Ehre und freuen sich riesig, Dich zu ihrer Hochzeit in Wien einzuladen."
-      : isHu
-        ? "Ruben és Andrea szeretettel és örömmel hívnak meg esküvőjük megünneplésére Bécsbe."
-        : "Ruben & Andrea request the pleasure of your company to celebrate their wedding in Vienna.";
-
-  const bodyText = isEs
-    ? "Hemos preparado una experiencia digital interactiva con todos los detalles del evento, lugares, código de vestimenta, hospedaje y confirmación de asistencia (RSVP)."
-    : isDe
-      ? "Wir haben eine interaktive digitale Einladung mit allen Details zu Ablauf, Veranstaltungsorten, Dresscode, Anreise und Rückmeldung (RSVP) für Dich vorbereitet."
-      : isHu
-        ? "Készítettünk egy digitális élményt a rendezvény minden részletével, a helyszínekkel, az öltözködési kóddal, a szállással és a visszajelzéssel (RSVP)."
-        : "We have prepared an interactive digital invitation with full details for the ceremony, celebration venues, dress code, travel, and RSVP.";
-
-  const ctaText = isEs
-    ? "Ver Invitación Personalizada →"
-    : isDe
-      ? "Zur persönlichen Einladung →"
-      : isHu
-        ? "Személyes meghívó megnyitása →"
-        : "Open Your Personal Invitation →";
-
-  const datePlace = isEs
-    ? "Sábado, 2 de Octubre de 2027 · Viena, Austria"
-    : isDe
-      ? "Samstag, 2. Oktober 2027 · Wien, Österreich"
-      : isHu
-        ? "2027. október 2., szombat · Bécs, Ausztria"
-        : "Saturday, October 2, 2027 · Vienna, Austria";
-
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ruben &amp; Andrea Wedding</title>
-      </head>
-      <body style="margin: 0; padding: 0; background-color: #FAF7F5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, serif; color: #2B2425;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #FAF7F5; padding: 30px 15px;">
-          <tr>
-            <td align="center">
-              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 580px; background-color: #FFFFFF; border-radius: 12px; overflow: hidden; border: 1px solid #E6DED8; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
-                <!-- Header Banner -->
-                <tr>
-                  <td align="center" style="background: linear-gradient(135deg, #8C2836 0%, #681C26 100%); padding: 35px 20px 30px 20px;">
-                    <div style="font-family: Georgia, serif; font-size: 28px; color: #CCA468; letter-spacing: 4px; font-weight: normal; margin-bottom: 8px;">
-                      R &amp; A
-                    </div>
-                    <div style="color: rgba(255,255,255,0.85); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">
-                      ${eyebrow}
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Content Area -->
-                <tr>
-                  <td style="padding: 35px 35px 25px 35px; text-align: center;">
-                    <h1 style="font-family: Georgia, serif; font-size: 26px; color: #2B2425; font-weight: normal; margin: 0 0 15px 0;">
-                      Ruben <span style="color: #CCA468; font-style: italic;">&amp;</span> Andrea
-                    </h1>
-                    <div style="font-size: 14px; color: #8C2836; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 25px;">
-                      ${datePlace}
-                    </div>
-
-                    <div style="background-color: #FAF7F5; border-radius: 8px; border: 1px solid #EFE8E2; padding: 20px; margin-bottom: 25px; text-align: left;">
-                      <p style="font-size: 16px; font-weight: 600; color: #2B2425; margin: 0 0 10px 0;">
-                        ${greeting}
-                      </p>
-                      <p style="font-size: 14px; line-height: 1.6; color: #55484A; margin: 0 0 12px 0;">
-                        ${leadText}
-                      </p>
-                      <p style="font-size: 13px; line-height: 1.6; color: #776A6C; margin: 0;">
-                        ${bodyText}
-                      </p>
-                    </div>
-
-                    <!-- CTA Button -->
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 25px 0 20px 0;">
-                      <tr>
-                        <td align="center">
-                          <a href="${invitationUrl}" target="_blank" style="display: inline-block; background-color: #8C2836; color: #FFFFFF; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 30px; border-radius: 999px; box-shadow: 0 3px 10px rgba(140,40,54,0.25);">
-                            ${ctaText}
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <p style="font-size: 11px; color: #9A8E90; margin-top: 15px; word-break: break-all;">
-                      Direct link: <a href="${invitationUrl}" style="color: #8C2836; text-decoration: underline;">${invitationUrl}</a>
-                    </p>
-                  </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                  <td style="background-color: #F8F4F0; padding: 20px; text-align: center; border-top: 1px solid #EFE8E2; font-size: 11px; color: #8A7E80; line-height: 1.5;">
-                    Ruben &amp; Andrea Wedding · Vienna 2027<br>
-                    This is a private invitation link created specifically for your party.
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
-}
+export { buildEnvelopeInvitationHtml };
 
 export async function testSmtpConnectionAction(formData: FormData): Promise<SmtpTestResult> {
   let actor = await getAuthenticatedAdminIdentity();
@@ -289,7 +153,7 @@ export async function sendInvitationEmailAction({
       const client = createSupabaseAdminClient();
       const { data } = await client
         .from("invitations")
-        .select("id, display_name, language, email, phone, whatsapp")
+        .select("id, display_name, language, email, phone, whatsapp, max_guests, plus_one_allowed")
         .eq("id", invitationId)
         .maybeSingle();
       if (data) {
@@ -300,8 +164,8 @@ export async function sendInvitationEmailAction({
           display_name: data.display_name,
           normalized_name: "",
           language: data.language,
-          max_guests: 1,
-          plus_one_allowed: false,
+          max_guests: data.max_guests || 1,
+          plus_one_allowed: Boolean(data.plus_one_allowed),
           group_name: null,
           normalized_group_name: null,
           personal_message: null,
@@ -322,21 +186,83 @@ export async function sendInvitationEmailAction({
     return { success: false, error: "No valid email address found for this guest." };
   }
 
-  const smtp = await getSmtpConfig();
-  if (!smtp.host || !smtp.user || !smtp.pass) {
-    return { success: false, error: "SMTP settings not configured. Please configure SMTP in Settings." };
-  }
-
   const origin = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   const token = invitation.token || invitation.id;
   const invitationUrl = `${origin}/i/${token}${invitation.language ? `?lang=${invitation.language}` : ""}`;
 
-  const emailSubject = subject || `Ruben & Andrea Wedding Invitation — ${invitation.display_name}`;
-  const emailHtml = buildInvitationEmailHtml({
+  const lang = invitation.language || "es";
+  const defaultSubject =
+    lang === "es"
+      ? `Invitación Imperial a la Boda de Ruben & Andrea — ${invitation.display_name}`
+      : lang === "de" || lang === "de-AT"
+        ? `Hochzeitseinladung Ruben & Andrea — ${invitation.display_name}`
+        : lang === "hu"
+          ? `Esküvői Meghívó: Ruben & Andrea — ${invitation.display_name}`
+          : `Ruben & Andrea Wedding Invitation — ${invitation.display_name}`;
+
+  const emailSubject = subject || defaultSubject;
+  const emailHtml = buildEnvelopeInvitationHtml({
     guestName: invitation.display_name,
     invitationUrl,
-    language: invitation.language || "en",
+    language: lang,
+    maxGuests: invitation.max_guests,
+    plusOneAllowed: invitation.plus_one_allowed,
+    siteUrl: origin,
   });
+
+  // Check if Resend is configured (preferred API provider)
+  const resendConfig = getResendConfig();
+
+  if (resendConfig.apiKey) {
+    const resendRes = await sendEmailViaResend({
+      to: targetEmail,
+      subject: emailSubject,
+      html: emailHtml,
+    });
+
+    if (resendRes.success) {
+      resilientStore.recordEvent({
+        invitation_id: invitation.id,
+        event_type: "EMAIL_DISPATCHED",
+        session_id: resendRes.messageId || "resend-api",
+      });
+
+      try {
+        await recordAdminAudit({
+          actor,
+          action: "INVITATION_UPDATED",
+          resourceType: "invitation",
+          resourceId: invitation.id,
+          metadata: {
+            channel: "resend_api",
+            recipient: targetEmail,
+            messageId: resendRes.messageId,
+          },
+        });
+      } catch {}
+
+      return {
+        success: true,
+        messageId: resendRes.messageId,
+        provider: "resend",
+      };
+    } else {
+      // If Resend failed with an error, return error
+      return {
+        success: false,
+        error: `Resend error: ${resendRes.error}`,
+      };
+    }
+  }
+
+  // Fallback to SMTP
+  const smtp = await getSmtpConfig();
+  if (!smtp.host || !smtp.user || !smtp.pass) {
+    return {
+      success: false,
+      error: "No email service configured. Please configure your Resend API Key or SMTP credentials in Settings.",
+    };
+  }
 
   try {
     const transporter = nodemailer.createTransport({
@@ -379,6 +305,7 @@ export async function sendInvitationEmailAction({
     return {
       success: true,
       messageId: info.messageId,
+      provider: "smtp",
     };
   } catch (err: unknown) {
     return {

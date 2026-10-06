@@ -4,6 +4,7 @@ import { hasAuthenticatedAdmin } from "@/lib/admin/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { updateSiteSettings } from "@/app/actions/admin-settings";
 import { SmtpTester } from "@/components/admin/smtp-tester";
+import { ResendTester } from "@/components/admin/resend-tester";
 
 export const dynamic = "force-dynamic";
 

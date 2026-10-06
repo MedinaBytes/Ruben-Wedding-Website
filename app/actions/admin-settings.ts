@@ -40,6 +40,11 @@ export async function updateSiteSettings(formData: FormData) {
   const privateCity = String(formData.get("privateCity") || "").trim();
   const privateAccessNotes = String(formData.get("privateAccessNotes") || "").trim();
 
+  // Resend API Settings
+  const resendApiKey = String(formData.get("resendApiKey") || "").trim();
+  const resendFromEmail = String(formData.get("resendFromEmail") || "").trim();
+  const resendFromName = String(formData.get("resendFromName") || "").trim();
+
   // SMTP Settings
   const smtpHost = String(formData.get("smtpHost") || "").trim();
   const smtpPort = String(formData.get("smtpPort") || "587").trim();
@@ -94,6 +99,11 @@ export async function updateSiteSettings(formData: FormData) {
     { key: "privateCity", value: privateCity, updated_at: now },
     { key: "privateAccessNotes", value: privateAccessNotes, updated_at: now },
 
+    // Resend API
+    { key: "resendApiKey", value: resendApiKey, updated_at: now },
+    { key: "resendFromEmail", value: resendFromEmail, updated_at: now },
+    { key: "resendFromName", value: resendFromName, updated_at: now },
+
     // SMTP
     { key: "smtpHost", value: smtpHost, updated_at: now },
     { key: "smtpPort", value: smtpPort, updated_at: now },
@@ -140,6 +150,9 @@ export async function updateSiteSettings(formData: FormData) {
     privateStreet,
     privateCity,
     privateAccessNotes,
+    resendApiKey,
+    resendFromEmail,
+    resendFromName,
     smtpHost,
     smtpPort,
     smtpSecure,
@@ -174,6 +187,7 @@ export async function updateSiteSettings(formData: FormData) {
         enableGuestbook,
         showGiftDetails,
         showPrivateAddress,
+        resendConfigured: Boolean(resendApiKey),
         smtpConfigured: Boolean(smtpHost && smtpUser),
       },
     });
