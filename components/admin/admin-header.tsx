@@ -151,6 +151,11 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Do not render the admin header on the login screen
+  if (pathname === "/admin/login") {
+    return null;
+  }
+
   // Auto-close dropdowns and mobile menu on route change
   useEffect(() => {
     setMoreDropdownOpen(false);
