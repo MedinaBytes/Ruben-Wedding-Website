@@ -319,10 +319,10 @@ export function EnvelopeIntro({
             >
               <div className="envelope-seal__image-wrap">
                 <Image
-                  src="/orchids/seal-monogram.svg"
-                  alt={sealMonogramAlt || "Ruben & Andrea Wax Seal Monogram"}
-                  width={110}
-                  height={110}
+                  src="/orchids/seal-monogram.png"
+                  alt={sealMonogramAlt || "Ruben & Andrea Botanical Wax Seal Monogram"}
+                  width={118}
+                  height={118}
                   priority
                 />
               </div>

@@ -51,12 +51,12 @@ export default async function HomePage({
 
         <section className="guest-gate__card" style={{ maxWidth: "520px", textAlign: "center", padding: "3rem 2rem" }}>
           {/* Handcrafted Monogram Wax Seal */}
-          <div style={{ width: "90px", height: "90px", margin: "0 auto 1.5rem" }}>
+          <div style={{ width: "95px", height: "95px", margin: "0 auto 1.5rem", filter: "drop-shadow(0 6px 16px rgba(40, 50, 35, 0.25))" }}>
             <Image
-              src="/orchids/seal-monogram.svg"
-              alt="Ruben & Andrea Monogram"
-              width={90}
-              height={90}
+              src="/orchids/seal-monogram.png"
+              alt="Ruben & Andrea Botanical Monogram"
+              width={95}
+              height={95}
               priority
             />
           </div>

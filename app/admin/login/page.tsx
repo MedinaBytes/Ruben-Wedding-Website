@@ -36,12 +36,12 @@ export default async function AdminLoginPage({
           textAlign: "center",
         }}
       >
-        <div style={{ width: "75px", height: "75px", margin: "0 auto 1.25rem" }}>
+        <div style={{ width: "80px", height: "80px", margin: "0 auto 1.25rem", filter: "drop-shadow(0 6px 14px rgba(40, 50, 35, 0.22))" }}>
           <Image
-            src="/orchids/seal-monogram.svg"
+            src="/orchids/seal-monogram.png"
             alt="Ruben & Andrea Monogram"
-            width={75}
-            height={75}
+            width={80}
+            height={80}
             priority
           />
         </div>

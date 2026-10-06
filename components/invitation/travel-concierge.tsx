@@ -34,7 +34,7 @@ const conciergeI18n: Record<string, {
     hotelTitle: "Recommended Accommodations",
     hotelDesc: "Selected hotels within quick reach of both the ceremony and the evening palace reception.",
     transitTitle: "Getting Around Vienna",
-    transitDesc: "Vienna has one of the world's most punctual public transit systems. Single tickets or 24h/48h passes are available at all stations.",
+    transitDesc: "Vienna has one of the world's most punctual public transit systems. Single tickets or 24-hour passes are easily purchased via the WienMobil app or at stations.",
     taxiTitle: "Recommended Taxi Hotlines",
     bookNow: "Check Availability →",
     hotels: [
@@ -85,7 +85,7 @@ const conciergeI18n: Record<string, {
     hotelTitle: "Hoteles Recomendados",
     hotelDesc: "Opciones cómodas y cercanas tanto a la ceremonia como a la recepción de la noche.",
     transitTitle: "Cómo Moverte en Viena",
-    transitDesc: "El transporte público de Viena es moderno, seguro y puntual. Puedes comprar pases de 24h o 48h en cualquier estación o en la app WienMobil.",
+    transitDesc: "El transporte público de Viena es moderno, seguro y puntual. Podéis comprar billetes sencillos o el pase de 24 horas en las estaciones o en la app oficial WienMobil.",
     taxiTitle: "Líneas de Taxi Oficiales",
     bookNow: "Ver Disponibilidad →",
     hotels: [
@@ -136,7 +136,7 @@ const conciergeI18n: Record<string, {
     hotelTitle: "Empfohlene Hotels",
     hotelDesc: "Ausgewählte Hotels in unmittelbarer Nähe von Kirche und festlichem Hochzeitsempfang.",
     transitTitle: "Öffentlicher Nahverkehr in Wien",
-    transitDesc: "Wien verfügt über ein weltberühmtes, pünktliches Nahverkehrsnetz. 24h- oder 48h-Tickets sind an allen Automaten oder in der WienMobil App erhältlich.",
+    transitDesc: "Wien verfügt über ein weltberühmtes, pünktliches Nahverkehrsnetz. Einzelfahrscheine und 24-Stunden-Tickets sind an Stationen sowie in der WienMobil App erhältlich.",
     taxiTitle: "Offizielle Taxi-Hotlines",
     bookNow: "Verfügbarkeit prüfen →",
     hotels: [
@@ -187,7 +187,7 @@ const conciergeI18n: Record<string, {
     hotelTitle: "Ajánlott Szállodák",
     hotelDesc: "Kényelmes szálláslehetőségek a szertartás és a kastélyi vacsora közelében.",
     transitTitle: "Közlekedés Bécsben",
-    transitDesc: "Bécs tömegközlekedése híresen pontos és kényelmes. 24 vagy 48 órás jegyek minden állomáson és a WienMobil applikációban megvásárolhatók.",
+    transitDesc: "Bécs tömegközlekedése híresen pontos és kényelmes. Vonaljegyek és 24 órás napijegyek minden állomáson, valamint a WienMobil appban is megvásárolhatók.",
     taxiTitle: "Hivatalos Taxi Vonalak",
     bookNow: "Szabad helyek megtekintése →",
     hotels: [
