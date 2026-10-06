@@ -6291,10 +6291,21 @@ a {
   display: none;
   background: #FAF7F5;
   border: 1px solid #E2D7CF;
-  border-radius: 6px;
-  padding: 0.35rem;
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-width: 42px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   color: #4C3F42;
+  transition: all 0.15s ease;
+}
+
+.admin-header-nav__mobile-toggle:hover,
+.admin-header-nav__mobile-toggle:active {
+  background: #F2ECE7;
+  border-color: #D6CBC4;
 }
 
 .admin-mobile-drawer {
@@ -6729,6 +6740,75 @@ a {
   margin: 0;
   line-height: 1.4;
 }
+
+/* Responsive Admin Table Scroll Wrapper */
+.admin-table-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 10px;
+  border: 1px solid #E4DBD3;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive Seating Planner Layouts */
+.admin-seating-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.admin-seating-add-form {
+  display: grid;
+  grid-template-columns: 100px 1fr 120px auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+@media (max-width: 960px) {
+  .admin-seating-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-seating-add-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-seating-add-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile Admin Ergonomics (< 640px) */
+@media (max-width: 640px) {
+  .admin-page-header__title {
+    font-size: 1.55rem;
+  }
+  .admin-card {
+    padding: 1rem;
+  }
+  .admin-stat-card {
+    padding: 1.1rem;
+    min-height: auto;
+  }
+  .admin-stat-card__value {
+    font-size: 1.75rem;
+  }
+  .admin-save-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
 
 
 

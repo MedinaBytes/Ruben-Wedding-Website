@@ -138,8 +138,8 @@ export function MusicManager({ songs }: { songs: SongRequestItem[] }) {
         />
       </div>
 
-      <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "0.88rem" }}>
+      <div className="admin-table-scroll-wrap">
+        <table style={{ width: "100%", minWidth: "600px", borderCollapse: "collapse", textAlign: "left", fontSize: "0.88rem" }}>
           <thead>
             <tr style={{ background: "#F7F3EF", borderBottom: "1px solid #E4DBD3", color: "#6A5E60", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
               <th style={{ padding: "0.75rem 1rem", width: "40px" }}>Set</th>

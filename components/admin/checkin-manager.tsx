@@ -297,6 +297,8 @@ export function CheckInManager({
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "0.75rem",
                   padding: "0.85rem 1.25rem",
                   borderRadius: "8px",
                   background: isChecked ? "rgba(85, 100, 78, 0.06)" : "#FAF8F6",

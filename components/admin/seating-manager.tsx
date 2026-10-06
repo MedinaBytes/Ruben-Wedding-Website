@@ -406,7 +406,7 @@ export function SeatingManager({
             </button>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 120px auto", gap: "1rem", alignItems: "end" }}>
+          <div className="admin-seating-add-form">
             <div>
               <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, color: "#5A4E51", marginBottom: "0.3rem" }}>
                 Table #
@@ -573,14 +573,7 @@ export function SeatingManager({
       )}
 
       {/* Main Grid: Left = Tables, Right = Unassigned Guests Drawer */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "2.5fr 1fr",
-          gap: "1.5rem",
-          alignItems: "start",
-        }}
-      >
+      <div className="admin-seating-grid">
         {/* Tables Grid */}
         <div
           style={{
