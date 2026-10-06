@@ -13,7 +13,7 @@ import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
-import { resolveLocale, supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
+import { resolveLocale, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 

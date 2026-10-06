@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
 import { resilientStore, type StoredWish } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { resolveLocale, type Locale } from "@/lib/wedding-config";
+import { resolveLocale } from "@/lib/wedding-config";
 
 export interface SubmitWishResult {
   success: boolean;

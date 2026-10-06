@@ -8,7 +8,7 @@ import { EnvelopeIntro } from "@/components/invitation/envelope-intro";
 import { findActiveInvitationByToken } from "@/lib/invitations/store";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
-import { resolveLocale, supportedLocales, weddingConfig, type Locale } from "@/lib/wedding-config";
+import { resolveLocale, weddingConfig, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
 

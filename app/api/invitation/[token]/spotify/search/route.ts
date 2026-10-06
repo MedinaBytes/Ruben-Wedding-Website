@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { consumeInvitationRateLimit, findActiveInvitation } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { privateApiHeaders } from "@/lib/security/request";
-import { getSpotifyPlaylistConfig, searchSpotifyTracks } from "@/lib/spotify/api";
+import { searchSpotifyTracks } from "@/lib/spotify/api";
 
 const privateHeaders = privateApiHeaders();
 
@@ -50,7 +50,7 @@ export async function GET(
       if (itunesRes.ok) {
         const itunesData = await itunesRes.json();
         if (Array.isArray(itunesData.results) && itunesData.results.length > 0) {
-          const realTracks = itunesData.results.map((item: any, idx: number) => ({
+          const realTracks = (itunesData.results as Array<{ trackId?: number; trackName?: string; artistName?: string; artworkUrl100?: string }>).map((item, idx: number) => ({
             id: `track-${item.trackId || idx}`,
             title: item.trackName,
             artist: item.artistName,

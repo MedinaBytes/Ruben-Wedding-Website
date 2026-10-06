@@ -33,7 +33,7 @@ export async function GET(
 
     const { resilientStore } = await import("@/lib/storage/resilient-store");
     const local = resilientStore.getRsvp(invitation.id);
-    const rsvpSource: any = data || (local ? {
+    const rsvpSource: Record<string, unknown> | null = (data as Record<string, unknown> | null) || (local ? {
       attendance_status: local.attendance_status,
       attendee_count: local.attendee_count,
       guest_names: local.guest_names,
