@@ -149,18 +149,15 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Do not render the admin header on the login screen
-  if (pathname === "/admin/login") {
-    return null;
-  }
-
-  // Auto-close dropdowns and mobile menu on route change
-  useEffect(() => {
+  // Reset menu open state synchronously on route change
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMoreDropdownOpen(false);
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
   // Robust click-outside listener for Tools dropdown
   useEffect(() => {
@@ -186,6 +183,11 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Do not render the admin header on the login screen
+  if (pathname === "/admin/login") {
+    return null;
+  }
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";

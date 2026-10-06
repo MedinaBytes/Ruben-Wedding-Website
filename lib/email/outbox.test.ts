@@ -3,9 +3,6 @@ import {
   getDailyEmailBudget,
   recordEmailSent,
   sendOrQueueEmail,
-  RESEND_FREE_DAILY_CAP,
-  TRANSACTIONAL_RESERVE,
-  CAMPAIGN_DAILY_CAP,
 } from "./outbox";
 
 let mockSettings: Record<string, unknown> = {};

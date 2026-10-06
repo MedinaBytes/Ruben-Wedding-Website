@@ -3,7 +3,6 @@
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { resilientStore } from "@/lib/storage/resilient-store";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export interface WeddingDataExport {
   success: boolean;

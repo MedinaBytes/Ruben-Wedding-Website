@@ -43,7 +43,7 @@ export async function GET() {
         "Content-Type": "text/csv; charset=utf-8",
       },
     });
-  } catch (err) {
+  } catch {
     return new Response("Guest export is temporarily unavailable.", {
       status: 503,
       headers: { "Cache-Control": "private, no-store" },

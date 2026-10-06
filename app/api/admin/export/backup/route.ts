@@ -47,7 +47,7 @@ export async function GET() {
         "Content-Type": "application/json; charset=utf-8",
       },
     });
-  } catch (err) {
+  } catch {
     return new Response("Backup export is temporarily unavailable.", {
       status: 503,
       headers: { "Cache-Control": "private, no-store" },

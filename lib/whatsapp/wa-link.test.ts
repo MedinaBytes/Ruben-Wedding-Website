@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   buildWhatsAppInvitationLink,
   buildWhatsAppReminderLink,
-  getWhatsAppInvitationText,
   normalizePhoneForWaMe,
 } from "./wa-link";
 
