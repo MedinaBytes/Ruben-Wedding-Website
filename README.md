@@ -253,9 +253,8 @@ npm run build
 
 ## 12. Strategic Roadmap & Documentation
 
-For the complete product evaluation against commercial market leaders (Joy, Zola, RSVPify), open-source architectural patterns (Tableaux, Wedding Manager, Hi.Events), and the 12-month campaign schedule leading up to October 2, 2027:
-
-👉 **Read the full roadmap:** [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- **Product Roadmap & Gap Analysis:** [`docs/ROADMAP.md`](docs/ROADMAP.md) — Comprehensive evaluation vs commercial market leaders (Joy, Zola, RSVPify), open-source ecosystem mining, and 12-month campaign schedule leading up to October 2, 2027.
+- **Couple Onboarding & Backend Setup Questionnaire:** [`docs/COUPLE_ONBOARDING_DATA_REQUEST.md`](docs/COUPLE_ONBOARDING_DATA_REQUEST.md) — Complete content questionnaire, API accounts, multi-language message copy, and bulk guest import CSV spreadsheet template for the couple.
 
 ---
 

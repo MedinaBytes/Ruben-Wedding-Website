@@ -620,18 +620,22 @@ export function InvitationsManager({
             </p>
 
             {/* Rendered QR Image */}
-            <div
-              style={{
-                width: "220px",
-                height: "220px",
-                margin: "0 auto 1.5rem",
-                padding: "0.75rem",
-                border: "1px solid #E8DFD8",
-                borderRadius: "8px",
-                background: "#FFFFFF",
-              }}
-              dangerouslySetInnerHTML={{ __html: activeQr.svg }}
-            />
+            <div className="admin-qr-card-preview">
+              {activeQr.dataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activeQr.dataUrl}
+                  alt={`QR code for ${activeQr.displayName}`}
+                  width={200}
+                  height={200}
+                />
+              ) : (
+                <div
+                  style={{ width: "100%", height: "100%" }}
+                  dangerouslySetInnerHTML={{ __html: activeQr.svg }}
+                />
+              )}
+            </div>
 
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", marginBottom: "1.25rem" }}>
               <button

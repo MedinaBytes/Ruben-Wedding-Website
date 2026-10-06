@@ -79,10 +79,15 @@ export async function updateSiteSettings(formData: FormData) {
   const contactPhone = String(formData.get("contactPhone") || "").trim();
   const contactEmail = String(formData.get("contactEmail") || "").trim();
 
+  // Admin Interface UI Language (Default: English)
+  const adminLanguage = String(formData.get("adminLanguage") || "en").trim() || "en";
+
   const client = createSupabaseAdminClient();
   const now = new Date().toISOString();
 
   const rows = [
+    // Admin Preferences
+    { key: "adminLanguage", value: adminLanguage, updated_at: now },
     // Demo
     { key: "enableDemoInvitation", value: enableDemoInvitation, updated_at: now },
 

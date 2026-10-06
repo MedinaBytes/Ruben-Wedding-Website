@@ -6809,6 +6809,38 @@ a {
   }
 }
 
+/* Admin QR Preview Box & Responsive QR rendering */
+.admin-qr-card-preview {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 1.5rem;
+  padding: 0.75rem;
+  border: 1px solid #E8DFD8;
+  border-radius: 10px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.admin-qr-card-preview svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  display: block;
+}
+
+.admin-qr-card-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain;
+  display: block;
+}
+
+
 
 
 

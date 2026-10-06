@@ -109,22 +109,25 @@ export default async function AdminSettingsPage() {
   const contactPhone = String(s.get("contactPhone") || "+43 660 0000000");
   const contactEmail = String(s.get("contactEmail") || "wedding@theandyrubenwedding.website");
 
+  // Admin Interface Language (Default: English)
+  const adminLanguage = String(s.get("adminLanguage") || "en");
+
   return (
     <div style={{ maxWidth: "1080px", margin: "0 auto" }}>
       {/* Header Intro */}
       <div style={{ marginBottom: "2rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
           <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, color: "#8C2836" }}>
-            Configuración del Sistema
+            System Configuration
           </span>
           <span style={{ color: "#C8BDC0" }}>·</span>
           <span style={{ fontSize: "0.76rem", color: "#7B6F71" }}>Schloss Hetzendorf 2027</span>
         </div>
         <h1 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "2.1rem", margin: "0 0 0.5rem 0", color: "#2B2425", fontWeight: 600 }}>
-          Ajustes Globales &amp; Medios de Pago
+          Global Settings &amp; Registry Options
         </h1>
         <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.94rem", lineHeight: 1.5 }}>
-          Gestiona los módulos interactivos de la invitación, las vías para entrega de regalos (Banco, Revolut, Wise y Efectivo), el servicio de correo con Resend y la privacidad de acceso.
+          Manage interactive guest modules, registry and gift payment channels (Bank SEPA, Revolut, Wise, Wishing Well), Resend email engine, and privacy gates.
         </p>
       </div>
 
@@ -151,13 +154,14 @@ export default async function AdminSettingsPage() {
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
             {[
-              { id: "modules", label: "Módulos" },
-              { id: "gifts", label: "Regalos & Pagos" },
-              { id: "email", label: "Resend & Correo" },
+              { id: "interface", label: "Admin Language" },
+              { id: "modules", label: "Modules" },
+              { id: "gifts", label: "Registry & Payments" },
+              { id: "email", label: "Resend & Email" },
               { id: "whatsapp", label: "WhatsApp" },
-              { id: "privacy", label: "Privacidad" },
-              { id: "general", label: "Contacto & Spotify" },
-              { id: "demo", label: "Modo Demo" },
+              { id: "privacy", label: "Privacy" },
+              { id: "general", label: "Contact & Spotify" },
+              { id: "demo", label: "Demo Sandbox" },
             ].map((anchor) => (
               <a
                 key={anchor.id}
@@ -193,11 +197,48 @@ export default async function AdminSettingsPage() {
               boxShadow: "0 2px 6px rgba(140, 40, 54, 0.22)",
             }}
           >
-            Guardar Cambios
+            Save Changes
           </button>
         </div>
 
-        {/* SECTION 1: Módulos Nupciales */}
+        {/* SECTION: Admin Platform UI Language */}
+        <section id="interface" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+                <span>Admin Platform UI Language</span>
+              </h2>
+              <p className="admin-card__desc">
+                Primary display language for the backend organizer console. Guest invitations maintain their individual recipient languages.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ maxWidth: "360px" }} className="admin-input-group">
+            <label className="admin-label">Console Interface Language</label>
+            <select
+              name="adminLanguage"
+              defaultValue={adminLanguage}
+              className="admin-input"
+              style={{ fontWeight: 600 }}
+            >
+              <option value="en">English (Default)</option>
+              <option value="es">Español</option>
+              <option value="de-AT">Deutsch (Österreich)</option>
+              <option value="hu">Magyar</option>
+            </select>
+            <span style={{ fontSize: "0.74rem", color: "#7B6F71", marginTop: "0.35rem", display: "block" }}>
+              Applies to admin navigation, metrics, seating, check-in, and configuration forms.
+            </span>
+          </div>
+        </section>
+
+        {/* SECTION 1: Modules & Guest Experience */}
         <section id="modules" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -205,22 +246,22 @@ export default async function AdminSettingsPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
-                <span>Módulos &amp; Experiencia de los Invitados</span>
+                <span>Modules &amp; Guest Experience</span>
               </h2>
               <p className="admin-card__desc">
-                Habilita o deshabilita en vivo las características interactivas visibles para los invitados.
+                Enable or disable interactive features visible to invited guests in real-time.
               </p>
             </div>
             <span style={{ fontSize: "0.74rem", background: "#F5F0EB", color: "#68585B", padding: "0.25rem 0.6rem", borderRadius: "999px", fontWeight: 600 }}>
-              9 Controles
+              9 Controls
             </span>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))", gap: "0.75rem" }}>
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Sincronización de Calendario 1-Click</span>
-                <span className="admin-switch-help">Apple Calendar, Google Calendar y descarga de archivo .ics</span>
+                <span className="admin-switch-label">1-Click Calendar Sync</span>
+                <span className="admin-switch-help">Apple Calendar, Google Calendar, and .ics file download</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableCalendarSync" defaultChecked={enableCalendarSync} />
@@ -230,8 +271,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Caligrafía de Sobre 3D</span>
-                <span className="admin-switch-help">Nombre de los invitados caligrafiado en el frontal del sobre</span>
+                <span className="admin-switch-label">3D Envelope Calligraphy</span>
+                <span className="admin-switch-help">Guest names calligraphed across the front of the 3D envelope</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableEnvelopeCalligraphy" defaultChecked={enableEnvelopeCalligraphy} />
@@ -241,8 +282,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Selección de Menú &amp; Dietas</span>
-                <span className="admin-switch-help">Opciones gastronómicas: carne, pescado, vegetariano, vegano e infantil</span>
+                <span className="admin-switch-label">Menu Selection &amp; Dietary Options</span>
+                <span className="admin-switch-help">Catering options: beef, fish, vegetarian, vegan, and children&apos;s menu</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableMealSelection" defaultChecked={enableMealSelection} />
@@ -252,8 +293,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Concierge de Viaje &amp; Hoteles</span>
-                <span className="admin-switch-help">Guía de transporte a Hetzendorf (Bim 62, S-Bahn) y hoteles recomendados</span>
+                <span className="admin-switch-label">Travel Concierge &amp; Hotels</span>
+                <span className="admin-switch-help">Transit guide to Schloss Hetzendorf (Bim 62, S-Bahn) and recommended hotels</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableTravelConcierge" defaultChecked={enableTravelConcierge} />
@@ -263,8 +304,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Modo Cronograma en Vivo</span>
-                <span className="admin-switch-help">Rastreador en tiempo real del itinerario durante el día del evento</span>
+                <span className="admin-switch-label">Live Day-of Timeline Mode</span>
+                <span className="admin-switch-help">Real-time schedule tracker during the event day</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableDayOfTimeline" defaultChecked={enableDayOfTimeline} />
@@ -274,8 +315,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Libro de Firmas &amp; Deseos</span>
-                <span className="admin-switch-help">Muro digital donde los invitados dedican mensajes y bendiciones</span>
+                <span className="admin-switch-label">Guestbook &amp; Warm Wishes</span>
+                <span className="admin-switch-help">Digital guestbook where attendees leave messages and blessings</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableGuestbook" defaultChecked={enableGuestbook} />
@@ -285,8 +326,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Asignación de Mesas Hetzendorf</span>
-                <span className="admin-switch-help">Distribución de asientos en el salón imperial del palacio</span>
+                <span className="admin-switch-label">Hetzendorf Table Seating Planner</span>
+                <span className="admin-switch-help">Imperial palace ballroom table arrangement and seat allocations</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableTablePlanner" defaultChecked={enableTablePlanner} />
@@ -296,8 +337,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row">
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Check-In con Escáner QR</span>
-                <span className="admin-switch-help">Lectura con cámara móvil. Desmarcado opera con lista manual de invitados</span>
+                <span className="admin-switch-label">QR Check-In Scanner</span>
+                <span className="admin-switch-help">Fast camera reader. When unchecked, entrance operates via manual search list</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableQrCheckin" defaultChecked={enableQrCheckin} />
@@ -307,8 +348,8 @@ export default async function AdminSettingsPage() {
 
             <label className="admin-switch-row" style={{ gridColumn: "1 / -1" }}>
               <div className="admin-switch-info">
-                <span className="admin-switch-label">Recordatorios de RSVP en Lote</span>
-                <span className="admin-switch-help">Disparo automatizado de recordatorios para invitados con confirmación pendiente</span>
+                <span className="admin-switch-label">Batch RSVP Follow-Up Reminders</span>
+                <span className="admin-switch-help">Automated follow-up reminders for guests with pending confirmations</span>
               </div>
               <div className="admin-toggle">
                 <input type="checkbox" name="enableRsvpReminders" defaultChecked={enableRsvpReminders} />
@@ -330,22 +371,22 @@ export default async function AdminSettingsPage() {
                   <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
                   <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
                 </svg>
-                <span>Mesa de Regalos &amp; Opciones de Pago</span>
+                <span>Gift Registry &amp; Payment Channels</span>
               </h2>
               <p className="admin-card__desc">
-                Proporciona a tus invitados múltiples canales cómodos y sin fricción: Transferencia Bancaria, Revolut, Wise y Sobre en Mano.
+                Provide guests with convenient, zero-fee payment options: Bank Transfer (SEPA), Revolut, Wise, and In-Person Wishing Well.
               </p>
             </div>
             <span style={{ fontSize: "0.74rem", background: "#EBF5EA", color: "#245A22", border: "1px solid #CCE5C8", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 700 }}>
-              4 Formas de Pago
+              4 Payment Channels
             </span>
           </div>
 
           {/* Master Switch */}
           <label className="admin-switch-row" style={{ marginBottom: "1.25rem", background: "#FBF7F5", border: "1px solid #E6DDD5" }}>
             <div className="admin-switch-info">
-              <span className="admin-switch-label">Habilitar Pestañas de Pago de Regalos en la Web</span>
-              <span className="admin-switch-help">Al desactivarlo, se muestra solo la nota de cortesía sin desplegar cuentas ni métodos</span>
+              <span className="admin-switch-label">Enable Gift Registry &amp; Payment Tabs on Website</span>
+              <span className="admin-switch-help">When disabled, only a courtesy greeting note is displayed without showing bank details</span>
             </div>
             <div className="admin-toggle">
               <input type="checkbox" name="showGiftDetails" defaultChecked={showGiftDetails} />
@@ -359,18 +400,18 @@ export default async function AdminSettingsPage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableBankTransfer" defaultChecked={enableBankTransfer} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>Método 1: Transferencia Bancaria Europea (SEPA)</span>
+                  <span>Method 1: European Bank Transfer (SEPA)</span>
                 </label>
                 <span style={{ fontSize: "0.72rem", color: "#7B6F71", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>IBAN / BIC</span>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.85rem", marginBottom: "0.85rem" }}>
                 <div className="admin-input-group">
-                  <label className="admin-label">Banco</label>
+                  <label className="admin-label">Bank Name</label>
                   <input name="bankName" defaultValue={bankName} placeholder="Erste Bank Österreich" className="admin-input" />
                 </div>
                 <div className="admin-input-group">
-                  <label className="admin-label">Titular de la Cuenta</label>
+                  <label className="admin-label">Account Holder Name</label>
                   <input name="accountHolder" defaultValue={accountHolder} placeholder="Ruben Quijada & Andrea Müllauer" className="admin-input" />
                 </div>
               </div>
@@ -387,8 +428,8 @@ export default async function AdminSettingsPage() {
               </div>
 
               <div className="admin-input-group">
-                <label className="admin-label">Concepto / Referencia Sugerida para el Invitado</label>
-                <input name="giftNote" defaultValue={giftNote} placeholder="Referencia: Boda Ruben & Andrea 2027" className="admin-input" />
+                <label className="admin-label">Suggested Reference / Note for Guest</label>
+                <input name="giftNote" defaultValue={giftNote} placeholder="Reference: Wedding Ruben & Andrea 2027" className="admin-input" />
               </div>
             </div>
 
@@ -397,22 +438,22 @@ export default async function AdminSettingsPage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableRevolut" defaultChecked={enableRevolut} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>Método 2: Revolut (@Revtag &amp; Enlace Instantáneo)</span>
+                  <span>Method 2: Revolut (@Revtag &amp; Instant Link)</span>
                 </label>
                 <span style={{ fontSize: "0.72rem", color: "#1E58A4", background: "#EBF3FC", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
-                  Instantáneo
+                  Instant
                 </span>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.85rem" }}>
                 <div className="admin-input-group">
-                  <label className="admin-label">Revtag o Enlace Revolut.me</label>
-                  <input name="revolutTag" defaultValue={revolutTag} placeholder="@ruben_andrea o https://revolut.me/ruben_andrea" className="admin-input" style={{ fontFamily: "monospace" }} />
-                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Ejemplo: <code>@ruben_andrea</code> o enlace completo</span>
+                  <label className="admin-label">Revtag or Revolut.me Link</label>
+                  <input name="revolutTag" defaultValue={revolutTag} placeholder="@ruben_andrea or https://revolut.me/ruben_andrea" className="admin-input" style={{ fontFamily: "monospace" }} />
+                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Example: <code>@ruben_andrea</code> or full link</span>
                 </div>
                 <div className="admin-input-group">
-                  <label className="admin-label">Instrucciones / Nota Revolut</label>
-                  <input name="revolutNote" defaultValue={revolutNote} placeholder="Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag" className="admin-input" />
+                  <label className="admin-label">Revolut Instructions / Note</label>
+                  <input name="revolutNote" defaultValue={revolutNote} placeholder="Instant fee-free transfer via Revolut or Revtag link" className="admin-input" />
                 </div>
               </div>
             </div>
@@ -422,22 +463,22 @@ export default async function AdminSettingsPage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableWise" defaultChecked={enableWise} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>Método 3: Wise (Transferencias Multidivisa Internacionales)</span>
+                  <span>Method 3: Wise (International Multi-Currency Transfers)</span>
                 </label>
                 <span style={{ fontSize: "0.72rem", color: "#1F6A44", background: "#E8F7ED", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
-                  Internacional
+                  International
                 </span>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.85rem" }}>
                 <div className="admin-input-group">
-                  <label className="admin-label">Wise Email / Enlace de Pago</label>
-                  <input name="wiseTag" defaultValue={wiseTag} placeholder="andrea.ruben@wise.com o https://wise.com/pay/me/..." className="admin-input" />
-                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Correo vinculado a tu cuenta Wise o URL de cobro</span>
+                  <label className="admin-label">Wise Email / Pay Link</label>
+                  <input name="wiseTag" defaultValue={wiseTag} placeholder="andrea.ruben@wise.com or https://wise.com/pay/me/..." className="admin-input" />
+                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Email linked to your Wise account or direct pay URL</span>
                 </div>
                 <div className="admin-input-group">
-                  <label className="admin-label">Instrucciones / Nota Wise</label>
-                  <input name="wiseNote" defaultValue={wiseNote} placeholder="Ideal para transferencias internacionales multidivisa directas y seguras" className="admin-input" />
+                  <label className="admin-label">Wise Instructions / Note</label>
+                  <input name="wiseNote" defaultValue={wiseNote} placeholder="Ideal for international multi-currency transfers directly and securely" className="admin-input" />
                 </div>
               </div>
             </div>
@@ -447,20 +488,20 @@ export default async function AdminSettingsPage() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableCash" defaultChecked={enableCash} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>Método 4: Sobre en Mano / Efectivo (Palacio Hetzendorf)</span>
+                  <span>Method 4: In-Person Wishing Well / Cash (Schloss Hetzendorf)</span>
                 </label>
                 <span style={{ fontSize: "0.72rem", color: "#8C2836", background: "#FDF2F4", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
-                  En Persona
+                  In Person
                 </span>
               </div>
 
               <div className="admin-input-group">
-                <label className="admin-label">Instrucciones del Buzón Nupcial en el Palacio</label>
+                <label className="admin-label">Palace Wishing Well Box Instructions</label>
                 <textarea
                   name="cashNote"
                   rows={2}
                   defaultValue={cashNote}
-                  placeholder="Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida..."
+                  placeholder="An imperial wishing well box will be placed at Schloss Hetzendorf during the welcome cocktail..."
                   className="admin-textarea"
                 />
               </div>
@@ -468,7 +509,7 @@ export default async function AdminSettingsPage() {
           </div>
         </section>
 
-        {/* SECTION 3: Servicio de Correo Electrónico (Resend & SMTP) */}
+        {/* SECTION 3: Email Infrastructure (Resend API & SMTP) */}
         <section id="email" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -477,19 +518,19 @@ export default async function AdminSettingsPage() {
                   <rect width="20" height="16" x="2" y="4" rx="2" />
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                 </svg>
-                <span>Servicio de Correo Electrónico (Resend API &amp; SMTP)</span>
+                <span>Email Infrastructure (Resend API &amp; SMTP)</span>
               </h2>
               <p className="admin-card__desc">
-                Configuración del motor de email para despachar invitaciones oficiales con plantilla nupcial y sello en cera interactivo.
+                Configuration for the email dispatch engine delivering official invitations with animated wax seals.
               </p>
             </div>
             {resendApiKey ? (
               <span style={{ fontSize: "0.75rem", background: "#E8F5E9", color: "#1B5E20", border: "1px solid #C8E6C9", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 700 }}>
-                ● Resend Configurado
+                ● Resend Configured
               </span>
             ) : (
               <span style={{ fontSize: "0.75rem", background: "#FFF8E1", color: "#8D6E00", border: "1px solid #FFE082", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 600 }}>
-                ○ API Key Pendiente
+                ○ API Key Pending
               </span>
             )}
           </div>
@@ -507,23 +548,23 @@ export default async function AdminSettingsPage() {
               style={{ fontFamily: "monospace" }}
             />
             <span style={{ fontSize: "0.74rem", color: "#7B6F71", marginTop: "0.25rem" }}>
-              Obtén tu API key gratuita en <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: "#8C2836", textDecoration: "underline" }}>resend.com/api-keys</a>
+              Get your free API key at <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: "#8C2836", textDecoration: "underline" }}>resend.com/api-keys</a>
             </span>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem", marginBottom: "1.25rem" }}>
             <div className="admin-input-group">
-              <label className="admin-label">Email de Envío (Remitente)</label>
+              <label className="admin-label">Sender Email (From)</label>
               <input
                 name="resendFromEmail"
                 type="email"
                 defaultValue={resendFromEmail}
-                placeholder="onboarding@resend.dev o wedding@theandyrubenwedding.website"
+                placeholder="onboarding@resend.dev or wedding@theandyrubenwedding.website"
                 className="admin-input"
               />
             </div>
             <div className="admin-input-group">
-              <label className="admin-label">Nombre del Remitente</label>
+              <label className="admin-label">Sender Name</label>
               <input
                 name="resendFromName"
                 defaultValue={resendFromName}
@@ -539,11 +580,11 @@ export default async function AdminSettingsPage() {
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ fontSize: "1rem" }}>📊</span>
                 <span style={{ fontSize: "0.86rem", fontWeight: 600, color: "#2B2425" }}>
-                  Presupuesto Diario de Correo (Resend Free Tier: 100/día UTC)
+                  Daily Email Budget (Resend Free Tier: 100/day UTC)
                 </span>
               </div>
               <span style={{ fontSize: "0.78rem", fontWeight: 700, color: emailBudget.sentToday > 90 ? "#B91C1C" : "#1B5E20" }}>
-                {emailBudget.sentToday} / {emailBudget.dailyCap} enviados hoy
+                {emailBudget.sentToday} / {emailBudget.dailyCap} sent today
               </span>
             </div>
 
@@ -562,10 +603,10 @@ export default async function AdminSettingsPage() {
 
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.76rem", color: "#6A5D60" }}>
               <span>
-                Cupo disponible para campañas / recordatorios: <strong>{emailBudget.remainingCampaign}</strong>
+                Available campaign / reminder allowance: <strong>{emailBudget.remainingCampaign}</strong>
               </span>
               <span>
-                Reserva transaccional protegida (RSVPs): <strong>{emailBudget.reserveTransactional}</strong>
+                Protected transactional reserve (RSVPs): <strong>{emailBudget.reserveTransactional}</strong>
               </span>
             </div>
           </div>
@@ -579,55 +620,55 @@ export default async function AdminSettingsPage() {
           {/* Fallback SMTP */}
           <div style={{ borderTop: "1px solid #F0E9E3", paddingTop: "1.25rem", marginTop: "1.5rem" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425" }}>
-              Servidor SMTP de Respaldo (Opcional)
+              Fallback SMTP Server (Optional)
             </h3>
             <p style={{ color: "#726567", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "0.85rem" }}>
-              Utiliza un servidor SMTP convencional (Gmail, Amazon SES, Brevo) como contingencia.
+              Use a standard SMTP provider (Gmail, Amazon SES, Brevo) as a contingency fallback.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
               <div className="admin-input-group">
-                <label className="admin-label">Servidor Host</label>
-                <input name="smtpHost" defaultValue={smtpHost} placeholder="smtp.resend.com o smtp.gmail.com" className="admin-input" />
+                <label className="admin-label">Host Server</label>
+                <input name="smtpHost" defaultValue={smtpHost} placeholder="smtp.resend.com or smtp.gmail.com" className="admin-input" />
               </div>
               <div className="admin-input-group">
-                <label className="admin-label">Puerto</label>
-                <input name="smtpPort" defaultValue={smtpPort} placeholder="587 o 465" className="admin-input" />
+                <label className="admin-label">Port</label>
+                <input name="smtpPort" defaultValue={smtpPort} placeholder="587 or 465" className="admin-input" />
               </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
               <div className="admin-input-group">
-                <label className="admin-label">Usuario SMTP</label>
-                <input name="smtpUser" defaultValue={smtpUser} placeholder="usuario@dominio.com" className="admin-input" />
+                <label className="admin-label">SMTP Username</label>
+                <input name="smtpUser" defaultValue={smtpUser} placeholder="user@domain.com" className="admin-input" />
               </div>
               <div className="admin-input-group">
-                <label className="admin-label">Contraseña</label>
+                <label className="admin-label">Password</label>
                 <input name="smtpPass" type="password" defaultValue={smtpPass} placeholder="••••••••••••" className="admin-input" />
               </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
               <div className="admin-input-group">
-                <label className="admin-label">Nombre</label>
+                <label className="admin-label">Sender Name</label>
                 <input name="smtpSenderName" defaultValue={smtpSenderName} placeholder="Ruben & Andrea" className="admin-input" />
               </div>
               <div className="admin-input-group">
-                <label className="admin-label">Email Remitente</label>
+                <label className="admin-label">Sender Email</label>
                 <input name="smtpSenderEmail" type="email" defaultValue={smtpSenderEmail} placeholder="wedding@theandyrubenwedding.website" className="admin-input" />
               </div>
             </div>
 
             <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.84rem", color: "#44383A", cursor: "pointer", marginBottom: "1rem" }}>
               <input type="checkbox" name="smtpSecure" defaultChecked={smtpSecure} style={{ width: "16px", height: "16px", accentColor: "#8C2836" }} />
-              <span>Usar conexión segura SSL/TLS (activar para puerto 465)</span>
+              <span>Use secure SSL/TLS connection (enable for port 465)</span>
             </label>
 
             <SmtpTester defaultRecipient={contactEmail || "ruben.andrea.wedding@gmail.com"} />
           </div>
         </section>
 
-        {/* SECTION 4: Comunicaciones WhatsApp */}
+        {/* SECTION 4: WhatsApp Communications */}
         <section id="whatsapp" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -635,16 +676,16 @@ export default async function AdminSettingsPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                 </svg>
-                <span>Comunicaciones WhatsApp</span>
+                <span>WhatsApp Communications</span>
               </h2>
               <p className="admin-card__desc">
-                Distribución de enlaces de invitación con personalización de nombres y enlaces únicos protegidos.
+                Direct distribution of digital invitation links with personalized names and private guest tokens.
               </p>
             </div>
           </div>
 
           <div style={{ marginBottom: "1rem" }} className="admin-input-group">
-            <label className="admin-label">Intervalo de Espera Entre Envíos (Protección Anti-Bloqueo)</label>
+            <label className="admin-label">Dispatch Interval Between Messages (Anti-Spam Safety)</label>
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <input
                 name="whatsappDelaySeconds"
@@ -655,13 +696,13 @@ export default async function AdminSettingsPage() {
                 className="admin-input"
                 style={{ width: "90px" }}
               />
-              <span style={{ fontSize: "0.84rem", color: "#6A5D60" }}>segundos por mensaje (Recomendado: 6 a 10s)</span>
+              <span style={{ fontSize: "0.84rem", color: "#6A5D60" }}>seconds per message (Recommended: 6 to 10s)</span>
             </div>
           </div>
 
           <div style={{ marginBottom: "1.25rem" }} className="admin-input-group">
             <label className="admin-label">
-              Plantilla de Mensaje (variables disponibles: <code>&#123;name&#125;</code> y <code>&#123;url&#125;</code>)
+              Message Template (available variables: <code>&#123;name&#125;</code> and <code>&#123;url&#125;</code>)
             </label>
             <textarea
               name="whatsappTemplate"
@@ -674,15 +715,15 @@ export default async function AdminSettingsPage() {
           {/* Vercel Cloud Options */}
           <div style={{ borderTop: "1px solid #F0E9E3", paddingTop: "1.25rem", marginTop: "1rem" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425" }}>
-              Meta WhatsApp Cloud API (Oficial)
+              Meta WhatsApp Cloud API (Official)
             </h3>
             <p style={{ color: "#726567", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "0.85rem" }}>
-              Para envíos en background en Vercel Serverless sin mantener la ventana del navegador abierta.
+              For background automated delivery on Vercel Serverless without requiring an active browser tab.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem", marginBottom: "0.85rem" }}>
               <div className="admin-input-group">
-                <label className="admin-label">Phone Number ID de Meta</label>
+                <label className="admin-label">Meta Phone Number ID</label>
                 <input name="whatsappPhoneNumberId" defaultValue={whatsappPhoneNumberId} placeholder="e.g. 109283746591023" className="admin-input" />
               </div>
               <div className="admin-input-group">
@@ -693,7 +734,7 @@ export default async function AdminSettingsPage() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "0.85rem" }}>
               <div className="admin-input-group">
-                <label className="admin-label">Gateway URL Alternativa</label>
+                <label className="admin-label">Alternative Gateway URL</label>
                 <input name="whatsappGatewayUrl" type="url" defaultValue={whatsappGatewayUrl} placeholder="https://gateway.example.com/send" className="admin-input" />
               </div>
               <div className="admin-input-group">
@@ -704,7 +745,7 @@ export default async function AdminSettingsPage() {
           </div>
         </section>
 
-        {/* SECTION 5: Privacidad & Ubicación */}
+        {/* SECTION 5: Privacy & Private Residence */}
         <section id="privacy" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -712,18 +753,18 @@ export default async function AdminSettingsPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <span>Privacidad &amp; Dirección Privada</span>
+                <span>Privacy &amp; Private Residence Address</span>
               </h2>
               <p className="admin-card__desc">
-                Control estricto de visibilidad del domicilio personal de los novios frente a los invitados.
+                Strict visibility controls over the couple&apos;s personal home address displayed to invited guests.
               </p>
             </div>
           </div>
 
           <label className="admin-switch-row" style={{ marginBottom: "1rem" }}>
             <div className="admin-switch-info">
-              <span className="admin-switch-label">Mostrar Dirección Privada en la Sección de Alojamiento</span>
-              <span className="admin-switch-help">Si está desactivado, solo se mostrará la información de los hoteles y el palacio</span>
+              <span className="admin-switch-label">Show Private Residence in Accommodations Section</span>
+              <span className="admin-switch-help">When disabled, only palace and partner hotels will be visible to guests</span>
             </div>
             <div className="admin-toggle">
               <input type="checkbox" name="showPrivateAddress" defaultChecked={showPrivateAddress} />
@@ -733,22 +774,22 @@ export default async function AdminSettingsPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "0.85rem", marginBottom: "0.85rem" }}>
             <div className="admin-input-group">
-              <label className="admin-label">Calle y Número</label>
+              <label className="admin-label">Street &amp; Number</label>
               <input name="privateStreet" defaultValue={privateStreet} placeholder="Schönbrunner Schloßstraße 47" className="admin-input" />
             </div>
             <div className="admin-input-group">
-              <label className="admin-label">Ciudad y Código Postal</label>
+              <label className="admin-label">City &amp; Postal Code</label>
               <input name="privateCity" defaultValue={privateCity} placeholder="1120 Wien, Austria" className="admin-input" />
             </div>
           </div>
 
           <div className="admin-input-group">
-            <label className="admin-label">Instrucciones de Acceso / Timbre</label>
-            <input name="privateAccessNotes" defaultValue={privateAccessNotes} placeholder="Timbre 'Ruben & Andrea' en el segundo piso" className="admin-input" />
+            <label className="admin-label">Access Instructions / Intercom</label>
+            <input name="privateAccessNotes" defaultValue={privateAccessNotes} placeholder="Buzzer 'Ruben & Andrea' on 2nd floor" className="admin-input" />
           </div>
         </section>
 
-        {/* SECTION 6: Spotify & Contacto */}
+        {/* SECTION 6: Spotify & Official Contact */}
         <section id="general" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -758,16 +799,16 @@ export default async function AdminSettingsPage() {
                   <circle cx="6" cy="18" r="3" />
                   <circle cx="18" cy="16" r="3" />
                 </svg>
-                <span>Spotify Playlist &amp; Contacto Oficial</span>
+                <span>Spotify Playlist &amp; Official Concierge</span>
               </h2>
               <p className="admin-card__desc">
-                Enlace a la playlist compartida de la boda y canales de soporte directo para dudas de los invitados.
+                Wedding playlist link and direct concierge channels for guest support.
               </p>
             </div>
           </div>
 
           <div style={{ marginBottom: "1rem" }} className="admin-input-group">
-            <label className="admin-label">URL de la Playlist de Spotify de la Boda</label>
+            <label className="admin-label">Wedding Spotify Playlist URL</label>
             <input
               name="spotifyPlaylistUrl"
               type="url"
@@ -779,17 +820,17 @@ export default async function AdminSettingsPage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
             <div className="admin-input-group">
-              <label className="admin-label">Teléfono de Contacto Concierge</label>
+              <label className="admin-label">Concierge Contact Phone</label>
               <input name="contactPhone" defaultValue={contactPhone} placeholder="+43 660 0000000" className="admin-input" />
             </div>
             <div className="admin-input-group">
-              <label className="admin-label">Email de Contacto</label>
+              <label className="admin-label">Official Contact Email</label>
               <input name="contactEmail" type="email" defaultValue={contactEmail} placeholder="wedding@theandyrubenwedding.website" className="admin-input" />
             </div>
           </div>
         </section>
 
-        {/* SECTION 7: Modo Demo & Seguridad */}
+        {/* SECTION 7: Demo Sandbox & Production Environment */}
         <section id="demo" className="admin-card" style={{ scrollMarginTop: "135px" }}>
           <div className="admin-card__head">
             <div>
@@ -797,18 +838,18 @@ export default async function AdminSettingsPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <span>Modo Demo &amp; Entorno de Producción</span>
+                <span>Demo Sandbox &amp; Production Mode</span>
               </h2>
               <p className="admin-card__desc">
-                Controla si la invitación pública de demostración <code>Sarah &amp; Guest (Demo)</code> en <code>/i/demo</code> está activa.
+                Controls whether the public sandbox invitation <code>Sarah &amp; Guest (Demo)</code> at <code>/i/demo</code> is accessible.
               </p>
             </div>
           </div>
 
           <label className="admin-switch-row">
             <div className="admin-switch-info">
-              <span className="admin-switch-label">Habilitar Invitación Demo Pública (<code>/i/demo</code>)</span>
-              <span className="admin-switch-help">Permite probar libremente sobre, música y formularios sin alterar datos de invitados reales. Desactivar antes de la boda.</span>
+              <span className="admin-switch-label">Enable Public Demo Invitation (<code>/i/demo</code>)</span>
+              <span className="admin-switch-help">Enables testing the wax seal, audio synth, and RSVP forms without modifying real guest records. Disable before the wedding.</span>
             </div>
             <div className="admin-toggle">
               <input
@@ -826,10 +867,10 @@ export default async function AdminSettingsPage() {
         <div className="admin-save-bar">
           <div>
             <span style={{ fontSize: "0.86rem", fontWeight: 600, color: "#2B2425", display: "block" }}>
-              ¿Listo para publicar los cambios?
+              Ready to publish your configuration?
             </span>
             <span style={{ fontSize: "0.78rem", color: "#7B6F71" }}>
-              Los cambios se sincronizan inmediatamente en la base de datos y la invitación web.
+              Changes synchronize instantly across the database and the live guest experience.
             </span>
           </div>
 
@@ -848,7 +889,7 @@ export default async function AdminSettingsPage() {
               transition: "all 0.15s ease",
             }}
           >
-            Guardar Todos los Ajustes
+            Save All Settings
           </button>
         </div>
       </form>
