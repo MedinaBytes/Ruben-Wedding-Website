@@ -16,13 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
+export default async function HomePage(props: {
   searchParams?: Promise<{ lang?: string }>;
-} = {}) {
+}) {
   const [params, requestLocale, cookieStore] = await Promise.all([
-    searchParams,
+    props.searchParams,
     getLocale(),
     cookies(),
   ]);

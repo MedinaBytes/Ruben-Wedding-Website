@@ -6,7 +6,10 @@ import { recordAdminAudit } from "@/lib/admin/audit";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
-import { getResendConfig, sendEmailViaResend } from "@/lib/email/resend";
+import { getResendConfig, sendEmailViaResend, checkResendStatusAction, testResendConnectionAction, type ResendStatusResult } from "@/lib/email/resend";
+
+export { checkResendStatusAction, testResendConnectionAction };
+export type { ResendStatusResult };
 
 export interface SmtpTestResult {
   success: boolean;
@@ -236,7 +239,7 @@ export async function sendInvitationEmailAction({
           metadata: {
             channel: "resend_api",
             recipient: targetEmail,
-            messageId: resendRes.messageId,
+            messageId: resendRes.messageId ?? null,
           },
         });
       } catch {}

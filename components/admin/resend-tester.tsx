@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { checkResendStatusAction, testResendConnectionAction, type ResendStatusResult } from "@/lib/email/resend";
+import { checkResendStatusAction, testResendConnectionAction, type ResendStatusResult } from "@/app/actions/admin-email";
 import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
 
 export function ResendTester({

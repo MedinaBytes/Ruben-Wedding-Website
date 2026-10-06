@@ -49,6 +49,9 @@ export default async function AdminSettingsPage() {
   const privateStreet = String(s.get("privateStreet") || "");
   const privateCity = String(s.get("privateCity") || "");
   const privateAccessNotes = String(s.get("privateAccessNotes") || "");
+  const resendApiKey = String(s.get("resendApiKey") || process.env.RESEND_API_KEY || "");
+  const resendFromEmail = String(s.get("resendFromEmail") || process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev");
+  const resendFromName = String(s.get("resendFromName") || process.env.RESEND_FROM_NAME || "Ruben & Andrea");
 
   const smtpHost = String(s.get("smtpHost") || "");
   const smtpPort = String(s.get("smtpPort") || "587");
@@ -264,16 +267,91 @@ export default async function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Section 3: SMTP Email Server (Invitation Email Dispatch) */}
+        {/* Section 3: Resend Email Service (Primary Official API) */}
+        <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <span style={{ fontSize: "1.4rem" }}>✉</span>
+              <h2 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
+                Resend Email Service (Official API)
+              </h2>
+            </div>
+            {resendApiKey ? (
+              <span style={{ fontSize: "0.75rem", background: "#E8F5E9", color: "#1B5E20", border: "1px solid #C8E6C9", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 700 }}>
+                ● API Key Configured
+              </span>
+            ) : (
+              <span style={{ fontSize: "0.75rem", background: "#FFF8E1", color: "#8D6E00", border: "1px solid #FFE082", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 600 }}>
+                ○ API Key Required
+              </span>
+            )}
+          </div>
+
+          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+            Direct integration with Resend to dispatch prestigious digital invitations. Features the closed royal envelope template where the interactive olive botanical wax seal acts as the direct link for your guests.
+          </p>
+
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
+              Resend API Key (<code style={{ fontSize: "0.8rem", color: "#8C2836" }}>re_...</code>)
+            </label>
+            <input
+              name="resendApiKey"
+              type="password"
+              defaultValue={resendApiKey}
+              placeholder="re_123456789_abcdef..."
+              style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem", fontFamily: "monospace" }}
+            />
+            <span style={{ display: "block", fontSize: "0.74rem", color: "#8A7E80", marginTop: "0.3rem" }}>
+              Obtain your free API Key from <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: "#8C2836", textDecoration: "underline" }}>resend.com/api-keys</a>. Can also be set via the <code style={{ color: "#8C2836" }}>RESEND_API_KEY</code> environment variable.
+            </span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
+                Sender Email Address
+              </label>
+              <input
+                name="resendFromEmail"
+                type="email"
+                defaultValue={resendFromEmail}
+                placeholder="wedding@theandyrubenwedding.website or onboarding@resend.dev"
+                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+              />
+              <span style={{ display: "block", fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.25rem" }}>
+                Use <code style={{ color: "#8C2836" }}>onboarding@resend.dev</code> for testing, or your verified domain.
+              </span>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
+                Sender Display Name
+              </label>
+              <input
+                name="resendFromName"
+                defaultValue={resendFromName}
+                placeholder="Ruben & Andrea"
+                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+              />
+            </div>
+          </div>
+
+          <ResendTester
+            defaultRecipient={contactEmail || "ruben.andrea.wedding@gmail.com"}
+            initialConfigured={Boolean(resendApiKey)}
+          />
+        </div>
+
+        {/* Section 3B: Secondary SMTP Mailer (Fallback / Custom Server) */}
         <div style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>✉</span>
+            <span style={{ fontSize: "1.4rem" }}>⚙</span>
             <h2 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              SMTP Server Configuration (Email Dispatch)
+              Alternative SMTP Configuration (Optional Fallback)
             </h2>
           </div>
           <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Connect your custom SMTP mailer (e.g. Resend, Gmail, Brevo, SendGrid) to send invitations directly from the wedding website.
+            If you prefer a custom SMTP server (Gmail, Brevo, SendGrid, Amazon SES) instead of the Resend API, configure it below as a fallback.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginBottom: "1rem" }}>

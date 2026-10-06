@@ -115,15 +115,41 @@ export default async function AdminOverviewPage() {
   const totalSongs = songs.length;
   const playlistSelected = songs.filter((s) => s.selected_for_playlist).length;
 
+  const settings = resilientStore.getSettings();
+  const hasResend = Boolean(settings.resendApiKey || process.env.RESEND_API_KEY);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      <div>
-        <p style={{ textTransform: "uppercase", letterSpacing: "0.15em", fontSize: "0.8rem", color: "#8E696E", margin: "0 0 0.25rem 0" }}>
-          Live Wedding Overview
-        </p>
-        <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2.2rem", margin: 0, color: "#2B2425" }}>
-          Dashboard &amp; Attendance
-        </h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
+        <div>
+          <p style={{ textTransform: "uppercase", letterSpacing: "0.15em", fontSize: "0.8rem", color: "#8E696E", margin: "0 0 0.25rem 0" }}>
+            Live Wedding Overview
+          </p>
+          <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2.2rem", margin: 0, color: "#2B2425" }}>
+            Dashboard &amp; Attendance
+          </h1>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Link
+            href="/admin/settings"
+            style={{
+              textDecoration: "none",
+              fontSize: "0.78rem",
+              background: hasResend ? "#E8F5E9" : "#FFF8E1",
+              color: hasResend ? "#1B5E20" : "#8D6E00",
+              border: `1px solid ${hasResend ? "#C8E6C9" : "#FFE082"}`,
+              padding: "0.35rem 0.75rem",
+              borderRadius: "999px",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}
+          >
+            <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: hasResend ? "#2E7D32" : "#B78103" }} />
+            {hasResend ? "Resend API Connected" : "Resend API: Setup Pending"}
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards Grid */}

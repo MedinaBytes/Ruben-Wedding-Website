@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
 import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction } from "@/app/actions/admin-invitations";
+import { sendInvitationEmailAction } from "@/app/actions/admin-email";
 
 export interface InvitationRow {
   id: string;
@@ -48,6 +49,12 @@ export function InvitationsManager({
   } | null>(null);
   const [loadingQr, setLoadingQr] = useState(false);
 
+  // Email Dispatch Modal State
+  const [activeEmailInv, setActiveEmailInv] = useState<InvitationRow | null>(null);
+  const [recipientEmailInput, setRecipientEmailInput] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailResult, setEmailResult] = useState<{ success: boolean; message: string } | null>(null);
+
   const filtered = items.filter((inv) => {
     const matchesSearch =
       inv.displayName.toLowerCase().includes(search.toLowerCase()) ||
@@ -55,6 +62,48 @@ export function InvitationsManager({
     const matchesStatus = statusFilter === "all" || inv.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  function openEmailModal(inv: InvitationRow) {
+    setActiveEmailInv(inv);
+    setRecipientEmailInput(inv.email || "");
+    setEmailResult(null);
+  }
+
+  async function handleSendEmail() {
+    if (!activeEmailInv) return;
+    setSendingEmail(true);
+    setEmailResult(null);
+
+    try {
+      const res = await sendInvitationEmailAction({
+        invitationId: activeEmailInv.id,
+        recipientEmail: recipientEmailInput.trim(),
+      });
+      if (res.success) {
+        setEmailResult({
+          success: true,
+          message: `Royal invitation sent via ${res.provider === "resend" ? "Resend API" : "SMTP"}! Message ID: ${res.messageId || "ok"}`,
+        });
+        if (recipientEmailInput.trim() && activeEmailInv.email !== recipientEmailInput.trim()) {
+          setItems((prev) =>
+            prev.map((i) => (i.id === activeEmailInv.id ? { ...i, email: recipientEmailInput.trim() } : i))
+          );
+        }
+      } else {
+        setEmailResult({
+          success: false,
+          message: res.error || "Failed to deliver email.",
+        });
+      }
+    } catch (err: unknown) {
+      setEmailResult({
+        success: false,
+        message: err instanceof Error ? err.message : "Error sending email.",
+      });
+    } finally {
+      setSendingEmail(false);
+    }
+  }
 
   async function copyLink(inv: InvitationRow) {
     const targetToken = inv.token || inv.id;
@@ -478,6 +527,23 @@ export function InvitationsManager({
                       </button>
                       <button
                         type="button"
+                        onClick={() => openEmailModal(inv)}
+                        title="Send royal invitation via Email (Resend API)"
+                        style={{
+                          background: "#FAF4EF",
+                          border: "1px solid #E2D6CB",
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.6rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: "#8C2836",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ✉ Email
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleRevoke(inv)}
                         title={inv.status === "active" ? "Revoke invitation" : "Activate invitation"}
                         style={{
@@ -615,6 +681,136 @@ export function InvitationsManager({
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Royal Email Dispatch Modal */}
+      {activeEmailInv && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.55)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1.25rem",
+          }}
+          onClick={() => setActiveEmailInv(null)}
+        >
+          <div
+            style={{
+              background: "#FAF7F2",
+              borderRadius: "14px",
+              padding: "2rem",
+              maxWidth: "480px",
+              width: "100%",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.22)",
+              border: "1px solid #DFD5C8",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+              <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✉</div>
+              <h3 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.4rem", margin: "0 0 0.35rem 0", color: "#2B2425" }}>
+                Send Royal Email Invitation
+              </h3>
+              <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.85rem" }}>
+                Dispatches the luxury closed envelope featuring the interactive olive botanical wax seal link.
+              </p>
+            </div>
+
+            <div style={{ background: "#FFFFFF", padding: "1rem", borderRadius: "8px", border: "1px solid #E6DCD2", marginBottom: "1.25rem", fontSize: "0.85rem" }}>
+              <div style={{ marginBottom: "0.5rem" }}>
+                <span style={{ color: "#776A6C" }}>Guest:</span> <strong>{activeEmailInv.displayName}</strong>
+              </div>
+              <div style={{ marginBottom: "0.5rem" }}>
+                <span style={{ color: "#776A6C" }}>Language:</span> <strong style={{ textTransform: "uppercase" }}>{activeEmailInv.language || "es"}</strong>
+              </div>
+              <div>
+                <span style={{ color: "#776A6C" }}>Allocated Seats:</span> <strong>{activeEmailInv.maxGuests}{activeEmailInv.plusOneAllowed ? " (+1)" : ""}</strong>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.35rem" }}>
+                Recipient Email Address:
+              </label>
+              <input
+                type="email"
+                value={recipientEmailInput}
+                onChange={(e) => setRecipientEmailInput(e.target.value)}
+                placeholder="guest@example.com"
+                style={{
+                  width: "100%",
+                  padding: "0.6rem 0.75rem",
+                  borderRadius: "6px",
+                  border: "1px solid #D5CBC4",
+                  fontSize: "0.9rem",
+                  backgroundColor: "#FFFFFF",
+                }}
+              />
+            </div>
+
+            {emailResult && (
+              <div
+                style={{
+                  marginBottom: "1.25rem",
+                  padding: "0.65rem 0.85rem",
+                  borderRadius: "6px",
+                  fontSize: "0.82rem",
+                  fontWeight: 500,
+                  background: emailResult.success ? "#E8F5E9" : "#FCEEEF",
+                  border: `1px solid ${emailResult.success ? "#C8E6C9" : "#F5C6CB"}`,
+                  color: emailResult.success ? "#1B5E20" : "#8C2836",
+                }}
+              >
+                {emailResult.success ? "✓ " : "✗ "}
+                {emailResult.message}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", alignItems: "center" }}>
+              <button
+                type="button"
+                onClick={() => setActiveEmailInv(null)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #D5CBC4",
+                  borderRadius: "6px",
+                  padding: "0.55rem 1rem",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  color: "#544648",
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={sendingEmail || !recipientEmailInput.trim()}
+                style={{
+                  background: "#8C2836",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.55rem 1.25rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: sendingEmail || !recipientEmailInput.trim() ? "not-allowed" : "pointer",
+                  opacity: sendingEmail || !recipientEmailInput.trim() ? 0.6 : 1,
+                  boxShadow: "0 2px 8px rgba(140, 40, 54, 0.25)",
+                }}
+              >
+                {sendingEmail ? "Dispatching..." : "Send Invitation ✈"}
+              </button>
+            </div>
           </div>
         </div>
       )}
