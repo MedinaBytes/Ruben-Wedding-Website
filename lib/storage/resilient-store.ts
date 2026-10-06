@@ -12,6 +12,8 @@ export interface StoredInvitation {
   plus_one_allowed: boolean;
   group_name: string | null;
   normalized_group_name: string | null;
+  household_id?: string | null;
+  household_name?: string | null;
   personal_message: string | null;
   email?: string | null;
   normalized_email?: string | null;
@@ -315,6 +317,11 @@ function loadDb(): LocalDatabase {
 }
 
 function saveDb(db: LocalDatabase) {
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
+    console.warn(
+      "[ResilientStore] Attempted filesystem write on ephemeral Vercel serverless container. Supabase must be configured as primary storage.",
+    );
+  }
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
     if (!isTestEnv) {
@@ -982,6 +989,93 @@ export const resilientStore = {
       menuOptions,
       guestRoster,
       allergies,
+    };
+  },
+
+  getHouseholds(): Array<{
+    householdId: string;
+    householdName: string;
+    invitations: StoredInvitation[];
+    totalMaxGuests: number;
+    confirmedAttendees: number;
+    status: "attending" | "declined" | "pending";
+  }> {
+    const db = loadDb();
+    const map = new Map<
+      string,
+      {
+        householdId: string;
+        householdName: string;
+        invitations: StoredInvitation[];
+        totalMaxGuests: number;
+        confirmedAttendees: number;
+        status: "attending" | "declined" | "pending";
+      }
+    >();
+
+    for (const inv of db.invitations) {
+      const key = inv.household_id || inv.group_name || `individual-${inv.id}`;
+      const name = inv.household_name || inv.group_name || inv.display_name;
+      const rsvp = db.rsvps.find((r) => r.invitation_id === inv.id);
+
+      if (!map.has(key)) {
+        map.set(key, {
+          householdId: key,
+          householdName: name,
+          invitations: [],
+          totalMaxGuests: 0,
+          confirmedAttendees: 0,
+          status: "pending",
+        });
+      }
+
+      const h = map.get(key)!;
+      h.invitations.push(inv);
+      h.totalMaxGuests += inv.max_guests;
+      if (rsvp && rsvp.attendance_status === "yes") {
+        h.confirmedAttendees += rsvp.attendee_count;
+        h.status = "attending";
+      } else if (rsvp && rsvp.attendance_status === "no") {
+        if (h.status !== "attending") h.status = "declined";
+      }
+    }
+
+    return Array.from(map.values());
+  },
+
+  checkMealCapAvailable(
+    mealId: string,
+    requestedPortions = 1,
+    excludeInvitationId?: string
+  ): { available: boolean; remaining: number; maxCap?: number; currentCount: number } {
+    const db = loadDb();
+    const menuOption = (db.menuOptions || []).find((m) => m.id === mealId);
+    const maxCap = (menuOption as Record<string, unknown> | undefined)?.maxCap as number | undefined;
+
+    let currentCount = 0;
+    for (const r of db.rsvps) {
+      if (excludeInvitationId && r.invitation_id === excludeInvitationId) continue;
+      if (r.attendance_status !== "yes") continue;
+
+      if (r.meal_preferences && r.meal_preferences.length > 0) {
+        for (const pref of r.meal_preferences) {
+          if (pref.meal === mealId) currentCount++;
+        }
+      } else if (mealId === "classic" || mealId === "standard") {
+        currentCount += r.attendee_count || 1;
+      }
+    }
+
+    if (typeof maxCap !== "number" || maxCap <= 0) {
+      return { available: true, remaining: 999, maxCap: undefined, currentCount };
+    }
+
+    const remaining = Math.max(0, maxCap - currentCount);
+    return {
+      available: remaining >= requestedPortions,
+      remaining,
+      maxCap,
+      currentCount,
     };
   },
 };
