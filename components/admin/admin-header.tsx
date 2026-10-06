@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -149,6 +149,38 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Auto-close dropdowns and mobile menu on route change
+  useEffect(() => {
+    setMoreDropdownOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Robust click-outside listener for Tools dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setMoreDropdownOpen(false);
+      }
+    }
+    if (moreDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [moreDropdownOpen]);
+
+  // Close menus on Escape key
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMoreDropdownOpen(false);
+        setMobileOpen(false);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -193,13 +225,13 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
           })}
 
           {/* More Dropdown */}
-          <div className="admin-nav-dropdown-wrap">
+          <div className="admin-nav-dropdown-wrap" ref={dropdownRef}>
             <button
               type="button"
               className={`admin-nav-item admin-nav-dropdown-btn ${isSecondaryActive ? "admin-nav-item--active" : ""}`}
-              onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
-              onBlur={() => setTimeout(() => setMoreDropdownOpen(false), 200)}
+              onClick={() => setMoreDropdownOpen((prev) => !prev)}
               aria-expanded={moreDropdownOpen}
+              aria-haspopup="true"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="1" />
@@ -213,7 +245,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
             </button>
 
             {moreDropdownOpen && (
-              <div className="admin-nav-dropdown-menu">
+              <div className="admin-nav-dropdown-menu" role="menu">
                 {SECONDARY_NAV.map((sub) => {
                   const subActive = isActive(sub.href);
                   const SubIcon = sub.icon;
@@ -221,6 +253,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
                     <Link
                       key={sub.href}
                       href={sub.href}
+                      role="menuitem"
                       className={`admin-nav-dropdown-link ${subActive ? "admin-nav-dropdown-link--active" : ""}`}
                       onClick={() => setMoreDropdownOpen(false)}
                     >
@@ -268,6 +301,7 @@ export function AdminHeader({ signOutAction }: AdminHeaderProps) {
             className="admin-header-nav__mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú de navegación"}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

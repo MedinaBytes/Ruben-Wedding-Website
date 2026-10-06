@@ -20,40 +20,35 @@
       "normalized_whatsapp": null,
       "status": "active",
       "created_at": "2026-10-05T20:46:54.898Z"
-    },
-    {
-      "id": "00000000-0000-0000-0000-000000000001",
-      "token": "demo",
-      "token_hash": "demo_hash",
-      "display_name": "Sarah & Guest (Demo)",
-      "normalized_name": "sarah guest demo",
-      "language": null,
-      "greeting_override": null,
-      "max_guests": 2,
-      "plus_one_allowed": true,
-      "group_name": "Demo Reviewers",
-      "normalized_group_name": "demo reviewers",
-      "personal_message": null,
-      "phone": "+43 664 1234567",
-      "whatsapp": "+436641234567",
-      "status": "active",
-      "created_at": "2026-10-04T18:09:30.248Z"
     }
   ],
   "rsvps": [],
-  "songRequests": [
-    {
-      "id": "song-00000000-0000-0000-0000-000000000001-1",
-      "invitation_id": "00000000-0000-0000-0000-000000000001",
-      "slot": 1,
-      "song_title": "Hips Don't Lie (feat. Wyclef Jean)",
-      "artist": "Shakira, Wyclef Jean",
-      "spotify_url": "https://open.spotify.com/track/3d0WouFnFmr0K3kjeza3fF",
-      "selected_for_playlist": false,
-      "submitted_at": "2026-10-05T15:34:45.076Z"
-    }
-  ],
+  "songRequests": [],
   "events": [
+    {
+      "id": "evt-1791309129913-mzq4f",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "f446676e-2e69-4508-ac77-40ccc34ca9de",
+      "event_type": "PLAYLIST_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-06T17:52:09.913Z"
+    },
+    {
+      "id": "evt-1791309121600-l28bx",
+      "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
+      "session_id": "f446676e-2e69-4508-ac77-40ccc34ca9de",
+      "event_type": "INVITE_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-06T17:52:01.600Z"
+    },
+    {
+      "id": "evt-1791309062602-kzhrl",
+      "invitation_id": "00000000-0000-0000-0000-000000000001",
+      "session_id": "748c2492-64be-46e9-839f-23406521f0bb",
+      "event_type": "INVITE_OPENED",
+      "locale": "es",
+      "created_at": "2026-10-06T17:51:02.602Z"
+    },
     {
       "id": "evt-1791304625384-tzt7i",
       "invitation_id": "0fb5af34-7043-4fda-bafd-e44f0d9faaa7",
@@ -332,7 +327,7 @@
     "showPrivateAddress": false,
     "bankName": "Erste Bank Österreich",
     "accountHolder": "Ruben & Andrea",
-    "iban": "AT61 2011 1000 0000 0000",
+    "iban": "AT95 2011 1853 4003 7600",
     "bic": "GIBAATWWXXX",
     "giftNote": "Reference: Ruben & Andrea Wedding 2027",
     "privateStreet": "Schönbrunner Schloßstraße 47",
@@ -350,8 +345,8 @@
     "spotifyPlaylistUrl": "https://open.spotify.com/playlist/4zpgM8knTb7CzrjMUQOS3E?si=fCg5_dv8ROSykKaaXqJxtw&utm_source=whatsapp&pi=TjLohFF3SQOMi",
     "contactPhone": "+43 660 0000000",
     "contactEmail": "wedding@theandyrubenwedding.website",
-    "enableDemoInvitation": true,
-    "demoDeleted": false,
+    "enableDemoInvitation": false,
+    "demoDeleted": true,
     "enableCalendarSync": true,
     "enableEnvelopeCalligraphy": true,
     "enableMealSelection": true,
@@ -361,12 +356,12 @@
     "enableTablePlanner": true,
     "enableQrCheckin": false,
     "enableRsvpReminders": true,
-    "enableBankTransfer": true,
-    "enableRevolut": true,
+    "enableBankTransfer": false,
+    "enableRevolut": false,
     "revolutTag": "@ruben_andrea",
     "revolutNote": "Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag",
-    "enableWise": true,
-    "wiseTag": "andrea.ruben@wise.com",
+    "enableWise": false,
+    "wiseTag": "rubenq28",
     "wiseNote": "Ideal para transferencias internacionales multidivisa directas y seguras",
     "enableCash": true,
     "cashNote": "Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida para quienes deseen entregar su sobre en mano con sus mejores deseos.",

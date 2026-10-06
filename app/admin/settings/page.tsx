@@ -21,6 +21,8 @@ export default async function AdminSettingsPage() {
 
   const { resilientStore } = await import("@/lib/storage/resilient-store");
   const localSettings = resilientStore.getSettings();
+  const { getDailyEmailBudget } = await import("@/lib/email/outbox");
+  const emailBudget = getDailyEmailBudget();
 
   const client = createSupabaseAdminClient();
   let remoteRows: Array<{ key: string; value: unknown }> = [];
@@ -528,6 +530,43 @@ export default async function AdminSettingsPage() {
                 placeholder="Ruben & Andrea"
                 className="admin-input"
               />
+            </div>
+          </div>
+
+          {/* Daily Email Budget Meter (Resend Free Tier Guardrail: 100/day UTC) */}
+          <div style={{ background: "#FAF7F5", border: "1px solid #E6DDD5", borderRadius: "10px", padding: "1rem 1.25rem", marginBottom: "1.25rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "1rem" }}>📊</span>
+                <span style={{ fontSize: "0.86rem", fontWeight: 600, color: "#2B2425" }}>
+                  Presupuesto Diario de Correo (Resend Free Tier: 100/día UTC)
+                </span>
+              </div>
+              <span style={{ fontSize: "0.78rem", fontWeight: 700, color: emailBudget.sentToday > 90 ? "#B91C1C" : "#1B5E20" }}>
+                {emailBudget.sentToday} / {emailBudget.dailyCap} enviados hoy
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div style={{ height: "7px", background: "#E8E0D9", borderRadius: "999px", overflow: "hidden", marginBottom: "0.6rem" }}>
+              <div
+                style={{
+                  height: "100%",
+                  width: `${Math.min(100, (emailBudget.sentToday / emailBudget.dailyCap) * 100)}%`,
+                  background: emailBudget.sentToday > 90 ? "#DC2626" : "#8C2836",
+                  borderRadius: "999px",
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.76rem", color: "#6A5D60" }}>
+              <span>
+                Cupo disponible para campañas / recordatorios: <strong>{emailBudget.remainingCampaign}</strong>
+              </span>
+              <span>
+                Reserva transaccional protegida (RSVPs): <strong>{emailBudget.reserveTransactional}</strong>
+              </span>
             </div>
           </div>
 

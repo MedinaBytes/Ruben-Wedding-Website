@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
 import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction } from "@/app/actions/admin-invitations";
 import { sendInvitationEmailAction } from "@/app/actions/admin-email";
+import { buildWhatsAppInvitationLink } from "@/lib/whatsapp/wa-link";
 
 export interface InvitationRow {
   id: string;
@@ -204,15 +205,13 @@ export function InvitationsManager({
   function sendWhatsApp(inv: InvitationRow) {
     const targetToken = inv.token || inv.id;
     const inviteUrl = `${siteUrl.replace(/\/$/, "")}/i/${targetToken}`;
-    const text = encodeURIComponent(
-      `Dear ${inv.displayName},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n${inviteUrl}`,
-    );
-    const targetPhone = inv.whatsapp || inv.phone;
-    const cleanPhone = targetPhone ? targetPhone.replace(/[^0-9+]/g, "") : "";
-    const waUrl = cleanPhone
-      ? `https://api.whatsapp.com/send?phone=${encodeURIComponent(cleanPhone)}&text=${text}`
-      : `https://api.whatsapp.com/send?text=${text}`;
-    window.open(waUrl, "_blank", "noopener,noreferrer");
+    const { url } = buildWhatsAppInvitationLink({
+      phoneNumber: inv.whatsapp || inv.phone,
+      guestName: inv.displayName,
+      invitationUrl: inviteUrl,
+      language: inv.language || "es",
+    });
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   return (

@@ -100,6 +100,19 @@ export async function POST(
       return NextResponse.json({ error: result.reason }, { status: 422, headers: privateHeaders });
     }
 
+    // Enforce catering meal capacity caps if configured
+    const { resilientStore } = await import("@/lib/storage/resilient-store");
+    if (result.data.attendanceStatus === "yes" && result.data.mealPreferences && result.data.mealPreferences.length > 0) {
+      for (const pref of result.data.mealPreferences) {
+        if (pref.meal && !resilientStore.checkMealCapAvailable(pref.meal)) {
+          return NextResponse.json(
+            { error: "meal_capacity_reached", meal: pref.meal },
+            { status: 422, headers: privateHeaders },
+          );
+        }
+      }
+    }
+
     await saveRsvp(client, invitation.id, result.data);
     await recordInvitationEvent(client, {
       invitationId: invitation.id,
