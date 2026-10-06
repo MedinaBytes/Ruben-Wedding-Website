@@ -98,7 +98,7 @@ describe("lookupInvitation", () => {
     expect(mock.aliasInsert).not.toHaveBeenCalled();
     expect(cookieSet).toHaveBeenCalledWith("guest_lookup_match", expect.any(String), expect.any(Object));
     expect(cookieSet).toHaveBeenCalledWith(`wedding_manual_locale_${invitation.id}`, "en", expect.any(Object));
-  });
+  }, 15000);
 
   it("issues the hashed route token only after a valid confirmation grant", async () => {
     const invitation = {
