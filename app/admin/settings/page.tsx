@@ -9,7 +9,7 @@ import { ResendTester } from "@/components/admin/resend-tester";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Site Settings & Integrations — Admin",
+  title: "Ajustes & Integraciones — Panel de Administración",
   robots: { index: false, follow: false },
 };
 
@@ -108,64 +108,66 @@ export default async function AdminSettingsPage() {
   const contactEmail = String(s.get("contactEmail") || "wedding@theandyrubenwedding.website");
 
   return (
-    <div style={{ maxWidth: "960px", margin: "0 auto" }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: "1.75rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "2.2rem", margin: "0 0 0.25rem 0", color: "#2B2425" }}>
-            Ajustes del Sistema &amp; Integraciones
-          </h1>
-          <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.95rem" }}>
-            Organización central de módulos nupciales, mesa de regalos con múltiples opciones de pago (Banco, Revolut, Wise, Efectivo), correo Resend, WhatsApp y privacidad.
-          </p>
+    <div style={{ maxWidth: "1080px", margin: "0 auto" }}>
+      {/* Header Intro */}
+      <div style={{ marginBottom: "2rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+          <span style={{ fontSize: "0.76rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, color: "#8C2836" }}>
+            Configuración del Sistema
+          </span>
+          <span style={{ color: "#C8BDC0" }}>·</span>
+          <span style={{ fontSize: "0.76rem", color: "#7B6F71" }}>Schloss Hetzendorf 2027</span>
         </div>
+        <h1 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "2.1rem", margin: "0 0 0.5rem 0", color: "#2B2425", fontWeight: 600 }}>
+          Ajustes Globales &amp; Medios de Pago
+        </h1>
+        <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.94rem", lineHeight: 1.5 }}>
+          Gestiona los módulos interactivos de la invitación, las vías para entrega de regalos (Banco, Revolut, Wise y Efectivo), el servicio de correo con Resend y la privacidad de acceso.
+        </p>
       </div>
 
-      <form action={updateSiteSettings} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        {/* Quick Jump Bar & Sticky Top Save */}
+      <form action={updateSiteSettings} style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+        {/* Navigation Sticky Strip */}
         <div
           style={{
             position: "sticky",
-            top: "60px",
+            top: "68px",
             zIndex: 40,
-            background: "rgba(255, 255, 255, 0.95)",
-            backdropFilter: "blur(10px)",
-            border: "1px solid #E8DFD8",
-            borderRadius: "10px",
-            padding: "0.75rem 1.25rem",
+            background: "rgba(255, 255, 255, 0.94)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid #EAE2DB",
+            borderRadius: "12px",
+            padding: "0.6rem 1rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            gap: "0.75rem",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.04)",
+            gap: "0.6rem",
+            boxShadow: "0 2px 10px rgba(45, 25, 30, 0.04)",
           }}
         >
-          {/* Section Anchor Shortcuts */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8A7D80", textTransform: "uppercase", letterSpacing: "0.05em", marginRight: "0.25rem" }}>
-              Saltar a:
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap" }}>
             {[
-              { id: "modules", label: "⚡ Módulos" },
-              { id: "gifts", label: "🎁 Regalos & Pagos" },
-              { id: "email", label: "✉️ Resend & SMTP" },
-              { id: "whatsapp", label: "💬 WhatsApp" },
-              { id: "stay", label: "🏠 Privacidad" },
-              { id: "general", label: "🎵 Contacto" },
-              { id: "demo", label: "🛡️ Demo" },
+              { id: "modules", label: "Módulos" },
+              { id: "gifts", label: "Regalos & Pagos" },
+              { id: "email", label: "Resend & Correo" },
+              { id: "whatsapp", label: "WhatsApp" },
+              { id: "privacy", label: "Privacidad" },
+              { id: "general", label: "Contacto & Spotify" },
+              { id: "demo", label: "Modo Demo" },
             ].map((anchor) => (
               <a
                 key={anchor.id}
                 href={`#${anchor.id}`}
                 style={{
-                  fontSize: "0.8rem",
+                  fontSize: "0.78rem",
                   color: "#544648",
                   textDecoration: "none",
-                  padding: "0.25rem 0.55rem",
+                  padding: "0.25rem 0.65rem",
                   background: "#FAF7F5",
                   border: "1px solid #ECE3DC",
-                  borderRadius: "5px",
+                  borderRadius: "6px",
                   fontWeight: 500,
                   transition: "all 0.15s ease",
                 }}
@@ -175,652 +177,632 @@ export default async function AdminSettingsPage() {
             ))}
           </div>
 
-          {/* Quick Save Button */}
           <button
             type="submit"
             style={{
               background: "#8C2836",
               color: "#FFFFFF",
               border: 0,
-              borderRadius: "6px",
+              borderRadius: "7px",
               padding: "0.45rem 1.15rem",
-              fontSize: "0.88rem",
+              fontSize: "0.85rem",
               fontWeight: 600,
               cursor: "pointer",
-              boxShadow: "0 2px 8px rgba(140, 40, 54, 0.2)",
+              boxShadow: "0 2px 6px rgba(140, 40, 54, 0.22)",
             }}
           >
             Guardar Cambios
           </button>
         </div>
 
-        {/* =========================================================================
-            SECTION 1: Módulos & Experiencia Nupcial
-            ========================================================================= */}
-        <div id="modules" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>⚡</span>
-            <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              Módulos &amp; Experiencia Nupcial
-            </h2>
-          </div>
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.5rem" }}>
-            Activa o desactiva en tiempo real las herramientas interactivas del sitio web según la etapa de la boda.
-          </p>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1rem" }}>
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableCalendarSync" defaultChecked={enableCalendarSync} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>📅 Sincronización de Calendario 1-Click</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Apple Calendar, Google Calendar y descarga .ics</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableEnvelopeCalligraphy" defaultChecked={enableEnvelopeCalligraphy} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🖋️ Caligrafía de Sobre 3D</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Nombre del invitado caligrafiado en el frontal del sobre interactivo</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableMealSelection" defaultChecked={enableMealSelection} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🍽️ Selección de Menú &amp; Alergias</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Opciones gourmet: ternera vienesa, pescado alpino, vegetariano, vegano e infantil</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableTravelConcierge" defaultChecked={enableTravelConcierge} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🏰 Concierge de Viaje &amp; Hoteles en Viena</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Guía de transporte a Hetzendorf (Bim 62, S-Bahn) y hoteles en Meidling</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableDayOfTimeline" defaultChecked={enableDayOfTimeline} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>⏱️ Modo Cronograma en Vivo</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Rastreador dinámico paso a paso durante el día del evento en Viena</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableGuestbook" defaultChecked={enableGuestbook} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>💌 Libro de Firmas &amp; Deseos</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Muro interactivo donde los invitados dejan bendiciones y mensajes</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableTablePlanner" defaultChecked={enableTablePlanner} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🪑 Asignación de Mesas Hetzendorf</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Gestor de mesas del salón del palacio para ubicar a confirmados</div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer" }}>
-              <input type="checkbox" name="enableQrCheckin" defaultChecked={enableQrCheckin} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>
-                  📲 Check-In con Escáner QR <span style={{ fontSize: "0.72rem", background: "#F3E8FF", color: "#6B21A8", padding: "0.1rem 0.4rem", borderRadius: "4px", marginLeft: "0.3rem", fontWeight: 700 }}>Roadmap</span>
-                </div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>
-                  Lectura con cámara móvil o webcam. Dejar desmarcado para operar con lista de puerta manual.
-                </div>
-              </div>
-            </label>
-
-            <label style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", padding: "0.85rem", background: "#FAF7F5", borderRadius: "8px", border: "1px solid #ECE4DD", cursor: "pointer", gridColumn: "1 / -1" }}>
-              <input type="checkbox" name="enableRsvpReminders" defaultChecked={enableRsvpReminders} style={{ marginTop: "3px", width: "17px", height: "17px", accentColor: "#8C2836" }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.88rem", color: "#2B2425" }}>🔔 Recordatorios de RSVP en Lote</div>
-                <div style={{ fontSize: "0.78rem", color: "#6E6264", marginTop: "2px" }}>Envío masivo con 1 clic para invitados con respuesta pendiente vía WhatsApp o Correo</div>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* =========================================================================
-            SECTION 2: Mesa de Regalos & Opciones de Pago (Bank, Revolut, Wise, Cash)
-            ========================================================================= */}
-        <div id="gifts" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <span style={{ fontSize: "1.4rem" }}>🎁</span>
-              <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-                Mesa de Regalos &amp; Opciones de Pago
+        {/* SECTION 1: Módulos Nupciales */}
+        <section id="modules" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                <span>Módulos &amp; Experiencia de los Invitados</span>
               </h2>
+              <p className="admin-card__desc">
+                Habilita o deshabilita en vivo las características interactivas visibles para los invitados.
+              </p>
             </div>
-            <span style={{ fontSize: "0.78rem", background: "#FFF8E1", color: "#8D6E00", border: "1px solid #FFE082", padding: "0.2rem 0.6rem", borderRadius: "6px", fontWeight: 600 }}>
-              Multi-Método: Banco · Revolut · Wise · Efectivo
+            <span style={{ fontSize: "0.74rem", background: "#F5F0EB", color: "#68585B", padding: "0.25rem 0.6rem", borderRadius: "999px", fontWeight: 600 }}>
+              9 Controles
             </span>
           </div>
 
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Configura las distintas vías para que los invitados puedan entregar sus regalos: transferencia SEPA tradicional, enlaces instantáneos de Revolut, transferencias internacionales Wise, o sobre nupcial en mano en el Palacio de Hetzendorf.
-          </p>
-
-          {/* Master Toggle */}
-          <div style={{ background: "#FAF7F5", border: "1px solid #E4DBD3", borderRadius: "8px", padding: "1rem", marginBottom: "1.5rem" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.92rem", fontWeight: 600, color: "#2B2425", cursor: "pointer" }}>
-              <input type="checkbox" name="showGiftDetails" defaultChecked={showGiftDetails} style={{ width: "19px", height: "19px", accentColor: "#8C2836" }} />
-              <span>Habilitar sección interactiva de detalles de regalo y medios de pago en la web</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))", gap: "0.75rem" }}>
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Sincronización de Calendario 1-Click</span>
+                <span className="admin-switch-help">Apple Calendar, Google Calendar y descarga de archivo .ics</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableCalendarSync" defaultChecked={enableCalendarSync} />
+                <span className="admin-toggle-slider" />
+              </div>
             </label>
-            <div style={{ fontSize: "0.78rem", color: "#776A6C", marginTop: "0.35rem", marginLeft: "1.8rem" }}>
-              Si está desmarcado, se mantiene la nota de cortesía general sin desplegar las pestañas de pago.
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Caligrafía de Sobre 3D</span>
+                <span className="admin-switch-help">Nombre de los invitados caligrafiado en el frontal del sobre</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableEnvelopeCalligraphy" defaultChecked={enableEnvelopeCalligraphy} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Selección de Menú &amp; Dietas</span>
+                <span className="admin-switch-help">Opciones gastronómicas: carne, pescado, vegetariano, vegano e infantil</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableMealSelection" defaultChecked={enableMealSelection} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Concierge de Viaje &amp; Hoteles</span>
+                <span className="admin-switch-help">Guía de transporte a Hetzendorf (Bim 62, S-Bahn) y hoteles recomendados</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableTravelConcierge" defaultChecked={enableTravelConcierge} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Modo Cronograma en Vivo</span>
+                <span className="admin-switch-help">Rastreador en tiempo real del itinerario durante el día del evento</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableDayOfTimeline" defaultChecked={enableDayOfTimeline} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Libro de Firmas &amp; Deseos</span>
+                <span className="admin-switch-help">Muro digital donde los invitados dedican mensajes y bendiciones</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableGuestbook" defaultChecked={enableGuestbook} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Asignación de Mesas Hetzendorf</span>
+                <span className="admin-switch-help">Distribución de asientos en el salón imperial del palacio</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableTablePlanner" defaultChecked={enableTablePlanner} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row">
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Check-In con Escáner QR</span>
+                <span className="admin-switch-help">Lectura con cámara móvil. Desmarcado opera con lista manual de invitados</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableQrCheckin" defaultChecked={enableQrCheckin} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+
+            <label className="admin-switch-row" style={{ gridColumn: "1 / -1" }}>
+              <div className="admin-switch-info">
+                <span className="admin-switch-label">Recordatorios de RSVP en Lote</span>
+                <span className="admin-switch-help">Disparo automatizado de recordatorios para invitados con confirmación pendiente</span>
+              </div>
+              <div className="admin-toggle">
+                <input type="checkbox" name="enableRsvpReminders" defaultChecked={enableRsvpReminders} />
+                <span className="admin-toggle-slider" />
+              </div>
+            </label>
+          </div>
+        </section>
+
+        {/* SECTION 2: Mesa de Regalos & Multi-Método de Pago */}
+        <section id="gifts" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="20 12 20 22 4 22 4 12" />
+                  <rect width="20" height="5" x="2" y="7" />
+                  <line x1="12" x2="12" y1="22" y2="7" />
+                  <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                  <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+                </svg>
+                <span>Mesa de Regalos &amp; Opciones de Pago</span>
+              </h2>
+              <p className="admin-card__desc">
+                Proporciona a tus invitados múltiples canales cómodos y sin fricción: Transferencia Bancaria, Revolut, Wise y Sobre en Mano.
+              </p>
             </div>
+            <span style={{ fontSize: "0.74rem", background: "#EBF5EA", color: "#245A22", border: "1px solid #CCE5C8", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 700 }}>
+              4 Formas de Pago
+            </span>
           </div>
 
-          {/* Payment Method Cards */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {/* Card A: Transferencia Bancaria SEPA */}
-            <div style={{ border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1.25rem", background: "#FFFFFF" }}>
+          {/* Master Switch */}
+          <label className="admin-switch-row" style={{ marginBottom: "1.25rem", background: "#FBF7F5", border: "1px solid #E6DDD5" }}>
+            <div className="admin-switch-info">
+              <span className="admin-switch-label">Habilitar Pestañas de Pago de Regalos en la Web</span>
+              <span className="admin-switch-help">Al desactivarlo, se muestra solo la nota de cortesía sin desplegar cuentas ni métodos</span>
+            </div>
+            <div className="admin-toggle">
+              <input type="checkbox" name="showGiftDetails" defaultChecked={showGiftDetails} />
+              <span className="admin-toggle-slider" />
+            </div>
+          </label>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {/* 1. Banco */}
+            <div style={{ background: "#FAF8F6", border: "1px solid #EAE2DB", borderRadius: "10px", padding: "1.25rem" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.95rem", color: "#2B2425" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableBankTransfer" defaultChecked={enableBankTransfer} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>🏦 Método 1: Transferencia Bancaria (IBAN / SEPA)</span>
+                  <span>Método 1: Transferencia Bancaria Europea (SEPA)</span>
                 </label>
-                <span style={{ fontSize: "0.75rem", color: "#6A5D60" }}>Transferencia europea tradicional</span>
+                <span style={{ fontSize: "0.72rem", color: "#7B6F71", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>IBAN / BIC</span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Entidad Bancaria</label>
-                  <input name="bankName" defaultValue={bankName} placeholder="e.g. Erste Bank Österreich" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.85rem", marginBottom: "0.85rem" }}>
+                <div className="admin-input-group">
+                  <label className="admin-label">Banco</label>
+                  <input name="bankName" defaultValue={bankName} placeholder="Erste Bank Österreich" className="admin-input" />
                 </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Titular de la Cuenta</label>
-                  <input name="accountHolder" defaultValue={accountHolder} placeholder="Ruben Quijada & Andrea Müllauer" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>IBAN</label>
-                  <input name="iban" defaultValue={iban} placeholder="AT61 2011 1000 0000 0000" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem", fontFamily: "monospace" }} />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>BIC / SWIFT</label>
-                  <input name="bic" defaultValue={bic} placeholder="GIBAATWWXXX" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem", fontFamily: "monospace" }} />
+                <div className="admin-input-group">
+                  <label className="admin-label">Titular de la Cuenta</label>
+                  <input name="accountHolder" defaultValue={accountHolder} placeholder="Ruben Quijada & Andrea Müllauer" className="admin-input" />
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Concepto / Referencia para el Invitado</label>
-                <input name="giftNote" defaultValue={giftNote} placeholder="Referencia: Boda Ruben & Andrea 2027" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
+              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "0.85rem", marginBottom: "0.85rem" }}>
+                <div className="admin-input-group">
+                  <label className="admin-label">IBAN</label>
+                  <input name="iban" defaultValue={iban} placeholder="AT61 2011 1000 0000 0000" className="admin-input" style={{ fontFamily: "monospace" }} />
+                </div>
+                <div className="admin-input-group">
+                  <label className="admin-label">BIC / SWIFT</label>
+                  <input name="bic" defaultValue={bic} placeholder="GIBAATWWXXX" className="admin-input" style={{ fontFamily: "monospace" }} />
+                </div>
+              </div>
+
+              <div className="admin-input-group">
+                <label className="admin-label">Concepto / Referencia Sugerida para el Invitado</label>
+                <input name="giftNote" defaultValue={giftNote} placeholder="Referencia: Boda Ruben & Andrea 2027" className="admin-input" />
               </div>
             </div>
 
-            {/* Card B: Revolut Pay */}
-            <div style={{ border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1.25rem", background: "#FFFFFF" }}>
+            {/* 2. Revolut */}
+            <div style={{ background: "#FAF8F6", border: "1px solid #EAE2DB", borderRadius: "10px", padding: "1.25rem" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.95rem", color: "#2B2425" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableRevolut" defaultChecked={enableRevolut} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>⚡ Método 2: Revolut Pay (Instantáneo &amp; Revtag)</span>
+                  <span>Método 2: Revolut (@Revtag &amp; Enlace Instantáneo)</span>
                 </label>
-                <span style={{ fontSize: "0.75rem", color: "#6A5D60" }}>Sin comisiones / Pago instantáneo</span>
+                <span style={{ fontSize: "0.72rem", color: "#1E58A4", background: "#EBF3FC", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
+                  Instantáneo
+                </span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                    Revtag o Enlace Revolut.me
-                  </label>
-                  <input
-                    name="revolutTag"
-                    defaultValue={revolutTag}
-                    placeholder="@ruben_andrea o https://revolut.me/ruben_andrea"
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem", fontFamily: "monospace" }}
-                  />
-                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.25rem", display: "block" }}>
-                    Ejemplo: <code>@ruben_andrea</code> o tu link <code>revolut.me/...</code>
-                  </span>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.85rem" }}>
+                <div className="admin-input-group">
+                  <label className="admin-label">Revtag o Enlace Revolut.me</label>
+                  <input name="revolutTag" defaultValue={revolutTag} placeholder="@ruben_andrea o https://revolut.me/ruben_andrea" className="admin-input" style={{ fontFamily: "monospace" }} />
+                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Ejemplo: <code>@ruben_andrea</code> o enlace completo</span>
                 </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                    Instrucciones / Nota Revolut para Invitados
-                  </label>
-                  <input
-                    name="revolutNote"
-                    defaultValue={revolutNote}
-                    placeholder="Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag"
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }}
-                  />
+                <div className="admin-input-group">
+                  <label className="admin-label">Instrucciones / Nota Revolut</label>
+                  <input name="revolutNote" defaultValue={revolutNote} placeholder="Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag" className="admin-input" />
                 </div>
               </div>
             </div>
 
-            {/* Card C: Wise (Transferencias Internacionales) */}
-            <div style={{ border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1.25rem", background: "#FFFFFF" }}>
+            {/* 3. Wise */}
+            <div style={{ background: "#FAF8F6", border: "1px solid #EAE2DB", borderRadius: "10px", padding: "1.25rem" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.95rem", color: "#2B2425" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableWise" defaultChecked={enableWise} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>🌐 Método 3: Wise (TransferWise / Internacional)</span>
+                  <span>Método 3: Wise (Transferencias Multidivisa Internacionales)</span>
                 </label>
-                <span style={{ fontSize: "0.75rem", color: "#6A5D60" }}>Ideal para invitados internacionales (USD, GBP, etc.)</span>
+                <span style={{ fontSize: "0.72rem", color: "#1F6A44", background: "#E8F7ED", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
+                  Internacional
+                </span>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                    Wise Email / Wise Tag / Enlace
-                  </label>
-                  <input
-                    name="wiseTag"
-                    defaultValue={wiseTag}
-                    placeholder="andrea.ruben@wise.com o https://wise.com/pay/me/..."
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
-                  />
-                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.25rem", display: "block" }}>
-                    Email registrado en Wise o enlace directo de pago.
-                  </span>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: "0.85rem" }}>
+                <div className="admin-input-group">
+                  <label className="admin-label">Wise Email / Enlace de Pago</label>
+                  <input name="wiseTag" defaultValue={wiseTag} placeholder="andrea.ruben@wise.com o https://wise.com/pay/me/..." className="admin-input" />
+                  <span style={{ fontSize: "0.72rem", color: "#8A7E80", marginTop: "0.2rem" }}>Correo vinculado a tu cuenta Wise o URL de cobro</span>
                 </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                    Instrucciones / Nota Wise
-                  </label>
-                  <input
-                    name="wiseNote"
-                    defaultValue={wiseNote}
-                    placeholder="Ideal para transferencias internacionales multidivisa directas y seguras"
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }}
-                  />
+                <div className="admin-input-group">
+                  <label className="admin-label">Instrucciones / Nota Wise</label>
+                  <input name="wiseNote" defaultValue={wiseNote} placeholder="Ideal para transferencias internacionales multidivisa directas y seguras" className="admin-input" />
                 </div>
               </div>
             </div>
 
-            {/* Card D: Sobre en Mano / Efectivo (Palacio Hetzendorf) */}
-            <div style={{ border: "1px solid #ECE4DD", borderRadius: "8px", padding: "1.25rem", background: "#FFFFFF" }}>
+            {/* 4. Cash / Sobre */}
+            <div style={{ background: "#FAF8F6", border: "1px solid #EAE2DB", borderRadius: "10px", padding: "1.25rem" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.95rem", color: "#2B2425" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: 600, fontSize: "0.92rem", color: "#2B2425" }}>
                   <input type="checkbox" name="enableCash" defaultChecked={enableCash} style={{ width: "17px", height: "17px", accentColor: "#8C2836" }} />
-                  <span>✉️ Método 4: Sobre en Mano / Efectivo (Palacio Hetzendorf)</span>
+                  <span>Método 4: Sobre en Mano / Efectivo (Palacio Hetzendorf)</span>
                 </label>
-                <span style={{ fontSize: "0.75rem", color: "#6A5D60" }}>Tradición nupcial imperial</span>
+                <span style={{ fontSize: "0.72rem", color: "#8C2836", background: "#FDF2F4", padding: "0.15rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
+                  En Persona
+                </span>
               </div>
 
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                  Instrucciones del Buzón de Sobres en el Palacio
-                </label>
+              <div className="admin-input-group">
+                <label className="admin-label">Instrucciones del Buzón Nupcial en el Palacio</label>
                 <textarea
                   name="cashNote"
                   rows={2}
                   defaultValue={cashNote}
-                  placeholder="Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida para quienes deseen entregar su sobre en mano con sus mejores deseos."
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem", lineHeight: 1.5 }}
+                  placeholder="Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida..."
+                  className="admin-textarea"
                 />
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* =========================================================================
-            SECTION 3: Servicio de Correo (Resend API & SMTP)
-            ========================================================================= */}
-        <div id="email" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <span style={{ fontSize: "1.4rem" }}>✉</span>
-              <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-                Servicio de Correo (Resend API &amp; SMTP)
+        {/* SECTION 3: Servicio de Correo Electrónico (Resend & SMTP) */}
+        <section id="email" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                <span>Servicio de Correo Electrónico (Resend API &amp; SMTP)</span>
               </h2>
+              <p className="admin-card__desc">
+                Configuración del motor de email para despachar invitaciones oficiales con plantilla nupcial y sello en cera interactivo.
+              </p>
             </div>
             {resendApiKey ? (
               <span style={{ fontSize: "0.75rem", background: "#E8F5E9", color: "#1B5E20", border: "1px solid #C8E6C9", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 700 }}>
-                ● Resend API Configurado
+                ● Resend Configurado
               </span>
             ) : (
               <span style={{ fontSize: "0.75rem", background: "#FFF8E1", color: "#8D6E00", border: "1px solid #FFE082", padding: "0.25rem 0.65rem", borderRadius: "999px", fontWeight: 600 }}>
-                ○ API Key Requerida
+                ○ API Key Pendiente
               </span>
             )}
           </div>
 
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Envío oficial de invitaciones digitales nupciales con plantilla de sobre cerrado y sello interactivo de cera botánica en oliva.
-          </p>
-
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-              Resend API Key (<code style={{ fontSize: "0.8rem", color: "#8C2836" }}>re_...</code>)
+          <div style={{ marginBottom: "1rem" }} className="admin-input-group">
+            <label className="admin-label">
+              Resend API Key (<code style={{ color: "#8C2836" }}>re_...</code>)
             </label>
             <input
               name="resendApiKey"
               type="password"
               defaultValue={resendApiKey}
               placeholder="re_123456789_abcdef..."
-              style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem", fontFamily: "monospace" }}
+              className="admin-input"
+              style={{ fontFamily: "monospace" }}
             />
-            <span style={{ display: "block", fontSize: "0.74rem", color: "#8A7E80", marginTop: "0.3rem" }}>
-              Obtén tu clave gratuita en <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: "#8C2836", textDecoration: "underline" }}>resend.com/api-keys</a>.
+            <span style={{ fontSize: "0.74rem", color: "#7B6F71", marginTop: "0.25rem" }}>
+              Obtén tu API key gratuita en <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" style={{ color: "#8C2836", textDecoration: "underline" }}>resend.com/api-keys</a>
             </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                Email de Envío (Remitente)
-              </label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem", marginBottom: "1.25rem" }}>
+            <div className="admin-input-group">
+              <label className="admin-label">Email de Envío (Remitente)</label>
               <input
                 name="resendFromEmail"
                 type="email"
                 defaultValue={resendFromEmail}
                 placeholder="onboarding@resend.dev o wedding@theandyrubenwedding.website"
-                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+                className="admin-input"
               />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-                Nombre del Remitente
-              </label>
+            <div className="admin-input-group">
+              <label className="admin-label">Nombre del Remitente</label>
               <input
                 name="resendFromName"
                 defaultValue={resendFromName}
                 placeholder="Ruben & Andrea"
-                style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+                className="admin-input"
               />
             </div>
           </div>
 
+          {/* Interactive Tester */}
           <ResendTester
             defaultRecipient={contactEmail || "ruben.andrea.wedding@gmail.com"}
             initialConfigured={Boolean(resendApiKey)}
           />
 
-          {/* Secondary SMTP Section */}
-          <div style={{ borderTop: "1px solid #EFEAE6", paddingTop: "1.25rem", marginTop: "1.5rem" }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 0.5rem 0", color: "#2B2425" }}>
-              Configuración Alternativa de Servidor SMTP (Opcional)
+          {/* Fallback SMTP */}
+          <div style={{ borderTop: "1px solid #F0E9E3", paddingTop: "1.25rem", marginTop: "1.5rem" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425" }}>
+              Servidor SMTP de Respaldo (Opcional)
             </h3>
-            <p style={{ color: "#6A5D60", fontSize: "0.82rem", lineHeight: 1.45, marginBottom: "1rem" }}>
-              Servidor SMTP de respaldo si no deseas usar la API de Resend (Gmail, SendGrid, Amazon SES, Brevo).
+            <p style={{ color: "#726567", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "0.85rem" }}>
+              Utiliza un servidor SMTP convencional (Gmail, Amazon SES, Brevo) como contingencia.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Servidor SMTP (Host)</label>
-                <input name="smtpHost" defaultValue={smtpHost} placeholder="smtp.resend.com o smtp.gmail.com" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+              <div className="admin-input-group">
+                <label className="admin-label">Servidor Host</label>
+                <input name="smtpHost" defaultValue={smtpHost} placeholder="smtp.resend.com o smtp.gmail.com" className="admin-input" />
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Puerto</label>
-                <input name="smtpPort" defaultValue={smtpPort} placeholder="587 o 465" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Usuario SMTP</label>
-                <input name="smtpUser" defaultValue={smtpUser} placeholder="resend o usuario@tudominio.com" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Contraseña / App Password</label>
-                <input name="smtpPass" type="password" defaultValue={smtpPass} placeholder="••••••••••••" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
+              <div className="admin-input-group">
+                <label className="admin-label">Puerto</label>
+                <input name="smtpPort" defaultValue={smtpPort} placeholder="587 o 465" className="admin-input" />
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Nombre del Remitente</label>
-                <input name="smtpSenderName" defaultValue={smtpSenderName} placeholder="Ruben & Andrea" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
+              <div className="admin-input-group">
+                <label className="admin-label">Usuario SMTP</label>
+                <input name="smtpUser" defaultValue={smtpUser} placeholder="usuario@dominio.com" className="admin-input" />
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Email del Remitente</label>
-                <input name="smtpSenderEmail" type="email" defaultValue={smtpSenderEmail} placeholder="wedding@theandyrubenwedding.website" style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem" }} />
+              <div className="admin-input-group">
+                <label className="admin-label">Contraseña</label>
+                <input name="smtpPass" type="password" defaultValue={smtpPass} placeholder="••••••••••••" className="admin-input" />
               </div>
             </div>
 
-            <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.85rem", color: "#44383A", cursor: "pointer", marginBottom: "1rem" }}>
-              <input type="checkbox" name="smtpSecure" defaultChecked={smtpSecure} style={{ width: "16px", height: "16px" }} />
-              <span>Usar conexión segura SSL/TLS (habilitar para puerto 465)</span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
+              <div className="admin-input-group">
+                <label className="admin-label">Nombre</label>
+                <input name="smtpSenderName" defaultValue={smtpSenderName} placeholder="Ruben & Andrea" className="admin-input" />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-label">Email Remitente</label>
+                <input name="smtpSenderEmail" type="email" defaultValue={smtpSenderEmail} placeholder="wedding@theandyrubenwedding.website" className="admin-input" />
+              </div>
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.84rem", color: "#44383A", cursor: "pointer", marginBottom: "1rem" }}>
+              <input type="checkbox" name="smtpSecure" defaultChecked={smtpSecure} style={{ width: "16px", height: "16px", accentColor: "#8C2836" }} />
+              <span>Usar conexión segura SSL/TLS (activar para puerto 465)</span>
             </label>
 
             <SmtpTester defaultRecipient={contactEmail || "ruben.andrea.wedding@gmail.com"} />
           </div>
-        </div>
+        </section>
 
-        {/* =========================================================================
-            SECTION 4: WhatsApp Automated Distribution
-            ========================================================================= */}
-        <div id="whatsapp" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>💬</span>
-            <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              WhatsApp Automated Distribution
-            </h2>
+        {/* SECTION 4: Comunicaciones WhatsApp */}
+        <section id="whatsapp" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+                <span>Comunicaciones WhatsApp</span>
+              </h2>
+              <p className="admin-card__desc">
+                Distribución de enlaces de invitación con personalización de nombres y enlaces únicos protegidos.
+              </p>
+            </div>
           </div>
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Envío seguro de invitaciones: genera mensajes con nombres personalizados y enlaces de acceso directos.
-          </p>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-              Intervalo de Espera Entre Envíos (Protección Anti-Spam)
-            </label>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ marginBottom: "1rem" }} className="admin-input-group">
+            <label className="admin-label">Intervalo de Espera Entre Envíos (Protección Anti-Bloqueo)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <input
                 name="whatsappDelaySeconds"
                 type="number"
                 min={3}
                 max={30}
                 defaultValue={whatsappDelaySeconds}
-                style={{ width: "90px", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+                className="admin-input"
+                style={{ width: "90px" }}
               />
-              <span style={{ fontSize: "0.85rem", color: "#6A5D60" }}>segundos (Recomendado: 6–10s)</span>
+              <span style={{ fontSize: "0.84rem", color: "#6A5D60" }}>segundos por mensaje (Recomendado: 6 a 10s)</span>
             </div>
           </div>
 
-          <div style={{ marginBottom: "1.25rem" }}>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
-              Plantilla de Mensaje (usa <code>&#123;name&#125;</code> y <code>&#123;url&#125;</code>)
+          <div style={{ marginBottom: "1.25rem" }} className="admin-input-group">
+            <label className="admin-label">
+              Plantilla de Mensaje (variables disponibles: <code>&#123;name&#125;</code> y <code>&#123;url&#125;</code>)
             </label>
             <textarea
               name="whatsappTemplate"
               rows={4}
               defaultValue={whatsappTemplate}
-              style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem", fontFamily: "inherit", lineHeight: 1.4 }}
+              className="admin-textarea"
             />
           </div>
 
-          {/* Vercel Cloud Serverless Options */}
-          <div style={{ borderTop: "1px solid #EFEAE6", paddingTop: "1.25rem", marginTop: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
-              <span style={{ fontSize: "1rem" }}>⚡</span>
-              <h3 style={{ fontSize: "0.98rem", fontWeight: 700, margin: 0, color: "#2B2425" }}>
-                Envío Automático en Vercel (Opciones Cloud / Gateway)
-              </h3>
-            </div>
-            <p style={{ color: "#6A5D60", fontSize: "0.82rem", lineHeight: 1.45, marginBottom: "1rem" }}>
-              En Vercel Serverless, para envíos masivos sin mantener la pestaña abierta, puedes vincular la API Oficial de Meta WhatsApp Cloud (1.000 conversaciones gratis/mes) o un microservicio Gateway.
+          {/* Vercel Cloud Options */}
+          <div style={{ borderTop: "1px solid #F0E9E3", paddingTop: "1.25rem", marginTop: "1rem" }}>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 600, margin: "0 0 0.35rem 0", color: "#2B2425" }}>
+              Meta WhatsApp Cloud API (Oficial)
+            </h3>
+            <p style={{ color: "#726567", fontSize: "0.8rem", lineHeight: 1.4, marginBottom: "0.85rem" }}>
+              Para envíos en background en Vercel Serverless sin mantener la ventana del navegador abierta.
             </p>
 
-            <div style={{ background: "#FAF7F5", border: "1px solid #EAE2DB", borderRadius: "8px", padding: "1rem", marginBottom: "1rem" }}>
-              <strong style={{ fontSize: "0.86rem", color: "#8C2836", display: "block", marginBottom: "0.75rem" }}>
-                Opción A: Meta WhatsApp Cloud API Oficial
-              </strong>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
-                    Meta Phone Number ID
-                  </label>
-                  <input
-                    name="whatsappPhoneNumberId"
-                    defaultValue={whatsappPhoneNumberId}
-                    placeholder="e.g. 109283746591023"
-                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
-                    Permanent Access Token
-                  </label>
-                  <input
-                    name="whatsappCloudToken"
-                    type="password"
-                    defaultValue={whatsappCloudToken}
-                    placeholder="EAAGm..."
-                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
-                  />
-                </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem", marginBottom: "0.85rem" }}>
+              <div className="admin-input-group">
+                <label className="admin-label">Phone Number ID de Meta</label>
+                <input name="whatsappPhoneNumberId" defaultValue={whatsappPhoneNumberId} placeholder="e.g. 109283746591023" className="admin-input" />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-label">Permanent Access Token</label>
+                <input name="whatsappCloudToken" type="password" defaultValue={whatsappCloudToken} placeholder="EAAGm..." className="admin-input" />
               </div>
             </div>
 
-            <div style={{ background: "#FAF7F5", border: "1px solid #EAE2DB", borderRadius: "8px", padding: "1rem" }}>
-              <strong style={{ fontSize: "0.86rem", color: "#4A3E3D", display: "block", marginBottom: "0.75rem" }}>
-                Opción B: Gateway Microservice URL
-              </strong>
-              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
-                    Gateway URL
-                  </label>
-                  <input
-                    name="whatsappGatewayUrl"
-                    type="url"
-                    defaultValue={whatsappGatewayUrl}
-                    placeholder="https://tu-gateway.railway.app/send"
-                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
-                    Gateway API Key
-                  </label>
-                  <input
-                    name="whatsappGatewayKey"
-                    type="password"
-                    defaultValue={whatsappGatewayKey}
-                    placeholder="••••••••••••"
-                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
-                  />
-                </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "0.85rem" }}>
+              <div className="admin-input-group">
+                <label className="admin-label">Gateway URL Alternativa</label>
+                <input name="whatsappGatewayUrl" type="url" defaultValue={whatsappGatewayUrl} placeholder="https://gateway.example.com/send" className="admin-input" />
+              </div>
+              <div className="admin-input-group">
+                <label className="admin-label">Gateway API Key</label>
+                <input name="whatsappGatewayKey" type="password" defaultValue={whatsappGatewayKey} placeholder="••••••••••••" className="admin-input" />
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* =========================================================================
-            SECTION 5: Dirección Privada & Alojamiento
-            ========================================================================= */}
-        <div id="stay" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>🏠</span>
-            <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              Dirección Privada &amp; Alojamiento
-            </h2>
+        {/* SECTION 5: Privacidad & Ubicación */}
+        <section id="privacy" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>Privacidad &amp; Dirección Privada</span>
+              </h2>
+              <p className="admin-card__desc">
+                Control estricto de visibilidad del domicilio personal de los novios frente a los invitados.
+              </p>
+            </div>
           </div>
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Control de privacidad estricto: desmarca la casilla para ocultar la dirección privada del domicilio de los novios en la sección de alojamiento.
-          </p>
 
-          <label style={{ display: "flex", alignItems: "center", gap: "0.6rem", fontSize: "0.9rem", fontWeight: 600, color: "#2B2425", cursor: "pointer", marginBottom: "1.25rem" }}>
-            <input type="checkbox" name="showPrivateAddress" defaultChecked={showPrivateAddress} style={{ width: "18px", height: "18px", accentColor: "#8C2836" }} />
-            <span>Mostrar dirección privada en la sección de alojamiento</span>
+          <label className="admin-switch-row" style={{ marginBottom: "1rem" }}>
+            <div className="admin-switch-info">
+              <span className="admin-switch-label">Mostrar Dirección Privada en la Sección de Alojamiento</span>
+              <span className="admin-switch-help">Si está desactivado, solo se mostrará la información de los hoteles y el palacio</span>
+            </div>
+            <div className="admin-toggle">
+              <input type="checkbox" name="showPrivateAddress" defaultChecked={showPrivateAddress} />
+              <span className="admin-toggle-slider" />
+            </div>
           </label>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Calle y Número</label>
-              <input name="privateStreet" defaultValue={privateStreet} placeholder="Schönbrunner Schloßstraße 47" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "0.85rem", marginBottom: "0.85rem" }}>
+            <div className="admin-input-group">
+              <label className="admin-label">Calle y Número</label>
+              <input name="privateStreet" defaultValue={privateStreet} placeholder="Schönbrunner Schloßstraße 47" className="admin-input" />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Ciudad y Código Postal</label>
-              <input name="privateCity" defaultValue={privateCity} placeholder="1120 Wien, Austria" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+            <div className="admin-input-group">
+              <label className="admin-label">Ciudad y Código Postal</label>
+              <input name="privateCity" defaultValue={privateCity} placeholder="1120 Wien, Austria" className="admin-input" />
             </div>
           </div>
 
-          <div>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Instrucciones de Acceso para Invitados</label>
-            <input name="privateAccessNotes" defaultValue={privateAccessNotes} placeholder="Timbre 'Ruben & Andrea' en el segundo piso" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+          <div className="admin-input-group">
+            <label className="admin-label">Instrucciones de Acceso / Timbre</label>
+            <input name="privateAccessNotes" defaultValue={privateAccessNotes} placeholder="Timbre 'Ruben & Andrea' en el segundo piso" className="admin-input" />
           </div>
-        </div>
+        </section>
 
-        {/* =========================================================================
-            SECTION 6: Spotify & Contacto General
-            ========================================================================= */}
-        <div id="general" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>🎵</span>
-            <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              Spotify &amp; Contacto General
-            </h2>
+        {/* SECTION 6: Spotify & Contacto */}
+        <section id="general" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
+            <div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
+                <span>Spotify Playlist &amp; Contacto Oficial</span>
+              </h2>
+              <p className="admin-card__desc">
+                Enlace a la playlist compartida de la boda y canales de soporte directo para dudas de los invitados.
+              </p>
+            </div>
           </div>
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>URL de la Playlist de Spotify Oficial</label>
+          <div style={{ marginBottom: "1rem" }} className="admin-input-group">
+            <label className="admin-label">URL de la Playlist de Spotify de la Boda</label>
             <input
               name="spotifyPlaylistUrl"
               type="url"
               defaultValue={spotifyPlaylistUrl}
               placeholder="https://open.spotify.com/playlist/..."
-              style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }}
+              className="admin-input"
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Teléfono de Contacto</label>
-              <input name="contactPhone" defaultValue={contactPhone} placeholder="+43 660 0000000" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.85rem" }}>
+            <div className="admin-input-group">
+              <label className="admin-label">Teléfono de Contacto Concierge</label>
+              <input name="contactPhone" defaultValue={contactPhone} placeholder="+43 660 0000000" className="admin-input" />
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>Email de Contacto</label>
-              <input name="contactEmail" type="email" defaultValue={contactEmail} placeholder="wedding@theandyrubenwedding.website" style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.88rem" }} />
+            <div className="admin-input-group">
+              <label className="admin-label">Email de Contacto</label>
+              <input name="contactEmail" type="email" defaultValue={contactEmail} placeholder="wedding@theandyrubenwedding.website" className="admin-input" />
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* =========================================================================
-            SECTION 7: Modo Demo & Seguridad
-            ========================================================================= */}
-        <div id="demo" style={{ background: "#FFFFFF", border: "1px solid #E4DBD3", borderRadius: "10px", padding: "1.75rem", scrollMarginTop: "130px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-            <span style={{ fontSize: "1.4rem" }}>🛡️</span>
-            <h2 style={{ fontFamily: "var(--font-display, Georgia, serif)", fontSize: "1.35rem", margin: 0, color: "#2B2425" }}>
-              Modo Demo &amp; Despliegue en Producción
-            </h2>
-          </div>
-          <p style={{ color: "#6A5D60", fontSize: "0.88rem", lineHeight: 1.5, marginBottom: "1.25rem" }}>
-            Controla la visibilidad del usuario de pruebas <code>Sarah &amp; Guest (Demo)</code> y la ruta pública <code>/i/demo</code>.
-            <strong> Para el lanzamiento final a producción:</strong> desmarca esta casilla para desactivar el acceso demo.
-          </p>
-
-          <label style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem", fontSize: "0.9rem", color: "#2B2425", cursor: "pointer", background: "#FAF7F5", border: "1px solid #EBE4DE", borderRadius: "8px", padding: "1rem" }}>
-            <input
-              type="checkbox"
-              id="enableDemoInvitation"
-              name="enableDemoInvitation"
-              defaultChecked={enableDemoInvitation}
-              style={{ width: "1.25rem", height: "1.25rem", accentColor: "#8C2836", marginTop: "2px", cursor: "pointer" }}
-            />
+        {/* SECTION 7: Modo Demo & Seguridad */}
+        <section id="demo" className="admin-card" style={{ scrollMarginTop: "135px" }}>
+          <div className="admin-card__head">
             <div>
-              <div style={{ fontWeight: 600, color: "#2B2425" }}>
-                Habilitar Invitación Demo (<code>/i/demo</code>)
-              </div>
-              <div style={{ fontSize: "0.82rem", color: "#776A6C", marginTop: "0.25rem", lineHeight: 1.4 }}>
-                Permite a los administradores y revisores probar la experiencia completa de sobre, música, RSVP y mesa de regalos sin alterar los datos reales de los invitados.
-              </div>
+              <h2 className="admin-card__title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C2836" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>Modo Demo &amp; Entorno de Producción</span>
+              </h2>
+              <p className="admin-card__desc">
+                Controla si la invitación pública de demostración <code>Sarah &amp; Guest (Demo)</code> en <code>/i/demo</code> está activa.
+              </p>
+            </div>
+          </div>
+
+          <label className="admin-switch-row">
+            <div className="admin-switch-info">
+              <span className="admin-switch-label">Habilitar Invitación Demo Pública (<code>/i/demo</code>)</span>
+              <span className="admin-switch-help">Permite probar libremente sobre, música y formularios sin alterar datos de invitados reales. Desactivar antes de la boda.</span>
+            </div>
+            <div className="admin-toggle">
+              <input
+                type="checkbox"
+                id="enableDemoInvitation"
+                name="enableDemoInvitation"
+                defaultChecked={enableDemoInvitation}
+              />
+              <span className="admin-toggle-slider" />
             </div>
           </label>
-        </div>
+        </section>
 
-        {/* Bottom Save Action */}
-        <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center", gap: "1rem", marginTop: "0.5rem", marginBottom: "2rem" }}>
+        {/* Bottom Floating Sticky Save Bar */}
+        <div className="admin-save-bar">
+          <div>
+            <span style={{ fontSize: "0.86rem", fontWeight: 600, color: "#2B2425", display: "block" }}>
+              ¿Listo para publicar los cambios?
+            </span>
+            <span style={{ fontSize: "0.78rem", color: "#7B6F71" }}>
+              Los cambios se sincronizan inmediatamente en la base de datos y la invitación web.
+            </span>
+          </div>
+
           <button
             type="submit"
             style={{
               background: "#8C2836",
               color: "#FFFFFF",
               border: 0,
-              borderRadius: "6px",
-              padding: "0.9rem 2.2rem",
-              fontSize: "1rem",
+              borderRadius: "8px",
+              padding: "0.7rem 2rem",
+              fontSize: "0.92rem",
               fontWeight: 600,
               cursor: "pointer",
               boxShadow: "0 4px 15px rgba(140, 40, 54, 0.25)",

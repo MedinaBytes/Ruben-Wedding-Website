@@ -8,19 +8,32 @@ export type InvitationInteractionEvent =
 
 const transientSessions = new Map<string, string>();
 
+function getSafeId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch {}
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 function getSessionId(invitationId: string) {
   const storageKey = `wedding-session:${invitationId}`;
 
   try {
     const existing = sessionStorage.getItem(storageKey);
     if (existing) return existing;
-    const generated = crypto.randomUUID();
+    const generated = getSafeId();
     sessionStorage.setItem(storageKey, generated);
     return generated;
   } catch {
     const existing = transientSessions.get(invitationId);
     if (existing) return existing;
-    const generated = crypto.randomUUID();
+    const generated = getSafeId();
     transientSessions.set(invitationId, generated);
     return generated;
   }

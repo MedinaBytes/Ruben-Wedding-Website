@@ -25,7 +25,7 @@ export async function PhotoStory({ locale }: { locale?: Locale }) {
           locale={locale ?? "en"}
           memoriesLabel={t("memoriesLabel")}
           viewerLabel={t("viewerLabel")}
-          openPhotoLabel={t("viewPhotoLabel")}
+          openPhotoLabel={t("viewPhotoLabel", { title: "{title}" })}
           closeViewerLabel={t("closeViewerLabel")}
           previousPhotoLabel={t("previousPhotoLabel")}
           nextPhotoLabel={t("nextPhotoLabel")}

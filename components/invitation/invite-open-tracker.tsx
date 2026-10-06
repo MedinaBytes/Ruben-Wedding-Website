@@ -3,6 +3,19 @@
 import { useLocale } from "next-intl";
 import { useEffect } from "react";
 
+function getSafeId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    try {
+      return crypto.randomUUID();
+    } catch {}
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 export function InviteOpenTracker({
   invitationId,
   token,
@@ -19,10 +32,10 @@ export function InviteOpenTracker({
 
     try {
       if (sessionStorage.getItem(openedKey) === "true") return;
-      sessionId = sessionStorage.getItem(sessionKey) ?? crypto.randomUUID();
+      sessionId = sessionStorage.getItem(sessionKey) ?? getSafeId();
       sessionStorage.setItem(sessionKey, sessionId);
     } catch {
-      sessionId = crypto.randomUUID();
+      sessionId = getSafeId();
     }
 
     const controller = new AbortController();

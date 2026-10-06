@@ -8,321 +8,331 @@ interface AdminHeaderProps {
   signOutAction: () => Promise<void>;
 }
 
-interface NavGroup {
-  category: string;
-  items: Array<{
-    label: string;
-    href: string;
-    badge?: string;
-    icon: string;
-  }>;
+interface NavItem {
+  label: string;
+  href: string;
+  icon: (props: { className?: string }) => React.JSX.Element;
+  badge?: string;
 }
 
-const NAV_GROUPS: NavGroup[] = [
+const PRIMARY_NAV: NavItem[] = [
   {
-    category: "General",
-    items: [
-      { label: "Dashboard", href: "/admin", icon: "📊" },
-      { label: "Analítica", href: "/admin/analytics", icon: "📈" },
-    ],
+    label: "Dashboard",
+    href: "/admin",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect width="7" height="9" x="3" y="3" rx="1" />
+        <rect width="7" height="5" x="14" y="3" rx="1" />
+        <rect width="7" height="9" x="14" y="12" rx="1" />
+        <rect width="7" height="5" x="3" y="16" rx="1" />
+      </svg>
+    ),
   },
   {
-    category: "Invitados",
-    items: [
-      { label: "Invitaciones", href: "/admin/invitations", icon: "💌" },
-      { label: "Importar", href: "/admin/invitations/import", icon: "📥" },
-      { label: "RSVPs", href: "/admin/rsvps", icon: "✓" },
-    ],
+    label: "Invitaciones",
+    href: "/admin/invitations",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect width="20" height="16" x="2" y="4" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </svg>
+    ),
   },
   {
-    category: "Palacio & Evento",
-    items: [
-      { label: "Mesas", href: "/admin/seating", icon: "🪑" },
-      { label: "Check-In", href: "/admin/checkin", icon: "🚪" },
-      { label: "Música", href: "/admin/music", icon: "🎵" },
-    ],
+    label: "RSVPs",
+    href: "/admin/rsvps",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <polyline points="16 11 18 13 22 9" />
+      </svg>
+    ),
   },
   {
-    category: "Sistema",
-    items: [
-      { label: "Ajustes & Pagos", href: "/admin/settings", icon: "⚙️" },
-      { label: "WhatsApp", href: "/admin/whatsapp", icon: "💬" },
-      { label: "Exportar", href: "/admin/export", icon: "📦" },
-      { label: "Danger Zone", href: "/admin/danger", icon: "⚠️" },
-    ],
+    label: "Mesas",
+    href: "/admin/seating",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" />
+        <circle cx="12" cy="3" r="2" />
+        <circle cx="12" cy="21" r="2" />
+        <circle cx="3" cy="12" r="2" />
+        <circle cx="21" cy="12" r="2" />
+      </svg>
+    ),
+  },
+  {
+    label: "Música",
+    href: "/admin/music",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M9 18V5l12-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="16" r="3" />
+      </svg>
+    ),
+  },
+  {
+    label: "WhatsApp",
+    href: "/admin/whatsapp",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Ajustes & Pagos",
+    href: "/admin/settings",
+    icon: () => (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="4" x2="20" y1="21" y2="21" />
+        <line x1="4" x2="20" y1="14" y2="14" />
+        <line x1="4" x2="20" y1="7" y2="7" />
+        <circle cx="14" cy="7" r="2" />
+        <circle cx="8" cy="14" r="2" />
+        <circle cx="16" cy="21" r="2" />
+      </svg>
+    ),
+  },
+];
+
+const SECONDARY_NAV: NavItem[] = [
+  {
+    label: "Analítica",
+    href: "/admin/analytics",
+    icon: () => (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <line x1="18" x2="18" y1="20" y2="10" />
+        <line x1="12" x2="12" y1="20" y2="4" />
+        <line x1="6" x2="6" y1="20" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    label: "Check-In",
+    href: "/admin/checkin",
+    icon: () => (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+        <path d="M13 5v2" />
+        <path d="M13 17v2" />
+        <path d="M13 11v2" />
+      </svg>
+    ),
+  },
+  {
+    label: "Exportar",
+    href: "/admin/export",
+    icon: () => (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" x2="12" y1="15" y2="3" />
+      </svg>
+    ),
+  },
+  {
+    label: "Danger Zone",
+    href: "/admin/danger",
+    icon: () => (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+        <line x1="12" x2="12" y1="9" y2="13" />
+        <line x1="12" x2="12.01" y1="17" y2="17" />
+      </svg>
+    ),
   },
 ];
 
 export function AdminHeader({ signOutAction }: AdminHeaderProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
 
+  const isSecondaryActive = SECONDARY_NAV.some((item) => isActive(item.href));
+
   return (
-    <header
-      style={{
-        background: "#FFFFFF",
-        borderBottom: "1px solid #E8DFD8",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.03)",
-      }}
-    >
-      {/* Top Bar */}
-      <div
-        style={{
-          maxWidth: "1400px",
-          margin: "0 auto",
-          padding: "0.75rem 1.5rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        {/* Brand & Quick Preview Link */}
-        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-          <Link
-            href="/admin"
-            style={{
-              fontFamily: "var(--font-display, Georgia, serif)",
-              fontSize: "1.45rem",
-              color: "#8C2836",
-              textDecoration: "none",
-              fontWeight: 600,
-              letterSpacing: "-0.01em",
-            }}
-          >
-            R <span style={{ fontStyle: "italic", fontWeight: 400, color: "#ECC57B" }}>&amp;</span> A
-            <span
-              style={{
-                fontSize: "0.82rem",
-                color: "#776A6C",
-                fontFamily: "var(--font-body, system-ui)",
-                fontWeight: 500,
-                marginLeft: "0.5rem",
-                padding: "0.15rem 0.5rem",
-                background: "#FAF7F5",
-                borderRadius: "4px",
-                border: "1px solid #ECE3DC",
-              }}
-            >
-              Admin Suite
+    <header className="admin-header-nav">
+      {/* Primary Bar */}
+      <div className="admin-header-nav__inner">
+        {/* Brand Lockup */}
+        <div className="admin-header-nav__brand-group">
+          <Link href="/admin" className="admin-header-nav__brand">
+            <span className="admin-header-nav__monogram">
+              R<i>&</i>A
             </span>
+            <div className="admin-header-nav__title-wrap">
+              <span className="admin-header-nav__title">Wedding Concierge</span>
+              <span className="admin-header-nav__subtitle">Vienna · Hetzendorf 2027</span>
+            </div>
           </Link>
 
           <a
-            href="/i/demo"
+            href="/i/demo/invitation"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.35rem",
-              fontSize: "0.78rem",
-              color: "#55644E",
-              textDecoration: "none",
-              background: "#F4F7F2",
-              border: "1px solid #DCE6D7",
-              borderRadius: "6px",
-              padding: "0.25rem 0.65rem",
-              fontWeight: 500,
-            }}
+            className="admin-header-nav__preview-btn"
+            title="Abrir vista previa de la invitación web de los invitados"
           >
-            <span>Ver Invitación Web</span>
-            <span style={{ fontSize: "0.7rem" }}>↗</span>
+            <span>Ver Invitación</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" x2="21" y1="14" y2="3" />
+            </svg>
           </a>
         </div>
 
-        {/* Right Section: Mobile Toggle & Sign Out */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <form action={signOutAction}>
+        {/* Desktop Primary Navigation Links */}
+        <nav className="admin-header-nav__menu" aria-label="Navegación principal de administración">
+          {PRIMARY_NAV.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`admin-nav-item ${active ? "admin-nav-item--active" : ""}`}
+              >
+                <span className="admin-nav-item__icon" aria-hidden="true">
+                  <Icon />
+                </span>
+                <span className="admin-nav-item__label">{item.label}</span>
+              </Link>
+            );
+          })}
+
+          {/* More Dropdown */}
+          <div className="admin-nav-dropdown-wrap">
             <button
-              type="submit"
-              style={{
-                background: "transparent",
-                border: "1px solid #E2D7CF",
-                borderRadius: "6px",
-                padding: "0.4rem 0.85rem",
-                fontSize: "0.82rem",
-                color: "#7A2833",
-                cursor: "pointer",
-                fontWeight: 600,
-                transition: "all 0.15s ease",
-              }}
+              type="button"
+              className={`admin-nav-item admin-nav-dropdown-btn ${isSecondaryActive ? "admin-nav-item--active" : ""}`}
+              onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
+              onBlur={() => setTimeout(() => setMoreDropdownOpen(false), 200)}
+              aria-expanded={moreDropdownOpen}
             >
-              Cerrar Sesión
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+              <span>Herramientas</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: moreDropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {moreDropdownOpen && (
+              <div className="admin-nav-dropdown-menu">
+                {SECONDARY_NAV.map((sub) => {
+                  const subActive = isActive(sub.href);
+                  const SubIcon = sub.icon;
+                  return (
+                    <Link
+                      key={sub.href}
+                      href={sub.href}
+                      className={`admin-nav-dropdown-link ${subActive ? "admin-nav-dropdown-link--active" : ""}`}
+                      onClick={() => setMoreDropdownOpen(false)}
+                    >
+                      <SubIcon />
+                      <span>{sub.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </nav>
+
+        {/* User Actions & Sign Out */}
+        <div className="admin-header-nav__actions">
+          <form action={signOutAction}>
+            <button type="submit" className="admin-header-nav__signout-btn" title="Cerrar sesión de administrador">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+              <span>Salir</span>
             </button>
           </form>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Hamburger Toggle */}
           <button
             type="button"
+            className="admin-header-nav__mobile-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle navigation menu"
-            style={{
-              display: "none",
-              background: "#FAF7F5",
-              border: "1px solid #E2D7CF",
-              borderRadius: "6px",
-              padding: "0.4rem 0.65rem",
-              fontSize: "1.1rem",
-              cursor: "pointer",
-            }}
-            className="admin-mobile-toggle"
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú de navegación"}
           >
-            {mobileOpen ? "✕" : "☰"}
+            {mobileOpen ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Categorized Desktop Navigation Hub */}
-      <nav
-        aria-label="Main Admin Navigation"
-        style={{
-          borderTop: "1px solid #F0E8E2",
-          background: "#FAF7F5",
-        }}
-        className="admin-desktop-nav"
-      >
-        <div
-          style={{
-            maxWidth: "1400px",
-            margin: "0 auto",
-            padding: "0.35rem 1.5rem",
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1.5rem",
-          }}
-        >
-          {NAV_GROUPS.map((group, groupIdx) => (
-            <div
-              key={group.category}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                paddingRight: groupIdx < NAV_GROUPS.length - 1 ? "1.25rem" : 0,
-                borderRight: groupIdx < NAV_GROUPS.length - 1 ? "1px solid #EADBCE" : "none",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "0.72rem",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "#96888A",
-                  fontWeight: 700,
-                  marginRight: "0.4rem",
-                  userSelect: "none",
-                }}
-              >
-                {group.category}:
-              </span>
-
-              {group.items.map((item) => {
+      {/* Mobile Drawer Menu */}
+      {mobileOpen && (
+        <div className="admin-mobile-drawer">
+          <div className="admin-mobile-drawer__section">
+            <span className="admin-mobile-drawer__heading">Secciones Principales</span>
+            <div className="admin-mobile-drawer__grid">
+              {PRIMARY_NAV.map((item) => {
                 const active = isActive(item.href);
+                const Icon = item.icon;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.35rem",
-                      padding: "0.35rem 0.65rem",
-                      borderRadius: "6px",
-                      fontSize: "0.83rem",
-                      fontWeight: active ? 600 : 500,
-                      color: active ? "#FFFFFF" : "#544648",
-                      background: active ? "#8C2836" : "transparent",
-                      textDecoration: "none",
-                      transition: "all 0.15s ease",
-                      boxShadow: active ? "0 2px 6px rgba(140, 40, 54, 0.2)" : "none",
-                    }}
+                    onClick={() => setMobileOpen(false)}
+                    className={`admin-mobile-link ${active ? "admin-mobile-link--active" : ""}`}
                   >
-                    <span style={{ fontSize: "0.85rem", opacity: active ? 1 : 0.85 }}>{item.icon}</span>
+                    <Icon />
                     <span>{item.label}</span>
                   </Link>
                 );
               })}
             </div>
-          ))}
-        </div>
-      </nav>
+          </div>
 
-      {/* Mobile Drawer */}
-      {mobileOpen && (
-        <div
-          style={{
-            background: "#FFFFFF",
-            borderTop: "1px solid #E8DFD8",
-            padding: "1rem 1.5rem 1.5rem",
-          }}
-        >
-          {NAV_GROUPS.map((group) => (
-            <div key={group.category} style={{ marginBottom: "1rem" }}>
-              <div
-                style={{
-                  fontSize: "0.75rem",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                  color: "#8C2836",
-                  fontWeight: 700,
-                  marginBottom: "0.4rem",
-                }}
-              >
-                {group.category}
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
-                {group.items.map((item) => {
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.45rem",
-                        padding: "0.5rem 0.75rem",
-                        borderRadius: "6px",
-                        fontSize: "0.85rem",
-                        fontWeight: active ? 600 : 500,
-                        color: active ? "#FFFFFF" : "#44383A",
-                        background: active ? "#8C2836" : "#FAF7F5",
-                        textDecoration: "none",
-                        border: "1px solid #ECE4DD",
-                      }}
-                    >
-                      <span>{item.icon}</span>
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+          <div className="admin-mobile-drawer__section" style={{ marginTop: "1rem" }}>
+            <span className="admin-mobile-drawer__heading">Herramientas &amp; Sistema</span>
+            <div className="admin-mobile-drawer__grid">
+              {SECONDARY_NAV.map((sub) => {
+                const subActive = isActive(sub.href);
+                const SubIcon = sub.icon;
+                return (
+                  <Link
+                    key={sub.href}
+                    href={sub.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`admin-mobile-link ${subActive ? "admin-mobile-link--active" : ""}`}
+                  >
+                    <SubIcon />
+                    <span>{sub.label}</span>
+                  </Link>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
       )}
-
-      <style jsx>{`
-        @media (max-width: 900px) {
-          .admin-mobile-toggle {
-            display: inline-flex !important;
-          }
-          .admin-desktop-nav {
-            display: none !important;
-          }
-        }
-      `}</style>
     </header>
   );
 }

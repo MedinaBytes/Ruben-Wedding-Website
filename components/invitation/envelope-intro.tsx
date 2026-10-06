@@ -179,46 +179,6 @@ export function EnvelopeIntro({
         {/* Subtle letterpress pattern & glow background */}
         <div className="envelope-stage__ambient" aria-hidden="true" />
 
-        {/* Decorative Watercolor Orchid Sprays */}
-        <motion.div
-          className="envelope-botanical envelope-botanical--top-right"
-          aria-hidden="true"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{
-            opacity: 1,
-            scale: step === "revealed" ? 1.03 : 1,
-          }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-        >
-          <Image
-            src="/orchids/orchid-watercolor-branch.webp"
-            alt=""
-            width={240}
-            height={312}
-            priority
-            className="envelope-botanical__image"
-          />
-        </motion.div>
-
-        <motion.div
-          className="envelope-botanical envelope-botanical--bottom-left"
-          aria-hidden="true"
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{
-            opacity: step === "idle" ? 0.9 : 0.75,
-            scale: 1,
-          }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
-        >
-          <Image
-            src="/orchids/orchid-leaves-cluster.webp"
-            alt=""
-            width={160}
-            height={192}
-            className="envelope-botanical__image"
-          />
-        </motion.div>
-
         {/* 3D Envelope Container */}
         <div className={`envelope-3d ${step !== "idle" ? "envelope-3d--open" : ""}`}>
           {/* Back Paper */}
@@ -258,17 +218,6 @@ export function EnvelopeIntro({
               </div>
 
               <div className="envelope-card__content">
-                {/* Botanical Watercolor Crest */}
-                <div className="envelope-card__orchid-crest" aria-hidden="true">
-                  <Image
-                    src="/orchids/orchid-spray-horizontal.webp"
-                    alt=""
-                    width={140}
-                    height={106}
-                    className="envelope-card__orchid-crest-img"
-                  />
-                </div>
-
                 <span className="envelope-card__monogram" aria-hidden="true">
                   R <i>&</i> A
                 </span>

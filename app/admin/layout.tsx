@@ -17,10 +17,10 @@ export default async function AdminLayout({
   const isAdmin = await hasAuthenticatedAdmin();
 
   return (
-    <div style={{ minHeight: "100dvh", background: "#FAF7F5", color: "#2B2425", fontFamily: "var(--font-body, system-ui)" }}>
+    <div style={{ minHeight: "100dvh", background: "#FBF9F7", color: "#2B2425", fontFamily: "var(--font-body, system-ui)" }}>
       {isAdmin && <AdminHeader signOutAction={signOutAdmin} />}
 
-      <main style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1.5rem" }}>
+      <main style={{ maxWidth: "1360px", margin: "0 auto", padding: "2rem 1.5rem 4rem" }}>
         {children}
       </main>
     </div>
