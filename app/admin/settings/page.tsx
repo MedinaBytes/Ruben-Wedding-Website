@@ -62,6 +62,10 @@ export default async function AdminSettingsPage() {
       "Dear {name}, Ruben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here: {url}",
   );
   const whatsappDelaySeconds = Number(s.get("whatsappDelaySeconds")) || 8;
+  const whatsappCloudToken = String(s.get("whatsappCloudToken") || process.env.WHATSAPP_CLOUD_API_TOKEN || "");
+  const whatsappPhoneNumberId = String(s.get("whatsappPhoneNumberId") || process.env.WHATSAPP_PHONE_NUMBER_ID || "");
+  const whatsappGatewayUrl = String(s.get("whatsappGatewayUrl") || process.env.WHATSAPP_GATEWAY_URL || "");
+  const whatsappGatewayKey = String(s.get("whatsappGatewayKey") || process.env.WHATSAPP_GATEWAY_KEY || "");
 
   const spotifyPlaylistUrl = String(s.get("spotifyPlaylistUrl") || process.env.NEXT_PUBLIC_SPOTIFY_PLAYLIST_URL || "");
   const contactPhone = String(s.get("contactPhone") || "");
@@ -342,7 +346,7 @@ export default async function AdminSettingsPage() {
             </div>
           </div>
 
-          <div>
+          <div style={{ marginBottom: "1.25rem" }}>
             <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#44383A", marginBottom: "0.3rem" }}>
               Message Template (use <code>&#123;name&#125;</code> and <code>&#123;url&#125;</code> tags)
             </label>
@@ -352,6 +356,82 @@ export default async function AdminSettingsPage() {
               defaultValue={whatsappTemplate}
               style={{ width: "100%", padding: "0.6rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.85rem", fontFamily: "inherit", lineHeight: 1.4 }}
             />
+          </div>
+
+          {/* Vercel Cloud Serverless Options */}
+          <div style={{ borderTop: "1px solid #EFEAE6", paddingTop: "1.25rem", marginTop: "1.25rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
+              <span style={{ fontSize: "1rem" }}>⚡</span>
+              <h3 style={{ fontSize: "0.98rem", fontWeight: 700, margin: 0, color: "#2B2425" }}>
+                Vercel Serverless Automated Cloud Dispatch (Optional)
+              </h3>
+            </div>
+            <p style={{ color: "#6A5D60", fontSize: "0.82rem", lineHeight: 1.45, marginBottom: "1rem" }}>
+              On Vercel, background WebSockets pause between requests. To run fully automated background dispatches without keeping your browser open, provide official Meta WhatsApp Cloud API credentials (free 1,000 conversations/month) or an external gateway. If left blank, the website uses the built-in <strong>Direct 1-Click Guided Assistant</strong>.
+            </p>
+
+            <div style={{ background: "#FAF7F5", border: "1px solid #EAE2DB", borderRadius: "8px", padding: "1rem", marginBottom: "1rem" }}>
+              <strong style={{ fontSize: "0.86rem", color: "#8C2836", display: "block", marginBottom: "0.75rem" }}>
+                Option A: Official Meta WhatsApp Cloud API (Best for Vercel)
+              </strong>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
+                    Meta Phone Number ID
+                  </label>
+                  <input
+                    name="whatsappPhoneNumberId"
+                    defaultValue={whatsappPhoneNumberId}
+                    placeholder="e.g. 109283746591023"
+                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
+                    System User Permanent Access Token
+                  </label>
+                  <input
+                    name="whatsappCloudToken"
+                    type="password"
+                    defaultValue={whatsappCloudToken}
+                    placeholder="EAAGm..."
+                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: "#FAF7F5", border: "1px solid #EAE2DB", borderRadius: "8px", padding: "1rem" }}>
+              <strong style={{ fontSize: "0.86rem", color: "#4A3E3D", display: "block", marginBottom: "0.75rem" }}>
+                Option B: External WhatsApp Gateway Microservice (Optional)
+              </strong>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
+                    Gateway Endpoint URL
+                  </label>
+                  <input
+                    name="whatsappGatewayUrl"
+                    type="url"
+                    defaultValue={whatsappGatewayUrl}
+                    placeholder="https://your-whatsapp-bot.railway.app/send"
+                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#44383A", marginBottom: "0.25rem" }}>
+                    Gateway API Key (Optional)
+                  </label>
+                  <input
+                    name="whatsappGatewayKey"
+                    type="password"
+                    defaultValue={whatsappGatewayKey}
+                    placeholder="••••••••••••"
+                    style={{ width: "100%", padding: "0.55rem", borderRadius: "6px", border: "1px solid #D5CBC4", fontSize: "0.84rem" }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

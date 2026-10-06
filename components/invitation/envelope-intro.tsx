@@ -31,6 +31,14 @@ interface EnvelopeIntroProps {
   enableCalligraphy?: boolean;
 }
 
+function persistLocaleCookies(invitationId: string | undefined, code: string) {
+  if (typeof document !== "undefined") {
+    const cookieName = invitationId ? `wedding_manual_locale_${invitationId}` : "wedding_manual_locale";
+    document.cookie = `${cookieName}=${code}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `wedding_manual_locale=${code}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+}
+
 export function EnvelopeIntro({
   token,
   invitationId,
@@ -81,7 +89,7 @@ export function EnvelopeIntro({
     } catch {}
     setStep("navigating");
     const targetUrl = `/i/${token}/invitation?lang=${encodeURIComponent(currentLocale)}`;
-    window.location.href = targetUrl;
+    router.push(targetUrl);
   }
 
   function handleOpen() {
@@ -107,13 +115,9 @@ export function EnvelopeIntro({
   }
 
   function handleLanguageChange(code: string) {
-    const cookieName = invitationId ? `wedding_manual_locale_${invitationId}` : "wedding_manual_locale";
-    if (typeof document !== "undefined") {
-      document.cookie = `${cookieName}=${code}; path=/; max-age=31536000; SameSite=Lax`;
-      document.cookie = `wedding_manual_locale=${code}; path=/; max-age=31536000; SameSite=Lax`;
-    }
+    persistLocaleCookies(invitationId, code);
     void setManualLocale(code, invitationId).catch(() => {});
-    window.location.href = `/i/${token}?lang=${code}`;
+    router.push(`/i/${token}?lang=${code}`);
   }
 
   return (

@@ -33,6 +33,8 @@ export function WhatsAppManager({
   siteUrl: string;
 }) {
   const [status, setStatus] = useState<"connected" | "disconnected" | "connecting">("disconnected");
+  const [metaCloudConfigured, setMetaCloudConfigured] = useState<boolean>(false);
+  const [gatewayConfigured, setGatewayConfigured] = useState<boolean>(false);
   const [linkedPhone, setLinkedPhone] = useState<string>("");
   const [liveQrCode, setLiveQrCode] = useState<string | null>(null);
   const [pairingError, setPairingError] = useState<string | null>(null);
@@ -81,6 +83,8 @@ export function WhatsAppManager({
         if (res.ok) {
           const data = await res.json();
           setStatus(data.status);
+          if (typeof data.metaCloudConfigured === "boolean") setMetaCloudConfigured(data.metaCloudConfigured);
+          if (typeof data.gatewayConfigured === "boolean") setGatewayConfigured(data.gatewayConfigured);
           if (data.isServerless) setIsServerless(true);
           if (data.linkedPhone) setLinkedPhone(data.linkedPhone);
           if (data.qrCode) setLiveQrCode(data.qrCode);
@@ -394,9 +398,15 @@ export function WhatsAppManager({
 
         if (data.success) {
           markGuestDispatched(inv);
+          const engineLabel =
+            data.engine === "meta_cloud"
+              ? "Meta Cloud API"
+              : data.engine === "external_gateway"
+                ? "External Gateway"
+                : "WhatsApp Bot";
           setDispatchLog((prev) => [
             ...prev,
-            `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Delivered to ${inv.displayName} (${phone}) via WhatsApp Bot`,
+            `✓ [${i + 1}/${targets.length}] [${lang.toUpperCase()}] Delivered to ${inv.displayName} (${phone}) via ${engineLabel}`,
           ]);
         } else if (data.directUrl) {
           window.open(data.directUrl, "_blank", "noopener,noreferrer");
@@ -475,7 +485,7 @@ export function WhatsAppManager({
             <p style={{ margin: "0.25rem 0 0 0", color: "#3B5A38", fontSize: "0.85rem", lineHeight: 1.45 }}>
               On cloud &amp; serverless hosting (Vercel), background WebSockets terminate between requests.
               Use the <strong>Direct 1-Click Dispatch Assistant</strong> below: it opens official WhatsApp (Web or Mobile App)
-              with the guest's personalized invitation prefilled in their language — 100% reliable, zero pairing drops, and zero ban risk!
+              with the guest&apos;s personalized invitation prefilled in their language — 100% reliable, zero pairing drops, and zero ban risk!
             </p>
           </div>
         </div>
@@ -538,9 +548,9 @@ export function WhatsAppManager({
                 justifyContent: "space-between",
                 marginBottom: "1.25rem",
                 padding: "0.85rem 1.1rem",
-                background: status === "connected" ? "#F0F9EE" : status === "connecting" ? "#FFF8E6" : "#FBF4F5",
+                background: metaCloudConfigured || status === "connected" ? "#F0F9EE" : gatewayConfigured ? "#F3F0FA" : status === "connecting" ? "#FFF8E6" : "#FAF7F5",
                 borderRadius: "8px",
-                border: `1px solid ${status === "connected" ? "#C6E8BD" : status === "connecting" ? "#F5DEB3" : "#F2D0D5"}`,
+                border: `1px solid ${metaCloudConfigured || status === "connected" ? "#C6E8BD" : gatewayConfigured ? "#D4C8EB" : status === "connecting" ? "#F5DEB3" : "#E5DDD6"}`,
               }}
             >
               <div>
@@ -550,28 +560,40 @@ export function WhatsAppManager({
                       width: "10px",
                       height: "10px",
                       borderRadius: "50%",
-                      background: status === "connected" ? "#34A853" : status === "connecting" ? "#FFA000" : "#D93025",
+                      background: metaCloudConfigured || status === "connected" ? "#34A853" : gatewayConfigured ? "#7C3AED" : status === "connecting" ? "#FFA000" : "#8C2836",
                     }}
                   />
-                  <strong style={{ fontSize: "0.95rem", color: status === "connected" ? "#2B6628" : status === "connecting" ? "#8A5A00" : "#8A2A35" }}>
+                  <strong style={{ fontSize: "0.95rem", color: metaCloudConfigured || status === "connected" ? "#2B6628" : gatewayConfigured ? "#5B21B6" : status === "connecting" ? "#8A5A00" : "#44383A" }}>
                     {isCheckingSession
                       ? "Checking connection..."
-                      : status === "connected"
-                        ? "Connected & Synced (WhatsApp Bot)"
-                        : status === "connecting"
-                          ? "Connecting (Awaiting QR Scan)..."
-                          : "Direct 1-Click Mode Active (Recommended)"}
+                      : metaCloudConfigured
+                        ? "Meta WhatsApp Cloud API Active (100% Vercel Serverless)"
+                        : gatewayConfigured
+                          ? "External WhatsApp Gateway Connected"
+                          : status === "connected"
+                            ? "Connected & Synced (WhatsApp Bot)"
+                            : status === "connecting"
+                              ? "Connecting (Awaiting QR Scan)..."
+                              : "Direct 1-Click Mode Active (Recommended & Ready)"}
                   </strong>
                 </div>
-                {status === "connected" ? (
+                {metaCloudConfigured ? (
+                  <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.82rem", color: "#3B5A38" }}>
+                    Automated cloud delivery enabled via official Meta Business REST API. Zero socket drops.
+                  </p>
+                ) : gatewayConfigured ? (
+                  <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.82rem", color: "#4C1D95" }}>
+                    Connected to external microservice proxy for automated background sending.
+                  </p>
+                ) : status === "connected" ? (
                   <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.85rem", color: "#544648" }}>
                     Linked device: <strong>{linkedPhone || "WhatsApp Phone"}</strong>
                   </p>
                 ) : (
                   <p style={{ margin: "0.25rem 0 0 1.25rem", fontSize: "0.8rem", color: "#776A6C" }}>
                     {isServerless
-                      ? "Cloud serverless environment: Direct 1-Click Dispatch is ready to use!"
-                      : "Optional: Pair a phone device for background socket dispatch."}
+                      ? "On Vercel: Use the 1-Click Assistant below (0 setup), or configure Meta Cloud API in Settings for hands-free sending."
+                      : "Direct 1-Click Assistant is ready, or optionally pair a phone device for background socket dispatch."}
                   </p>
                 )}
               </div>
@@ -594,26 +616,63 @@ export function WhatsAppManager({
                   >
                     Unlink Now
                   </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleLinkClick}
+                ) : metaCloudConfigured || gatewayConfigured ? (
+                  <a
+                    href="/admin/settings"
                     style={{
-                      background: "#FAF7F5",
-                      color: "#4A3E3D",
+                      display: "inline-block",
+                      background: "#FFFFFF",
                       border: "1px solid #D5CBC4",
                       borderRadius: "6px",
                       padding: "0.45rem 0.85rem",
                       fontSize: "0.82rem",
                       fontWeight: 600,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.4rem",
+                      color: "#44383A",
+                      textDecoration: "none",
                     }}
                   >
-                    <span>📷</span> Pair Device (QR)
-                  </button>
+                    ⚙️ Cloud Settings
+                  </a>
+                ) : (
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={handleLinkClick}
+                      style={{
+                        background: "#FAF7F5",
+                        color: "#4A3E3D",
+                        border: "1px solid #D5CBC4",
+                        borderRadius: "6px",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                      }}
+                    >
+                      <span>📷</span> Pair Device (QR)
+                    </button>
+                    <a
+                      href="/admin/settings"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        background: "#FFFFFF",
+                        border: "1px solid #D5CBC4",
+                        borderRadius: "6px",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        color: "#8C2836",
+                        textDecoration: "none",
+                      }}
+                    >
+                      ⚙️ Setup Cloud API
+                    </a>
+                  </div>
                 )}
               </div>
             </div>

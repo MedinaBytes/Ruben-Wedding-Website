@@ -52,6 +52,10 @@ export async function updateSiteSettings(formData: FormData) {
   // WhatsApp Dispatch Settings
   const whatsappTemplate = String(formData.get("whatsappTemplate") || "").trim();
   const whatsappDelaySeconds = parseInt(String(formData.get("whatsappDelaySeconds") || "8"), 10) || 8;
+  const whatsappCloudToken = String(formData.get("whatsappCloudToken") || "").trim();
+  const whatsappPhoneNumberId = String(formData.get("whatsappPhoneNumberId") || "").trim();
+  const whatsappGatewayUrl = String(formData.get("whatsappGatewayUrl") || "").trim();
+  const whatsappGatewayKey = String(formData.get("whatsappGatewayKey") || "").trim();
 
   // Spotify & General Contact
   const spotifyPlaylistUrl = String(formData.get("spotifyPlaylistUrl") || "").trim();
@@ -102,6 +106,10 @@ export async function updateSiteSettings(formData: FormData) {
     // WhatsApp
     { key: "whatsappTemplate", value: whatsappTemplate, updated_at: now },
     { key: "whatsappDelaySeconds", value: whatsappDelaySeconds, updated_at: now },
+    { key: "whatsappCloudToken", value: whatsappCloudToken, updated_at: now },
+    { key: "whatsappPhoneNumberId", value: whatsappPhoneNumberId, updated_at: now },
+    { key: "whatsappGatewayUrl", value: whatsappGatewayUrl, updated_at: now },
+    { key: "whatsappGatewayKey", value: whatsappGatewayKey, updated_at: now },
 
     // General
     { key: "spotifyPlaylistUrl", value: spotifyPlaylistUrl, updated_at: now },
@@ -141,6 +149,10 @@ export async function updateSiteSettings(formData: FormData) {
     smtpSenderName,
     whatsappTemplate,
     whatsappDelaySeconds,
+    whatsappCloudToken,
+    whatsappPhoneNumberId,
+    whatsappGatewayUrl,
+    whatsappGatewayKey,
     spotifyPlaylistUrl,
     contactPhone,
     contactEmail,

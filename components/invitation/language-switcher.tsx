@@ -58,7 +58,7 @@ export function LanguageSwitcher({
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
       url.searchParams.set("lang", nextLocale);
-      window.location.href = url.toString();
+      window.location.assign(url.toString());
     }
   }
 

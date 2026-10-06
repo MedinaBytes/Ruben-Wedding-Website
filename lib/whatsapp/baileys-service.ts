@@ -18,6 +18,9 @@ export interface WhatsAppBotState {
   lastSyncedAt: string | null;
   error: string | null;
   isServerless?: boolean;
+  engine?: "meta_cloud" | "external_gateway" | "socket_bot" | "direct_assistant";
+  metaCloudConfigured?: boolean;
+  gatewayConfigured?: boolean;
 }
 
 interface GlobalWhatsApp {
@@ -27,7 +30,6 @@ interface GlobalWhatsApp {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var __whatsappBot: GlobalWhatsApp | undefined;
 }
 
@@ -110,6 +112,27 @@ export async function getWhatsAppStatus(): Promise<WhatsAppBotState> {
     void startWhatsAppLinking().catch(() => {});
   }
 
+  const settings = resilientStore.getSettings();
+  const metaToken = String(process.env.WHATSAPP_CLOUD_API_TOKEN || settings.whatsappCloudToken || "").trim();
+  const phoneId = String(process.env.WHATSAPP_PHONE_NUMBER_ID || settings.whatsappPhoneNumberId || "").trim();
+  const metaCloudConfigured = Boolean(metaToken && phoneId);
+
+  const gatewayUrl = String(process.env.WHATSAPP_GATEWAY_URL || settings.whatsappGatewayUrl || "").trim();
+  const gatewayConfigured = Boolean(gatewayUrl);
+
+  let engine: "meta_cloud" | "external_gateway" | "socket_bot" | "direct_assistant" = "direct_assistant";
+  if (metaCloudConfigured) {
+    engine = "meta_cloud";
+  } else if (gatewayConfigured) {
+    engine = "external_gateway";
+  } else if (bot.state.status === "connected") {
+    engine = "socket_bot";
+  }
+
+  bot.state.engine = engine;
+  bot.state.metaCloudConfigured = metaCloudConfigured;
+  bot.state.gatewayConfigured = gatewayConfigured;
+
   return { ...bot.state };
 }
 
@@ -147,6 +170,7 @@ export async function startWhatsAppLinking(): Promise<WhatsAppBotState> {
       fs.mkdirSync(authDir, { recursive: true });
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { state: authState, saveCreds } = await useMultiFileAuthState(authDir);
 
     const sock = makeWASocket({
@@ -290,8 +314,14 @@ export async function unlinkWhatsApp(): Promise<void> {
 export async function sendWhatsAppMessage(
   phone: string,
   text: string,
-): Promise<{ success: boolean; error?: string; messageId?: string; directUrl?: string; waMeUrl?: string }> {
-  const bot = getGlobalBot();
+): Promise<{
+  success: boolean;
+  error?: string;
+  messageId?: string;
+  directUrl?: string;
+  waMeUrl?: string;
+  engine?: "meta_cloud" | "external_gateway" | "socket_bot" | "direct_assistant";
+}> {
   const cleanPhone = phone.replace(/[^\d]/g, "");
 
   const directUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
@@ -301,29 +331,133 @@ export async function sendWhatsAppMessage(
     return { success: false, error: "Invalid recipient phone number format." };
   }
 
-  if (!bot.socket || bot.state.status !== "connected") {
-    return {
-      success: false,
-      error: "WhatsApp bot is not connected. Open directly via WhatsApp Web link.",
-      directUrl,
-      waMeUrl,
-    };
+  const settings = resilientStore.getSettings();
+  const metaToken = String(process.env.WHATSAPP_CLOUD_API_TOKEN || settings.whatsappCloudToken || "").trim();
+  const phoneId = String(process.env.WHATSAPP_PHONE_NUMBER_ID || settings.whatsappPhoneNumberId || "").trim();
+
+  // Tier 1: Meta WhatsApp Cloud API (HTTP REST, zero persistent socket needed, works 100% on Vercel)
+  if (metaToken && phoneId) {
+    try {
+      const res = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${metaToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: cleanPhone,
+          type: "text",
+          text: { preview_url: true, body: text },
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.messages?.[0]?.id) {
+        return {
+          success: true,
+          messageId: data.messages[0].id,
+          engine: "meta_cloud",
+        };
+      } else {
+        const errMsg = data?.error?.message || `Meta Cloud API error (HTTP ${res.status})`;
+        return {
+          success: false,
+          error: errMsg,
+          directUrl,
+          waMeUrl,
+          engine: "meta_cloud",
+        };
+      }
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: `Meta Cloud API connection error: ${err instanceof Error ? err.message : String(err)}`,
+        directUrl,
+        waMeUrl,
+        engine: "meta_cloud",
+      };
+    }
   }
 
-  const jid = `${cleanPhone}@s.whatsapp.net`;
+  // Tier 2: External Gateway Microservice (REST proxy on Render/Railway/Fly.io or Evolution API)
+  const gatewayUrl = String(process.env.WHATSAPP_GATEWAY_URL || settings.whatsappGatewayUrl || "").trim();
+  const gatewayKey = String(process.env.WHATSAPP_GATEWAY_KEY || settings.whatsappGatewayKey || "").trim();
 
-  try {
-    const result = await bot.socket.sendMessage(jid, { text });
-    return {
-      success: true,
-      messageId: result?.key?.id ?? undefined,
-    };
-  } catch (err: unknown) {
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "Failed to send message via WhatsApp socket.",
-      directUrl,
-      waMeUrl,
-    };
+  if (gatewayUrl) {
+    try {
+      const res = await fetch(gatewayUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(gatewayKey ? { Authorization: `Bearer ${gatewayKey}`, "x-api-key": gatewayKey } : {}),
+        },
+        body: JSON.stringify({
+          number: cleanPhone,
+          phone: cleanPhone,
+          message: text,
+          text,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        return {
+          success: true,
+          messageId: data?.id || data?.messageId || "gateway-ok",
+          engine: "external_gateway",
+        };
+      } else {
+        return {
+          success: false,
+          error: `External gateway error (HTTP ${res.status}): ${data?.message || data?.error || "Unknown error"}`,
+          directUrl,
+          waMeUrl,
+          engine: "external_gateway",
+        };
+      }
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: `External gateway connection error: ${err instanceof Error ? err.message : String(err)}`,
+        directUrl,
+        waMeUrl,
+        engine: "external_gateway",
+      };
+    }
   }
+
+  // Tier 3: Local / VPS Persistent Baileys Socket
+  const bot = getGlobalBot();
+  if (bot.socket && bot.state.status === "connected") {
+    const jid = `${cleanPhone}@s.whatsapp.net`;
+    try {
+      const result = await bot.socket.sendMessage(jid, { text });
+      return {
+        success: true,
+        messageId: result?.key?.id ?? undefined,
+        engine: "socket_bot",
+      };
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : "Failed to send message via WhatsApp socket.",
+        directUrl,
+        waMeUrl,
+        engine: "socket_bot",
+      };
+    }
+  }
+
+  // Tier 4: Direct 1-Click WhatsApp Assistant Fallback
+  return {
+    success: false,
+    error: isServerlessEnvironment()
+      ? "Vercel Serverless environment detected: automated background socket is paused. Use Direct 1-Click Dispatch below or configure Meta WhatsApp Cloud API in Settings."
+      : "WhatsApp bot is not connected. Open directly via WhatsApp Web link.",
+    directUrl,
+    waMeUrl,
+    engine: "direct_assistant",
+  };
 }

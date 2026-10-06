@@ -25,7 +25,7 @@ export async function GET(
       return NextResponse.json({ error: "not_found" }, { status: 404, headers: privateHeaders });
     }
 
-    const { data, error } = await client
+    const { data } = await client
       .from("rsvps")
       .select("attendance_status, attendee_count, guest_names, dietary_requirements, notes")
       .eq("invitation_id", invitation.id)

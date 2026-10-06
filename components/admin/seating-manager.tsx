@@ -28,6 +28,14 @@ export interface ConfirmedGuestItem {
   meal?: string | null;
 }
 
+function generateAssignmentId(): string {
+  return `seat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+}
+
+function getCurrentIsoTimestamp(): string {
+  return new Date().toISOString();
+}
+
 export function SeatingManager({
   initialAssignments,
   initialTables = DEFAULT_IMPERIAL_TABLES,
@@ -90,13 +98,13 @@ export function SeatingManager({
     if (!activeTableDef) return;
 
     const newAssignment: StoredTableAssignment = {
-      id: `seat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: generateAssignmentId(),
       table_number: activeTableDef.number,
       table_name: activeTableDef.name,
       guest_name: guest.guestName,
       invitation_id: guest.invitationId,
       notes: guest.dietary ? `Diet: ${guest.dietary}` : undefined,
-      created_at: new Date().toISOString(),
+      created_at: getCurrentIsoTimestamp(),
     };
 
     setAssignments((prev) => [...prev, newAssignment]);

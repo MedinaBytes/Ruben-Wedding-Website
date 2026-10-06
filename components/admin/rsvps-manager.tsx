@@ -763,7 +763,7 @@ export function RsvpsManager({
                       <span>⚠️</span> Head Chef Dietary &amp; Allergy Alert Pass ({cateringSummary.allergies.length} Flagged Plates)
                     </strong>
                     <p style={{ margin: "0.15rem 0 0 0", fontSize: "0.78rem", color: "#B91C1C" }}>
-                      Cross-referenced with Palace Table Seating so banquet servers deliver dietary plates directly to the guest's assigned table.
+                      Cross-referenced with Palace Table Seating so banquet servers deliver dietary plates directly to the guest&apos;s assigned table.
                     </p>
                   </div>
 
