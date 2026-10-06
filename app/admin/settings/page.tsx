@@ -9,7 +9,7 @@ import { ResendTester } from "@/components/admin/resend-tester";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Ajustes & Integraciones — Panel de Administración",
+  title: "Settings & System — Admin Portal",
   robots: { index: false, follow: false },
 };
 
@@ -61,18 +61,18 @@ export default async function AdminSettingsPage() {
   const accountHolder = String(s.get("accountHolder") || "Ruben Quijada & Andrea Müllauer");
   const iban = String(s.get("iban") || "AT61 2011 1000 0000 0000");
   const bic = String(s.get("bic") || "GIBAATWWXXX");
-  const giftNote = String(s.get("giftNote") || "Referencia: Boda Ruben & Andrea 2027");
+  const giftNote = String(s.get("giftNote") || "Reference: Wedding Ruben & Andrea 2027");
 
   const enableRevolut = s.has("enableRevolut") ? Boolean(s.get("enableRevolut")) : true;
   const revolutTag = String(s.get("revolutTag") || "@ruben_andrea");
-  const revolutNote = String(s.get("revolutNote") || "Transferencia instantánea sin comisiones mediante Revolut o enlace Revtag");
+  const revolutNote = String(s.get("revolutNote") || "Instant fee-free transfer via Revolut or Revtag link");
 
   const enableWise = s.has("enableWise") ? Boolean(s.get("enableWise")) : true;
   const wiseTag = String(s.get("wiseTag") || "andrea.ruben@wise.com");
-  const wiseNote = String(s.get("wiseNote") || "Ideal para transferencias internacionales multidivisa directas y seguras");
+  const wiseNote = String(s.get("wiseNote") || "Ideal for international multi-currency transfers directly and securely");
 
   const enableCash = s.has("enableCash") ? Boolean(s.get("enableCash")) : true;
-  const cashNote = String(s.get("cashNote") || "Dispondremos de un buzón imperial nupcial en el Palacio Hetzendorf durante el cóctel de bienvenida para quienes deseen entregar su sobre en mano con sus mejores deseos.");
+  const cashNote = String(s.get("cashNote") || "An imperial wishing well box will be placed at Schloss Hetzendorf during the welcome cocktail for guests who wish to hand-deliver their card.");
 
   // Private Address
   const showPrivateAddress = Boolean(s.get("showPrivateAddress"));
