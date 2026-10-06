@@ -316,6 +316,20 @@ function loadDb(): LocalDatabase {
   }
 }
 
+function sanitizeDbForStorage(db: LocalDatabase): LocalDatabase {
+  if (!db.settings) return db;
+  return {
+    ...db,
+    settings: {
+      ...db.settings,
+      resendApiKey: "", // Never write secret keys to disk
+      smtpPass: "",
+      whatsappCloudToken: "",
+      whatsappGatewayKey: "",
+    },
+  };
+}
+
 function saveDb(db: LocalDatabase) {
   if (process.env.NODE_ENV === "production" && process.env.VERCEL) {
     console.warn(
@@ -323,9 +337,10 @@ function saveDb(db: LocalDatabase) {
     );
   }
   try {
-    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), "utf-8");
+    const cleanDb = sanitizeDbForStorage(db);
+    fs.writeFileSync(DB_PATH, JSON.stringify(cleanDb, null, 2), "utf-8");
     if (!isTestEnv) {
-      fs.writeFileSync(BACKUP_PATH, JSON.stringify(db, null, 2), "utf-8");
+      fs.writeFileSync(BACKUP_PATH, JSON.stringify(cleanDb, null, 2), "utf-8");
     }
   } catch {}
 }
@@ -666,12 +681,22 @@ export const resilientStore = {
 
   // SETTINGS
   getSettings(): Record<string, unknown> {
-    return loadDb().settings;
+    const s = { ...loadDb().settings };
+    if (!s.resendApiKey && process.env.RESEND_API_KEY) {
+      s.resendApiKey = process.env.RESEND_API_KEY;
+    }
+    return s;
   },
 
   updateSettings(partial: Record<string, unknown>) {
+    const sanitizedPartial = { ...partial };
+    delete sanitizedPartial.resendApiKey;
+    delete sanitizedPartial.smtpPass;
+    delete sanitizedPartial.whatsappCloudToken;
+    delete sanitizedPartial.whatsappGatewayKey;
+
     const db = loadDb();
-    db.settings = { ...db.settings, ...partial };
+    db.settings = { ...db.settings, ...sanitizedPartial };
     saveDb(db);
     return db.settings;
   },
