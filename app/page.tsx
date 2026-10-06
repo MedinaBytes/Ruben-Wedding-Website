@@ -4,6 +4,7 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { GateLanguageSwitcher } from "@/components/invitation/gate-language-switcher";
 import { supportedLocales, type Locale } from "@/lib/wedding-config";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +61,7 @@ export default async function HomePage(props: {
           </div>
 
           <p className="section-label" style={{ letterSpacing: "0.2em", textTransform: "uppercase", fontSize: "0.8rem", color: "#8E696E" }}>
-            {gate.has("eyebrow") ? gate("eyebrow") : "A Private Invitation"}
+            {gate("eyebrow")}
           </p>
 
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 5vw, 2.6rem)", margin: "0.5rem 0 1rem", color: "#2E2426" }}>
@@ -74,36 +75,17 @@ export default async function HomePage(props: {
           <div style={{ height: "1px", width: "4rem", background: "linear-gradient(90deg, transparent, #CCA468, transparent)", margin: "0 auto 1.5rem" }} />
 
           <p style={{ color: "#5C5052", fontSize: "0.95rem", lineHeight: 1.65, marginBottom: "1.75rem" }}>
-            {gate.has("instruction") ? gate("instruction") : "This celebration is strictly by personal invitation. Each guest receives a unique, private link directly from Ruben and Andrea to open their interactive invitation."}
+            {gate("instruction")}
           </p>
 
           <div style={{ background: "rgba(247, 243, 239, 0.8)", border: "1px solid #E4DBD3", borderRadius: "8px", padding: "1.25rem 1rem", marginBottom: "2rem" }}>
             <p style={{ margin: 0, fontSize: "0.88rem", color: "#6A5D60", lineHeight: 1.5 }}>
-              💌 {gate.has("personalNotice") ? gate("personalNotice") : "Please use the personal invitation link provided to you in WhatsApp, email, or your printed card to access your RSVP and wedding details."}
+              💌 {gate("personalNotice")}
             </p>
           </div>
 
-          {/* Language Switcher Bar */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "0.75rem", alignItems: "center" }}>
-            <span style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "#8A7D80" }}>
-              {navigation("language")}:
-            </span>
-            {supportedLocales.map((loc) => (
-              <a
-                key={loc}
-                href={`/?lang=${loc}`}
-                style={{
-                  fontSize: "0.8rem",
-                  fontWeight: loc === locale ? "700" : "400",
-                  textDecoration: loc === locale ? "underline" : "none",
-                  color: loc === locale ? "#8C2836" : "#6E6264",
-                  padding: "0.2rem 0.4rem",
-                }}
-              >
-                {loc === "de-AT" ? "AT" : loc.toUpperCase()}
-              </a>
-            ))}
-          </div>
+          {/* Interactive Language Switcher */}
+          <GateLanguageSwitcher currentLocale={locale} label={navigation("language")} />
         </section>
       </main>
 

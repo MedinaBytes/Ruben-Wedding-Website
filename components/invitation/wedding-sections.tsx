@@ -10,6 +10,7 @@ import { SpotifyPlaylist } from "@/components/invitation/spotify-playlist";
 import { SpotifySongRequests } from "@/components/invitation/spotify-song-requests";
 import { TrackedMapLink } from "@/components/invitation/tracked-map-link";
 import { TravelConcierge } from "@/components/invitation/travel-concierge";
+import { GiftPaymentTabs } from "@/components/invitation/gift-payment-tabs";
 import { getSpotifyPlaylistConfig } from "@/lib/spotify/api";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { weddingConfig, type Locale } from "@/lib/wedding-config";
@@ -82,11 +83,20 @@ export type GuestInvitationDetails = {
 
 export type SiteSettingsData = {
   showGiftDetails?: boolean;
+  enableBankTransfer?: boolean;
   bankName?: string;
   accountHolder?: string;
   iban?: string;
   bic?: string;
   giftNote?: string;
+  enableRevolut?: boolean;
+  revolutTag?: string;
+  revolutNote?: string;
+  enableWise?: boolean;
+  wiseTag?: string;
+  wiseNote?: string;
+  enableCash?: boolean;
+  cashNote?: string;
   showPrivateAddress?: boolean;
   privateStreet?: string;
   privateCity?: string;
@@ -538,46 +548,7 @@ export async function WeddingSections({
               <summary style={{ cursor: "pointer", fontWeight: 500, color: "#8C2836" }}>
                 {gifts("detailsLabel")}
               </summary>
-              <div
-                style={{
-                  marginTop: "1rem",
-                  padding: "1.25rem",
-                  background: "rgba(247, 245, 242, 0.9)",
-                  border: "1px solid #E8DFD8",
-                  borderRadius: "8px",
-                  fontSize: "0.9rem",
-                  lineHeight: 1.6,
-                }}
-              >
-                {siteSettings.accountHolder && (
-                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-                    <strong style={{ color: "#6E6264" }}>{gifts("accountHolderLabel")}:</strong> {siteSettings.accountHolder}
-                  </p>
-                )}
-                {siteSettings.bankName && (
-                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425" }}>
-                    <strong style={{ color: "#6E6264" }}>{gifts("bankLabel")}:</strong> {siteSettings.bankName}
-                  </p>
-                )}
-                {siteSettings.iban && (
-                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425", fontFamily: "monospace" }}>
-                    <strong style={{ color: "#6E6264", fontFamily: "var(--font-body, sans-serif)" }}>IBAN:</strong> {siteSettings.iban}
-                  </p>
-                )}
-                {siteSettings.bic && (
-                  <p style={{ margin: "0 0 0.4rem 0", color: "#2B2425", fontFamily: "monospace" }}>
-                    <strong style={{ color: "#6E6264", fontFamily: "var(--font-body, sans-serif)" }}>BIC/SWIFT:</strong> {siteSettings.bic}
-                  </p>
-                )}
-                {siteSettings.giftNote && (
-                  <p style={{ margin: "0.5rem 0 0 0", color: "#6E6264", fontStyle: "italic", fontSize: "0.85rem" }}>
-                    {siteSettings.giftNote}
-                  </p>
-                )}
-                {!siteSettings.iban && (
-                  <p style={{ margin: 0, color: "#6E6264" }}>{gifts("detailsPending")}</p>
-                )}
-              </div>
+              <GiftPaymentTabs siteSettings={siteSettings} locale={locale} />
             </details>
           )}
         </div>

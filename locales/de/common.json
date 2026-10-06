@@ -1,10 +1,18 @@
 {
   "gate": {
     "title": "Private Hochzeitseinladung",
+    "eyebrow": "Private Einladung",
     "metaTitle": "Ruben & Andrea — Hochzeitsfeier",
     "metaDescription": "Eine private digitale Hochzeitseinladung für Ruben & Andrea.",
-    "instruction": "Dies ist eine private Hochzeits-Website für die Hochzeit von Ruben und Andrea am 2. Oktober 2027 in Wien.",
-    "personalNotice": "Bitte öffnen Sie Ihren persönlichen Link aus Ihrer WhatsApp- oder E-Mail-Nachricht, um Ihren Umschlag zu öffnen und zuzusagen."
+    "instruction": "Diese Feier findet ausschließlich auf persönliche Einladung statt. Jeder Gast erhält einen individuellen, privaten Link direkt von Ruben und Andrea, um die interaktive Einladung zu öffnen.",
+    "personalNotice": "Bitte nutzen Sie den persönlichen Einladungslink, den Sie per WhatsApp, E-Mail oder auf Ihrer gedruckten Karte erhalten haben, um auf Ihre Zusage (RSVP) und alle Hochzeitsdetails zuzugreifen.",
+    "progressLabel": "Schritte zum Öffnen deiner Einladung",
+    "steps": {
+      "language": "Sprache",
+      "identify": "Deine Angaben",
+      "confirm": "Bestätigen"
+    },
+    "privacyNote": "Deine Angaben werden nur verwendet, um deine Einladung zu finden, und niemals weitergegeben."
   },
   "metadata": {
     "titleSuffix": "Hochzeitseinladung",
@@ -92,18 +100,6 @@
     "confirmYes": "Ja, das bin ich",
     "confirmNo": "Nein, erneut suchen",
     "opening": "Deine Einladung wird geöffnet…"
-  },
-  "gate": {
-    "metaTitle": "Eine private Einladung",
-    "metaDescription": "Eine persönliche Einladung, die nur ihr Gast öffnet.",
-    "eyebrow": "Eine private Einladung",
-    "progressLabel": "Schritte zum Öffnen deiner Einladung",
-    "steps": {
-      "language": "Sprache",
-      "identify": "Deine Angaben",
-      "confirm": "Bestätigen"
-    },
-    "privacyNote": "Deine Angaben werden nur verwendet, um deine Einladung zu finden, und niemals weitergegeben."
   },
   "event": {
     "dayLabel": "Ein gemeinsamer Tag",

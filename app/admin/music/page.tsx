@@ -35,6 +35,7 @@ export default async function AdminMusicPage() {
   const localInvitations = resilientStore.getInvitations();
 
   const nameMap = new Map<string, string>();
+  nameMap.set("00000000-0000-0000-0000-000000000001", "Sarah & Guest (Demo)");
   for (const inv of localInvitations) {
     nameMap.set(inv.id, inv.display_name);
   }
@@ -55,6 +56,7 @@ export default async function AdminMusicPage() {
     seenSongKeys.add(dedupeKey);
     songs.push({
       id,
+      invitationId: s.invitation_id,
       songTitle: s.song_title,
       artist: s.artist,
       spotifyUrl: s.spotify_url,
@@ -73,6 +75,7 @@ export default async function AdminMusicPage() {
       seenSongKeys.add(dedupeKey);
       songs.push({
         id: String(s.id),
+        invitationId: invId,
         songTitle: title,
         artist: s.artist ? String(s.artist) : null,
         spotifyUrl: s.spotify_url ? String(s.spotify_url) : null,

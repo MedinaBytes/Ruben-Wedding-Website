@@ -106,22 +106,28 @@ export function CheckInManager({
         <div
           style={{
             marginBottom: "1.5rem",
-            padding: "0.85rem 1.25rem",
-            background: "#FFFBEB",
-            border: "1px solid #FDE68A",
-            borderRadius: "8px",
-            color: "#92400E",
-            fontSize: "0.88rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
+            padding: "1.2rem 1.5rem",
+            background: "#FBF7FF",
+            border: "1px solid #E9D5FF",
+            borderRadius: "10px",
+            color: "#581C87",
+            boxShadow: "0 2px 8px rgba(107, 33, 168, 0.05)",
           }}
         >
-          <span>⚠️</span>
-          <span>
-            <strong>Module Status:</strong> QR Check-In mode is currently toggled <strong>OFF</strong> in Settings.
-            You can still test and verify check-ins here.
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+            <span style={{ fontSize: "1.2rem" }}>📌</span>
+            <strong style={{ fontSize: "1rem", color: "#581C87" }}>
+              Control de Puerta Manual Activo · Escaneo QR en Hoja de Ruta (Roadmap)
+            </strong>
+          </div>
+          <div style={{ fontSize: "0.86rem", lineHeight: 1.5, color: "#6B21A8" }}>
+            <p style={{ margin: "0 0 0.5rem 0" }}>
+              <strong>Por qué el escáner QR está desactivado:</strong> Las invitaciones enviadas actualmente por WhatsApp y Correo Electrónico proporcionan un enlace directo seguro (<code>/i/[token]</code>) sin emitir un código QR adjunto. Para mantener coherencia con los invitados, el registro de puerta se opera directamente mediante la lista de búsqueda.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>Integración futura en el Roadmap:</strong> Una vez implementada la generación de pases QR en invitaciones, se incorporará el lector en vivo para cámara de teléfono móvil, webcam y lectores ópticos externos USB/Bluetooth.
+            </p>
+          </div>
         </div>
       )}
 
@@ -139,7 +145,7 @@ export function CheckInManager({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "1rem" }}>
           <div>
             <span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "1px", opacity: 0.85 }}>
-              Vienna Event Day · Live Door Check-In
+              Vienna Event Day · Live Guest Reception
             </span>
             <h1 style={{ fontFamily: "var(--font-display, serif)", fontSize: "2.2rem", margin: "0.25rem 0 0 0" }}>
               {totalArrivedGuests} / {totalExpectedGuests} Arrived
@@ -173,49 +179,51 @@ export function CheckInManager({
         </div>
       </div>
 
-      {/* Fast QR / Barcode Input */}
-      <form
-        onSubmit={handleManualTokenSubmit}
-        style={{
-          display: "flex",
-          gap: "0.75rem",
-          background: "#FFFFFF",
-          padding: "1rem",
-          borderRadius: "10px",
-          border: "1px solid #E5DCD3",
-          marginBottom: "1.5rem",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Scan QR code or paste guest token (e.g. demo)..."
-          value={scannerInput}
-          onChange={(e) => setScannerInput(e.target.value)}
+      {/* Fast QR / Barcode Input (Active only if QR Checkin is explicitly enabled) */}
+      {isEnabled ? (
+        <form
+          onSubmit={handleManualTokenSubmit}
           style={{
-            flex: 1,
-            padding: "0.75rem 1rem",
-            borderRadius: "6px",
-            border: "1px solid #D5CBC4",
-            fontSize: "1rem",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            background: "#8C2836",
-            color: "#FFF",
-            border: 0,
-            borderRadius: "6px",
-            padding: "0.75rem 1.5rem",
-            fontSize: "0.95rem",
-            fontWeight: 600,
-            cursor: "pointer",
+            display: "flex",
+            gap: "0.75rem",
+            background: "#FFFFFF",
+            padding: "1rem",
+            borderRadius: "10px",
+            border: "1px solid #E5DCD3",
+            marginBottom: "1.5rem",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
           }}
         >
-          ⚡ Check In
-        </button>
-      </form>
+          <input
+            type="text"
+            placeholder="Scan QR code or paste guest token (e.g. demo)..."
+            value={scannerInput}
+            onChange={(e) => setScannerInput(e.target.value)}
+            style={{
+              flex: 1,
+              padding: "0.75rem 1rem",
+              borderRadius: "6px",
+              border: "1px solid #D5CBC4",
+              fontSize: "1rem",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              background: "#8C2836",
+              color: "#FFF",
+              border: 0,
+              borderRadius: "6px",
+              padding: "0.75rem 1.5rem",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            ⚡ Check In
+          </button>
+        </form>
+      ) : null}
 
       {/* Success Banner if recently checked in */}
       {recentlyChecked && (

@@ -67,9 +67,28 @@ export const spotifySongSubmissionSchema = z
     }
   });
 
+export const singleSongSubmissionSchema = z.object({
+  song: z.object({
+    title: z.string().trim().min(1).max(200),
+    artist: z.string().trim().max(160).nullable().optional(),
+    spotifyUrl: z.union([z.string().url().max(2048), z.literal(""), z.null()]).optional().transform((val) => val || undefined),
+    trackId: z.string().trim().max(100).nullable().optional(),
+    artworkUrl: z.union([z.string().url().max(2048), z.literal(""), z.null()]).optional().transform((val) => val || undefined),
+  }),
+  language: z.enum(supportedLocales).optional().default("es"),
+});
+
 export type RsvpPayload = z.infer<typeof rsvpPayloadSchema>;
 export type SongRequestPayload = z.infer<typeof songRequestPayloadSchema>;
 export type SpotifySongSubmission = z.infer<typeof spotifySongSubmissionSchema>;
+export type SingleSongSubmission = z.infer<typeof singleSongSubmissionSchema>;
+
+export function isSingleSongSubmissionPayload(value: unknown): value is SingleSongSubmission {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  if (!("song" in candidate) || typeof candidate.song !== "object" || candidate.song === null) return false;
+  return singleSongSubmissionSchema.safeParse(value).success;
+}
 
 export function isManualSongRequestPayload(value: unknown): value is SongRequestPayload {
   if (typeof value !== "object" || value === null) return false;

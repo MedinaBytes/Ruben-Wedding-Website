@@ -7,7 +7,7 @@ import { CheckInManager, type CheckInGuestRow } from "@/components/admin/checkin
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Door QR Check-In — Admin",
+  title: "Door Check-In & Reception — Admin",
   robots: { index: false, follow: false },
 };
 
@@ -50,7 +50,7 @@ export default async function AdminCheckInPage() {
     <CheckInManager
       initialCheckIns={checkIns}
       guests={guests}
-      isEnabled={settings.enableQrCheckin !== false}
+      isEnabled={Boolean(settings.enableQrCheckin)}
     />
   );
 }

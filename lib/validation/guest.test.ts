@@ -4,6 +4,7 @@ import { deriveInvitationStatus, resolveLocalePreference } from "../invitations/
 import { supportedLocales } from "../wedding-config";
 import {
   isManualSongRequestPayload,
+  isSingleSongSubmissionPayload,
   isSpotifySongSubmissionPayload,
   songRequestPayloadSchema,
   spotifySongSubmissionSchema,
@@ -47,6 +48,26 @@ describe("guest request validation", () => {
     expect(isSpotifySongSubmissionPayload(spotifyPayload)).toBe(true);
     expect(isManualSongRequestPayload(spotifyPayload)).toBe(false);
     expect(isSpotifySongSubmissionPayload(manualPayload)).toBe(false);
+  });
+
+  it("validates single song auto-save payloads", () => {
+    const validSingle = {
+      song: {
+        title: "Vienna Waltz",
+        artist: "Johann Strauss",
+        spotifyUrl: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+        trackId: "track-12345",
+      },
+      language: "es",
+    };
+    expect(isSingleSongSubmissionPayload(validSingle)).toBe(true);
+
+    const invalidSingleNoTitle = {
+      song: {
+        title: "",
+      },
+    };
+    expect(isSingleSongSubmissionPayload(invalidSingleNoTitle)).toBe(false);
   });
 
   it("accepts at most three valid, distinct Spotify track IDs", () => {

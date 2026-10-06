@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export interface SongRequestItem {
   id: string;
+  invitationId?: string;
   songTitle: string;
   artist: string | null;
   spotifyUrl: string | null;
@@ -23,6 +24,14 @@ export function MusicManager({ songs }: { songs: SongRequestItem[] }) {
     const key = `${s.songTitle.toLowerCase().trim()} — ${(s.artist || "").toLowerCase().trim()}`;
     frequencyMap.set(key, (frequencyMap.get(key) || 0) + 1);
   });
+
+  // Count requests per guest/invitation to track the 3-song limit
+  const guestSongCountMap = new Map<string, number>();
+  items.forEach((s) => {
+    const key = s.invitationId || s.guestName;
+    guestSongCountMap.set(key, (guestSongCountMap.get(key) || 0) + 1);
+  });
+  const completedGuestsCount = Array.from(guestSongCountMap.values()).filter((c) => c >= 3).length;
 
   const filtered = items.filter((s) => {
     const query = search.toLowerCase();
@@ -89,7 +98,7 @@ export function MusicManager({ songs }: { songs: SongRequestItem[] }) {
             Guest Music Requests
           </h1>
           <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.9rem" }}>
-            {items.length} Total Requests · {selectedCount} Selected for Wedding Setlist
+            {items.length} Total Requests · {selectedCount} Selected for Wedding Setlist · <strong>{completedGuestsCount}</strong> Guests Completed (3/3 Limit)
           </p>
         </div>
 
@@ -153,6 +162,7 @@ export function MusicManager({ songs }: { songs: SongRequestItem[] }) {
                 const key = `${s.songTitle.toLowerCase().trim()} — ${(s.artist || "").toLowerCase().trim()}`;
                 const freq = frequencyMap.get(key) || 1;
                 const spotifySearchUrl = `https://open.spotify.com/search/${encodeURIComponent(`${s.songTitle} ${s.artist || ""}`.trim())}`;
+                const guestCount = guestSongCountMap.get(s.invitationId || s.guestName) || 1;
 
                 return (
                   <tr key={s.id} style={{ borderBottom: "1px solid #EFEAE5", background: s.selectedForPlaylist ? "#F9FCF8" : "transparent" }}>
@@ -187,7 +197,39 @@ export function MusicManager({ songs }: { songs: SongRequestItem[] }) {
                       </span>
                     </td>
                     <td style={{ padding: "0.85rem 1rem", color: "#544648" }}>
-                      {s.guestName}
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                        <span style={{ fontWeight: 600 }}>{s.guestName}</span>
+                        {guestCount >= 3 ? (
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              fontWeight: 700,
+                              padding: "0.15rem 0.5rem",
+                              borderRadius: "999px",
+                              background: "#ECFDF5",
+                              color: "#065F46",
+                              border: "1px solid #A7F3D0",
+                            }}
+                            title="Guest has reached the 3-song maximum limit"
+                          >
+                            ✓ 3/3 (Completo)
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              padding: "0.15rem 0.5rem",
+                              borderRadius: "999px",
+                              background: "#F3F4F6",
+                              color: "#4B5563",
+                              border: "1px solid #E5E7EB",
+                            }}
+                          >
+                            {guestCount}/3
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: "0.85rem 1rem", textAlign: "right" }}>
                       <a

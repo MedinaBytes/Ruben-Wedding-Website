@@ -178,6 +178,106 @@ export async function saveRsvp(client: SupabaseClient, invitationId: string, rsv
   } catch {}
 }
 
+export async function addSingleSongRequest(
+  client: SupabaseClient | null,
+  invitationId: string,
+  song: {
+    title: string;
+    artist?: string | null;
+    spotifyUrl?: string | null;
+    trackId?: string | null;
+    artworkUrl?: string | null;
+  },
+) {
+  const localResult = resilientStore.addSongRequest(invitationId, {
+    title: song.title,
+    artist: song.artist,
+    spotifyUrl: song.spotifyUrl,
+    spotifyTrackId: song.trackId,
+    albumArtworkUrl: song.artworkUrl,
+  });
+
+  if (invitationId === DEMO_INVITATION.id || !client) {
+    return localResult;
+  }
+
+  try {
+    const { count, error } = await client
+      .from("song_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("invitation_id", invitationId);
+
+    if (!error && typeof count === "number" && count >= 3) {
+      return { success: false, error: "maximum_reached" };
+    }
+
+    const nextSlot = (count ?? 0) + 1;
+    const spotifyTrackId = song.trackId && /^[A-Za-z0-9]{22}$/.test(song.trackId) ? song.trackId : null;
+
+    await client.from("song_requests").insert({
+      invitation_id: invitationId,
+      slot: nextSlot,
+      song_title: song.title.slice(0, 200),
+      artist: song.artist ? song.artist.slice(0, 160) : null,
+      spotify_url: song.spotifyUrl ?? null,
+      spotify_track_id: spotifyTrackId,
+      album_artwork_url: song.artworkUrl ?? null,
+      playlist_status: "added",
+      submitted_at: new Date().toISOString(),
+    });
+  } catch {}
+
+  return localResult;
+}
+
+export async function deleteSongRequest(
+  client: SupabaseClient | null,
+  invitationId: string,
+  identifier: string | number,
+) {
+  const localDeleted = resilientStore.deleteSongRequest(invitationId, identifier);
+
+  if (invitationId === DEMO_INVITATION.id || !client) {
+    return localDeleted;
+  }
+
+  try {
+    if (typeof identifier === "number") {
+      await client
+        .from("song_requests")
+        .delete()
+        .eq("invitation_id", invitationId)
+        .eq("slot", identifier);
+    } else {
+      await client
+        .from("song_requests")
+        .delete()
+        .eq("invitation_id", invitationId)
+        .or(`id.eq.${identifier},spotify_track_id.eq.${identifier}`);
+    }
+
+    // Re-index slots in Supabase
+    const { data: remaining } = await client
+      .from("song_requests")
+      .select("id, slot")
+      .eq("invitation_id", invitationId)
+      .order("slot");
+
+    if (remaining) {
+      for (let i = 0; i < remaining.length; i++) {
+        if (remaining[i].slot !== i + 1) {
+          await client
+            .from("song_requests")
+            .update({ slot: i + 1 })
+            .eq("id", remaining[i].id);
+        }
+      }
+    }
+  } catch {}
+
+  return localDeleted;
+}
+
 export async function saveSongRequests(
   client: SupabaseClient,
   invitationId: string,

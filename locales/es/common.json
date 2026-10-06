@@ -1,10 +1,18 @@
 {
   "gate": {
     "title": "Invitación Privada de Boda",
+    "eyebrow": "Invitación Privada",
     "metaTitle": "Ruben & Andrea — Celebración de Boda",
     "metaDescription": "Una invitación digital privada para la boda de Ruben y Andrea.",
-    "instruction": "Este es un sitio web privado para la boda de Ruben y Andrea el 2 de octubre de 2027 en Viena.",
-    "personalNotice": "Por favor, abre el enlace personal directo que recibiste por WhatsApp o correo para ver tu sobre y confirmar tu asistencia."
+    "instruction": "Esta celebración es estrictamente por invitación personal. Cada invitado recibe un enlace único y privado directamente de Rubén y Andrea para abrir su invitación interactiva.",
+    "personalNotice": "Por favor, utiliza el enlace de invitación personal que recibiste por WhatsApp, correo electrónico o en tu tarjeta impresa para acceder a tu confirmación de asistencia (RSVP) y a los detalles de la boda.",
+    "progressLabel": "Pasos para abrir tu invitación",
+    "steps": {
+      "language": "Idioma",
+      "identify": "Tus datos",
+      "confirm": "Confirmar"
+    },
+    "privacyNote": "Tus datos solo se usan para encontrar tu invitación y nunca se comparten."
   },
   "metadata": {
     "titleSuffix": "Invitación de boda",
@@ -92,18 +100,6 @@
     "confirmYes": "Sí, soy yo",
     "confirmNo": "No, buscar de nuevo",
     "opening": "Abriendo tu invitación…"
-  },
-  "gate": {
-    "metaTitle": "Una invitación privada",
-    "metaDescription": "Una invitación personal que solo abre su invitado.",
-    "eyebrow": "Una invitación privada",
-    "progressLabel": "Pasos para abrir tu invitación",
-    "steps": {
-      "language": "Idioma",
-      "identify": "Tus datos",
-      "confirm": "Confirmar"
-    },
-    "privacyNote": "Tus datos solo se usan para encontrar tu invitación y nunca se comparten."
   },
   "event": {
     "dayLabel": "Un día juntos",

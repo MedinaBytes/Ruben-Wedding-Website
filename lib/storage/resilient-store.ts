@@ -116,6 +116,8 @@ export interface StoredSongRequest {
   song_title: string;
   artist: string | null;
   spotify_url: string | null;
+  spotify_track_id?: string | null;
+  album_artwork_url?: string | null;
   selected_for_playlist?: boolean;
   submitted_at: string;
 }
@@ -214,15 +216,24 @@ function getDefaultDb(): LocalDatabase {
       enableDayOfTimeline: false,
       enableGuestbook: false,
       enableTablePlanner: true,
-      enableQrCheckin: true,
+      enableQrCheckin: false,
       enableRsvpReminders: true,
       showGiftDetails: false,
-      showPrivateAddress: false,
+      enableBankTransfer: true,
       bankName: "Erste Bank Österreich",
       accountHolder: "Ruben & Andrea",
       iban: "AT61 2011 1000 0000 0000",
       bic: "GIBAATWWXXX",
       giftNote: "Reference: Ruben & Andrea Wedding 2027",
+      enableRevolut: true,
+      revolutTag: "@ruben_andrea",
+      revolutNote: "Revolut Pay / Instant transfer without fees",
+      enableWise: true,
+      wiseTag: "andrea.ruben@wise.com",
+      wiseNote: "Wise multi-currency international transfer",
+      enableCash: true,
+      cashNote: "A royal wedding envelope box will be available during the cocktail reception at Schloss Hetzendorf.",
+      showPrivateAddress: false,
       privateStreet: "Schönbrunner Schloßstraße 47",
       privateCity: "1120 Vienna, Austria",
       privateAccessNotes: "Ring bell for 'Ruben & Andrea' on 2nd floor.",
@@ -479,22 +490,130 @@ export const resilientStore = {
   getSongRequests(invitationId?: string): StoredSongRequest[] {
     const db = loadDb();
     if (!invitationId) return db.songRequests;
-    return db.songRequests.filter((s) => s.invitation_id === invitationId);
+    return db.songRequests
+      .filter((s) => s.invitation_id === invitationId)
+      .sort((a, b) => a.slot - b.slot);
   },
 
-  saveSongRequests(invitationId: string, requests: Array<{ title: string; artist?: string | null; spotifyUrl?: string | null }>) {
+  addSongRequest(
+    invitationId: string,
+    song: {
+      title: string;
+      artist?: string | null;
+      spotifyUrl?: string | null;
+      spotifyTrackId?: string | null;
+      albumArtworkUrl?: string | null;
+    },
+  ): { success: boolean; error?: string; song?: StoredSongRequest } {
+    const db = loadDb();
+    const existing = db.songRequests
+      .filter((s) => s.invitation_id === invitationId)
+      .sort((a, b) => a.slot - b.slot);
+
+    if (existing.length >= 3) {
+      return { success: false, error: "maximum_reached" };
+    }
+
+    const cleanTitle = song.title.trim();
+    const cleanArtist = song.artist?.trim() || null;
+    const isDup = existing.some(
+      (s) =>
+        (song.spotifyTrackId && s.spotify_track_id && s.spotify_track_id === song.spotifyTrackId) ||
+        (s.song_title.toLowerCase() === cleanTitle.toLowerCase() &&
+          (s.artist || "").toLowerCase() === (cleanArtist || "").toLowerCase()),
+    );
+    if (isDup) {
+      return { success: false, error: "already_submitted" };
+    }
+
+    const usedSlots = new Set(existing.map((s) => s.slot));
+    let nextSlot = 1;
+    while (usedSlots.has(nextSlot) && nextSlot <= 3) {
+      nextSlot++;
+    }
+
+    const now = new Date().toISOString();
+    const newSong: StoredSongRequest = {
+      id: `song-${invitationId}-${nextSlot}-${Date.now().toString(36)}`,
+      invitation_id: invitationId,
+      slot: nextSlot,
+      song_title: cleanTitle,
+      artist: cleanArtist,
+      spotify_url: song.spotifyUrl?.trim() || null,
+      spotify_track_id: song.spotifyTrackId?.trim() || null,
+      album_artwork_url: song.albumArtworkUrl?.trim() || null,
+      selected_for_playlist: false,
+      submitted_at: now,
+    };
+
+    db.songRequests.push(newSong);
+
+    // Recompact slots
+    const userSongs = db.songRequests
+      .filter((s) => s.invitation_id === invitationId)
+      .sort((a, b) => a.slot - b.slot);
+    userSongs.forEach((s, idx) => {
+      s.slot = idx + 1;
+    });
+
+    saveDb(db);
+    return { success: true, song: newSong };
+  },
+
+  deleteSongRequest(invitationId: string, identifier: string | number): boolean {
+    const db = loadDb();
+    const beforeCount = db.songRequests.length;
+    db.songRequests = db.songRequests.filter((s) => {
+      if (s.invitation_id !== invitationId) return true;
+      if (typeof identifier === "number" && s.slot === identifier) return false;
+      if (
+        typeof identifier === "string" &&
+        (s.id === identifier ||
+          s.spotify_track_id === identifier ||
+          String(s.slot) === identifier ||
+          s.song_title.toLowerCase() === identifier.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    // Recompact slots
+    const remaining = db.songRequests
+      .filter((s) => s.invitation_id === invitationId)
+      .sort((a, b) => a.slot - b.slot);
+    remaining.forEach((s, idx) => {
+      s.slot = idx + 1;
+    });
+
+    saveDb(db);
+    return db.songRequests.length < beforeCount;
+  },
+
+  saveSongRequests(
+    invitationId: string,
+    requests: Array<{
+      title: string;
+      artist?: string | null;
+      spotifyUrl?: string | null;
+      spotifyTrackId?: string | null;
+      albumArtworkUrl?: string | null;
+    }>,
+  ) {
     const db = loadDb();
     db.songRequests = db.songRequests.filter((s) => s.invitation_id !== invitationId);
     const now = new Date().toISOString();
-    requests.forEach((req, index) => {
+    requests.slice(0, 3).forEach((req, index) => {
       const slot = index + 1;
       db.songRequests.push({
-        id: `song-${invitationId}-${slot}`,
+        id: `song-${invitationId}-${slot}-${Date.now().toString(36)}`,
         invitation_id: invitationId,
         slot,
-        song_title: req.title,
-        artist: req.artist ?? null,
-        spotify_url: req.spotifyUrl ?? null,
+        song_title: req.title.trim(),
+        artist: req.artist?.trim() || null,
+        spotify_url: req.spotifyUrl?.trim() || null,
+        spotify_track_id: req.spotifyTrackId?.trim() || null,
+        album_artwork_url: req.albumArtworkUrl?.trim() || null,
         selected_for_playlist: false,
         submitted_at: now,
       });

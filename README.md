@@ -277,8 +277,29 @@ npm run build
 
 ---
 
-## 12. License & Attribution
+---
+
+## 12. Product Roadmap & Future Enhancements
+
+### 📲 QR Code Check-In Ecosystem (Planned Feature)
+El sistema de Check-In con lectura de código QR se encuentra actualmente registrado en la hoja de ruta (**Roadmap**) para su implementación integral coordinada:
+
+1. **Emisión de Códigos QR en Invitaciones:**
+   - Incorporación de pases digitales con código QR único embebidos en las plantillas de correo transaccional de Resend.
+   - Envío de tarjetas de acceso QR adjuntas en los mensajes de WhatsApp para cada titular de invitación.
+2. **Escáner Multidispositivo en Vivo:**
+   - Lector web mediante cámara integrado en el panel de ujieres/recepción (`html5-qrcode` / `BarcodeDetector` API) para teléfonos móviles (iOS Safari y Android) y ordenadores portátiles (webcam).
+   - Compatibilidad nativa con pistolas y lectores ópticos externos 2D USB/Bluetooth (emulación de teclado HID).
+3. **Validación Imperial en Puerta:**
+   - Confirmación instantánea de llegada, conteo de acompañantes, avisos dietéticos para cocina y asignación de mesa en el Palacio de Hetzendorf.
+4. **Operativa Actual en Producción:**
+   - El control de acceso está activo y operativo en `/admin/checkin` mediante búsqueda en lista de invitados por nombre, grupo o mesa, con confirmación instantánea a 1 clic y estadísticas de aforo en directo.
+
+---
+
+## 13. License & Attribution
 
 - **Source Code:** Private and proprietary to Ruben & Andrea.
 - **Botanical Illustrations:** Vector line art assets in `public/orchids/` are custom artworks created exclusively for this wedding platform under the MIT License.
 - **Crafted with Love:** Developed by Jonathan Medina for Ruben & Andrea.
+

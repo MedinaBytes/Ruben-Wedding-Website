@@ -1,10 +1,18 @@
 {
   "gate": {
     "title": "Zártkörű Esküvői Meghívó",
+    "eyebrow": "Zártkörű Meghívó",
     "metaTitle": "Ruben & Andrea — Esküvői Ünnepség",
     "metaDescription": "Személyre szóló digitális esküvői meghívó Ruben és Andrea esküvőjére.",
-    "instruction": "Ez egy zártkörű esküvői weboldal Ruben és Andrea 2027. október 2-i bécsi esküvőjéhez.",
-    "personalNotice": "Kérjük, nyissa meg a WhatsApp-on vagy e-mailben kapott személyes linkjét a boríték megnyitásához és a visszajelzéshez."
+    "instruction": "Ez az ünnepség kizárólag személyes meghívóval látogatható. Minden vendég egy egyedi, privát linket kap közvetlenül Rubentől és Andreától az interaktív meghívó megnyitásához.",
+    "personalNotice": "Kérjük, használja a WhatsApp-on, e-mailben vagy a nyomtatott kártyáján kapott személyes meghívó linket a visszajelzéshez (RSVP) és az esküvői részletek megtekintéséhez.",
+    "progressLabel": "A meghívó megnyitásának lépései",
+    "steps": {
+      "language": "Nyelv",
+      "identify": "Adataid",
+      "confirm": "Megerősítés"
+    },
+    "privacyNote": "Adataidat csak a meghívód megkeresésére használjuk, és soha nem adjuk tovább."
   },
   "metadata": {
     "titleSuffix": "Esküvői meghívó",
@@ -92,18 +100,6 @@
     "confirmYes": "Igen, én vagyok",
     "confirmNo": "Nem, új keresés",
     "opening": "Meghívód megnyitása…"
-  },
-  "gate": {
-    "metaTitle": "Személyes meghívó",
-    "metaDescription": "Személyes meghívó, amelyet csak a vendége nyithat meg.",
-    "eyebrow": "Személyes meghívó",
-    "progressLabel": "A meghívó megnyitásának lépései",
-    "steps": {
-      "language": "Nyelv",
-      "identify": "Adataid",
-      "confirm": "Megerősítés"
-    },
-    "privacyNote": "Adataidat csak a meghívód megkeresésére használjuk, és soha nem adjuk tovább."
   },
   "event": {
     "dayLabel": "Egy közös nap",

@@ -26,13 +26,25 @@ export async function updateSiteSettings(formData: FormData) {
   const enableQrCheckin = formData.get("enableQrCheckin") === "on";
   const enableRsvpReminders = formData.get("enableRsvpReminders") === "on";
 
-  // Gift & Bank Settings
+  // Gift & Payment Settings
   const showGiftDetails = formData.get("showGiftDetails") === "on";
+  const enableBankTransfer = formData.get("enableBankTransfer") === "on";
   const bankName = String(formData.get("bankName") || "").trim();
   const accountHolder = String(formData.get("accountHolder") || "").trim();
   const iban = String(formData.get("iban") || "").trim();
   const bic = String(formData.get("bic") || "").trim();
   const giftNote = String(formData.get("giftNote") || "").trim();
+
+  const enableRevolut = formData.get("enableRevolut") === "on";
+  const revolutTag = String(formData.get("revolutTag") || "").trim();
+  const revolutNote = String(formData.get("revolutNote") || "").trim();
+
+  const enableWise = formData.get("enableWise") === "on";
+  const wiseTag = String(formData.get("wiseTag") || "").trim();
+  const wiseNote = String(formData.get("wiseNote") || "").trim();
+
+  const enableCash = formData.get("enableCash") === "on";
+  const cashNote = String(formData.get("cashNote") || "").trim();
 
   // Private Address Settings
   const showPrivateAddress = formData.get("showPrivateAddress") === "on";
@@ -85,13 +97,22 @@ export async function updateSiteSettings(formData: FormData) {
     { key: "enableQrCheckin", value: enableQrCheckin, updated_at: now },
     { key: "enableRsvpReminders", value: enableRsvpReminders, updated_at: now },
 
-    // Gifts
+    // Gifts & Payments
     { key: "showGiftDetails", value: showGiftDetails, updated_at: now },
+    { key: "enableBankTransfer", value: enableBankTransfer, updated_at: now },
     { key: "bankName", value: bankName, updated_at: now },
     { key: "accountHolder", value: accountHolder, updated_at: now },
     { key: "iban", value: iban, updated_at: now },
     { key: "bic", value: bic, updated_at: now },
     { key: "giftNote", value: giftNote, updated_at: now },
+    { key: "enableRevolut", value: enableRevolut, updated_at: now },
+    { key: "revolutTag", value: revolutTag, updated_at: now },
+    { key: "revolutNote", value: revolutNote, updated_at: now },
+    { key: "enableWise", value: enableWise, updated_at: now },
+    { key: "wiseTag", value: wiseTag, updated_at: now },
+    { key: "wiseNote", value: wiseNote, updated_at: now },
+    { key: "enableCash", value: enableCash, updated_at: now },
+    { key: "cashNote", value: cashNote, updated_at: now },
 
     // Address
     { key: "showPrivateAddress", value: showPrivateAddress, updated_at: now },
@@ -141,11 +162,20 @@ export async function updateSiteSettings(formData: FormData) {
     enableQrCheckin,
     enableRsvpReminders,
     showGiftDetails,
+    enableBankTransfer,
     bankName,
     accountHolder,
     iban,
     bic,
     giftNote,
+    enableRevolut,
+    revolutTag,
+    revolutNote,
+    enableWise,
+    wiseTag,
+    wiseNote,
+    enableCash,
+    cashNote,
     showPrivateAddress,
     privateStreet,
     privateCity,

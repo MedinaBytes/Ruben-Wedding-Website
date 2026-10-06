@@ -82,11 +82,20 @@ export default async function MainInvitationPage({
 
   const siteSettings = {
     showGiftDetails: Boolean(s.get("showGiftDetails")),
+    enableBankTransfer: s.has("enableBankTransfer") ? Boolean(s.get("enableBankTransfer")) : true,
     bankName: s.get("bankName") ? String(s.get("bankName")) : undefined,
     accountHolder: s.get("accountHolder") ? String(s.get("accountHolder")) : undefined,
     iban: s.get("iban") ? String(s.get("iban")) : undefined,
     bic: s.get("bic") ? String(s.get("bic")) : undefined,
     giftNote: s.get("giftNote") ? String(s.get("giftNote")) : undefined,
+    enableRevolut: s.has("enableRevolut") ? Boolean(s.get("enableRevolut")) : true,
+    revolutTag: s.get("revolutTag") ? String(s.get("revolutTag")) : undefined,
+    revolutNote: s.get("revolutNote") ? String(s.get("revolutNote")) : undefined,
+    enableWise: s.has("enableWise") ? Boolean(s.get("enableWise")) : true,
+    wiseTag: s.get("wiseTag") ? String(s.get("wiseTag")) : undefined,
+    wiseNote: s.get("wiseNote") ? String(s.get("wiseNote")) : undefined,
+    enableCash: s.has("enableCash") ? Boolean(s.get("enableCash")) : true,
+    cashNote: s.get("cashNote") ? String(s.get("cashNote")) : undefined,
     showPrivateAddress: Boolean(s.get("showPrivateAddress")),
     privateStreet: s.get("privateStreet") ? String(s.get("privateStreet")) : undefined,
     privateCity: s.get("privateCity") ? String(s.get("privateCity")) : undefined,
@@ -100,7 +109,7 @@ export default async function MainInvitationPage({
     enableDayOfTimeline: s.has("enableDayOfTimeline") ? Boolean(s.get("enableDayOfTimeline")) : false,
     enableGuestbook: s.has("enableGuestbook") ? Boolean(s.get("enableGuestbook")) : false,
     enableTablePlanner: s.has("enableTablePlanner") ? Boolean(s.get("enableTablePlanner")) : true,
-    enableQrCheckin: s.has("enableQrCheckin") ? Boolean(s.get("enableQrCheckin")) : true,
+    enableQrCheckin: s.has("enableQrCheckin") ? Boolean(s.get("enableQrCheckin")) : false,
     enableRsvpReminders: s.has("enableRsvpReminders") ? Boolean(s.get("enableRsvpReminders")) : true,
   };
 
