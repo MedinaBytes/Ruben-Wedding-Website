@@ -80,8 +80,9 @@ export async function createInvitationAction(formData: FormData): Promise<Create
 
   // Attempt Supabase insert in background / best-effort
   try {
-    await client.from("invitations").insert({
+    const { error: insertError } = await client.from("invitations").insert({
       id: invitationId,
+      token,
       token_hash: tokenHash,
       display_name: displayName,
       normalized_name: normalizeName(displayName),
@@ -99,7 +100,12 @@ export async function createInvitationAction(formData: FormData): Promise<Create
       normalized_whatsapp: normalizedWhatsapp,
       status: "active",
     });
-  } catch {}
+    if (insertError) {
+      console.error("[createInvitationAction] Supabase insert failed:", insertError);
+    }
+  } catch (err) {
+    console.error("[createInvitationAction] Supabase insert threw:", err);
+  }
 
   await recordAdminAudit({
     actor,
@@ -109,11 +115,11 @@ export async function createInvitationAction(formData: FormData): Promise<Create
     metadata: { displayName, maxGuests, plusOneAllowed },
   }).catch(() => undefined);
 
-  let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://theandyrubenwedding.website";
   if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
-    baseUrl = `http://${baseUrl}`;
+    baseUrl = `https://${baseUrl}`;
   }
-  const url = `${baseUrl}/i/${token}`;
+  const url = `${baseUrl.replace(/\/$/, "")}/i/${token}`;
 
   revalidatePath("/admin/invitations");
   revalidatePath("/admin");
@@ -150,19 +156,25 @@ export async function createDemoInvitationAction(): Promise<CreateInvitationResu
   });
 
   try {
-    await client.from("invitations").upsert({
+    const { error: demoError } = await client.from("invitations").upsert({
       id: demoId,
+      token: "demo",
       token_hash: tokenHash,
       display_name: "Sarah & Guest (Demo)",
       normalized_name: "sarah guest demo",
       language: "en",
-      max_guests: 1,
+      max_guests: 2,
       plus_one_allowed: true,
       group_name: "Demo Reviewers",
       status: "active",
-      personal_message: "We are thrilled to celebrate our special day with you in Vienna!",
+      personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
     });
-  } catch {}
+    if (demoError) {
+      console.error("[createDemoInvitationAction] Supabase upsert error:", demoError);
+    }
+  } catch (err) {
+    console.error("[createDemoInvitationAction] Supabase upsert threw:", err);
+  }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return {

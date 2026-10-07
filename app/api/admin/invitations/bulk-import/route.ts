@@ -83,8 +83,13 @@ export async function POST(request: Request) {
   }> = [];
   const errors: Array<{ row: number; displayName: string; message: string }> = [];
 
-  const rawOrigin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
-  const origin = rawOrigin.replace(/\/$/, "");
+  const proto = request.headers.get("x-forwarded-proto") || "https";
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
+  const origin = host && !host.includes("localhost") && !host.includes("127.0.0.1")
+    ? `${proto}://${host}`
+    : (process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes("localhost")
+        ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
+        : "https://theandyrubenwedding.website");
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -148,10 +153,11 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
     });
 
-    // 2. Best-effort remote Supabase insert
+    // 2. Persist in remote Supabase
     try {
-      await client.from("invitations").insert({
+      const { error: insertError } = await client.from("invitations").upsert({
         id,
+        token,
         token_hash: tokenHash,
         display_name: rawName,
         normalized_name: normalizeName(rawName),
@@ -169,7 +175,13 @@ export async function POST(request: Request) {
         normalized_whatsapp: normalizedWhatsapp,
         status: "active",
       });
-    } catch {}
+
+      if (insertError) {
+        console.error("[BulkImport] Supabase upsert error for", rawName, insertError);
+      }
+    } catch (err) {
+      console.error("[BulkImport] Supabase network/client exception:", err);
+    }
 
     created.push({
       id,

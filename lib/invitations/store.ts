@@ -52,52 +52,60 @@ export async function findActiveInvitation(client: SupabaseClient, token: string
 
   // Check local store first or as fallback
   const localMatch = resilientStore.getInvitationByToken(token);
-
   const tokenHash = getInvitationTokenHash(token);
-  if (!tokenHash) {
-    if (localMatch) {
-      return {
-        id: localMatch.id,
-        display_name: localMatch.display_name,
-        greeting_override: null,
-        language: localMatch.language as Locale | null,
-        max_guests: localMatch.max_guests,
-        plus_one_allowed: localMatch.plus_one_allowed,
-        personal_message: localMatch.personal_message,
-        status: "active",
-      };
-    }
-    return null;
-  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token);
 
-  try {
-    const { data: directInvitation, error: directError } = await client
-      .from("invitations")
-      .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
-      .eq("token_hash", tokenHash)
-      .eq("status", "active")
-      .maybeSingle();
-
-    if (!directError && directInvitation) return directInvitation as ActiveInvitation;
-  } catch {}
-
-  if (tokenHash) {
+  if (client) {
     try {
-      const { data: alias, error: aliasError } = await client
-        .from("invitation_token_aliases")
-        .select("invitation_id")
-        .eq("token_hash", tokenHash)
+      // 1. Direct query by token column
+      const { data: byToken, error: byTokenError } = await client
+        .from("invitations")
+        .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+        .eq("token", token)
+        .eq("status", "active")
         .maybeSingle();
 
-      if (!aliasError && alias) {
-        const { data, error } = await client
+      if (!byTokenError && byToken) return byToken as ActiveInvitation;
+
+      // 2. Query by token_hash if valid token format
+      if (tokenHash) {
+        const { data: directInvitation, error: directError } = await client
           .from("invitations")
           .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
-          .eq("id", alias.invitation_id)
+          .eq("token_hash", tokenHash)
           .eq("status", "active")
           .maybeSingle();
 
-        if (!error && data) return data as ActiveInvitation;
+        if (!directError && directInvitation) return directInvitation as ActiveInvitation;
+
+        const { data: alias, error: aliasError } = await client
+          .from("invitation_token_aliases")
+          .select("invitation_id")
+          .eq("token_hash", tokenHash)
+          .maybeSingle();
+
+        if (!aliasError && alias) {
+          const { data, error } = await client
+            .from("invitations")
+            .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+            .eq("id", alias.invitation_id)
+            .eq("status", "active")
+            .maybeSingle();
+
+          if (!error && data) return data as ActiveInvitation;
+        }
+      }
+
+      // 3. Direct query by UUID id (so links using /i/[uuid] resolve instantly)
+      if (isUuid) {
+        const { data: byId, error: byIdError } = await client
+          .from("invitations")
+          .select("id, display_name, greeting_override, language, max_guests, plus_one_allowed, personal_message, status")
+          .eq("id", token)
+          .eq("status", "active")
+          .maybeSingle();
+
+        if (!byIdError && byId) return byId as ActiveInvitation;
       }
     } catch {}
   }

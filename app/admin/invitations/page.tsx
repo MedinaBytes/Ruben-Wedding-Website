@@ -27,7 +27,7 @@ export default async function AdminInvitationsPage() {
     const [invitationsRes, rsvpsRes] = await Promise.all([
       client
         .from("invitations")
-        .select("id, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, email, phone, whatsapp")
+        .select("id, token, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, email, phone, whatsapp")
         .order("created_at", { ascending: false }),
       client.from("rsvps").select("invitation_id, attendance_status, attendee_count"),
     ]);
@@ -102,13 +102,16 @@ export default async function AdminInvitationsPage() {
         email: (inv.email as string) || null,
         phone: (inv.phone as string) || null,
         whatsapp: (inv.whatsapp as string) || null,
+        token: (inv.token as string) || id,
       });
     }
   }
 
-  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  if (!siteUrl.startsWith("http://") && !siteUrl.startsWith("https://")) {
-    siteUrl = `http://${siteUrl}`;
+  let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+  if (!siteUrl || siteUrl.includes("localhost") || siteUrl.includes("127.0.0.1")) {
+    siteUrl = process.env.NODE_ENV === "production" ? "https://theandyrubenwedding.website" : "http://localhost:3000";
+  } else if (!siteUrl.startsWith("http://") && !siteUrl.startsWith("https://")) {
+    siteUrl = `https://${siteUrl}`;
   }
 
   return <InvitationsManager invitations={combined} siteUrl={siteUrl} isDemoEnabled={isDemoEnabled} />;
