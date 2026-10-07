@@ -111,10 +111,8 @@ export function validateRsvpForInvitation(
   const result = rsvpPayloadSchema.safeParse(value);
   if (!result.success) return { success: false as const, reason: "invalid_request" as const };
 
-  if (
-    result.data.attendeeCount > invitation.maxGuests ||
-    (!invitation.plusOneAllowed && result.data.attendeeCount > 1)
-  ) {
+  const totalAllowed = invitation.maxGuests + (invitation.plusOneAllowed ? 1 : 0);
+  if (result.data.attendeeCount > totalAllowed) {
     return { success: false as const, reason: "guest_limit" as const };
   }
 

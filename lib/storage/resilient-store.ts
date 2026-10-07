@@ -170,7 +170,7 @@ function getDefaultDb(): LocalDatabase {
         display_name: "Sarah & Guest (Demo)",
         normalized_name: "sarah guest demo",
         language: "en",
-        max_guests: 2,
+        max_guests: 1,
         plus_one_allowed: true,
         group_name: "Demo Reviewers",
         normalized_group_name: "demo reviewers",

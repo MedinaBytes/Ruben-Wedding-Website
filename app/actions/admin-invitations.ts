@@ -37,9 +37,6 @@ export async function createInvitationAction(formData: FormData): Promise<Create
   if (maxGuests > 20) maxGuests = 20;
 
   const plusOneAllowed = formData.get("plusOneAllowed") === "on";
-  if (plusOneAllowed && maxGuests < 2) {
-    maxGuests = 2; // Auto-adjust to at least 2 places if +1 is enabled
-  }
 
   const groupName = String(formData.get("groupName") || "").trim() || null;
   const rawLang = String(formData.get("language") || "").trim();
@@ -159,7 +156,7 @@ export async function createDemoInvitationAction(): Promise<CreateInvitationResu
       display_name: "Sarah & Guest (Demo)",
       normalized_name: "sarah guest demo",
       language: "en",
-      max_guests: 2,
+      max_guests: 1,
       plus_one_allowed: true,
       group_name: "Demo Reviewers",
       status: "active",

@@ -103,6 +103,19 @@ export interface CustomMenuOptionItem {
   enabled: boolean;
 }
 
+function getInitialPrimaryName(displayName: string): string {
+  const cleaned = displayName
+    .replace(/\s*\(Demo\)/i, "")
+    .replace(/\s*(&|\+)\s*(Guest|Invitado|Gast|Vendég|Acompañante|Begleitperson)/i, "")
+    .trim();
+  return cleaned || displayName;
+}
+
+interface GuestMealState {
+  meal: string;
+  allergies: string;
+}
+
 export function RsvpForm({
   invitation,
   enableMealSelection = true,
@@ -117,27 +130,63 @@ export function RsvpForm({
   const t = useTranslations("rsvp");
   const { play } = useSound();
   const hasTrackedStart = useRef(false);
-  const isSingleGuestOnly = !invitation.plusOneAllowed && invitation.maxGuests <= 1;
-  const isPlusOneInvitation = invitation.plusOneAllowed && invitation.maxGuests === 2;
-  const isMultiGuestParty = invitation.maxGuests > 2;
+  const dict = mealLabels[locale] || mealLabels.en;
+
+  const maxInvited = Math.max(1, invitation.maxGuests);
+  const hasPlusOneOption = Boolean(invitation.plusOneAllowed);
+  const isMultiSeatParty = maxInvited > 1;
+
+  const [primaryName, setPrimaryName] = useState(() => getInitialPrimaryName(invitation.displayName));
+  const [primaryMeal, setPrimaryMeal] = useState<GuestMealState>({ meal: "classic", allergies: "" });
+
+  const [additionalGuestNames, setAdditionalGuestNames] = useState<string[]>(() =>
+    Array(Math.max(0, maxInvited - 1)).fill("")
+  );
+  const [additionalMeals, setAdditionalMeals] = useState<GuestMealState[]>(() =>
+    Array(Math.max(0, maxInvited - 1)).fill({ meal: "classic", allergies: "" })
+  );
 
   const [plusOneSelected, setPlusOneSelected] = useState<"yes" | "no">("yes");
   const [plusOneName, setPlusOneName] = useState("");
+  const [companionMeal, setCompanionMeal] = useState<GuestMealState>({ meal: "classic", allergies: "" });
+
+  const [invitedAttendingCount, setInvitedAttendingCount] = useState<number>(maxInvited);
   const [attendance, setAttendance] = useState<RsvpState>("");
-  const [attendeeCount, setAttendeeCount] = useState(1);
-  const [guestNames, setGuestNames] = useState("");
   const [dietaryRequirements, setDietaryRequirements] = useState("");
   const [notes, setNotes] = useState("");
-  const [meals, setMeals] = useState<Record<number, { meal: string; allergies: string }>>({
-    0: { meal: "classic", allergies: "" },
-    1: { meal: "classic", allergies: "" },
-  });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmation, setConfirmation] = useState<"yes" | "no" | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const endpoint = `/api/invitation/${encodeURIComponent(invitation.token)}/rsvp`;
+
+  const handleAdditionalNameChange = (index: number, value: string) => {
+    setAdditionalGuestNames((prev) => {
+      const next = [...prev];
+      while (next.length <= index) next.push("");
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const handleAdditionalMealChange = (index: number, meal: string) => {
+    setAdditionalMeals((prev) => {
+      const next = [...prev];
+      while (next.length <= index) next.push({ meal: "classic", allergies: "" });
+      next[index] = { ...next[index], meal };
+      return next;
+    });
+  };
+
+  const handleAdditionalAllergiesChange = (index: number, allergies: string) => {
+    setAdditionalMeals((prev) => {
+      const next = [...prev];
+      while (next.length <= index) next.push({ meal: "classic", allergies: "" });
+      next[index] = { ...next[index], allergies };
+      return next;
+    });
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -157,31 +206,68 @@ export function RsvpForm({
           notes: string | null;
           mealPreferences?: Array<{ guestName: string; meal: string; allergies?: string }>;
         };
+
         setAttendance(saved.attendanceStatus);
-        if (isPlusOneInvitation) {
-          if (saved.attendeeCount === 2) {
-            setPlusOneSelected("yes");
-            setPlusOneName(saved.guestNames[0] || "");
-          } else {
-            setPlusOneSelected("no");
-            setPlusOneName("");
-          }
-        } else if (isMultiGuestParty) {
-          setAttendeeCount(Math.max(1, Math.min(invitation.maxGuests, saved.attendeeCount)));
-          setGuestNames(saved.guestNames.join("\n"));
-        } else {
-          setAttendeeCount(1);
-          setGuestNames("");
-        }
         setDietaryRequirements(saved.dietaryRequirements ?? "");
         setNotes(saved.notes ?? "");
 
-        if (Array.isArray(saved.mealPreferences) && saved.mealPreferences.length > 0) {
-          const mObj: Record<number, { meal: string; allergies: string }> = {};
-          saved.mealPreferences.forEach((p, idx) => {
-            mObj[idx] = { meal: p.meal || "classic", allergies: p.allergies || "" };
-          });
-          setMeals(mObj);
+        if (saved.attendanceStatus === "yes" && saved.attendeeCount > 0) {
+          const totalSaved = saved.attendeeCount;
+          let bringsCompanion = false;
+          let invCount = totalSaved;
+          let pOneName = "";
+          let addNames: string[] = [];
+
+          if (hasPlusOneOption) {
+            if (totalSaved > maxInvited || (maxInvited === 1 && totalSaved === 2)) {
+              bringsCompanion = true;
+              invCount = Math.min(maxInvited, Math.max(1, totalSaved - 1));
+              const neededAdd = Math.max(0, invCount - 1);
+              addNames = saved.guestNames.slice(0, neededAdd);
+              pOneName = saved.guestNames[neededAdd] || "";
+            } else {
+              bringsCompanion = false;
+              invCount = Math.min(maxInvited, Math.max(1, totalSaved));
+              addNames = saved.guestNames.slice(0, Math.max(0, invCount - 1));
+            }
+          } else {
+            invCount = Math.min(maxInvited, Math.max(1, totalSaved));
+            addNames = saved.guestNames.slice(0, Math.max(0, invCount - 1));
+          }
+
+          setInvitedAttendingCount(invCount);
+          setPlusOneSelected(bringsCompanion ? "yes" : "no");
+          setPlusOneName(pOneName);
+          setAdditionalGuestNames(addNames);
+
+          if (saved.mealPreferences && saved.mealPreferences.length > 0) {
+            const p0 = saved.mealPreferences[0];
+            if (p0) {
+              if (p0.guestName && p0.guestName !== invitation.displayName) {
+                setPrimaryName(p0.guestName);
+              }
+              setPrimaryMeal({ meal: p0.meal || "classic", allergies: p0.allergies || "" });
+            }
+
+            const neededAdd = Math.max(0, invCount - 1);
+            const restoredAddMeals: GuestMealState[] = [];
+            for (let i = 0; i < neededAdd; i++) {
+              const pref = saved.mealPreferences[1 + i];
+              restoredAddMeals.push({
+                meal: pref?.meal || "classic",
+                allergies: pref?.allergies || "",
+              });
+            }
+            setAdditionalMeals(restoredAddMeals);
+
+            if (bringsCompanion && saved.mealPreferences.length > 1 + neededAdd) {
+              const compPref = saved.mealPreferences[1 + neededAdd];
+              setCompanionMeal({
+                meal: compPref?.meal || "classic",
+                allergies: compPref?.allergies || "",
+              });
+            }
+          }
         }
       } catch {
         if (!controller.signal.aborted) setErrorMessage(t("loadError"));
@@ -192,7 +278,7 @@ export function RsvpForm({
 
     void loadExistingRsvp();
     return () => controller.abort();
-  }, [endpoint, t, isPlusOneInvitation, isMultiGuestParty, invitation.maxGuests]);
+  }, [endpoint, t, hasPlusOneOption, maxInvited, invitation.displayName]);
 
   async function submitRsvp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -204,47 +290,68 @@ export function RsvpForm({
       return;
     }
 
-    let finalCount = 1;
+    let finalCount = 0;
     let finalGuestNames: string[] = [];
+    let mealPreferences: Array<{ guestName: string; meal: string; allergies?: string }> | undefined = undefined;
 
-    if (attendance === "no") {
-      finalCount = 0;
-      finalGuestNames = [];
-    } else if (isSingleGuestOnly) {
-      finalCount = 1;
-      finalGuestNames = [];
-    } else if (isPlusOneInvitation) {
-      if (plusOneSelected === "yes") {
-        const trimmed = plusOneName.trim();
-        if (!trimmed) {
+    if (attendance === "yes") {
+      const actualInvitedCount = isMultiSeatParty ? invitedAttendingCount : 1;
+      const bringsCompanion = hasPlusOneOption && plusOneSelected === "yes";
+
+      const validPrimaryName = primaryName.trim() || getInitialPrimaryName(invitation.displayName);
+      const validAdditionalNames: string[] = [];
+
+      for (let i = 0; i < actualInvitedCount - 1; i++) {
+        const name = (additionalGuestNames[i] || "").trim();
+        if (!name) {
+          setErrorMessage(t("additionalNamesRequired"));
+          return;
+        }
+        validAdditionalNames.push(name);
+      }
+
+      let validCompanionName = "";
+      if (bringsCompanion) {
+        validCompanionName = plusOneName.trim();
+        if (!validCompanionName) {
           setErrorMessage(t("plusOneNameRequired"));
           return;
         }
-        finalCount = 2;
-        finalGuestNames = [trimmed];
-      } else {
-        finalCount = 1;
-        finalGuestNames = [];
       }
-    } else if (isMultiGuestParty) {
-      finalCount = attendeeCount;
-      const names = guestNames
-        .split("\n")
-        .map((name) => name.trim())
-        .filter(Boolean);
-      if (finalCount > 1 && names.length < finalCount - 1) {
-        setErrorMessage(t("additionalNamesRequired"));
-        return;
+
+      finalCount = actualInvitedCount + (bringsCompanion ? 1 : 0);
+      finalGuestNames = [...validAdditionalNames, ...(bringsCompanion ? [validCompanionName] : [])];
+
+      if (enableMealSelection) {
+        mealPreferences = [
+          {
+            guestName: validPrimaryName,
+            meal: primaryMeal.meal || "classic",
+            allergies: primaryMeal.allergies.trim() || undefined,
+          },
+          ...validAdditionalNames.map((name, i) => ({
+            guestName: name,
+            meal: additionalMeals[i]?.meal || "classic",
+            allergies: additionalMeals[i]?.allergies.trim() || undefined,
+          })),
+          ...(bringsCompanion
+            ? [
+                {
+                  guestName: validCompanionName,
+                  meal: companionMeal.meal || "classic",
+                  allergies: companionMeal.allergies.trim() || undefined,
+                },
+              ]
+            : []),
+        ];
       }
-      finalGuestNames = names.slice(0, finalCount - 1);
     }
 
-    const guestList = [invitation.displayName, ...finalGuestNames];
-    const mealPreferences = guestList.slice(0, finalCount).map((gName, idx) => ({
-      guestName: gName,
-      meal: meals[idx]?.meal || "classic",
-      allergies: meals[idx]?.allergies || "",
-    }));
+    const combinedAllergies = mealPreferences
+      ?.filter((m) => Boolean(m.allergies))
+      .map((m) => `${m.guestName}: ${m.allergies}`)
+      .join("; ");
+    const finalDietary = combinedAllergies || (dietaryRequirements.trim() || undefined);
 
     setIsSaving(true);
     try {
@@ -255,7 +362,7 @@ export function RsvpForm({
           attendanceStatus: attendance,
           attendeeCount: finalCount,
           guestNames: finalGuestNames,
-          dietaryRequirements: attendance === "yes" ? dietaryRequirements.trim() : undefined,
+          dietaryRequirements: attendance === "yes" ? finalDietary : undefined,
           mealPreferences: attendance === "yes" && enableMealSelection ? mealPreferences : undefined,
           notes: notes.trim() || undefined,
           language: typedLocale,
@@ -264,7 +371,13 @@ export function RsvpForm({
 
       if (!response.ok) {
         const code = await readErrorCode(response);
-        setErrorMessage(code === "guest_limit" ? t("guestLimitError") : code === "rate_limited" ? t("rateLimitError") : t("saveError"));
+        setErrorMessage(
+          code === "guest_limit"
+            ? t("guestLimitError")
+            : code === "rate_limited"
+            ? t("rateLimitError")
+            : t("saveError"),
+        );
         return;
       }
 
@@ -312,8 +425,16 @@ export function RsvpForm({
             {confirmation === "yes" ? t("confirmedTitle") : t("declinedTitle")}
           </h3>
           <p style={{ color: "#5F5456", maxWidth: "480px", margin: "0 auto", fontSize: "0.95rem", lineHeight: 1.6 }}>
-            {t(confirmation === "yes" ? "confirmedMessage" : "declinedMessage", { name: invitation.displayName })}
+            {t(confirmation === "yes" ? "confirmedMessage" : "declinedMessage", { name: primaryName.trim() || invitation.displayName })}
           </p>
+          <button
+            className="text-button"
+            onClick={() => setConfirmation(null)}
+            type="button"
+            style={{ marginTop: "1rem" }}
+          >
+            {locale === "es" ? "Modificar mi respuesta" : locale === "de" ? "Antwort bearbeiten" : locale === "hu" ? "Válasz módosítása" : "Edit my response"}
+          </button>
         </motion.div>
       ) : (
         <form
@@ -357,14 +478,82 @@ export function RsvpForm({
 
           {attendance === "yes" && (
             <div className="guest-form__fields">
-              {/* Case 1: Standard Plus-One (+1) Invitation */}
-              {isPlusOneInvitation && (
-                <div style={{ marginBottom: "1.25rem" }}>
-                  <fieldset className="guest-form__fieldset" style={{ border: 0, padding: 0, margin: "0 0 1rem 0" }}>
-                    <legend style={{ fontWeight: 600, color: "#2B2425", marginBottom: "0.6rem", fontSize: "0.95rem" }}>
-                      {t("plusOneQuestion")}
-                    </legend>
-                    <label className="choice-row" style={{ marginBottom: "0.5rem" }}>
+              {/* Question 1: How many invited guests attending (if multi-seat party) */}
+              {isMultiSeatParty && (
+                <div
+                  style={{
+                    padding: "1.1rem 1.25rem",
+                    borderRadius: "0.85rem",
+                    background: "rgba(255, 255, 255, 0.75)",
+                    border: "1px solid rgba(212, 175, 55, 0.4)",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+                  }}
+                >
+                  <label
+                    htmlFor="invited-attending-count"
+                    style={{
+                      display: "block",
+                      fontWeight: 600,
+                      fontSize: "0.95rem",
+                      color: "#2C1810",
+                      marginBottom: "0.6rem",
+                    }}
+                  >
+                    👥 {t("howManyAttending", { max: maxInvited })}
+                  </label>
+                  <select
+                    id="invited-attending-count"
+                    value={invitedAttendingCount}
+                    onChange={(e) =>
+                      setInvitedAttendingCount(
+                        Math.min(maxInvited, Math.max(1, Number(e.target.value)))
+                      )
+                    }
+                    style={{
+                      width: "100%",
+                      maxWidth: "280px",
+                      padding: "0.6rem 0.85rem",
+                      borderRadius: "0.5rem",
+                      border: "1px solid rgba(212, 175, 55, 0.5)",
+                      background: "#FFFDF9",
+                      fontWeight: 600,
+                      fontSize: "0.95rem",
+                      color: "#2C1810",
+                    }}
+                  >
+                    {Array.from({ length: maxInvited }, (_, i) => i + 1).map((num) => (
+                      <option key={num} value={num}>
+                        {num} {num === 1 ? t("guestNumber", { number: 1 }).replace(" 1", "") : (locale === "es" ? "invitados" : locale === "de" ? "Gäste" : locale === "hu" ? "vendég" : "guests")}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Question 2: Companion Plus-One Toggle (if plusOneAllowed) */}
+              {hasPlusOneOption && (
+                <div
+                  style={{
+                    padding: "1.1rem 1.25rem",
+                    borderRadius: "0.85rem",
+                    background: "rgba(255, 255, 255, 0.75)",
+                    border: "1px solid rgba(212, 175, 55, 0.4)",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontWeight: 600,
+                      color: "#2C1810",
+                      margin: "0 0 0.65rem 0",
+                      fontSize: "0.95rem",
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    ✨ {t("plusOnePrompt")}
+                  </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                    <label className="choice-row">
                       <input
                         type="radio"
                         name="plusOneChoice"
@@ -372,7 +561,7 @@ export function RsvpForm({
                         checked={plusOneSelected === "yes"}
                         onChange={() => setPlusOneSelected("yes")}
                       />
-                      <span>{t("plusOneWithGuest")}</span>
+                      <span style={{ fontSize: "0.92rem", color: "#2C1810" }}>{t("plusOneYes")}</span>
                     </label>
                     <label className="choice-row">
                       <input
@@ -382,199 +571,504 @@ export function RsvpForm({
                         checked={plusOneSelected === "no"}
                         onChange={() => setPlusOneSelected("no")}
                       />
-                      <span>{t("plusOneSolo")}</span>
+                      <span style={{ fontSize: "0.92rem", color: "#2C1810" }}>{t("plusOneNo")}</span>
                     </label>
-                  </fieldset>
-
-                  {plusOneSelected === "yes" && (
-                    <div className="field-group" style={{ marginTop: "0.75rem" }}>
-                      <label htmlFor="plus-one-name">
-                        {t("plusOneNameLabel")} <span style={{ color: "#8C2836" }}>*</span>
-                      </label>
-                      <input
-                        autoComplete="off"
-                        id="plus-one-name"
-                        name="plusOneName"
-                        onChange={(event) => setPlusOneName(event.target.value)}
-                        placeholder={t("plusOneNamePlaceholder")}
-                        required
-                        type="text"
-                        value={plusOneName}
-                      />
-                    </div>
-                  )}
+                  </div>
                 </div>
               )}
 
-              {/* Case 2: Multi-Guest Group or Family (3+ guests) */}
-              {isMultiGuestParty && (
-                <>
-                  <div className="field-group">
-                    <label htmlFor="attendee-count">
-                      {t("attendeeCount")} ({t("maxAllowed", { max: invitation.maxGuests })})
-                    </label>
-                    <input
-                      autoComplete="off"
-                      id="attendee-count"
-                      max={invitation.maxGuests}
-                      min={1}
-                      name="attendeeCount"
-                      onChange={(event) => setAttendeeCount(Math.min(invitation.maxGuests, Math.max(1, Number(event.target.value))))}
-                      type="number"
-                      value={attendeeCount}
-                    />
-                  </div>
-                  {attendeeCount > 1 && (
-                    <div className="field-group">
-                      <label htmlFor="guest-names">
-                        {t("additionalNames")} <span style={{ color: "#8C2836" }}>*</span>
-                      </label>
-                      <textarea
-                        autoComplete="off"
-                        id="guest-names"
-                        name="guestNames"
-                        onChange={(event) => setGuestNames(event.target.value)}
-                        placeholder={t("additionalNamesPlaceholder")}
-                        rows={Math.min(attendeeCount - 1, 4)}
-                        value={guestNames}
-                        required
-                      />
-                    </div>
-                  )}
-                </>
-              )}
+              {/* Guest Confirmation and Meal Selection Cards */}
+              <div style={{ marginTop: "0.75rem" }}>
+                <div style={{ marginBottom: "1rem" }}>
+                  <h3
+                    style={{
+                      fontFamily: "'Cinzel', serif",
+                      fontSize: "1.15rem",
+                      color: "#2C1810",
+                      margin: "0 0 0.35rem 0",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <span>📜</span>
+                    {t("confirmGuestsTitle")}
+                  </h3>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.88rem",
+                      color: "#6b5b52",
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    {t("confirmGuestsSubtitle")}
+                  </p>
+                </div>
 
-              {/* Case 3: Single Guest Only - No questions about how many people! */}
-
-              <div className="field-group">
-                <label htmlFor="dietary-requirements">{t("dietaryLabel")}</label>
-                <textarea
-                  autoComplete="off"
-                  id="dietary-requirements"
-                  name="dietaryRequirements"
-                  onChange={(event) => setDietaryRequirements(event.target.value)}
-                  rows={2}
-                  value={dietaryRequirements}
-                />
-              </div>
-
-              {enableMealSelection && (
-                <div
-                  className="meal-selection-container"
-                  style={{
-                    marginTop: "1.25rem",
-                    padding: "1.25rem",
-                    borderRadius: "1rem",
-                    background: "rgba(255, 255, 255, 0.75)",
-                    backdropFilter: "blur(8px)",
-                    border: "1px solid rgba(212, 175, 55, 0.35)",
-                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.04)",
-                  }}
-                >
-                  <div style={{ marginBottom: "1rem" }}>
-                    <h4
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  {/* Card 1: Primary Guest */}
+                  <div
+                    style={{
+                      padding: "1.25rem",
+                      borderRadius: "0.9rem",
+                      background: "rgba(255, 255, 255, 0.85)",
+                      backdropFilter: "blur(6px)",
+                      border: "1px solid rgba(212, 175, 55, 0.45)",
+                      boxShadow: "0 4px 18px rgba(0, 0, 0, 0.04)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.9rem",
+                    }}
+                  >
+                    <div
                       style={{
-                        margin: "0 0 0.25rem 0",
-                        fontFamily: "'Cinzel', serif",
-                        fontSize: "1.05rem",
-                        color: "#2C1810",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
                         gap: "0.5rem",
                       }}
                     >
-                      <span>🍽️</span>
-                      {(mealLabels[locale] || mealLabels.en).sectionTitle}
-                    </h4>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.85rem",
-                        color: "#6b5b52",
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {(mealLabels[locale] || mealLabels.en).sectionSubtitle}
-                    </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                        <span style={{ fontSize: "1.15rem" }}>👑</span>
+                        <span
+                          style={{
+                            fontFamily: "'Cinzel', serif",
+                            fontWeight: 600,
+                            fontSize: "1rem",
+                            color: "#2C1810",
+                          }}
+                        >
+                          {t("primaryGuest")}
+                        </span>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "0.72rem",
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "999px",
+                          background: "rgba(212, 175, 55, 0.15)",
+                          color: "#725816",
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        {t("guestNumber", { number: 1 })}
+                      </span>
+                    </div>
+
+                    <div className="field-group">
+                      <label
+                        htmlFor="primary-guest-name"
+                        style={{ fontWeight: 600, fontSize: "0.85rem", color: "#4a3e3d" }}
+                      >
+                        {t("confirmGuestNameLabel")} <span style={{ color: "#8C2836" }}>*</span>
+                      </label>
+                      <input
+                        id="primary-guest-name"
+                        type="text"
+                        autoComplete="name"
+                        placeholder={t("confirmGuestNamePlaceholder")}
+                        value={primaryName}
+                        onChange={(e) => setPrimaryName(e.target.value)}
+                        required
+                        style={{
+                          background: "#FFFDF9",
+                          border: "1px solid rgba(212, 175, 55, 0.4)",
+                          borderRadius: "0.5rem",
+                          padding: "0.6rem 0.75rem",
+                          fontSize: "0.95rem",
+                          color: "#2C1810",
+                        }}
+                      />
+                    </div>
+
+                    {enableMealSelection && (
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                          gap: "0.75rem",
+                          paddingTop: "0.5rem",
+                          borderTop: "1px dashed rgba(212, 175, 55, 0.35)",
+                        }}
+                      >
+                        <div>
+                          <label
+                            htmlFor="primary-meal-select"
+                            style={{
+                              display: "block",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              color: "#4a3e3d",
+                              marginBottom: "0.25rem",
+                            }}
+                          >
+                            🍽️ {dict.mealType}
+                          </label>
+                          <select
+                            id="primary-meal-select"
+                            value={primaryMeal.meal}
+                            onChange={(e) =>
+                              setPrimaryMeal((prev) => ({ ...prev, meal: e.target.value }))
+                            }
+                            style={{
+                              width: "100%",
+                              padding: "0.55rem 0.75rem",
+                              borderRadius: "0.5rem",
+                              border: "1px solid rgba(212, 175, 55, 0.4)",
+                              background: "#FFFDF9",
+                              fontSize: "0.85rem",
+                              color: "#2C1810",
+                            }}
+                          >
+                            {customMenuOptions && customMenuOptions.length > 0
+                              ? customMenuOptions
+                                  .filter((opt) => opt.enabled)
+                                  .map((opt) => (
+                                    <option key={opt.id} value={opt.id}>
+                                      {opt.icon ? `${opt.icon} ` : ""}{opt.name}
+                                    </option>
+                                  ))
+                              : Object.entries(dict.options).map(([optKey, optText]) => (
+                                  <option key={optKey} value={optKey}>
+                                    {optText}
+                                  </option>
+                                ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="primary-allergy-input"
+                            style={{
+                              display: "block",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              color: "#4a3e3d",
+                              marginBottom: "0.25rem",
+                            }}
+                          >
+                            ⚠️ {dict.allergiesLabel}
+                          </label>
+                          <input
+                            id="primary-allergy-input"
+                            type="text"
+                            placeholder={dict.allergiesPlaceholder}
+                            value={primaryMeal.allergies}
+                            onChange={(e) =>
+                              setPrimaryMeal((prev) => ({ ...prev, allergies: e.target.value }))
+                            }
+                            style={{
+                              width: "100%",
+                              padding: "0.55rem 0.75rem",
+                              borderRadius: "0.5rem",
+                              border: "1px solid rgba(212, 175, 55, 0.35)",
+                              background: "#FFFDF9",
+                              fontSize: "0.85rem",
+                              color: "#2C1810",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    {(
-                      isPlusOneInvitation
-                        ? [
-                            invitation.displayName,
-                            ...(plusOneSelected === "yes"
-                              ? [plusOneName.trim() || `${(mealLabels[locale] || mealLabels.en).guestHeader} 2`]
-                              : []),
-                          ]
-                        : isMultiGuestParty
-                        ? [
-                            invitation.displayName,
-                            ...Array.from({ length: Math.max(0, attendeeCount - 1) }, (_, i) => {
-                              const lines = guestNames.split("\n").map((n) => n.trim()).filter(Boolean);
-                              return lines[i] || `${(mealLabels[locale] || mealLabels.en).guestHeader} ${i + 2}`;
-                            }),
-                          ]
-                        : [invitation.displayName]
-                    ).map((guestTitle, idx) => {
-                      const dict = mealLabels[locale] || mealLabels.en;
-                      const currentMeal = meals[idx]?.meal || "classic";
-                      const currentAllergies = meals[idx]?.allergies || "";
+                  {/* Cards 2..N: Additional Invited Guests */}
+                  {Array.from(
+                    { length: Math.max(0, (isMultiSeatParty ? invitedAttendingCount : 1) - 1) },
+                    (_, i) => {
+                      const guestNum = i + 2;
+                      const gName = additionalGuestNames[i] || "";
+                      const gMeal = additionalMeals[i]?.meal || "classic";
+                      const gAllergies = additionalMeals[i]?.allergies || "";
 
                       return (
                         <div
-                          key={idx}
+                          key={`additional-guest-${i}`}
                           style={{
-                            padding: "0.85rem 1rem",
-                            borderRadius: "0.75rem",
-                            background: "rgba(247, 244, 239, 0.8)",
-                            border: "1px solid rgba(140, 40, 54, 0.15)",
+                            padding: "1.25rem",
+                            borderRadius: "0.9rem",
+                            background: "rgba(255, 255, 255, 0.85)",
+                            backdropFilter: "blur(6px)",
+                            border: "1px solid rgba(212, 175, 55, 0.45)",
+                            boxShadow: "0 4px 18px rgba(0, 0, 0, 0.04)",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.9rem",
                           }}
                         >
                           <div
                             style={{
-                              fontWeight: 600,
-                              fontSize: "0.92rem",
-                              color: "#8C2836",
-                              marginBottom: "0.5rem",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              flexWrap: "wrap",
+                              gap: "0.5rem",
                             }}
                           >
-                            👤 {guestTitle}
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                              <span style={{ fontSize: "1.15rem" }}>👤</span>
+                              <span
+                                style={{
+                                  fontFamily: "'Cinzel', serif",
+                                  fontWeight: 600,
+                                  fontSize: "1rem",
+                                  color: "#2C1810",
+                                }}
+                              >
+                                {t("guestNumber", { number: guestNum })}
+                              </span>
+                            </div>
+                            <span
+                              style={{
+                                fontSize: "0.72rem",
+                                padding: "0.2rem 0.6rem",
+                                borderRadius: "999px",
+                                background: "rgba(212, 175, 55, 0.15)",
+                                color: "#725816",
+                                fontWeight: 600,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.05em",
+                              }}
+                            >
+                              {locale === "es" ? "Invitado Confirmado" : locale === "de" ? "Eingeladener Gast" : locale === "hu" ? "Meghívott Vendég" : "Invited Guest"}
+                            </span>
                           </div>
 
-                          <div style={{ marginBottom: "0.5rem" }}>
+                          <div className="field-group">
                             <label
-                              htmlFor={`meal-select-${idx}`}
+                              htmlFor={`guest-name-${i}`}
+                              style={{ fontWeight: 600, fontSize: "0.85rem", color: "#4a3e3d" }}
+                            >
+                              {t("confirmGuestNameLabel")} <span style={{ color: "#8C2836" }}>*</span>
+                            </label>
+                            <input
+                              id={`guest-name-${i}`}
+                              type="text"
+                              autoComplete="off"
+                              placeholder={t("confirmGuestNamePlaceholder")}
+                              value={gName}
+                              onChange={(e) => handleAdditionalNameChange(i, e.target.value)}
+                              required
+                              style={{
+                                background: "#FFFDF9",
+                                border: "1px solid rgba(212, 175, 55, 0.4)",
+                                borderRadius: "0.5rem",
+                                padding: "0.6rem 0.75rem",
+                                fontSize: "0.95rem",
+                                color: "#2C1810",
+                              }}
+                            />
+                          </div>
+
+                          {enableMealSelection && (
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                                gap: "0.75rem",
+                                paddingTop: "0.5rem",
+                                borderTop: "1px dashed rgba(212, 175, 55, 0.35)",
+                              }}
+                            >
+                              <div>
+                                <label
+                                  htmlFor={`guest-meal-${i}`}
+                                  style={{
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    fontWeight: 600,
+                                    color: "#4a3e3d",
+                                    marginBottom: "0.25rem",
+                                  }}
+                                >
+                                  🍽️ {dict.mealType}
+                                </label>
+                                <select
+                                  id={`guest-meal-${i}`}
+                                  value={gMeal}
+                                  onChange={(e) => handleAdditionalMealChange(i, e.target.value)}
+                                  style={{
+                                    width: "100%",
+                                    padding: "0.55rem 0.75rem",
+                                    borderRadius: "0.5rem",
+                                    border: "1px solid rgba(212, 175, 55, 0.4)",
+                                    background: "#FFFDF9",
+                                    fontSize: "0.85rem",
+                                    color: "#2C1810",
+                                  }}
+                                >
+                                  {customMenuOptions && customMenuOptions.length > 0
+                                    ? customMenuOptions
+                                        .filter((opt) => opt.enabled)
+                                        .map((opt) => (
+                                          <option key={opt.id} value={opt.id}>
+                                            {opt.icon ? `${opt.icon} ` : ""}{opt.name}
+                                          </option>
+                                        ))
+                                    : Object.entries(dict.options).map(([optKey, optText]) => (
+                                        <option key={optKey} value={optKey}>
+                                          {optText}
+                                        </option>
+                                      ))}
+                                </select>
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor={`guest-allergy-${i}`}
+                                  style={{
+                                    display: "block",
+                                    fontSize: "0.8rem",
+                                    fontWeight: 600,
+                                    color: "#4a3e3d",
+                                    marginBottom: "0.25rem",
+                                  }}
+                                >
+                                  ⚠️ {dict.allergiesLabel}
+                                </label>
+                                <input
+                                  id={`guest-allergy-${i}`}
+                                  type="text"
+                                  placeholder={dict.allergiesPlaceholder}
+                                  value={gAllergies}
+                                  onChange={(e) => handleAdditionalAllergiesChange(i, e.target.value)}
+                                  style={{
+                                    width: "100%",
+                                    padding: "0.55rem 0.75rem",
+                                    borderRadius: "0.5rem",
+                                    border: "1px solid rgba(212, 175, 55, 0.35)",
+                                    background: "#FFFDF9",
+                                    fontSize: "0.85rem",
+                                    color: "#2C1810",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
+
+                  {/* Plus-One Companion Card (if plusOneAllowed & plusOneSelected === "yes") */}
+                  {hasPlusOneOption && plusOneSelected === "yes" && (
+                    <div
+                      style={{
+                        padding: "1.25rem",
+                        borderRadius: "0.9rem",
+                        background: "rgba(255, 255, 255, 0.88)",
+                        backdropFilter: "blur(6px)",
+                        border: "1px solid rgba(140, 40, 54, 0.35)",
+                        boxShadow: "0 4px 18px rgba(140, 40, 54, 0.06)",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.9rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.45rem" }}>
+                          <span style={{ fontSize: "1.15rem" }}>✨</span>
+                          <span
+                            style={{
+                              fontFamily: "'Cinzel', serif",
+                              fontWeight: 600,
+                              fontSize: "1rem",
+                              color: "#8C2836",
+                            }}
+                          >
+                            {t("companionGuest")}
+                          </span>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: "0.72rem",
+                            padding: "0.2rem 0.6rem",
+                            borderRadius: "999px",
+                            background: "rgba(140, 40, 54, 0.1)",
+                            color: "#8C2836",
+                            fontWeight: 600,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.05em",
+                          }}
+                        >
+                          +1 Companion
+                        </span>
+                      </div>
+
+                      <div className="field-group">
+                        <label
+                          htmlFor="plus-one-name-input"
+                          style={{ fontWeight: 600, fontSize: "0.85rem", color: "#4a3e3d" }}
+                        >
+                          {t("confirmGuestNameLabel")} <span style={{ color: "#8C2836" }}>*</span>
+                        </label>
+                        <input
+                          id="plus-one-name-input"
+                          type="text"
+                          autoComplete="off"
+                          placeholder={t("confirmGuestNamePlaceholder")}
+                          value={plusOneName}
+                          onChange={(e) => setPlusOneName(e.target.value)}
+                          required
+                          style={{
+                            background: "#FFFDF9",
+                            border: "1px solid rgba(140, 40, 54, 0.4)",
+                            borderRadius: "0.5rem",
+                            padding: "0.6rem 0.75rem",
+                            fontSize: "0.95rem",
+                            color: "#2C1810",
+                          }}
+                        />
+                      </div>
+
+                      {enableMealSelection && (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                            gap: "0.75rem",
+                            paddingTop: "0.5rem",
+                            borderTop: "1px dashed rgba(140, 40, 54, 0.25)",
+                          }}
+                        >
+                          <div>
+                            <label
+                              htmlFor="companion-meal-select"
                               style={{
                                 display: "block",
                                 fontSize: "0.8rem",
-                                fontWeight: 500,
+                                fontWeight: 600,
                                 color: "#4a3e3d",
                                 marginBottom: "0.25rem",
                               }}
                             >
-                              {dict.mealType}
+                              🍽️ {dict.mealType}
                             </label>
                             <select
-                              id={`meal-select-${idx}`}
-                              value={currentMeal}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setMeals((prev) => ({
-                                  ...prev,
-                                  [idx]: {
-                                    meal: val,
-                                    allergies: prev[idx]?.allergies || "",
-                                  },
-                                }));
-                              }}
+                              id="companion-meal-select"
+                              value={companionMeal.meal}
+                              onChange={(e) =>
+                                setCompanionMeal((prev) => ({ ...prev, meal: e.target.value }))
+                              }
                               style={{
                                 width: "100%",
-                                padding: "0.5rem 0.75rem",
+                                padding: "0.55rem 0.75rem",
                                 borderRadius: "0.5rem",
-                                border: "1px solid #d4af37",
-                                background: "#fff",
-                                fontSize: "0.875rem",
+                                border: "1px solid rgba(140, 40, 54, 0.35)",
+                                background: "#FFFDF9",
+                                fontSize: "0.85rem",
                                 color: "#2C1810",
                               }}
                             >
@@ -596,48 +1090,42 @@ export function RsvpForm({
 
                           <div>
                             <label
-                              htmlFor={`allergy-input-${idx}`}
+                              htmlFor="companion-allergy-input"
                               style={{
                                 display: "block",
-                                fontSize: "0.78rem",
-                                color: "#6b5b52",
+                                fontSize: "0.8rem",
+                                fontWeight: 600,
+                                color: "#4a3e3d",
                                 marginBottom: "0.25rem",
                               }}
                             >
-                              {dict.allergiesLabel}
+                              ⚠️ {dict.allergiesLabel}
                             </label>
                             <input
+                              id="companion-allergy-input"
                               type="text"
-                              id={`allergy-input-${idx}`}
                               placeholder={dict.allergiesPlaceholder}
-                              value={currentAllergies}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setMeals((prev) => ({
-                                  ...prev,
-                                  [idx]: {
-                                    meal: prev[idx]?.meal || "classic",
-                                    allergies: val,
-                                  },
-                                }));
-                              }}
+                              value={companionMeal.allergies}
+                              onChange={(e) =>
+                                setCompanionMeal((prev) => ({ ...prev, allergies: e.target.value }))
+                              }
                               style={{
                                 width: "100%",
-                                padding: "0.4rem 0.65rem",
+                                padding: "0.55rem 0.75rem",
                                 borderRadius: "0.5rem",
-                                border: "1px solid #d5cec5",
-                                background: "#fff",
-                                fontSize: "0.82rem",
+                                border: "1px solid rgba(140, 40, 54, 0.25)",
+                                background: "#FFFDF9",
+                                fontSize: "0.85rem",
                                 color: "#2C1810",
                               }}
                             />
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           )}
 

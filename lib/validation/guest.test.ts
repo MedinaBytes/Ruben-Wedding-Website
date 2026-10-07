@@ -24,6 +24,25 @@ describe("guest request validation", () => {
 
     expect(allowed.success).toBe(true);
     expect(denied).toEqual({ success: false, reason: "guest_limit" });
+
+    // maxGuests is base invited count; plusOne allows 1 additional companion
+    const singleWithPlusOne = validateRsvpForInvitation(
+      { attendanceStatus: "yes", attendeeCount: 2, guestNames: ["Companion"], language: "en" },
+      { maxGuests: 1, plusOneAllowed: true },
+    );
+    expect(singleWithPlusOne.success).toBe(true);
+
+    const singleWithPlusOneExceeded = validateRsvpForInvitation(
+      { attendanceStatus: "yes", attendeeCount: 3, guestNames: ["Guest 2", "Guest 3"], language: "en" },
+      { maxGuests: 1, plusOneAllowed: true },
+    );
+    expect(singleWithPlusOneExceeded).toEqual({ success: false, reason: "guest_limit" });
+
+    const multiGuestNoPlusOne = validateRsvpForInvitation(
+      { attendanceStatus: "yes", attendeeCount: 3, guestNames: ["Guest 2", "Guest 3"], language: "en" },
+      { maxGuests: 3, plusOneAllowed: false },
+    );
+    expect(multiGuestNoPlusOne.success).toBe(true);
   });
 
   it("accepts up to three song requests and rejects a fourth", () => {

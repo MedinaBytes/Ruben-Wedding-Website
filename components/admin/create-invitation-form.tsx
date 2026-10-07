@@ -18,21 +18,11 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
 
   function handlePlusOneToggle(checked: boolean) {
     setPlusOneAllowed(checked);
-    if (checked && maxGuests < 2) {
-      setMaxGuests(2);
-    } else if (!checked && maxGuests === 2) {
-      setMaxGuests(1);
-    }
   }
 
   function handleMaxGuestsChange(val: number) {
     const num = isNaN(val) ? 1 : Math.max(1, Math.min(20, val));
     setMaxGuests(num);
-    if (num >= 2 && num === 2 && !plusOneAllowed) {
-      setPlusOneAllowed(true);
-    } else if (num === 1 && plusOneAllowed) {
-      setPlusOneAllowed(false);
-    }
   }
 
   async function handleSubmit(formData: FormData) {
@@ -151,10 +141,10 @@ export function CreateInvitationForm({ labels }: { labels: Record<string, string
               </label>
               <span style={{ display: "block", fontSize: "0.78rem", color: "#776A6C", marginTop: "0.35rem", lineHeight: 1.3 }}>
                 {plusOneAllowed
-                  ? `✓ Allows 1 guest + 1 companion (${maxGuests} total)`
+                  ? `✓ ${maxGuests} invited guest${maxGuests > 1 ? "s" : ""} + 1 companion (${maxGuests + 1} total seats)`
                   : maxGuests > 1
-                    ? `Group/family invitation for ${maxGuests} named guests`
-                    : "Solo invitation (single attendee)"}
+                    ? `Group/family invitation for ${maxGuests} named guests (${maxGuests} seats)`
+                    : "Solo invitation (single named attendee, 1 seat)"}
               </span>
             </div>
           </div>

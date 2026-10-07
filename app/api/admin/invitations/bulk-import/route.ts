@@ -96,13 +96,10 @@ export async function POST(request: Request) {
 
     const token = generateInvitationToken();
     const tokenHash = hashInvitationToken(token);
-    let maxGuests = Math.min(20, Math.max(1, Number(row.maxGuests) || 1));
+    const maxGuests = Math.min(20, Math.max(1, Number(row.maxGuests) || 1));
     const plusOneAllowed = typeof row.plusOneAllowed === "boolean"
       ? row.plusOneAllowed
       : String(row.plusOneAllowed || "").toLowerCase() === "true" || String(row.plusOneAllowed || "") === "1";
-    if (plusOneAllowed && maxGuests < 2) {
-      maxGuests = 2;
-    }
 
     const groupName = row.groupName?.trim() || null;
     const resolvedLang = resolveLocale(row.language);

@@ -79,12 +79,9 @@ export function BulkImportForm() {
       const whatsapp = whatsappIdx !== -1 ? parts[whatsappIdx] : undefined;
       const phone = phoneIdx !== -1 ? parts[phoneIdx] : undefined;
       const lang = langIdx !== -1 && parts[langIdx] ? parts[langIdx] : "en";
-      let maxGuests = guestsIdx !== -1 ? parseInt(parts[guestsIdx], 10) || 1 : 1;
+      const maxGuests = guestsIdx !== -1 ? parseInt(parts[guestsIdx], 10) || 1 : 1;
       const plusOneRaw = plusOneIdx !== -1 ? parts[plusOneIdx]?.toLowerCase() : "";
       const plusOne = plusOneRaw === "true" || plusOneRaw === "1" || plusOneRaw === "yes" || plusOneRaw === "si";
-      if (plusOne && maxGuests < 2) {
-        maxGuests = 2;
-      }
       const group = groupIdx !== -1 ? parts[groupIdx] : undefined;
       const personalMessage = msgIdx !== -1 ? parts[msgIdx] : undefined;
 
@@ -141,9 +138,10 @@ export function BulkImportForm() {
     const csvContent =
       "display_name,email,whatsapp,language,max_guests,plus_one_allowed,group_name,personal_message\n" +
       "Familia Quijada Sanchez,maria.quijada@example.com,+34612345678,es,4,false,Family Ruben,Nos emociona compartir este viaje con ustedes.\n" +
-      "Christian & Guest,christian.weber@example.at,+436641234567,de-AT,2,true,Friends Vienna,Wir freuen uns sehr auf ein unvergessliches Fest!\n" +
+      "Christian Weber,christian.weber@example.at,+436641234567,de-AT,1,true,Friends Vienna,Wir freuen uns sehr auf ein unvergessliches Fest!\n" +
+      "Sophie & Marcus,sophie.m@example.at,+436601234567,de-AT,2,false,Friends Vienna,Wir freuen uns sehr auf das gemeinsame Fest!\n" +
       "Mate Kovacs,mate.kovacs@example.hu,+36301234567,hu,1,false,Friends Hungary,Szeretettel várunk Bécsben!\n" +
-      "Sarah Jenkins,sarah.j@example.com,+447911123456,en,2,true,International Friends,Looking forward to celebrating together in Vienna!\n";
+      "Sarah Jenkins,sarah.j@example.com,+447911123456,en,1,true,International Friends,Looking forward to celebrating together in Vienna!\n";
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -249,12 +247,15 @@ export function BulkImportForm() {
             />
           </label>
         </div>
+        <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.78rem", color: "#6A5D60", lineHeight: 1.4 }}>
+          💡 <strong>Capacity logic</strong>: <code>max_guests</code> is the count of invited guests (e.g. <code>1</code> for solo, <code>2</code> for a couple, <code>4</code> for a family). Setting <code>plus_one_allowed</code> to <code>true</code> enables the guest to register 1 additional companion (+1) upon RSVP.
+        </p>
         <textarea
           id="csv-input"
           rows={7}
           value={csvContent}
           onChange={(e) => handleParse(e.target.value)}
-          placeholder={`display_name,email,whatsapp,language,max_guests,plus_one_allowed,group_name\nFamilia Rodriguez,diego@example.com,+34612345678,es,4,false,Family Ruben\nChristian & Guest,christian@example.at,+436641234567,de-AT,2,true,Friends Vienna`}
+          placeholder={`display_name,email,whatsapp,language,max_guests,plus_one_allowed,group_name\nFamilia Rodriguez,diego@example.com,+34612345678,es,4,false,Family Ruben\nChristian Weber,christian@example.at,+436641234567,de-AT,1,true,Friends Vienna\nSophie & Marcus,sophie@example.at,+436601234567,de-AT,2,false,Friends Vienna`}
           style={{
             width: "100%",
             fontFamily: "monospace",
@@ -272,29 +273,35 @@ export function BulkImportForm() {
             <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "#55644E", margin: "0 0 0.5rem 0" }}>
               ✓ Ready to import {parsedRows.length} guest invitations:
             </p>
-            <div style={{ maxHeight: "220px", overflowY: "auto", border: "1px solid #EBE4DE", borderRadius: "6px" }}>
+            <div style={{ maxHeight: "240px", overflowY: "auto", border: "1px solid #EBE4DE", borderRadius: "6px" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
                 <thead>
                   <tr style={{ background: "#F8F5F2", borderBottom: "1px solid #EBE4DE" }}>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>Name</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>Email</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>WhatsApp / Phone</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>Group</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>Seats</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>+1</th>
-                    <th style={{ padding: "0.4rem 0.6rem" }}>Lang</th>
+                    <th style={{ padding: "0.45rem 0.6rem" }}>Name</th>
+                    <th style={{ padding: "0.45rem 0.6rem" }}>Email</th>
+                    <th style={{ padding: "0.45rem 0.6rem" }}>WhatsApp / Phone</th>
+                    <th style={{ padding: "0.45rem 0.6rem" }}>Group</th>
+                    <th style={{ padding: "0.45rem 0.6rem", textAlign: "center" }}>Invited Seats</th>
+                    <th style={{ padding: "0.45rem 0.6rem", textAlign: "center" }}>Plus-One (+1)</th>
+                    <th style={{ padding: "0.45rem 0.6rem", textAlign: "center" }}>Total Max</th>
+                    <th style={{ padding: "0.45rem 0.6rem" }}>Lang</th>
                   </tr>
                 </thead>
                 <tbody>
                   {parsedRows.map((r, i) => (
                     <tr key={i} style={{ borderBottom: "1px solid #F5EFEB" }}>
-                      <td style={{ padding: "0.4rem 0.6rem", fontWeight: 500 }}>{r.displayName}</td>
-                      <td style={{ padding: "0.4rem 0.6rem", color: "#6A5D60" }}>{r.email || "—"}</td>
-                      <td style={{ padding: "0.4rem 0.6rem", color: "#6A5D60" }}>{r.whatsapp || r.phone || "—"}</td>
-                      <td style={{ padding: "0.4rem 0.6rem", color: "#776A6C" }}>{r.groupName || "—"}</td>
-                      <td style={{ padding: "0.4rem 0.6rem" }}>{r.maxGuests}</td>
-                      <td style={{ padding: "0.4rem 0.6rem" }}>{r.plusOneAllowed ? "Yes" : "No"}</td>
-                      <td style={{ padding: "0.4rem 0.6rem", textTransform: "uppercase" }}>{r.language}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", fontWeight: 500 }}>{r.displayName}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", color: "#6A5D60" }}>{r.email || "—"}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", color: "#6A5D60" }}>{r.whatsapp || r.phone || "—"}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", color: "#776A6C" }}>{r.groupName || "—"}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", textAlign: "center", fontWeight: 600 }}>{r.maxGuests}</td>
+                      <td style={{ padding: "0.45rem 0.6rem", textAlign: "center", color: r.plusOneAllowed ? "#1B5E20" : "#8C7E80" }}>
+                        {r.plusOneAllowed ? "✓ +1 Companion" : "—"}
+                      </td>
+                      <td style={{ padding: "0.45rem 0.6rem", textAlign: "center", fontWeight: 700, color: "#8C2836" }}>
+                        {r.maxGuests + (r.plusOneAllowed ? 1 : 0)}
+                      </td>
+                      <td style={{ padding: "0.45rem 0.6rem", textTransform: "uppercase" }}>{r.language}</td>
                     </tr>
                   ))}
                 </tbody>
