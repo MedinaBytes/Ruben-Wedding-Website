@@ -431,7 +431,7 @@ export function EnvelopeIntro({
         </div>
 
         {/* Guest Address Calligraphy on Envelope when closed */}
-        {enableCalligraphy && step === "idle" && (
+        {enableCalligraphy && token !== "demo" && step === "idle" && (
           <motion.div
             className="envelope-calligraphy"
             initial={{ opacity: 0, y: 6 }}

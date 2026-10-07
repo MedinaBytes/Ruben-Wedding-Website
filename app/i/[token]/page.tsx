@@ -100,10 +100,15 @@ export default async function InvitationIntroPage({
 
   const { resilientStore } = await import("@/lib/storage/resilient-store");
   const siteSettings = resilientStore.getSettings();
-  const enableCalligraphy = siteSettings.enableEnvelopeCalligraphy !== false;
+  const isDemo = token === "demo";
+  const enableCalligraphy = !isDemo && siteSettings.enableEnvelopeCalligraphy !== false;
 
-  const greeting = (token === "demo" ? null : invitation.greeting_override)
-    ?? intro("greeting", { name: invitation.display_name });
+  const displayName = isDemo
+    ? invitation.display_name.replace(/\s*\(Demo\)/i, "").trim()
+    : invitation.display_name;
+
+  const greeting = (isDemo ? null : invitation.greeting_override)
+    ?? intro("greeting", { name: displayName });
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -113,7 +118,7 @@ export default async function InvitationIntroPage({
             token={token}
             invitationId={invitation.id}
             currentLocale={locale}
-            displayName={invitation.display_name}
+            displayName={displayName}
             greeting={greeting}
             dateLabel={getWeddingDateLabel(locale, true)}
             cityLabel={weddingConfig.event.city}

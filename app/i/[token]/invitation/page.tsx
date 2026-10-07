@@ -127,12 +127,17 @@ export default async function MainInvitationPage({
     hu: "Végtelenül boldogok lennénk, ha velünk ünnepelnéd ezt a felejthetetlen napot Bécsben!",
   };
 
-  const personalMessage = token === "demo"
+  const isDemo = token === "demo";
+  const personalMessage = isDemo
     ? demoPersonalMessages[locale]
     : invitation.personal_message;
 
-  const greeting = (token === "demo" ? null : invitation.greeting_override)
-    ?? intro("greeting", { name: invitation.display_name });
+  const displayName = isDemo
+    ? invitation.display_name.replace(/\s*\(Demo\)/i, "").trim()
+    : invitation.display_name;
+
+  const greeting = (isDemo ? null : invitation.greeting_override)
+    ?? intro("greeting", { name: displayName });
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -224,7 +229,7 @@ export default async function MainInvitationPage({
             invitation={{
               id: invitation.id,
               token,
-              displayName: invitation.display_name,
+              displayName,
               maxGuests: invitation.max_guests,
               plusOneAllowed: invitation.plus_one_allowed,
               locale,
