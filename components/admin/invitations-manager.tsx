@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
 import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction } from "@/app/actions/admin-invitations";
-import { sendInvitationEmailAction } from "@/app/actions/admin-email";
+import { sendInvitationEmailAction, sendBatchInvitationEmailsAction, type BatchInvitationEmailResult } from "@/app/actions/admin-email";
 import { buildWhatsAppInvitationLink } from "@/lib/whatsapp/wa-link";
 
 export interface InvitationRow {
@@ -40,6 +40,12 @@ export function InvitationsManager({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showCreate, setShowCreate] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Batch Selection State
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchModalOpen, setBatchModalOpen] = useState(false);
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [batchResult, setBatchResult] = useState<BatchInvitationEmailResult | null>(null);
 
   // QR Modal State
   const [activeQr, setActiveQr] = useState<{
@@ -103,6 +109,51 @@ export function InvitationsManager({
       });
     } finally {
       setSendingEmail(false);
+    }
+  }
+
+  function toggleSelectAllFiltered() {
+    if (selectedIds.size === filtered.length && filtered.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((i) => i.id)));
+    }
+  }
+
+  function selectAllWithEmail() {
+    const withEmail = filtered.filter((i) => i.email && i.email.includes("@")).map((i) => i.id);
+    setSelectedIds(new Set(withEmail));
+  }
+
+  function toggleSelectRow(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  async function handleExecuteBatchEmail(dryRun: boolean) {
+    if (selectedIds.size === 0) return;
+    if (!dryRun) {
+      const confirmed = confirm(
+        `Are you sure you want to dispatch LIVE invitation emails to ${selectedIds.size} guests?\n\nEach invitation will be formatted and delivered strictly in the guest's assigned invitation language.`
+      );
+      if (!confirmed) return;
+    }
+
+    setBatchLoading(true);
+    try {
+      const res = await sendBatchInvitationEmailsAction({
+        invitationIds: Array.from(selectedIds),
+        dryRun,
+      });
+      setBatchResult(res);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : "Error executing batch email operation.");
+    } finally {
+      setBatchLoading(false);
     }
   }
 
@@ -337,7 +388,7 @@ export function InvitationsManager({
       )}
 
       {/* Search and Filters Bar */}
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.25rem", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "0.75rem", alignItems: "center" }}>
         <input
           type="search"
           placeholder="Search by guest or group name..."
@@ -370,6 +421,61 @@ export function InvitationsManager({
           <option value="active">Active Only</option>
           <option value="revoked">Revoked Only</option>
         </select>
+
+        {selectedIds.size > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setBatchResult(null);
+              setBatchModalOpen(true);
+            }}
+            style={{
+              background: "#8C2836",
+              color: "#FFFFFF",
+              border: 0,
+              borderRadius: "6px",
+              padding: "0.55rem 1rem",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(140, 40, 54, 0.25)",
+            }}
+          >
+            ✉ Batch Email ({selectedIds.size})
+          </button>
+        )}
+      </div>
+
+      {/* Quick Selection Toolbar */}
+      <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", marginBottom: "1.25rem", fontSize: "0.8rem", color: "#6A5D60" }}>
+        <span>Quick select:</span>
+        <button
+          type="button"
+          onClick={selectAllWithEmail}
+          style={{ background: "none", border: "none", color: "#8C2836", textDecoration: "underline", cursor: "pointer", fontSize: "0.8rem", padding: 0 }}
+        >
+          All with email ({filtered.filter((i) => i.email && i.email.includes("@")).length})
+        </button>
+        <span>·</span>
+        <button
+          type="button"
+          onClick={toggleSelectAllFiltered}
+          style={{ background: "none", border: "none", color: "#8C2836", textDecoration: "underline", cursor: "pointer", fontSize: "0.8rem", padding: 0 }}
+        >
+          {selectedIds.size === filtered.length && filtered.length > 0 ? "Deselect all" : `All filtered (${filtered.length})`}
+        </button>
+        {selectedIds.size > 0 && (
+          <>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={() => setSelectedIds(new Set())}
+              style={{ background: "none", border: "none", color: "#6A5D60", textDecoration: "underline", cursor: "pointer", fontSize: "0.8rem", padding: 0 }}
+            >
+              Clear selection ({selectedIds.size})
+            </button>
+          </>
+        )}
       </div>
 
       {/* Table */}
@@ -377,6 +483,14 @@ export function InvitationsManager({
         <table style={{ width: "100%", minWidth: "680px", borderCollapse: "collapse", textAlign: "left", fontSize: "0.88rem" }}>
           <thead>
             <tr style={{ background: "#F7F3EF", borderBottom: "1px solid #E4DBD3", color: "#6A5E60", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <th style={{ width: "38px", padding: "0.75rem 0.5rem", textAlign: "center" }}>
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                  onChange={toggleSelectAllFiltered}
+                  aria-label="Select all filtered guests"
+                />
+              </th>
               <th style={{ padding: "0.75rem 1rem" }}>Guest Name</th>
               <th style={{ padding: "0.75rem 1rem" }}>Group</th>
               <th style={{ padding: "0.75rem 1rem" }}>Guests</th>
@@ -389,13 +503,21 @@ export function InvitationsManager({
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: "2.5rem", textAlign: "center", color: "#8E7F81" }}>
+                <td colSpan={8} style={{ padding: "2.5rem", textAlign: "center", color: "#8E7F81" }}>
                   No invitations match your search.
                 </td>
               </tr>
             ) : (
               filtered.map((inv) => (
-                <tr key={inv.id} style={{ borderBottom: "1px solid #EFEAE5" }}>
+                <tr key={inv.id} style={{ borderBottom: "1px solid #EFEAE5", background: selectedIds.has(inv.id) ? "#FDF8F5" : undefined }}>
+                  <td style={{ width: "38px", padding: "0.85rem 0.5rem", textAlign: "center" }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(inv.id)}
+                      onChange={() => toggleSelectRow(inv.id)}
+                      aria-label={`Select ${inv.displayName}`}
+                    />
+                  </td>
                   <td style={{ padding: "0.85rem 1rem", fontWeight: 600, color: "#2B2425" }}>
                     <div>{inv.displayName}</div>
                     {(inv.email || inv.whatsapp || inv.phone) && (
@@ -812,6 +934,157 @@ export function InvitationsManager({
                 }}
               >
                 {sendingEmail ? "Dispatching..." : "Send Invitation ✈"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Email Modal */}
+      {batchModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.45)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1.25rem",
+          }}
+          onClick={() => {
+            if (!batchLoading) setBatchModalOpen(false);
+          }}
+        >
+          <div
+            style={{
+              background: "#FAF7F2",
+              borderRadius: "14px",
+              padding: "2rem",
+              maxWidth: "600px",
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.22)",
+              border: "1px solid #DFD5C8",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+              <div style={{ fontSize: "2rem", marginBottom: "0.25rem" }}>✉</div>
+              <h3 style={{ fontFamily: "var(--font-display, serif)", fontSize: "1.4rem", margin: "0 0 0.35rem 0", color: "#2B2425" }}>
+                Batch Invitation Email Dispatch
+              </h3>
+              <p style={{ margin: 0, color: "#6A5D60", fontSize: "0.85rem" }}>
+                Send or preview luxury envelope invitations in batch, automatically localized per guest.
+              </p>
+            </div>
+
+            {/* Language Breakdown & Multi-Language Guarantee */}
+            <div style={{ background: "#FFFFFF", padding: "1rem", borderRadius: "8px", border: "1px solid #E6DCD2", marginBottom: "1.25rem", fontSize: "0.85rem" }}>
+              <div style={{ fontWeight: 600, color: "#2B2425", marginBottom: "0.5rem" }}>
+                Selected Guests: {selectedIds.size}
+              </div>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+                <span style={{ background: "#F5EFE7", padding: "0.25rem 0.6rem", borderRadius: "4px", fontSize: "0.8rem" }}>
+                  🇪🇸 Spanish: {items.filter((i) => selectedIds.has(i.id) && (i.language || "es").toLowerCase().startsWith("es")).length}
+                </span>
+                <span style={{ background: "#F5EFE7", padding: "0.25rem 0.6rem", borderRadius: "4px", fontSize: "0.8rem" }}>
+                  🇩🇪 German: {items.filter((i) => selectedIds.has(i.id) && (i.language || "").toLowerCase().startsWith("de")).length}
+                </span>
+                <span style={{ background: "#F5EFE7", padding: "0.25rem 0.6rem", borderRadius: "4px", fontSize: "0.8rem" }}>
+                  🇭🇺 Hungarian: {items.filter((i) => selectedIds.has(i.id) && (i.language || "").toLowerCase().startsWith("hu")).length}
+                </span>
+                <span style={{ background: "#F5EFE7", padding: "0.25rem 0.6rem", borderRadius: "4px", fontSize: "0.8rem" }}>
+                  🇬🇧 English: {items.filter((i) => selectedIds.has(i.id) && !["es", "de", "hu"].some((l) => (i.language || "").toLowerCase().startsWith(l))).length}
+                </span>
+              </div>
+              <div style={{ fontSize: "0.8rem", color: "#2E7D32", display: "flex", alignItems: "flex-start", gap: "0.4rem", lineHeight: 1.4 }}>
+                <span style={{ fontWeight: 700 }}>✓</span>
+                <span>
+                  <strong>Multi-Language Guarantee:</strong> Each guest receives their invitation email strictly in their assigned invitation language with their personalized greeting and matching royal envelope design.
+                </span>
+              </div>
+            </div>
+
+            {/* Results or Preview Table */}
+            {batchResult && (
+              <div style={{ background: "#FFFFFF", padding: "1rem", borderRadius: "8px", border: "1px solid #E6DCD2", marginBottom: "1.25rem", maxHeight: "240px", overflowY: "auto" }}>
+                <div style={{ fontSize: "0.82rem", fontWeight: 600, marginBottom: "0.5rem", color: batchResult.dryRun ? "#3B612C" : "#8C2836" }}>
+                  {batchResult.dryRun ? "✓ Dry-Run Verification (Safe — No emails sent):" : "✓ Batch Dispatch Results:"}
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.78rem" }}>
+                  {batchResult.processed.map((p) => (
+                    <div key={p.invitationId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.4rem 0.6rem", background: "#FAF7F2", borderRadius: "4px", border: "1px solid #EFEAE5" }}>
+                      <div>
+                        <strong>{p.displayName}</strong> <span style={{ textTransform: "uppercase", fontSize: "0.7rem", color: "#8C2836", fontWeight: 700 }}>[{p.language}]</span>
+                        <div style={{ color: "#6A5D60", fontSize: "0.72rem" }}>{p.subject}</div>
+                      </div>
+                      <span style={{ fontWeight: 600, color: p.status === "sent" || p.status === "ready" ? "#2E7D32" : "#8C2836" }}>
+                        {p.status === "ready" ? "Verified" : p.status === "sent" ? "Sent ✓" : p.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap" }}>
+              <button
+                type="button"
+                disabled={batchLoading}
+                onClick={() => setBatchModalOpen(false)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #D5CBC4",
+                  borderRadius: "6px",
+                  padding: "0.55rem 1rem",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  color: "#544648",
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                disabled={batchLoading}
+                onClick={() => handleExecuteBatchEmail(true)}
+                style={{
+                  background: "#FAF7F2",
+                  border: "1px solid #8C2836",
+                  color: "#8C2836",
+                  borderRadius: "6px",
+                  padding: "0.55rem 1.1rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: batchLoading ? "wait" : "pointer",
+                }}
+              >
+                {batchLoading ? "Checking..." : "Preview / Dry Run Only (Safe)"}
+              </button>
+              <button
+                type="button"
+                disabled={batchLoading}
+                onClick={() => handleExecuteBatchEmail(false)}
+                style={{
+                  background: "#8C2836",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.55rem 1.25rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: batchLoading ? "wait" : "pointer",
+                  boxShadow: "0 2px 8px rgba(140, 40, 54, 0.25)",
+                }}
+              >
+                {batchLoading ? "Dispatching..." : "Send Batch Emails ✈"}
               </button>
             </div>
           </div>

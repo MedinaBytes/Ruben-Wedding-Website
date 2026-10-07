@@ -11,6 +11,7 @@ export interface InvitationEmailTemplateParams {
   maxGuests?: number;
   plusOneAllowed?: boolean;
   siteUrl?: string;
+  personalMessage?: string | null;
 }
 
 export function buildEnvelopeInvitationHtml({
@@ -20,10 +21,12 @@ export function buildEnvelopeInvitationHtml({
   maxGuests = 1,
   plusOneAllowed = false,
   siteUrl = "https://theandyrubenwedding.website",
+  personalMessage,
 }: InvitationEmailTemplateParams): string {
-  const isEs = language === "es" || language.startsWith("es");
-  const isDe = language === "de" || language === "de-AT" || language.startsWith("de");
-  const isHu = language === "hu" || language.startsWith("hu");
+  const normLang = (language || "es").toLowerCase();
+  const isEs = normLang === "es" || normLang.startsWith("es");
+  const isDe = normLang === "de" || normLang.startsWith("de");
+  const isHu = normLang === "hu" || normLang.startsWith("hu");
 
   const cleanSiteUrl = siteUrl.replace(/\/$/, "");
   const sealImageUrl = `${cleanSiteUrl}/orchids/seal-monogram.png`;
@@ -32,6 +35,13 @@ export function buildEnvelopeInvitationHtml({
 
   // Localized texts
   const t = {
+    title: isEs
+      ? "Ruben & Andrea — Boda Real en Viena"
+      : isDe
+        ? "Ruben & Andrea — Kaiserliche Hochzeit in Wien"
+        : isHu
+          ? "Ruben & Andrea — Császári Esküvő Bécsben"
+          : "Ruben & Andrea — Imperial Wedding in Vienna",
     eyebrow: isEs
       ? "ENLACE IMPERIAL · VIENA 2027"
       : isDe
@@ -107,15 +117,43 @@ export function buildEnvelopeInvitationHtml({
           ? "Ez a személyes link kizárólag a Te részedre készült."
           : "This personalized link is private and exclusively created for your party.",
     troubleLink: isEs ? "¿Problemas con el botón? Copia este enlace:" : isDe ? "Link manuell öffnen:" : isHu ? "Közvetlen link:" : "Having trouble with the button? Copy this link:",
+    loveFromVienna: isEs
+      ? "Enviado con amor desde Viena · theandyrubenwedding.website"
+      : isDe
+        ? "Mit Liebe gesendet aus Wien · theandyrubenwedding.website"
+        : isHu
+          ? "Szeretettel küldve Bécsből · theandyrubenwedding.website"
+          : "Sent with love from Vienna · theandyrubenwedding.website",
+    altFlowerSpray: isEs
+      ? "Orquídeas Vienesas"
+      : isDe
+        ? "Wiener Orchideen"
+        : isHu
+          ? "Bécsi orchideák"
+          : "Viennese Orchids",
+    altMonogram: isEs
+      ? "Sello de Cera de Ruben & Andrea"
+      : isDe
+        ? "Wachssiegel von Ruben & Andrea"
+        : isHu
+          ? "Ruben & Andrea Viaszpecsét"
+          : "Ruben & Andrea Wax Seal",
+    altBloom: isEs
+      ? "Orquídea Imperial"
+      : isDe
+        ? "Kaiserliche Orchidee"
+        : isHu
+          ? "Császári orchidea"
+          : "Imperial Orchid",
   };
 
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="${language}">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${normLang}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="format-detection" content="telephone=no" />
-  <title>Ruben &amp; Andrea — Wedding in Vienna</title>
+  <title>${t.title}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #F5EFE7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Georgia, 'Times New Roman', serif; color: #2B2425; -webkit-font-smoothing: antialiased;">
   <!-- Main Outer Container -->
@@ -131,7 +169,7 @@ export function buildEnvelopeInvitationHtml({
               <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
                 <tr>
                   <td align="center">
-                    <img src="${flowerSprayUrl}" width="138" height="105" alt="Orquídeas Vienesas" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 138px; height: auto;" />
+                    <img src="${flowerSprayUrl}" width="138" height="105" alt="${t.altFlowerSpray}" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 138px; height: auto;" />
                   </td>
                 </tr>
               </table>
@@ -176,7 +214,7 @@ export function buildEnvelopeInvitationHtml({
                             <table border="0" cellspacing="0" cellpadding="0" style="border-collapse: separate;">
                               <tr>
                                 <td align="center" valign="middle" style="width: 104px; height: 104px; border-radius: 52px; background: radial-gradient(circle, #55664C 0%, #3F4D38 65%, #2D3728 100%); border: 3px solid #CCA468; box-shadow: 0 8px 24px rgba(45, 55, 40, 0.45); padding: 4px;">
-                                  <img src="${sealImageUrl}" width="88" height="88" alt="Ruben &amp; Andrea Wax Seal" style="display: block; border-radius: 44px; max-width: 88px; height: auto; border: 0;" />
+                                  <img src="${sealImageUrl}" width="88" height="88" alt="${t.altMonogram}" style="display: block; border-radius: 44px; max-width: 88px; height: auto; border: 0;" />
                                 </td>
                               </tr>
                             </table>
@@ -219,7 +257,7 @@ export function buildEnvelopeInvitationHtml({
                           <div style="height: 1px; background: linear-gradient(90deg, transparent, #CCA468);"></div>
                         </td>
                         <td align="center" valign="middle" style="padding: 0 10px; width: 44px;">
-                          <img src="${flowerBloomUrl}" width="36" height="40" alt="Orquídea" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 36px; height: auto;" />
+                          <img src="${flowerBloomUrl}" width="36" height="40" alt="${t.altBloom}" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 36px; height: auto;" />
                         </td>
                         <td valign="middle" style="width: 85px;">
                           <div style="height: 1px; background: linear-gradient(90deg, #CCA468, transparent);"></div>
@@ -229,7 +267,7 @@ export function buildEnvelopeInvitationHtml({
 
                     <!-- Personal Invitation Lead -->
                     <p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.65; color: #43393B; margin: 0 0 16px 0; max-width: 480px;">
-                      ${t.headline}
+                      ${personalMessage ? personalMessage : t.headline}
                     </p>
 
                     <p style="font-size: 13.5px; line-height: 1.6; color: #6E6062; margin: 0 0 28px 0; max-width: 490px;">
@@ -242,7 +280,7 @@ export function buildEnvelopeInvitationHtml({
                         <td align="center" style="padding-bottom: 12px;">
                           <!-- Dainty Orchid Flourish crowning the date -->
                           <div style="margin-bottom: 6px;">
-                            <img src="${flowerSprayUrl}" width="68" height="52" alt="Orchids" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 68px; height: auto; opacity: 0.9;" />
+                            <img src="${flowerSprayUrl}" width="68" height="52" alt="${t.altFlowerSpray}" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 68px; height: auto; opacity: 0.9;" />
                           </div>
                           <div style="font-family: Georgia, serif; font-size: 14px; font-weight: 700; color: #8C2836; letter-spacing: 1px;">
                             ${t.dateText}
@@ -305,7 +343,7 @@ export function buildEnvelopeInvitationHtml({
                 <tr>
                   <td align="center" style="background-color: #F2EBE1; padding: 22px 24px; text-align: center; border-top: 1px solid #DFD5C8; font-size: 11px; color: #7F736E; line-height: 1.5;">
                     <div style="margin-bottom: 10px;">
-                      <img src="${flowerBloomUrl}" width="28" height="31" alt="Orquídea" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 28px; height: auto; opacity: 0.85;" />
+                      <img src="${flowerBloomUrl}" width="28" height="31" alt="${t.altBloom}" style="display: block; border: 0; outline: none; margin: 0 auto; max-width: 28px; height: auto; opacity: 0.85;" />
                     </div>
                     <strong style="color: #4C413D;">Ruben &amp; Andrea Wedding</strong> · Schloss Hetzendorf, Wien<br />
                     ${t.privateNotice}
@@ -319,7 +357,7 @@ export function buildEnvelopeInvitationHtml({
           <!-- Subtle Copyright / Unsubscribe Info -->
           <tr>
             <td align="center" style="padding-top: 18px; font-size: 11px; color: #9A8E90;">
-              Sent with love from Vienna · theandyrubenwedding.website
+              ${t.loveFromVienna}
             </td>
           </tr>
 

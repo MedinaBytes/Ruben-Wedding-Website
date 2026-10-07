@@ -9,6 +9,8 @@ import { isSameOriginMutation } from "@/lib/security/request";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { resolveLocale, type Locale } from "@/lib/wedding-config";
+import { getInvitationEmailSubject } from "@/app/actions/admin-email";
+import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
 
 interface ImportRow {
   displayName: string;
@@ -27,13 +29,6 @@ const defaultWhatsAppTemplates: Record<string, string> = {
   es: "¡Hola {name}!\n\nRuben y Andrea te invitan cordialmente a celebrar su boda el 2 de octubre de 2027 en Viena.\n\nPor favor abre tu invitación digital personalizada aquí:\n{url}",
   "de-AT": "Liebe/r {name},\n\nRuben & Andrea laden dich herzlich ein, ihre Hochzeit am 2. Oktober 2027 in Wien zu feiern!\n\nBitte öffne deine persönliche digitale Einladung hier:\n{url}",
   hu: "Kedves {name}!\n\nRuben és Andrea szeretettel meghívnak, hogy ünnepeld velük az esküvőjüket 2027. október 2-án Bécsben!\n\nKérjük, nyisd meg a személyre szóló digitális meghívódat itt:\n{url}",
-};
-
-const defaultEmailSubjects: Record<string, string> = {
-  en: "Wedding Invitation — Ruben & Andrea (Vienna, October 2, 2027)",
-  es: "Invitación de Boda — Ruben y Andrea (Viena, 2 de Octubre de 2027)",
-  "de-AT": "Hochzeitseinladung — Ruben & Andrea (Wien, 2. Oktober 2027)",
-  hu: "Esküvői Meghívó — Ruben és Andrea (Bécs, 2027. október 2.)",
 };
 
 export async function POST(request: Request) {
@@ -127,8 +122,16 @@ export async function POST(request: Request) {
     const guestUrl = `${origin}/i/${token}${language ? `?lang=${language}` : ""}`;
     const waTemplate = defaultWhatsAppTemplates[templateLang] || defaultWhatsAppTemplates.en;
     const whatsappMessage = waTemplate.replace(/\{name\}/g, rawName).replace(/\{url\}/g, guestUrl);
-    const emailSubject = defaultEmailSubjects[templateLang] || defaultEmailSubjects.en;
-    const emailBody = whatsappMessage;
+    const emailSubject = getInvitationEmailSubject(templateLang, rawName);
+    const emailBody = buildEnvelopeInvitationHtml({
+      guestName: rawName,
+      invitationUrl: guestUrl,
+      language: templateLang,
+      maxGuests,
+      plusOneAllowed,
+      siteUrl: origin,
+      personalMessage,
+    });
 
     // 1. Persist immediately in resilient store
     resilientStore.saveInvitation({

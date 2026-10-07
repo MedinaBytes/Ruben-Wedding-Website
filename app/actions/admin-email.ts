@@ -24,6 +24,53 @@ export interface SendInvitationEmailResult {
   error?: string;
 }
 
+export interface BatchInvitationEmailOptions {
+  invitationIds?: string[];
+  dryRun?: boolean;
+  limit?: number;
+}
+
+export interface BatchInvitationEmailResult {
+  totalTargeted: number;
+  dryRun: boolean;
+  byLanguage: {
+    es: number;
+    de: number;
+    hu: number;
+    en: number;
+  };
+  processed: Array<{
+    invitationId: string;
+    displayName: string;
+    recipientEmail: string;
+    language: string;
+    subject: string;
+    hasPersonalMessage: boolean;
+    status: "ready" | "sent" | "failed" | "skipped";
+    error?: string;
+    messageId?: string;
+  }>;
+  sentCount: number;
+  failedCount: number;
+  skippedCount: number;
+}
+
+export function getInvitationEmailSubject(lang?: string | null, displayName?: string): string {
+  const normLang = (lang || "es").toLowerCase();
+  const name = displayName?.trim() || "Invitado";
+
+  if (normLang.startsWith("de")) {
+    return `Hochzeitseinladung Ruben & Andrea — ${name}`;
+  }
+  if (normLang.startsWith("hu")) {
+    return `Esküvői Meghívó: Ruben & Andrea — ${name}`;
+  }
+  if (normLang.startsWith("es")) {
+    return `Invitación Imperial a la Boda de Ruben & Andrea — ${name}`;
+  }
+  return `Ruben & Andrea Wedding Invitation — ${name}`;
+}
+
 async function getSmtpConfig() {
   const settings = resilientStore.getSettings() as Record<string, unknown>;
 
@@ -156,7 +203,7 @@ export async function sendInvitationEmailAction({
       const client = createSupabaseAdminClient();
       const { data } = await client
         .from("invitations")
-        .select("id, display_name, language, email, phone, whatsapp, max_guests, plus_one_allowed")
+        .select("id, display_name, language, email, phone, whatsapp, max_guests, plus_one_allowed, personal_message")
         .eq("id", invitationId)
         .maybeSingle();
       if (data) {
@@ -171,7 +218,7 @@ export async function sendInvitationEmailAction({
           plus_one_allowed: Boolean(data.plus_one_allowed),
           group_name: null,
           normalized_group_name: null,
-          personal_message: null,
+          personal_message: data.personal_message,
           email: data.email,
           status: "active",
           created_at: new Date().toISOString(),
@@ -193,17 +240,8 @@ export async function sendInvitationEmailAction({
   const token = invitation.token || invitation.id;
   const invitationUrl = `${origin}/i/${token}${invitation.language ? `?lang=${invitation.language}` : ""}`;
 
-  const lang = invitation.language || "es";
-  const defaultSubject =
-    lang === "es"
-      ? `Invitación Imperial a la Boda de Ruben & Andrea — ${invitation.display_name}`
-      : lang === "de" || lang === "de-AT"
-        ? `Hochzeitseinladung Ruben & Andrea — ${invitation.display_name}`
-        : lang === "hu"
-          ? `Esküvői Meghívó: Ruben & Andrea — ${invitation.display_name}`
-          : `Ruben & Andrea Wedding Invitation — ${invitation.display_name}`;
-
-  const emailSubject = subject || defaultSubject;
+  const lang = (invitation.language || "es").toLowerCase();
+  const emailSubject = subject || getInvitationEmailSubject(lang, invitation.display_name);
   const emailHtml = buildEnvelopeInvitationHtml({
     guestName: invitation.display_name,
     invitationUrl,
@@ -211,6 +249,7 @@ export async function sendInvitationEmailAction({
     maxGuests: invitation.max_guests,
     plusOneAllowed: invitation.plus_one_allowed,
     siteUrl: origin,
+    personalMessage: invitation.personal_message,
   });
 
   // Check if Resend is configured (preferred API provider)
@@ -316,4 +355,175 @@ export async function sendInvitationEmailAction({
       error: err instanceof Error ? err.message : "Failed to send invitation email.",
     };
   }
+}
+
+export async function sendBatchInvitationEmailsAction(
+  options: BatchInvitationEmailOptions = {}
+): Promise<BatchInvitationEmailResult> {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) {
+    throw new Error("Unauthorized. Please sign in as admin.");
+  }
+
+  const isDryRun = options.dryRun ?? true;
+  const limit = options.limit ?? 100;
+
+  // Retrieve candidates from resilient store
+  let allInvs = resilientStore.getInvitations().filter((i) => i.status === "active");
+
+  // Merge with Supabase to make sure we have all remote rows
+  try {
+    const client = createSupabaseAdminClient();
+    const { data } = await client
+      .from("invitations")
+      .select("id, token, display_name, language, email, phone, whatsapp, max_guests, plus_one_allowed, personal_message, status")
+      .eq("status", "active");
+
+    if (data && Array.isArray(data)) {
+      const existingIds = new Set(allInvs.map((i) => i.id));
+      for (const row of data) {
+        if (!existingIds.has(row.id)) {
+          allInvs.push({
+            id: row.id,
+            token: row.token || row.id,
+            token_hash: "",
+            display_name: row.display_name,
+            normalized_name: "",
+            language: row.language,
+            max_guests: row.max_guests || 1,
+            plus_one_allowed: Boolean(row.plus_one_allowed),
+            group_name: null,
+            normalized_group_name: null,
+            personal_message: row.personal_message,
+            email: row.email,
+            status: "active",
+            created_at: new Date().toISOString(),
+          });
+          existingIds.add(row.id);
+        }
+      }
+    }
+  } catch {}
+
+  // Filter by invitationIds if provided
+  let targets = allInvs;
+  if (options.invitationIds && options.invitationIds.length > 0) {
+    const targetSet = new Set(options.invitationIds);
+    targets = allInvs.filter((i) => targetSet.has(i.id));
+  } else {
+    // Only target invitations that have an email configured
+    targets = allInvs.filter((i) => i.email && i.email.includes("@"));
+  }
+
+  if (limit > 0 && targets.length > limit) {
+    targets = targets.slice(0, limit);
+  }
+
+  const byLanguage = { es: 0, de: 0, hu: 0, en: 0 };
+  const processed: BatchInvitationEmailResult["processed"] = [];
+  let sentCount = 0;
+  let failedCount = 0;
+  let skippedCount = 0;
+
+  for (const inv of targets) {
+    const lang = (inv.language || "es").toLowerCase();
+    if (lang.startsWith("es")) byLanguage.es++;
+    else if (lang.startsWith("de")) byLanguage.de++;
+    else if (lang.startsWith("hu")) byLanguage.hu++;
+    else byLanguage.en++;
+
+    const recipient = inv.email?.trim() || "";
+    const subject = getInvitationEmailSubject(lang, inv.display_name);
+    const hasPersonalMessage = Boolean(inv.personal_message?.trim());
+
+    if (!recipient || !recipient.includes("@")) {
+      skippedCount++;
+      processed.push({
+        invitationId: inv.id,
+        displayName: inv.display_name,
+        recipientEmail: recipient,
+        language: lang,
+        subject,
+        hasPersonalMessage,
+        status: "skipped",
+        error: "Missing or invalid email address",
+      });
+      continue;
+    }
+
+    if (isDryRun) {
+      processed.push({
+        invitationId: inv.id,
+        displayName: inv.display_name,
+        recipientEmail: recipient,
+        language: lang,
+        subject,
+        hasPersonalMessage,
+        status: "ready",
+      });
+    } else {
+      const sendRes = await sendInvitationEmailAction({
+        invitationId: inv.id,
+        recipientEmail: recipient,
+        subject,
+      });
+
+      if (sendRes.success) {
+        sentCount++;
+        processed.push({
+          invitationId: inv.id,
+          displayName: inv.display_name,
+          recipientEmail: recipient,
+          language: lang,
+          subject,
+          hasPersonalMessage,
+          status: "sent",
+          messageId: sendRes.messageId,
+        });
+      } else {
+        failedCount++;
+        processed.push({
+          invitationId: inv.id,
+          displayName: inv.display_name,
+          recipientEmail: recipient,
+          language: lang,
+          subject,
+          hasPersonalMessage,
+          status: "failed",
+          error: sendRes.error,
+        });
+      }
+    }
+  }
+
+  if (!isDryRun && (sentCount > 0 || failedCount > 0)) {
+    try {
+      await recordAdminAudit({
+        actor,
+        action: "INVITATION_UPDATED",
+        resourceType: "invitation",
+        metadata: {
+          action: "BATCH_EMAIL_DISPATCH",
+          total: targets.length,
+          sentCount,
+          failedCount,
+          skippedCount,
+          byLanguage: JSON.stringify(byLanguage),
+        },
+      });
+    } catch {}
+  }
+
+  return {
+    totalTargeted: targets.length,
+    dryRun: isDryRun,
+    byLanguage,
+    processed,
+    sentCount,
+    failedCount,
+    skippedCount,
+  };
 }
