@@ -15,7 +15,7 @@ export const rsvpPayloadSchema = z
         z
           .object({
             guestName: z.string().trim().max(120),
-            meal: z.enum(["classic", "fish", "vegetarian", "vegan", "kids", "standard"]).default("standard"),
+            meal: z.enum(["meat", "classic", "fish", "vegetarian", "vegan", "kids", "standard"]).default("meat"),
             allergies: optionalText(500),
           })
           .strict(),

@@ -27,7 +27,7 @@ export interface StoredInvitation {
 
 export interface MealPreference {
   guestName: string;
-  meal: "classic" | "fish" | "vegetarian" | "vegan" | "kids" | "standard";
+  meal: "meat" | "classic" | "fish" | "vegetarian" | "vegan" | "kids" | "standard" | string;
   allergies?: string;
 }
 
@@ -93,11 +93,9 @@ export interface StoredMenuOption {
 }
 
 export const DEFAULT_MENU_OPTIONS: StoredMenuOption[] = [
-  { id: "classic", name: "Classic (Beef Tenderloin & Viennese Specialties)", icon: "🥩", category: "meat", enabled: true },
-  { id: "fish", name: "Fish (Alpine Char / Trout with Seasonal Vegetables)", icon: "🐟", category: "fish", enabled: true },
-  { id: "vegetarian", name: "Vegetarian (Truffle Risotto & Specialties)", icon: "🥗", category: "vegetarian", enabled: true },
-  { id: "vegan", name: "Vegan Gourmet Course", icon: "🌿", category: "vegan", enabled: true },
-  { id: "kids", name: "Children's Menu (Wiener Schnitzerl)", icon: "🧒", category: "kids", enabled: true },
+  { id: "meat", name: "Meat", icon: "🥩", category: "meat", enabled: true, description: "Meat banquet course" },
+  { id: "vegan", name: "Vegan", icon: "🌱", category: "vegan", enabled: true, description: "Vegan course" },
+  { id: "vegetarian", name: "Vegetarian", icon: "🥗", category: "vegetarian", enabled: true, description: "Vegetarian course" },
 ];
 
 export interface StoredCheckIn {
@@ -963,7 +961,8 @@ export const resilientStore = {
       const tableInfo = tableMap.get(r.invitation_id);
       if (Array.isArray(r.meal_preferences) && r.meal_preferences.length > 0) {
         for (const pref of r.meal_preferences) {
-          const mealId = pref.meal || "classic";
+          let mealId = pref.meal || "meat";
+          if (mealId === "classic") mealId = "meat";
           mealBreakdown[mealId] = (mealBreakdown[mealId] || 0) + 1;
 
           guestRoster.push({

@@ -45,11 +45,9 @@ export interface CateringSummaryData {
 }
 
 const DEFAULT_MENU_OPTIONS_FALLBACK: StoredMenuOption[] = [
-  { id: "classic", name: "Classic (Beef Tenderloin & Viennese Specialties)", icon: "🥩", category: "meat", enabled: true, description: "Baroque roasted with parsnip puree & red wine jus" },
-  { id: "fish", name: "Fish (Alpine Char / Trout with Seasonal Vegetables)", icon: "🐟", category: "fish", enabled: true, description: "Fresh Austrian mountain trout with butter potatoes" },
-  { id: "vegetarian", name: "Vegetarian (Truffle Risotto & Specialties)", icon: "🥗", category: "vegetarian", enabled: true, description: "Arborio risotto with shaved Styrian black truffle" },
-  { id: "vegan", name: "Vegan Gourmet Course", icon: "🌿", category: "vegan", enabled: true, description: "Seasonal forest mushrooms & roasted garden vegetables" },
-  { id: "kids", name: "Children's Menu (Wiener Schnitzerl)", icon: "🧒", category: "kids", enabled: true, description: "Crispy mini veal or chicken schnitzel with potato salad" },
+  { id: "meat", name: "Meat", icon: "🥩", category: "meat", enabled: true, description: "Meat banquet course" },
+  { id: "vegan", name: "Vegan", icon: "🌱", category: "vegan", enabled: true, description: "Vegan course" },
+  { id: "vegetarian", name: "Vegetarian", icon: "🥗", category: "vegetarian", enabled: true, description: "Vegetarian course" },
 ];
 
 const COURSE_PALETTE: Record<string, { bg: string; text: string; bar: string; border: string }> = {

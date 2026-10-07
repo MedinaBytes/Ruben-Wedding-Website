@@ -35,63 +35,55 @@ const mealLabels: Record<string, {
   options: Record<string, string>;
 }> = {
   en: {
-    sectionTitle: "Menu & Dietary Preferences per Guest",
-    sectionSubtitle: "Please choose a course for each attending guest at Schloss Hetzendorf.",
+    sectionTitle: "Menu Preference & Dietary Requirements",
+    sectionSubtitle: "Please select meat, vegan, or vegetarian for each guest and note any allergies.",
     guestHeader: "Guest",
-    mealType: "Meal Preference",
-    allergiesLabel: "Specific Allergies / Intolerances",
+    mealType: "Menu Choice",
+    allergiesLabel: "Specific Allergies / Dietary Restrictions",
     allergiesPlaceholder: "e.g. Celiac (gluten-free), nut allergy, lactose...",
     options: {
-      classic: "🥩 Classic (Beef Tenderloin & Viennese Specialties)",
-      fish: "🐟 Fish (Alpine Char / Trout with Seasonal Vegetables)",
-      vegetarian: "🥗 Vegetarian (Truffle Risotto & Specialties)",
-      vegan: "🌿 Vegan Gourmet Menu",
-      kids: "🧒 Children's Menu (Wiener Schnitzerl)",
+      meat: "🥩 Meat",
+      vegan: "🌱 Vegan",
+      vegetarian: "🥗 Vegetarian",
     },
   },
   es: {
-    sectionTitle: "Selección de Menú por Invitado",
-    sectionSubtitle: "Por favor elige la opción de plato para cada invitado en el Palacio Hetzendorf.",
+    sectionTitle: "Preferencia de Menú y Alergias por Invitado",
+    sectionSubtitle: "Por favor indica si prefieres carne, vegano o vegetariano, e infórmanos de cualquier alergia.",
     guestHeader: "Invitado/a",
     mealType: "Preferencia de Menú",
     allergiesLabel: "Alergias o Intolerancias Específicas",
     allergiesPlaceholder: "ej. Celíaco (sin gluten), frutos secos, lactosa...",
     options: {
-      classic: "🥩 Clásico (Solomillo de Ternera y Especialidades Vienesas)",
-      fish: "🐟 Pescado (Trucha / Salvelino Alpino con Verduras)",
-      vegetarian: "🥗 Vegetariano (Risotto de Trufa y Pastas)",
-      vegan: "🌿 Menú Gourmet Vegano",
-      kids: "🧒 Menú Infantil (Milanesa Vienesa)",
+      meat: "🥩 Carne",
+      vegan: "🌱 Vegano",
+      vegetarian: "🥗 Vegetariano",
     },
   },
   "de-AT": {
-    sectionTitle: "Menüauswahl & Speisen pro Gast",
-    sectionSubtitle: "Bitte wählt euren gewünschten Hauptgang für das Hochzeitsdinner im Schloss Hetzendorf.",
+    sectionTitle: "Menüauswahl & Allergien pro Gast",
+    sectionSubtitle: "Bitte wähle Fleisch, Vegan oder Vegetarisch für jeden Gast und gib allfällige Allergien an.",
     guestHeader: "Gast",
-    mealType: "Hauptgang-Wahl",
+    mealType: "Menü-Wahl",
     allergiesLabel: "Spezifische Allergien & Unverträglichkeiten",
     allergiesPlaceholder: "z.B. Zöliakie (glutenfrei), Laktose, Nussallergie...",
     options: {
-      classic: "🥩 Klassisch (Zartes Rindsmedaillon & Wiener Beilagen)",
-      fish: "🐟 Fisch (Alpensaibling / Zander auf Gemüse)",
-      vegetarian: "🥗 Vegetarisch (Trüffel-Risotto & Spezialitäten)",
-      vegan: "🌿 Veganes Gourmet-Menü",
-      kids: "🧒 Kindermenü (Wiener Schnitzerl)",
+      meat: "🥩 Fleisch",
+      vegan: "🌱 Vegan",
+      vegetarian: "🥗 Vegetarisch",
     },
   },
   hu: {
-    sectionTitle: "Menüválasztás és Ételigények Vendégenként",
-    sectionSubtitle: "Kérjük, válaszd ki a főételt minden résztvevő vendég számára a Hetzendorf-kastélyban.",
+    sectionTitle: "Menüválasztás és Ételérzékenységek Vendégenként",
+    sectionSubtitle: "Kérjük, válaszd ki a húsos, vegán vagy vegetáriánus menüt minden vendégnek, és jelezd az allergiákat.",
     guestHeader: "Vendég",
     mealType: "Menü Választás",
     allergiesLabel: "Allergiák és Ételérzékenységek",
     allergiesPlaceholder: "pl. Lisztérzékenység (gluténmentes), laktóz, dióféle...",
     options: {
-      classic: "🥩 Klasszikus (Marhabélszín és bécsi köretek)",
-      fish: "🐟 Hal (Alpesi szaibling szezonális zöldségekkel)",
-      vegetarian: "🥗 Vegetáriánus (Szarvasgombás rizottó)",
-      vegan: "🌿 Vegán Gourmet Menü",
-      kids: "🧒 Gyerekmenü (Bécsi szelet)",
+      meat: "🥩 Húsos",
+      vegan: "🌱 Vegán",
+      vegetarian: "🥗 Vegetáriánus",
     },
   },
 };
@@ -137,18 +129,18 @@ export function RsvpForm({
   const isMultiSeatParty = maxInvited > 1;
 
   const [primaryName, setPrimaryName] = useState(() => getInitialPrimaryName(invitation.displayName));
-  const [primaryMeal, setPrimaryMeal] = useState<GuestMealState>({ meal: "classic", allergies: "" });
+  const [primaryMeal, setPrimaryMeal] = useState<GuestMealState>({ meal: "meat", allergies: "" });
 
   const [additionalGuestNames, setAdditionalGuestNames] = useState<string[]>(() =>
     Array(Math.max(0, maxInvited - 1)).fill("")
   );
   const [additionalMeals, setAdditionalMeals] = useState<GuestMealState[]>(() =>
-    Array(Math.max(0, maxInvited - 1)).fill({ meal: "classic", allergies: "" })
+    Array(Math.max(0, maxInvited - 1)).fill({ meal: "meat", allergies: "" })
   );
 
   const [plusOneSelected, setPlusOneSelected] = useState<"yes" | "no">("yes");
   const [plusOneName, setPlusOneName] = useState("");
-  const [companionMeal, setCompanionMeal] = useState<GuestMealState>({ meal: "classic", allergies: "" });
+  const [companionMeal, setCompanionMeal] = useState<GuestMealState>({ meal: "meat", allergies: "" });
 
   const [invitedAttendingCount, setInvitedAttendingCount] = useState<number>(maxInvited);
   const [attendance, setAttendance] = useState<RsvpState>("");
@@ -173,7 +165,7 @@ export function RsvpForm({
   const handleAdditionalMealChange = (index: number, meal: string) => {
     setAdditionalMeals((prev) => {
       const next = [...prev];
-      while (next.length <= index) next.push({ meal: "classic", allergies: "" });
+      while (next.length <= index) next.push({ meal: "meat", allergies: "" });
       next[index] = { ...next[index], meal };
       return next;
     });
@@ -182,7 +174,7 @@ export function RsvpForm({
   const handleAdditionalAllergiesChange = (index: number, allergies: string) => {
     setAdditionalMeals((prev) => {
       const next = [...prev];
-      while (next.length <= index) next.push({ meal: "classic", allergies: "" });
+      while (next.length <= index) next.push({ meal: "meat", allergies: "" });
       next[index] = { ...next[index], allergies };
       return next;
     });
@@ -710,7 +702,7 @@ export function RsvpForm({
                           </label>
                           <select
                             id="primary-meal-select"
-                            value={primaryMeal.meal}
+                            value={primaryMeal.meal === "classic" ? "meat" : primaryMeal.meal}
                             onChange={(e) =>
                               setPrimaryMeal((prev) => ({ ...prev, meal: e.target.value }))
                             }
@@ -724,19 +716,11 @@ export function RsvpForm({
                               color: "#2C1810",
                             }}
                           >
-                            {customMenuOptions && customMenuOptions.length > 0
-                              ? customMenuOptions
-                                  .filter((opt) => opt.enabled)
-                                  .map((opt) => (
-                                    <option key={opt.id} value={opt.id}>
-                                      {opt.icon ? `${opt.icon} ` : ""}{opt.name}
-                                    </option>
-                                  ))
-                              : Object.entries(dict.options).map(([optKey, optText]) => (
-                                  <option key={optKey} value={optKey}>
-                                    {optText}
-                                  </option>
-                                ))}
+                            {Object.entries(dict.options).map(([optKey, optText]) => (
+                              <option key={optKey} value={optKey}>
+                                {optText}
+                              </option>
+                            ))}
                           </select>
                         </div>
 
@@ -889,7 +873,7 @@ export function RsvpForm({
                                 </label>
                                 <select
                                   id={`guest-meal-${i}`}
-                                  value={gMeal}
+                                  value={gMeal === "classic" ? "meat" : gMeal}
                                   onChange={(e) => handleAdditionalMealChange(i, e.target.value)}
                                   style={{
                                     width: "100%",
@@ -901,19 +885,11 @@ export function RsvpForm({
                                     color: "#2C1810",
                                   }}
                                 >
-                                  {customMenuOptions && customMenuOptions.length > 0
-                                    ? customMenuOptions
-                                        .filter((opt) => opt.enabled)
-                                        .map((opt) => (
-                                          <option key={opt.id} value={opt.id}>
-                                            {opt.icon ? `${opt.icon} ` : ""}{opt.name}
-                                          </option>
-                                        ))
-                                    : Object.entries(dict.options).map(([optKey, optText]) => (
-                                        <option key={optKey} value={optKey}>
-                                          {optText}
-                                        </option>
-                                      ))}
+                                  {Object.entries(dict.options).map(([optKey, optText]) => (
+                                    <option key={optKey} value={optKey}>
+                                      {optText}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
 
@@ -1058,7 +1034,7 @@ export function RsvpForm({
                             </label>
                             <select
                               id="companion-meal-select"
-                              value={companionMeal.meal}
+                              value={companionMeal.meal === "classic" ? "meat" : companionMeal.meal}
                               onChange={(e) =>
                                 setCompanionMeal((prev) => ({ ...prev, meal: e.target.value }))
                               }
@@ -1072,19 +1048,11 @@ export function RsvpForm({
                                 color: "#2C1810",
                               }}
                             >
-                              {customMenuOptions && customMenuOptions.length > 0
-                                ? customMenuOptions
-                                    .filter((opt) => opt.enabled)
-                                    .map((opt) => (
-                                      <option key={opt.id} value={opt.id}>
-                                        {opt.icon ? `${opt.icon} ` : ""}{opt.name}
-                                      </option>
-                                    ))
-                                : Object.entries(dict.options).map(([optKey, optText]) => (
-                                    <option key={optKey} value={optKey}>
-                                      {optText}
-                                    </option>
-                                  ))}
+                              {Object.entries(dict.options).map(([optKey, optText]) => (
+                                <option key={optKey} value={optKey}>
+                                  {optText}
+                                </option>
+                              ))}
                             </select>
                           </div>
 
