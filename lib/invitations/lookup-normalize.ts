@@ -21,7 +21,9 @@ export function normalizeEmail(value: string) {
 export function normalizePhone(value: string) {
   const trimmed = value.trim();
   if (!phoneCharacters.test(trimmed)) return null;
-  const international = trimmed.replace(/^00/, "+");
+  const international = trimmed.startsWith("+") || trimmed.startsWith("00")
+    ? trimmed.replace(/^00/, "+")
+    : "+" + trimmed;
   const phone = parsePhoneNumberFromString(international);
   return phone?.isValid() ? phone.number : null;
 }

@@ -46,6 +46,30 @@ export function BulkImportForm() {
     return headers.findIndex((h) => aliases.includes(h.toLowerCase().replace(/[\s_-]+/g, "")));
   }
 
+  function parseCsvLine(line: string): string[] {
+    const result: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === "," && !inQuotes) {
+        result.push(current.trim().replace(/^["']|["']$/g, ""));
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim().replace(/^["']|["']$/g, ""));
+    return result;
+  }
+
   function handleParse(text: string) {
     setCsvContent(text);
     setResult(null);
@@ -57,7 +81,7 @@ export function BulkImportForm() {
     }
 
     // Split headers and find indices using aliases
-    const rawHeaders = lines[0].split(",").map((h) => h.trim());
+    const rawHeaders = parseCsvLine(lines[0]);
     const nameIdx = findColumnIndex(rawHeaders, ["displayname", "name", "fullname", "guest", "guestname", "invitado", "gast", "vendeg"]);
     const emailIdx = findColumnIndex(rawHeaders, ["email", "guestemail", "mail", "correo", "emailaddress"]);
     const whatsappIdx = findColumnIndex(rawHeaders, ["whatsapp", "wa", "whatsappnumber", "celular", "mobile", "tel"]);
@@ -70,8 +94,7 @@ export function BulkImportForm() {
 
     const rows: ParsedRow[] = [];
     for (let i = 1; i < lines.length; i++) {
-      // Basic CSV split respecting simple quotes if present
-      const parts = lines[i].split(",").map((p) => p.trim().replace(/^["']|["']$/g, ""));
+      const parts = parseCsvLine(lines[i]);
       const name = nameIdx !== -1 ? parts[nameIdx] : parts[0];
       if (!name) continue;
 
