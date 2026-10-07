@@ -44,6 +44,19 @@ export function getInvitationTokenHash(token: string) {
 
 export async function findActiveInvitation(client: SupabaseClient, token: string) {
   if (token === "demo" || token === DEMO_INVITATION.id) {
+    if (client) {
+      try {
+        const { data } = await client
+          .from("site_settings")
+          .select("value")
+          .eq("key", "enableDemoInvitation")
+          .maybeSingle();
+        if (data && typeof data.value === "boolean") {
+          if (!data.value) return null;
+          return DEMO_INVITATION;
+        }
+      } catch {}
+    }
     if (!resilientStore.isDemoEnabled()) {
       return null;
     }

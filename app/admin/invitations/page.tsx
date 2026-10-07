@@ -23,13 +23,16 @@ export default async function AdminInvitationsPage() {
   let remoteInvitations: Array<Record<string, unknown>> = [];
   const rsvpMap = new Map<string, { status: string; count: number }>();
 
+  let isDemoEnabled = resilientStore.isDemoEnabled();
+
   try {
-    const [invitationsRes, rsvpsRes] = await Promise.all([
+    const [invitationsRes, rsvpsRes, settingsRes] = await Promise.all([
       client
         .from("invitations")
         .select("id, token, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, email, phone, whatsapp")
         .order("created_at", { ascending: false }),
       client.from("rsvps").select("invitation_id, attendance_status, attendee_count"),
+      client.from("site_settings").select("key, value"),
     ]);
 
     if (invitationsRes.data) {
@@ -38,6 +41,12 @@ export default async function AdminInvitationsPage() {
     (rsvpsRes.data ?? []).forEach((r) => {
       rsvpMap.set(r.invitation_id, { status: r.attendance_status, count: r.attendee_count });
     });
+    if (settingsRes.data && Array.isArray(settingsRes.data)) {
+      const demoRow = settingsRes.data.find((r) => r.key === "enableDemoInvitation");
+      if (demoRow && typeof demoRow.value === "boolean") {
+        isDemoEnabled = demoRow.value;
+      }
+    }
   } catch {}
 
   // Merge with resilient local store
@@ -51,8 +60,6 @@ export default async function AdminInvitationsPage() {
 
   const seenIds = new Set<string>();
   const combined: InvitationRow[] = [];
-
-  const isDemoEnabled = resilientStore.isDemoEnabled();
 
   // Local first
   for (const inv of localInvitations) {

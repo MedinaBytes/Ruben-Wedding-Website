@@ -21,7 +21,8 @@ export default async function AdminCheckInPage() {
   const rsvps = resilientStore.getRsvps();
   const checkIns = resilientStore.getCheckIns();
   const tableAssignments = resilientStore.getTableAssignments();
-  const settings = resilientStore.getSettings();
+  const { getSiteSettings } = await import("@/lib/settings/site-settings");
+  const settings = await getSiteSettings();
 
   const rsvpMap = new Map(rsvps.map((r) => [r.invitation_id, r]));
   const tableMap = new Map(tableAssignments.map((t) => [t.invitation_id, t]));

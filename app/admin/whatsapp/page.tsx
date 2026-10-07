@@ -22,19 +22,28 @@ export default async function AdminWhatsAppPage() {
   const client = createSupabaseAdminClient();
   let remoteInvitations: Array<Record<string, unknown>> = [];
 
+  let isDemoEnabled = resilientStore.isDemoEnabled();
+
   try {
-    const { data } = await client
-      .from("invitations")
-      .select("id, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, phone, whatsapp")
-      .order("created_at", { ascending: false });
-    if (data) remoteInvitations = data as Array<Record<string, unknown>>;
+    const [invitationsRes, settingsRes] = await Promise.all([
+      client
+        .from("invitations")
+        .select("id, display_name, group_name, language, max_guests, plus_one_allowed, status, created_at, phone, whatsapp")
+        .order("created_at", { ascending: false }),
+      client.from("site_settings").select("key, value"),
+    ]);
+    if (invitationsRes.data) remoteInvitations = invitationsRes.data as Array<Record<string, unknown>>;
+    if (settingsRes.data && Array.isArray(settingsRes.data)) {
+      const demoRow = settingsRes.data.find((r) => r.key === "enableDemoInvitation");
+      if (demoRow && typeof demoRow.value === "boolean") {
+        isDemoEnabled = demoRow.value;
+      }
+    }
   } catch {}
 
   const localInvitations = resilientStore.getInvitations();
   const seenIds = new Set<string>();
   const combined: InvitationRow[] = [];
-
-  const isDemoEnabled = resilientStore.isDemoEnabled();
 
   for (const inv of localInvitations) {
     if (!isDemoEnabled && (inv.id === "00000000-0000-0000-0000-000000000001" || inv.token === "demo")) {

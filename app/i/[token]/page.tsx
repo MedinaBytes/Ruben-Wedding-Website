@@ -98,8 +98,8 @@ export default async function InvitationIntroPage({
     getTranslations({ locale, namespace: "intro" }),
   ]);
 
-  const { resilientStore } = await import("@/lib/storage/resilient-store");
-  const siteSettings = resilientStore.getSettings();
+  const { getSiteSettings } = await import("@/lib/settings/site-settings");
+  const siteSettings = await getSiteSettings();
   const isDemo = token === "demo";
   const enableCalligraphy = !isDemo && siteSettings.enableEnvelopeCalligraphy !== false;
 

@@ -24,19 +24,30 @@ export default async function AdminOverviewPage() {
   let remoteRsvps: Array<Record<string, unknown>> = [];
   let remoteEvents: Array<Record<string, unknown>> = [];
   let remoteSongs: Array<Record<string, unknown>> = [];
+  const remoteSettingsMap = new Map<string, unknown>();
+  let isDemo = resilientStore.isDemoEnabled();
 
   try {
-    const [invitationsRes, rsvpsRes, eventsRes, songsRes] = await Promise.all([
+    const [invitationsRes, rsvpsRes, eventsRes, songsRes, settingsRes] = await Promise.all([
       client.from("invitations").select("id, status, max_guests"),
       client.from("rsvps").select("id, invitation_id, attendance_status, attendee_count"),
       client.from("invitation_events").select("invitation_id, event_type"),
       client.from("song_requests").select("id, song_title, artist, selected_for_playlist"),
+      client.from("site_settings").select("key, value"),
     ]);
 
     if (invitationsRes.data) remoteInvitations = invitationsRes.data as Array<Record<string, unknown>>;
     if (rsvpsRes.data) remoteRsvps = rsvpsRes.data as Array<Record<string, unknown>>;
     if (eventsRes.data) remoteEvents = eventsRes.data as Array<Record<string, unknown>>;
     if (songsRes.data) remoteSongs = songsRes.data as Array<Record<string, unknown>>;
+    if (settingsRes.data && Array.isArray(settingsRes.data)) {
+      for (const row of settingsRes.data) {
+        remoteSettingsMap.set(row.key, row.value);
+      }
+      if (typeof remoteSettingsMap.get("enableDemoInvitation") === "boolean") {
+        isDemo = Boolean(remoteSettingsMap.get("enableDemoInvitation"));
+      }
+    }
   } catch {}
 
   // Merge with resilient local store
@@ -48,10 +59,12 @@ export default async function AdminOverviewPage() {
   // Deduplicate and combine invitations
   const invMap = new Map<string, { id: string; status: string; max_guests: number }>();
   for (const inv of localInvitations) {
+    if (!isDemo && (inv.id === "00000000-0000-0000-0000-000000000001" || inv.id === "demo")) continue;
     invMap.set(inv.id, { id: inv.id, status: inv.status, max_guests: inv.max_guests });
   }
   for (const inv of remoteInvitations) {
     const id = String(inv.id);
+    if (!isDemo && (id === "00000000-0000-0000-0000-000000000001" || id === "demo")) continue;
     if (!invMap.has(id)) {
       invMap.set(id, { id, status: String(inv.status || "active"), max_guests: Number(inv.max_guests) || 1 });
     }
@@ -122,9 +135,8 @@ export default async function AdminOverviewPage() {
   const playlistSelected = songs.filter((s) => s.selected_for_playlist).length;
   const playlistPercent = totalSongs > 0 ? Math.round((playlistSelected / totalSongs) * 100) : 0;
 
-  const settings = resilientStore.getSettings();
+  const settings = { ...resilientStore.getSettings(), ...Object.fromEntries(remoteSettingsMap) };
   const hasResend = Boolean(settings.resendApiKey || process.env.RESEND_API_KEY);
-  const isDemo = resilientStore.isDemoEnabled();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>

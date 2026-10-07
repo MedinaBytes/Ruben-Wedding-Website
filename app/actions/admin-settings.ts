@@ -204,6 +204,8 @@ export async function updateSiteSettings(formData: FormData) {
 
   try {
     await client.from("site_settings").upsert(rows);
+    const { invalidateSettingsCache } = await import("@/lib/settings/site-settings");
+    invalidateSettingsCache();
   } catch {}
 
   try {

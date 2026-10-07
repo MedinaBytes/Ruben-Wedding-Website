@@ -161,56 +161,63 @@ const DB_PATH = isTestEnv
 const BACKUP_PATH = path.resolve(process.cwd(), ".local-db.backup.json");
 
 function getDefaultDb(): LocalDatabase {
+  const isProd = process.env.NODE_ENV === "production";
   return {
-    invitations: [
-      {
-        id: "00000000-0000-0000-0000-000000000001",
-        token: "demo",
-        token_hash: "demo_hash",
-        display_name: "Sarah & Guest (Demo)",
-        normalized_name: "sarah guest demo",
-        language: "en",
-        max_guests: 1,
-        plus_one_allowed: true,
-        group_name: "Demo Reviewers",
-        normalized_group_name: "demo reviewers",
-        personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
-        phone: "+43 664 1234567",
-        whatsapp: "+436641234567",
-        status: "active",
-        created_at: new Date().toISOString(),
-      },
-    ],
+    invitations: isProd
+      ? []
+      : [
+          {
+            id: "00000000-0000-0000-0000-000000000001",
+            token: "demo",
+            token_hash: "demo_hash",
+            display_name: "Sarah & Guest (Demo)",
+            normalized_name: "sarah guest demo",
+            language: "en",
+            max_guests: 1,
+            plus_one_allowed: true,
+            group_name: "Demo Reviewers",
+            normalized_group_name: "demo reviewers",
+            personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+            phone: "+43 664 1234567",
+            whatsapp: "+436641234567",
+            status: "active",
+            created_at: new Date().toISOString(),
+          },
+        ],
     rsvps: [],
     songRequests: [],
-    events: [
-      {
-        id: "evt-demo-1",
-        invitation_id: "00000000-0000-0000-0000-000000000001",
-        session_id: "demo-session",
-        event_type: "INVITE_OPENED",
-        locale: "en",
-        created_at: new Date().toISOString(),
-      },
-    ],
-    wishes: [
-      {
-        id: "wish-demo-1",
-        invitation_id: "00000000-0000-0000-0000-000000000001",
-        guest_name: "Sarah & Marcus",
-        message: "Wishing Ruben & Andrea a lifetime of radiant love and laughter in Vienna! Cannot wait to celebrate with you at Hetzendorf.",
-        locale: "en",
-        status: "approved",
-        created_at: new Date().toISOString(),
-      },
-    ],
+    events: isProd
+      ? []
+      : [
+          {
+            id: "evt-demo-1",
+            invitation_id: "00000000-0000-0000-0000-000000000001",
+            session_id: "demo-session",
+            event_type: "INVITE_OPENED",
+            locale: "en",
+            created_at: new Date().toISOString(),
+          },
+        ],
+    wishes: isProd
+      ? []
+      : [
+          {
+            id: "wish-demo-1",
+            invitation_id: "00000000-0000-0000-0000-000000000001",
+            guest_name: "Sarah & Marcus",
+            message: "Wishing Ruben & Andrea a lifetime of radiant love and laughter in Vienna! Cannot wait to celebrate with you at Hetzendorf.",
+            locale: "en",
+            status: "approved",
+            created_at: new Date().toISOString(),
+          },
+        ],
     tableAssignments: [],
     tables: DEFAULT_IMPERIAL_TABLES,
     menuOptions: DEFAULT_MENU_OPTIONS,
     checkIns: [],
     settings: {
-      enableDemoInvitation: true,
-      demoDeleted: false,
+      enableDemoInvitation: !isProd,
+      demoDeleted: isProd,
       enableCalendarSync: true,
       enableEnvelopeCalligraphy: true,
       enableMealSelection: true,

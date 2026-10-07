@@ -197,14 +197,40 @@ export async function toggleDemoInvitationAction(enable: boolean): Promise<{ suc
 
   try {
     const client = createSupabaseAdminClient();
-    await client.from("site_settings").upsert({
-      key: "enableDemoInvitation",
-      value: enable,
-      updated_at: new Date().toISOString(),
-    });
+    await client.from("site_settings").upsert([
+      {
+        key: "enableDemoInvitation",
+        value: enable,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        key: "demoDeleted",
+        value: !enable,
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+
     if (!enable) {
       await client.from("invitations").delete().eq("id", "00000000-0000-0000-0000-000000000001");
+      await client.from("invitations").delete().eq("token", "demo");
+    } else {
+      await client.from("invitations").upsert({
+        id: "00000000-0000-0000-0000-000000000001",
+        token: "demo",
+        token_hash: "demo_hash",
+        display_name: "Sarah & Guest (Demo)",
+        normalized_name: "sarah guest demo",
+        language: "en",
+        max_guests: 2,
+        plus_one_allowed: true,
+        group_name: "Demo Reviewers",
+        status: "active",
+        personal_message: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+      });
     }
+
+    const { invalidateSettingsCache } = await import("@/lib/settings/site-settings");
+    invalidateSettingsCache();
   } catch {}
 
   try {
@@ -247,14 +273,26 @@ export async function deleteInvitationAction(id: string): Promise<{ success: boo
   try {
     const client = createSupabaseAdminClient();
     await client.from("invitations").delete().eq("id", id);
+    if (isDemo) {
+      await client.from("invitations").delete().eq("token", "demo");
+    }
     await client.from("rsvps").delete().eq("invitation_id", id);
     await client.from("song_requests").delete().eq("invitation_id", id);
     if (isDemo) {
-      await client.from("site_settings").upsert({
-        key: "enableDemoInvitation",
-        value: false,
-        updated_at: new Date().toISOString(),
-      });
+      await client.from("site_settings").upsert([
+        {
+          key: "enableDemoInvitation",
+          value: false,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          key: "demoDeleted",
+          value: true,
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+      const { invalidateSettingsCache } = await import("@/lib/settings/site-settings");
+      invalidateSettingsCache();
     }
   } catch {}
 

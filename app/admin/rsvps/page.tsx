@@ -115,7 +115,8 @@ export default async function AdminRsvpsPage() {
   });
 
   const cateringSummary = resilientStore.getCateringSummary();
-  const settings = resilientStore.getSettings();
+  const { getSiteSettings } = await import("@/lib/settings/site-settings");
+  const settings = await getSiteSettings();
 
   return (
     <RsvpsManager

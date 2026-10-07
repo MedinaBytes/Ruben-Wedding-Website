@@ -21,7 +21,8 @@ export default async function AdminSeatingPage() {
   const rsvps = resilientStore.getRsvps();
   const assignments = resilientStore.getTableAssignments();
   const tables = resilientStore.getTables();
-  const settings = resilientStore.getSettings();
+  const { getSiteSettings } = await import("@/lib/settings/site-settings");
+  const settings = await getSiteSettings();
 
   const invMap = new Map(invitations.map((i) => [i.id, i]));
   const confirmedGuests: ConfirmedGuestItem[] = [];
