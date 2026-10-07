@@ -20,6 +20,7 @@ interface EnvelopeIntroProps {
   skipPrompt: string;
   enterPrompt: string;
   celebratePrompt?: string;
+  personalMessage?: string;
   soundPrompt: string;
   soundOffPrompt?: string;
   previouslyOpenedPrompt?: string;
@@ -51,6 +52,7 @@ export function EnvelopeIntro({
   skipPrompt,
   enterPrompt,
   celebratePrompt,
+  personalMessage,
   soundPrompt,
   soundOffPrompt,
   previouslyOpenedPrompt,
@@ -337,8 +339,14 @@ export function EnvelopeIntro({
                 <h1 className="envelope-card__title">
                   Ruben <i>&</i> Andrea
                 </h1>
-                <p className="envelope-card__celebrate">
-                  {celebratePrompt || "Request the pleasure of your company at their wedding"}
+                <p
+                  className={`envelope-card__celebrate ${
+                    personalMessage ? "envelope-card__celebrate--personal" : ""
+                  }`}
+                >
+                  {personalMessage
+                    ? `“${personalMessage.replace(/^[“"']+|[”"']+$/g, "").trim()}”`
+                    : (celebratePrompt || "Request the pleasure of your company at their wedding")}
                 </p>
                 <p className="envelope-card__date">
                   <span>{dateLabel}</span>

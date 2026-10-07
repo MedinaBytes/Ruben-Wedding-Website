@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
 import { EnvelopeIntro } from "@/components/invitation/envelope-intro";
-import { findActiveInvitationByToken } from "@/lib/invitations/store";
+import { findActiveInvitationByToken, DEMO_PERSONAL_MESSAGES } from "@/lib/invitations/store";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
 import { resolveLocale, weddingConfig, type Locale } from "@/lib/wedding-config";
@@ -110,6 +110,10 @@ export default async function InvitationIntroPage({
   const greeting = (isDemo ? null : invitation.greeting_override)
     ?? intro("greeting", { name: displayName });
 
+  const personalMessage = isDemo
+    ? DEMO_PERSONAL_MESSAGES[locale]
+    : (invitation.personal_message?.trim() || null);
+
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <SoundProvider>
@@ -126,6 +130,7 @@ export default async function InvitationIntroPage({
             skipPrompt={intro("skip")}
             enterPrompt={intro("enter")}
             celebratePrompt={intro("celebrate")}
+            personalMessage={personalMessage ?? undefined}
             soundPrompt={intro("soundOn")}
             soundOffPrompt={intro("soundOff")}
             previouslyOpenedPrompt={intro("alreadySeen")}

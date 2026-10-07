@@ -9,7 +9,7 @@ import { InviteOpenTracker } from "@/components/invitation/invite-open-tracker";
 import { SiteHeader } from "@/components/invitation/site-header";
 import { WeddingPhoto } from "@/components/invitation/wedding-photo";
 import { WeddingSections } from "@/components/invitation/wedding-sections";
-import { findActiveInvitationByToken } from "@/lib/invitations/store";
+import { findActiveInvitationByToken, DEMO_PERSONAL_MESSAGES } from "@/lib/invitations/store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getWeddingDateLabel } from "@/lib/event-time";
 import { SoundProvider } from "@/lib/sound";
@@ -120,16 +120,9 @@ export default async function MainInvitationPage({
     getTranslations({ locale, namespace: "wedding" }),
   ]);
 
-  const demoPersonalMessages: Record<Locale, string> = {
-    en: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
-    es: "¡Nos haría una ilusión inmensa celebrar este día tan especial e inolvidable en Viena contigo!",
-    "de-AT": "Wir würden uns riesig freuen, diesen unvergesslichen Tag in Wien gemeinsam mit Dir zu feiern!",
-    hu: "Végtelenül boldogok lennénk, ha velünk ünnepelnéd ezt a felejthetetlen napot Bécsben!",
-  };
-
   const isDemo = token === "demo";
   const personalMessage = isDemo
-    ? demoPersonalMessages[locale]
+    ? DEMO_PERSONAL_MESSAGES[locale]
     : invitation.personal_message;
 
   const displayName = isDemo

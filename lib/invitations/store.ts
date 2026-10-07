@@ -19,6 +19,13 @@ export type ActiveInvitation = {
   status: "active";
 };
 
+export const DEMO_PERSONAL_MESSAGES: Record<Locale, string> = {
+  en: "We would be absolutely thrilled to celebrate this unforgettable day in Vienna with you!",
+  es: "¡Nos haría una ilusión inmensa celebrar este día tan especial e inolvidable en Viena contigo!",
+  "de-AT": "Wir würden uns riesig freuen, diesen unvergesslichen Tag in Wien gemeinsam mit Dir zu feiern!",
+  hu: "Végtelenül boldogok lennénk, ha velünk ünnepelnéd ezt a felejthetetlen napot Bécsben!",
+};
+
 export const DEMO_INVITATION: ActiveInvitation = {
   id: "00000000-0000-0000-0000-000000000001",
   display_name: "Sarah & Guest (Demo)",

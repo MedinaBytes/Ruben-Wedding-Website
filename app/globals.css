@@ -4580,6 +4580,23 @@ a {
   margin: 0.15rem 0 0 0;
 }
 
+.envelope-card__celebrate--personal {
+  font-family: var(--font-body);
+  font-size: clamp(0.76rem, 1.9vw, 0.84rem);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: #4C3C3E;
+  line-height: 1.42;
+  max-width: min(340px, 94%);
+  margin: 0.2rem auto 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .envelope-card__date {
   font-family: var(--font-body);
   font-size: 0.8rem;
@@ -4792,6 +4809,15 @@ a {
   .envelope-card__celebrate {
     font-size: 0.68rem;
     letter-spacing: 0.08em;
+  }
+
+  .envelope-card__celebrate--personal {
+    font-size: clamp(0.7rem, 2.7vw, 0.76rem);
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    margin-top: 0.1rem;
+    max-width: 96%;
+    -webkit-line-clamp: 3;
   }
 
   .envelope-card__date {
