@@ -5,7 +5,7 @@ import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
+import { buildEnvelopeInvitationHtml, getInvitationEmailSubject } from "@/lib/email/template";
 import { getResendConfig, sendEmailViaResend, checkResendStatusAction, testResendConnectionAction, type ResendStatusResult } from "@/lib/email/resend";
 
 export { checkResendStatusAction, testResendConnectionAction };
@@ -53,22 +53,6 @@ export interface BatchInvitationEmailResult {
   sentCount: number;
   failedCount: number;
   skippedCount: number;
-}
-
-export function getInvitationEmailSubject(lang?: string | null, displayName?: string): string {
-  const normLang = (lang || "es").toLowerCase();
-  const name = displayName?.trim() || "Invitado";
-
-  if (normLang.startsWith("de")) {
-    return `Hochzeitseinladung Ruben & Andrea — ${name}`;
-  }
-  if (normLang.startsWith("hu")) {
-    return `Esküvői Meghívó: Ruben & Andrea — ${name}`;
-  }
-  if (normLang.startsWith("es")) {
-    return `Invitación Imperial a la Boda de Ruben & Andrea — ${name}`;
-  }
-  return `Ruben & Andrea Wedding Invitation — ${name}`;
 }
 
 async function getSmtpConfig() {

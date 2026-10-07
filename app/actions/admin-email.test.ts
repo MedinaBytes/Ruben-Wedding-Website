@@ -97,11 +97,14 @@ vi.mock("@/lib/supabase/admin", () => ({
 }));
 
 const {
+  getInvitationEmailSubject,
+  buildEnvelopeInvitationHtml,
+} = await import("@/lib/email/template");
+
+const {
   sendInvitationEmailAction,
   testSmtpConnectionAction,
   sendBatchInvitationEmailsAction,
-  getInvitationEmailSubject,
-  buildEnvelopeInvitationHtml,
 } = await import("./admin-email");
 
 describe("admin email actions and localized templates", () => {

@@ -9,8 +9,7 @@ import { isSameOriginMutation } from "@/lib/security/request";
 import { resilientStore } from "@/lib/storage/resilient-store";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { resolveLocale, type Locale } from "@/lib/wedding-config";
-import { getInvitationEmailSubject } from "@/app/actions/admin-email";
-import { buildEnvelopeInvitationHtml } from "@/lib/email/template";
+import { buildEnvelopeInvitationHtml, getInvitationEmailSubject } from "@/lib/email/template";
 
 interface ImportRow {
   displayName: string;

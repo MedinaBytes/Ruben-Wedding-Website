@@ -14,6 +14,22 @@ export interface InvitationEmailTemplateParams {
   personalMessage?: string | null;
 }
 
+export function getInvitationEmailSubject(lang?: string | null, displayName?: string): string {
+  const normLang = (lang || "es").toLowerCase();
+  const name = displayName?.trim() || "Invitado";
+
+  if (normLang.startsWith("de")) {
+    return `Hochzeitseinladung Ruben & Andrea — ${name}`;
+  }
+  if (normLang.startsWith("hu")) {
+    return `Esküvői Meghívó: Ruben & Andrea — ${name}`;
+  }
+  if (normLang.startsWith("es")) {
+    return `Invitación Imperial a la Boda de Ruben & Andrea — ${name}`;
+  }
+  return `Ruben & Andrea Wedding Invitation — ${name}`;
+}
+
 export function buildEnvelopeInvitationHtml({
   guestName,
   invitationUrl,
