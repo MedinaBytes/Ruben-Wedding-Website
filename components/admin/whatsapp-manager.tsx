@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { InvitationRow } from "@/components/admin/invitations-manager";
+import { updateInvitationContactAction } from "@/app/actions/admin-invitations";
 
 const defaultTemplates: Record<string, string> = {
   en: "Dear {name},\n\nRuben & Andrea cordially invite you to celebrate their wedding on October 2, 2027 in Vienna!\n\nPlease open your personalized digital invitation here:\n{url}",
@@ -32,6 +33,11 @@ export function WhatsAppManager({
   invitations: InvitationRow[];
   siteUrl: string;
 }) {
+  const [invitationsList, setInvitationsList] = useState<InvitationRow[]>(invitations);
+  const [editingGuestPhone, setEditingGuestPhone] = useState<InvitationRow | null>(null);
+  const [phoneEditInput, setPhoneEditInput] = useState("");
+  const [savingGuestPhone, setSavingGuestPhone] = useState(false);
+
   const [status, setStatus] = useState<"connected" | "disconnected" | "connecting">("disconnected");
   const [metaCloudConfigured, setMetaCloudConfigured] = useState<boolean>(false);
   const [gatewayConfigured, setGatewayConfigured] = useState<boolean>(false);
@@ -207,9 +213,41 @@ export function WhatsAppManager({
       setLinkedPhone("");
       setLiveQrCode(null);
       setPairingError(null);
-      setDispatchLog((prev) => [...prev, "WhatsApp session unlinked and destroyed."]);
     } catch {
       alert("Failed to unlink session.");
+    }
+  }
+
+  async function handleSaveGuestPhone() {
+    if (!editingGuestPhone) return;
+    setSavingGuestPhone(true);
+    try {
+      const clean = phoneEditInput.trim();
+      const res = await updateInvitationContactAction({
+        id: editingGuestPhone.id,
+        whatsapp: clean || null,
+        phone: clean || null,
+      });
+      if (res.success) {
+        setInvitationsList((prev) =>
+          prev.map((i) =>
+            i.id === editingGuestPhone.id
+              ? { ...i, whatsapp: clean || null, phone: clean || null }
+              : i
+          )
+        );
+        setEditingGuestPhone(null);
+        setDispatchLog((prev) => [
+          ...prev,
+          `✓ Updated WhatsApp number for ${editingGuestPhone.displayName}: ${clean || "removed"}`,
+        ]);
+      } else {
+        alert(res.error || "Failed to update phone number.");
+      }
+    } catch {
+      alert("Network error updating phone number.");
+    } finally {
+      setSavingGuestPhone(false);
     }
   }
 
@@ -858,7 +896,7 @@ export function WhatsAppManager({
 
             {/* List */}
             <div style={{ maxHeight: "290px", overflowY: "auto", border: "1px solid #E8DFD8", borderRadius: "6px", marginBottom: "1rem" }}>
-              {invitations.map((inv) => {
+              {invitationsList.map((inv) => {
                 const lang = resolveGuestLanguage(inv.language);
                 const langInfo = languageLabels[lang] || { name: lang, flag: "" };
                 const isSelected = selectedIds.includes(inv.id);
@@ -912,8 +950,28 @@ export function WhatsAppManager({
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "#776A6C", marginTop: "0.1rem" }}>
-                        {phone || "No phone"} · {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}
+                      <div style={{ fontSize: "0.75rem", color: "#776A6C", marginTop: "0.1rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                        <span>{phone || "No phone"}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingGuestPhone(inv);
+                            setPhoneEditInput(inv.whatsapp || inv.phone || "");
+                          }}
+                          title="Edit WhatsApp number"
+                          style={{
+                            background: "transparent",
+                            border: 0,
+                            cursor: "pointer",
+                            fontSize: "0.75rem",
+                            padding: "0 0.15rem",
+                            opacity: 0.7,
+                          }}
+                        >
+                          ✏️
+                        </button>
+                        <span>· {inv.maxGuests} {inv.maxGuests > 1 ? "guests" : "guest"}</span>
                       </div>
                     </div>
 
@@ -939,7 +997,27 @@ export function WhatsAppManager({
                         💬 Send
                       </button>
                     ) : (
-                      <span style={{ fontSize: "0.7rem", color: "#9CA3AF" }}>No #</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingGuestPhone(inv);
+                          setPhoneEditInput("");
+                        }}
+                        style={{
+                          fontSize: "0.72rem",
+                          color: "#166534",
+                          background: "#F0FDF4",
+                          border: "1px solid #BBF7D0",
+                          borderRadius: "4px",
+                          padding: "0.25rem 0.5rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        + Add WA #
+                      </button>
                     )}
                   </div>
                 );
@@ -1389,6 +1467,102 @@ export function WhatsAppManager({
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Guest WhatsApp Phone Number Modal */}
+      {editingGuestPhone && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem",
+          }}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "12px",
+              padding: "1.75rem",
+              maxWidth: "440px",
+              width: "100%",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+            }}
+          >
+            <h3 style={{ margin: "0 0 0.5rem 0", fontFamily: "var(--font-display, serif)", fontSize: "1.3rem", color: "#2B2425" }}>
+              Set WhatsApp Number
+            </h3>
+            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem" }}>
+              Add or update the WhatsApp number for <strong>{editingGuestPhone.displayName}</strong>.
+            </p>
+
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
+                WhatsApp Number (with country code):
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. +436641234567 or 436641234567"
+                value={phoneEditInput}
+                onChange={(e) => setPhoneEditInput(e.target.value)}
+                autoFocus
+                style={{
+                  width: "100%",
+                  padding: "0.6rem 0.8rem",
+                  borderRadius: "6px",
+                  border: "1px solid #D5CBC4",
+                  fontSize: "0.9rem",
+                  background: "#FFFFFF",
+                }}
+              />
+              <span style={{ fontSize: "0.72rem", color: "#776A6C", display: "block", marginTop: "0.3rem" }}>
+                Enter international format without special symbols or spaces.
+              </span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.6rem" }}>
+              <button
+                type="button"
+                onClick={() => setEditingGuestPhone(null)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #D5CBC4",
+                  borderRadius: "6px",
+                  padding: "0.5rem 0.9rem",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  color: "#6A5D60",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={savingGuestPhone}
+                onClick={handleSaveGuestPhone}
+                style={{
+                  background: "#25D366",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.5rem 1.2rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: savingGuestPhone ? "wait" : "pointer",
+                }}
+              >
+                {savingGuestPhone ? "Saving..." : "Save Phone Number"}
+              </button>
+            </div>
           </div>
         </div>
       )}

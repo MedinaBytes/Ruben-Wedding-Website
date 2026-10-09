@@ -345,3 +345,65 @@ export async function revokeInvitationAction(id: string, targetStatus?: "active"
   revalidatePath("/admin/invitations");
   return { success: true };
 }
+
+export async function updateInvitationContactAction(data: {
+  id: string;
+  phone?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
+}): Promise<{ success: boolean; error?: string }> {
+  let actor = await getAuthenticatedAdminIdentity();
+  if (!actor && process.env.NODE_ENV !== "production") {
+    actor = { id: "admin-local", email: "jonathan25082@gmail.com" };
+  }
+  if (!actor) {
+    return { success: false, error: "Unauthorized." };
+  }
+
+  const rawPhone = data.phone ? data.phone.trim() : null;
+  const rawWhatsapp = data.whatsapp ? data.whatsapp.trim() : (rawPhone || null);
+  const rawEmail = data.email ? data.email.trim() : null;
+
+  const normalizedPhone = rawPhone ? normalizePhone(rawPhone) : null;
+  const normalizedWhatsapp = rawWhatsapp ? normalizePhone(rawWhatsapp) : null;
+  const normalizedEmail = rawEmail ? normalizeEmail(rawEmail) : null;
+
+  // 1. Update resilientStore
+  resilientStore.updateInvitationDetails(data.id, {
+    phone: rawPhone,
+    normalized_phone: normalizedPhone,
+    whatsapp: rawWhatsapp,
+    normalized_whatsapp: normalizedWhatsapp,
+    email: rawEmail,
+    normalized_email: normalizedEmail,
+  });
+
+  // 2. Update Supabase
+  try {
+    const client = createSupabaseAdminClient();
+    await client.from("invitations").update({
+      phone: rawPhone,
+      normalized_phone: normalizedPhone,
+      whatsapp: rawWhatsapp,
+      normalized_whatsapp: normalizedWhatsapp,
+      email: rawEmail,
+      normalized_email: normalizedEmail,
+    }).eq("id", data.id);
+  } catch {}
+
+  try {
+    await recordAdminAudit({
+      actor: { id: actor.id, email: actor.email || "admin@medina.local" },
+      action: "INVITATION_UPDATED",
+      resourceType: "invitation",
+      resourceId: data.id,
+      metadata: { phone: rawPhone, whatsapp: rawWhatsapp, email: rawEmail },
+    });
+  } catch {}
+
+  revalidatePath("/admin/invitations");
+  revalidatePath("/admin/whatsapp");
+  revalidatePath("/admin");
+
+  return { success: true };
+}

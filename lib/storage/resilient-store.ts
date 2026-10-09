@@ -491,6 +491,17 @@ export const resilientStore = {
     }
   },
 
+  updateInvitationDetails(id: string, updates: Partial<StoredInvitation>) {
+    const db = loadDb();
+    const inv = db.invitations.find((i) => i.id === id);
+    if (inv) {
+      Object.assign(inv, updates);
+      saveDb(db);
+      return inv;
+    }
+    return null;
+  },
+
   // RSVPS
   getRsvps(): StoredRsvp[] {
     return loadDb().rsvps;
@@ -511,6 +522,22 @@ export const resilientStore = {
     }
     saveDb(db);
     return rsvp;
+  },
+
+  upsertRsvps(rsvps: StoredRsvp[]) {
+    const db = loadDb();
+    let modified = false;
+    for (const rsvp of rsvps) {
+      const idx = db.rsvps.findIndex((r) => r.invitation_id === rsvp.invitation_id);
+      if (idx >= 0) {
+        db.rsvps[idx] = { ...db.rsvps[idx], ...rsvp };
+        modified = true;
+      } else {
+        db.rsvps.push(rsvp);
+        modified = true;
+      }
+    }
+    if (modified) saveDb(db);
   },
 
   // SONG REQUESTS

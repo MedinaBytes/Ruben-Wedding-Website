@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { isSameOriginMutation } from "@/lib/security/request";
+import {
+  getWhatsAppStatus,
+  startWhatsAppLinking,
+  unlinkWhatsApp,
+} from "@/lib/whatsapp/baileys-service";
 
 export const dynamic = "force-dynamic";
 
@@ -16,19 +21,7 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401, headers: noStoreHeaders });
   }
 
-  // ToS-safe serverless direct WhatsApp assistant state
-  const status = {
-    status: "connected",
-    engine: "direct_assistant",
-    isServerless: true,
-    qrCode: null,
-    linkedPhone: null,
-    lastSyncedAt: new Date().toISOString(),
-    error: null,
-    mode: "wa_me_click_to_chat",
-    description: "Serverless-ready direct WhatsApp assistant. Uses official wa.me click-to-chat links without WebSocket ban risks.",
-  };
-
+  const status = await getWhatsAppStatus();
   return NextResponse.json(status, { headers: noStoreHeaders });
 }
 
@@ -42,5 +35,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_origin" }, { status: 403, headers: noStoreHeaders });
   }
 
-  return GET();
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    body = {};
+  }
+
+  const action = (body as { action?: string })?.action || "start";
+
+  if (action === "unlink") {
+    await unlinkWhatsApp();
+    const status = await getWhatsAppStatus();
+    return NextResponse.json(status, { headers: noStoreHeaders });
+  }
+
+  // Start linking or retrieve live QR code
+  const status = await startWhatsAppLinking();
+  return NextResponse.json(status, { headers: noStoreHeaders });
 }

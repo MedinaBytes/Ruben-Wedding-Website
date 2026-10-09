@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CreateInvitationForm } from "@/components/admin/create-invitation-form";
-import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction } from "@/app/actions/admin-invitations";
+import { deleteInvitationAction, revokeInvitationAction, toggleDemoInvitationAction, updateInvitationContactAction } from "@/app/actions/admin-invitations";
 import { sendInvitationEmailAction, sendBatchInvitationEmailsAction, type BatchInvitationEmailResult } from "@/app/actions/admin-email";
 import { buildWhatsAppInvitationLink } from "@/lib/whatsapp/wa-link";
 
@@ -62,6 +62,14 @@ export function InvitationsManager({
   const [sendingEmail, setSendingEmail] = useState(false);
   const [emailResult, setEmailResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  // Contact Edit Modal State
+  const [editingContactInv, setEditingContactInv] = useState<InvitationRow | null>(null);
+  const [contactPhoneInput, setContactPhoneInput] = useState("");
+  const [contactWhatsappInput, setContactWhatsappInput] = useState("");
+  const [contactEmailInput, setContactEmailInput] = useState("");
+  const [savingContact, setSavingContact] = useState(false);
+  const [contactFeedback, setContactFeedback] = useState<string | null>(null);
+
   const filtered = items.filter((inv) => {
     const matchesSearch =
       inv.displayName.toLowerCase().includes(search.toLowerCase()) ||
@@ -109,6 +117,48 @@ export function InvitationsManager({
       });
     } finally {
       setSendingEmail(false);
+    }
+  }
+
+  function openContactModal(inv: InvitationRow) {
+    setEditingContactInv(inv);
+    setContactPhoneInput(inv.phone || "");
+    setContactWhatsappInput(inv.whatsapp || inv.phone || "");
+    setContactEmailInput(inv.email || "");
+    setContactFeedback(null);
+  }
+
+  async function handleSaveContact() {
+    if (!editingContactInv) return;
+    setSavingContact(true);
+    setContactFeedback(null);
+    try {
+      const res = await updateInvitationContactAction({
+        id: editingContactInv.id,
+        phone: contactPhoneInput.trim() || null,
+        whatsapp: contactWhatsappInput.trim() || null,
+        email: contactEmailInput.trim() || null,
+      });
+      if (res.success) {
+        const updatedPhone = contactPhoneInput.trim() || null;
+        const updatedWa = contactWhatsappInput.trim() || null;
+        const updatedMail = contactEmailInput.trim() || null;
+        setItems((prev) =>
+          prev.map((i) =>
+            i.id === editingContactInv.id
+              ? { ...i, phone: updatedPhone, whatsapp: updatedWa, email: updatedMail }
+              : i
+          )
+        );
+        setContactFeedback("✓ Contact details updated successfully!");
+        setTimeout(() => setEditingContactInv(null), 1200);
+      } else {
+        setContactFeedback(res.error || "Failed to update contact.");
+      }
+    } catch {
+      setContactFeedback("Network error updating contact.");
+    } finally {
+      setSavingContact(false);
     }
   }
 
@@ -631,6 +681,23 @@ export function InvitationsManager({
                       </button>
                       <button
                         type="button"
+                        onClick={() => openContactModal(inv)}
+                        title="Add or update phone & WhatsApp number"
+                        style={{
+                          background: inv.whatsapp || inv.phone ? "#F4F7F4" : "#FFF9E6",
+                          border: `1px solid ${inv.whatsapp || inv.phone ? "#C8E6C9" : "#F5DEB3"}`,
+                          borderRadius: "4px",
+                          padding: "0.3rem 0.55rem",
+                          fontSize: "0.78rem",
+                          cursor: "pointer",
+                          color: inv.whatsapp || inv.phone ? "#2E7D32" : "#B45309",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ✏️ {inv.whatsapp || inv.phone ? "Phone" : "+ Add WA"}
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => sendWhatsApp(inv)}
                         title="Send invitation via WhatsApp"
                         style={{
@@ -1085,6 +1152,173 @@ export function InvitationsManager({
                 }}
               >
                 {batchLoading ? "Dispatching..." : "Send Batch Emails ✈"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Contact / WhatsApp Modal */}
+      {editingContactInv && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "1rem",
+          }}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              borderRadius: "12px",
+              padding: "1.75rem",
+              maxWidth: "480px",
+              width: "100%",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-display, serif)", fontSize: "1.3rem", color: "#2B2425" }}>
+                Edit Contact Details
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingContactInv(null)}
+                style={{ background: "none", border: 0, fontSize: "1.2rem", cursor: "pointer", color: "#6A5D60" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ margin: "0 0 1.25rem 0", color: "#6A5D60", fontSize: "0.85rem" }}>
+              Update WhatsApp, phone number, and email for <strong>{editingContactInv.displayName}</strong>.
+            </p>
+
+            {contactFeedback && (
+              <div
+                style={{
+                  marginBottom: "1rem",
+                  padding: "0.6rem 0.85rem",
+                  borderRadius: "6px",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  background: contactFeedback.startsWith("✓") ? "#F0FDF4" : "#FEF2F2",
+                  color: contactFeedback.startsWith("✓") ? "#166534" : "#991B1B",
+                  border: `1px solid ${contactFeedback.startsWith("✓") ? "#BBF7D0" : "#FECACA"}`,
+                }}
+              >
+                {contactFeedback}
+              </div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
+                  📱 WhatsApp Number (International format):
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. +436641234567 or 436641234567"
+                  value={contactWhatsappInput}
+                  onChange={(e) => {
+                    setContactWhatsappInput(e.target.value);
+                    if (!contactPhoneInput) setContactPhoneInput(e.target.value);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    border: "1px solid #D5CBC4",
+                    fontSize: "0.88rem",
+                    background: "#FFFFFF",
+                  }}
+                />
+                <span style={{ fontSize: "0.72rem", color: "#776A6C", display: "block", marginTop: "0.2rem" }}>
+                  Used for automated bot dispatch and direct 1-click WhatsApp links.
+                </span>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
+                  📞 Standard Phone:
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. +43 664 1234567"
+                  value={contactPhoneInput}
+                  onChange={(e) => setContactPhoneInput(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    border: "1px solid #D5CBC4",
+                    fontSize: "0.88rem",
+                    background: "#FFFFFF",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "#2B2425", marginBottom: "0.3rem" }}>
+                  ✉ Email:
+                </label>
+                <input
+                  type="email"
+                  placeholder="guest@example.com"
+                  value={contactEmailInput}
+                  onChange={(e) => setContactEmailInput(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    border: "1px solid #D5CBC4",
+                    fontSize: "0.88rem",
+                    background: "#FFFFFF",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.6rem" }}>
+              <button
+                type="button"
+                onClick={() => setEditingContactInv(null)}
+                style={{
+                  background: "transparent",
+                  border: "1px solid #D5CBC4",
+                  borderRadius: "6px",
+                  padding: "0.5rem 0.95rem",
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  color: "#6A5D60",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={savingContact}
+                onClick={handleSaveContact}
+                style={{
+                  background: "#25D366",
+                  color: "#FFFFFF",
+                  border: 0,
+                  borderRadius: "6px",
+                  padding: "0.5rem 1.2rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                  cursor: savingContact ? "wait" : "pointer",
+                }}
+              >
+                {savingContact ? "Saving..." : "Save Contact Details"}
               </button>
             </div>
           </div>

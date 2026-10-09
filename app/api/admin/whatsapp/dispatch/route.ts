@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedAdminIdentity } from "@/lib/admin/auth";
 import { isSameOriginMutation } from "@/lib/security/request";
-import { normalizePhoneForWaMe } from "@/lib/whatsapp/wa-link";
+import { sendWhatsAppMessage } from "@/lib/whatsapp/baileys-service";
 import { recordAdminAudit } from "@/lib/admin/audit";
 import { resilientStore } from "@/lib/storage/resilient-store";
 
@@ -61,16 +61,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "missing_fields" }, { status: 422 });
   }
 
-  const cleanPhone = normalizePhoneForWaMe(phone);
-  const waUrl = cleanPhone
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
-    : `https://wa.me/?text=${encodeURIComponent(message)}`;
+  const result = await sendWhatsAppMessage(phone, message);
 
-  if (invitationId) {
+  if (result.success && invitationId) {
     resilientStore.recordEvent({
       invitation_id: invitationId,
       event_type: "WHATSAPP_DISPATCHED",
-      session_id: "wa-click-to-chat",
+      session_id: result.messageId || "wa-direct",
     });
 
     try {
@@ -80,18 +77,14 @@ export async function POST(request: Request) {
         resourceType: "invitation",
         resourceId: invitationId,
         metadata: {
-          channel: "whatsapp_wa_me",
-          phone: cleanPhone,
+          channel: "whatsapp_bot",
+          phone,
           guestName: guestName ?? null,
+          messageId: result.messageId ?? null,
         },
       });
     } catch {}
   }
 
-  return NextResponse.json({
-    success: true,
-    url: waUrl,
-    mode: "click_to_chat",
-    message: "Direct WhatsApp click-to-chat link created successfully",
-  });
+  return NextResponse.json(result);
 }
