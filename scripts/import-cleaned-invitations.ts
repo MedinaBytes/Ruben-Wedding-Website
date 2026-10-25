@@ -62,7 +62,7 @@ async function run() {
   const csvFile = path.resolve(process.cwd(), "docs/bulk-invitations-cleaned.csv");
   const rawCsv = fs.readFileSync(csvFile, "utf-8");
   const lines = rawCsv.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  
+
   const headers = parseCsvLine(lines[0]);
   console.log("Headers:", headers);
 
